@@ -309,6 +309,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="connections.config" />
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
