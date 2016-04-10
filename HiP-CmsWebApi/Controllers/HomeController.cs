@@ -10,9 +10,7 @@ namespace HiP_CmsWebApi.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Title = "Home Page";
-
-            return View();
+            return new RedirectResult("~/swagger/ui/index");
         }
     }
 }
