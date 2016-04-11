@@ -1,0 +1,6 @@
+namespace HiP_CmsWebApi.Areas.HelpPage.ModelDescriptions
+{
+    public class SimpleTypeModelDescription : ModelDescription
+    {
+    }
+}
