@@ -253,7 +253,3 @@ paket-files/
 
 #Connection Settings
 connections.config
-
-#migrations
-Migrations
-!Migrations/Configuration.cs
