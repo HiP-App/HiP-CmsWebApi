@@ -42,20 +42,11 @@
   },
 
   "exclude": [
-    "wwwroot",
-    "node_modules",
-    "bower_components"
+    "wwwroot"
   ],
   "publishExclude": [
     "**.user",
     "**.vspscc"
   ],
-  "scripts": {
-    "prepublish": [
-      "npm install",
-      "bower install",
-      "gulp clean",
-      "gulp min"
-    ]
-  }
+  "scripts": {}
 }
