@@ -1,40 +1,79 @@
-# Welcome to ASP.NET 5
+HiPCMS
+======
 
-We've made some big updates in this release, so it’s **important** that you spend a few minutes to learn what’s new.
+HiP-CmsWebApi is a content management system which is developed by the project group [History in 
+Paderborn](http://is.uni-paderborn.de/fachgebiete/fg-engels/lehre/ss15/hip-app/pg-hip-app.html).
+It is developed to fill the system 'History in Paderborn' with data. This is only a REST API with service end points. We 
+also develop client applicaion to consume this REST API. The client application is built on AngularJS.
 
-You've created a new ASP.NET 5 project. [Learn what's new](http://go.microsoft.com/fwlink/?LinkId=518016)
+In another team of the project group, an Android app is developed that will 
+make the content of HiPCMS accessable to the public. Information about the app 
+will be added as soon as it is available.
 
-## This application consists of:
+HiPCMS will replace the original project which was known as [HiPBackend](https://hip.upb.de/).
+HiPBackend's code unfortunately was not maintainable anymore and a rewrite was decided. 
 
-*   Sample pages using ASP.NET MVC 6
-*   [Gulp](http://go.microsoft.com/fwlink/?LinkId=518007) and [Bower](http://go.microsoft.com/fwlink/?LinkId=518004) for managing client-side libraries
-*   Theming using [Bootstrap](http://go.microsoft.com/fwlink/?LinkID=398939)
+See the LICENSE file for licensing information.
 
-## How to
+See [the graphs page](https://github.com/HiP-App/HiP-CmsWebApi/graphs/contributors) 
+for a list of code contributions.
 
-*   [Add a Controller and View](http://go.microsoft.com/fwlink/?LinkID=398600)
-*   [Add an appsetting in config and access it in app.](http://go.microsoft.com/fwlink/?LinkID=699562)
-*   [Manage User Secrets using Secret Manager.](http://go.microsoft.com/fwlink/?LinkId=699315)
-*   [Use logging to log a message.](http://go.microsoft.com/fwlink/?LinkId=699316)
-*   [Add packages using NuGet.](http://go.microsoft.com/fwlink/?LinkId=699317)
-*   [Add client packages using Bower.](http://go.microsoft.com/fwlink/?LinkId=699318)
-*   [Target development, staging or production environment.](http://go.microsoft.com/fwlink/?LinkId=699319)
+## Requirements:
 
-## Overview
+ * [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs-2015-product-editions.aspx) and make sure you have [rc1-Update1](https://www.visualstudio.com/en-us/news/vs2015-update1-vs.aspx) installed
+ * [PostgreSQL](http://www.postgresql.org/download/)
+ * [NuGet Package Manager](https://www.nuget.org/), an extension of Visual Studio.
+ 
 
-*   [Conceptual overview of what is ASP.NET 5](http://go.microsoft.com/fwlink/?LinkId=518008)
-*   [Fundamentals of ASP.NET 5 such as Startup and middleware.](http://go.microsoft.com/fwlink/?LinkId=699320)
-*   [Working with Data](http://go.microsoft.com/fwlink/?LinkId=398602)
-*   [Security](http://go.microsoft.com/fwlink/?LinkId=398603)
-*   [Client side development](http://go.microsoft.com/fwlink/?LinkID=699321)
-*   [Develop on different platforms](http://go.microsoft.com/fwlink/?LinkID=699322)
-*   [Read more on the documentation site](http://go.microsoft.com/fwlink/?LinkID=699323)
+## Technolgies and Frameworks
 
-## Run & Deploy
+HiP-CmsWebApi is a REST API built on .NET Framework 4.5.2
 
-*   [Run your app](http://go.microsoft.com/fwlink/?LinkID=517851)
-*   [Run your app on .NET Core](http://go.microsoft.com/fwlink/?LinkID=517852)
-*   [Run commands in your project.json](http://go.microsoft.com/fwlink/?LinkID=517853)
-*   [Publish to Microsoft Azure Web Apps](http://go.microsoft.com/fwlink/?LinkID=398609)
 
-We would love to hear your [feedback](http://go.microsoft.com/fwlink/?LinkId=518015)
+## Getting started
+
+ * Clone the repository.
+ * Update the database connection string in the appsettings.json file.
+ * Then run 'dnx ef database update' seeds and updates your database.
+ * Use ```setup.sh``` to install all dependencies.
+ * Use ```test.sh``` to execute the tests
+
+Note: the scripts setup.sh and test.sh are also used by TravisCI; they were 
+created to keep setup and test-execution independent of a CI server.
+
+
+## How to develop
+
+ * The latest code is available on [the project's Github-page](https://github.com/HiP-App/HiP-CmsWebApi/)
+ * You can [fork the repo](https://help.github.com/articles/fork-a-repo/) or [clone our repo](https://help.github.com/articles/cloning-a-repository/)
+   * To submit patches you should fork and then [create a Pull Request](https://help.github.com/articles/using-pull-requests/)
+   * If you are part of the project group, you can create new branches on the main repo as described [in our internal
+     Confluence](http://atlassian-hip.cs.upb.de:8090/display/DCS/Conventions+for+git)
+
+We are using [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs-2015-product-editions.aspx). 
+
+
+## How to test
+TODO
+
+
+## How to submit Defects and Feature Proposals
+
+Please write an email to [hip-app@campus.upb.de](mailto:hip-app@campus.upb.de).
+
+## Documentation
+
+Documentation is currently collected in our [internal Confluence](http://atlassian-hip.cs.upb.de:8090/dashboard.action). If something is missing in 
+this README, just [send an email](mailto:hip-app@campus.upb.de).
+
+
+## Contact
+
+> HiP (History in Paderborn) ist eine Plattform der:
+> Universität Paderborn
+> Warburger Str. 100
+> 33098 Paderborn
+> http://www.uni-paderborn.de
+> Tel.: +49 5251 60-0
+
+You can also [write an email](mailto:hip-app@campus.upb.de).
