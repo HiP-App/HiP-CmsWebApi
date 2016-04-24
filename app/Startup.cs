@@ -33,7 +33,6 @@ namespace app
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-            Configuration["Data:DefaultConnection:ConnectionString"] = $@"Data Source={appEnv.ApplicationBasePath}/app.db";
 
         }
 
@@ -47,9 +46,8 @@ namespace app
         {
             // Add framework services.
             services.AddEntityFramework()
-                .AddSqlite()
-                .AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlite(Configuration["Data:DefaultConnection:ConnectionString"]));
+                .AddNpgsql()
+                .AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration["Data:DefaultConnection:ConnectionString"]));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
