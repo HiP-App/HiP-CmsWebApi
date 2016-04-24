@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace test
@@ -9,6 +10,11 @@ namespace test
     // https://xunit.github.io/docs/getting-started-dnx.html
     public class SampleTest
     {
+        [Fact]
+        public void TrueIsTrue() {
+            Assert.True(true);
+        }
+
         [Fact]
         public void PassingTest()
         {
@@ -24,6 +30,23 @@ namespace test
         int Add(int x, int y)
         {
             return x + y;
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void MyFirstTheory(int value) {
+            Assert.True(IsOdd(value));
+        }
+
+        bool IsOdd(int value) {
+            return value % 2 == 1;
+        }
+
+        [Fact]
+        public async Task SampleAsyncTest() {
+            await Task.Delay(01);
         }
     }
 }
