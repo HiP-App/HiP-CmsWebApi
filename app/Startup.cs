@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using app.Models;
 using app.Services;
+using Swashbuckle.SwaggerGen;
 
 namespace app
 {
@@ -37,6 +38,9 @@ namespace app
         }
 
         public IConfigurationRoot Configuration { get; set; }
+        
+        //This path is used by swagger to generate the documentation.
+        private string pathToDoc = "..\\artifacts\\bin\\app\\Debug\\dnxcore50\\app.xml";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -56,6 +60,25 @@ namespace app
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            //swagger configurations
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerDocument(options =>
+            {
+                options.SingleApiVersion(new Info
+                {
+                    Version = "v1",
+                    Title = "HiPCMS WebAPI",
+                    Description = "A WebApi for History in Paderborn App",
+                    TermsOfService = ""
+                });
+                options.OperationFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlActionComments(pathToDoc));
+            });
+            services.ConfigureSwaggerSchema(options => {
+                options.DescribeAllEnumsAsStrings = true;
+                options.ModelFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlTypeComments(pathToDoc));
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,6 +123,10 @@ namespace app
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Registering the swagger configurations
+            app.UseSwaggerGen();
+            app.UseSwaggerUi();
         }
 
         // Entry point for the application.
