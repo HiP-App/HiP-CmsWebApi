@@ -17,5 +17,4 @@ script:
     - docker push hipcms/hipcmsrepository
     
 notifications:
-  slack:
-    secure: $SLACK_SECRET
+  slack: $SLACK_SECRET
