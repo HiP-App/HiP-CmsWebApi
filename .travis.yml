@@ -15,3 +15,7 @@ script:
     - docker tag hipcms/hipcmsrepository:latest hipcms/hipcmsrepository:v1
     #push the image to the repository
     - docker push hipcms/hipcmsrepository
+    
+    notifications:
+  slack:
+    secure: $SLACK_SECRET

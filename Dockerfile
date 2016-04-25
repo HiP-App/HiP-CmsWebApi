@@ -8,4 +8,4 @@ WORKDIR /app
 RUN ["dnu", "restore"]
 
 EXPOSE 5000/tcp
-ENTRYPOINT ["dnx", "-p", "app/project.json", "web", "test/project.json"]
+ENTRYPOINT ["dnx", "-p", "app/project.json", "web"]
