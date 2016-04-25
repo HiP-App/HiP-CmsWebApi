@@ -12,9 +12,9 @@ script:
     #build the image
     - docker build --no-cache -t hipcms/hipcmsrepository .
     #tag the build
-    - docker tag hipcms/hipcmsrepository:latest hipcms/hipcmsrepository:v1
+    - docker tag hipcms/hipcmsrepository:latest "hipcms/hipcmsrepository:v$TRAVIS_BUILD_NUMBER"
     #push the image to the repository
     - docker push hipcms/hipcmsrepository
     
 notifications:
-  slack: $SLACK_SECRET
+  slack: "$SLACK_SECRET"
