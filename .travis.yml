@@ -16,6 +16,6 @@ script:
     #push the image to the repository
     - docker push hipcms/hipcmsrepository
     
-    notifications:
+notifications:
   slack:
     secure: $SLACK_SECRET
