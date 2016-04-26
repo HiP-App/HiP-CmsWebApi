@@ -31,8 +31,8 @@ for a list of code contributions.
 
 HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the runtime specifications we use
 
- * For Windows : (coreclr)[http://docs.asp.net/en/latest/getting-started/installing-on-windows.html]
- * For Linux	: (Mono v4.0.5)[http://www.mono-project.com/docs/getting-started/install/linux/#debian-ubuntu-and-derivatives]
+ * For Windows : [coreclr](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html)
+ * For Linux	: [Mono v4.0.5](http://www.mono-project.com/docs/getting-started/install/linux/#debian-ubuntu-and-derivatives)
 
 ## Getting started
 
