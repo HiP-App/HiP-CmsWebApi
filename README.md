@@ -21,15 +21,18 @@ for a list of code contributions.
 
 ## Requirements:
 
- * [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs-2015-product-editions.aspx) and make sure you have [rc1-Update1](https://www.visualstudio.com/en-us/news/vs2015-update1-vs.aspx) installed
+ * [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs-2015-product-editions.aspx) and make sure you have [rc1-Update2](https://www.visualstudio.com/news/vs2015-update2-vs) installed
+ * ASP.NET 5 for [Windows](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html) or [Linux](http://docs.asp.net/en/latest/getting-started/installing-on-linux.html).
  * [PostgreSQL](http://www.postgresql.org/download/)
  * [NuGet Package Manager](https://www.nuget.org/), an extension of Visual Studio.
  
 
 ## Technolgies and Frameworks
 
-HiP-CmsWebApi is a REST API built on .NET Framework 4.5.2
+HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the runtime specifications we use
 
+ * For Windows : [coreclr](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html)
+ * For Linux	: [Mono v4.0.5](http://www.mono-project.com/docs/getting-started/install/linux/#debian-ubuntu-and-derivatives)
 
 ## Getting started
 
