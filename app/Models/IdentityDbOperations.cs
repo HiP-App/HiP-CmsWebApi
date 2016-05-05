@@ -37,6 +37,30 @@ namespace app.Models
             await CreateUser(context, userManager);
         }
 
-        
+        // Create Superuser Admin User.
+        public async Task CreateUser(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            // Checking if the user exixts.
+            var adminUser = await userManager.FindByEmailAsync("admin@hipapp.de");
+            if (adminUser != null)
+            {
+                // Assigning Superuser role if user admin already exists.
+                if (!(await userManager.IsInRoleAsync(adminUser, "Admin")))
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+            else
+            {
+                // Creating a new user and giving the user the Superuser role.
+                var newAdmin = new ApplicationUser()
+                {
+                    UserName = "admin@hipapp.de",
+                    Email = "admin@hipapp.de",
+                };
+
+                string userPWD = "Hipapp@123";
+                await userManager.CreateAsync(newAdmin, userPWD);
+                await userManager.AddToRoleAsync(newAdmin, "Admin");
+            }
+        }
     }
 }
