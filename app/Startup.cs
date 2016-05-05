@@ -39,7 +39,7 @@ namespace app
         public IConfigurationRoot Configuration { get; set; }
         
         //This path is used by swagger to generate the documentation.
-        private string pathToDoc = "..\\artifacts\\bin\\app\\Debug\\dnxcore50\\app.xml";
+        //private string pathToDoc = "..\\artifacts\\bin\\app\\Debug\\dnxcore50\\app.xml";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -70,11 +70,11 @@ namespace app
                     Description = "A WebApi for History in Paderborn App",
                     TermsOfService = ""
                 });
-                options.OperationFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlActionComments(pathToDoc));
+                //options.OperationFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlActionComments(pathToDoc));
             });
             services.ConfigureSwaggerSchema(options => {
                 options.DescribeAllEnumsAsStrings = true;
-                options.ModelFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlTypeComments(pathToDoc));
+                //options.ModelFilter(new Swashbuckle.SwaggerGen.XmlComments.ApplyXmlTypeComments(pathToDoc));
             });
 
         }
@@ -125,6 +125,7 @@ namespace app
             //Registering the swagger configurations
             app.UseSwaggerGen();
             app.UseSwaggerUi();
+           
         }
 
         // Entry point for the application.
