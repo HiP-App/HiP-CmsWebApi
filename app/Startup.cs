@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using app.Models;
 using app.Services;
 using Swashbuckle.SwaggerGen;
+using Microsoft.AspNet.Identity;
 
 namespace app
 {
@@ -80,7 +81,7 @@ namespace app
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, ApplicationDbContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -125,7 +126,10 @@ namespace app
             //Registering the swagger configurations
             app.UseSwaggerGen();
             app.UseSwaggerUi();
-           
+
+            //Call to create user roles
+            IdentityDbOperations identityOperations = new IdentityDbOperations();
+            await identityOperations.CreateRoles(context, serviceProvider);            
         }
 
         // Entry point for the application.
