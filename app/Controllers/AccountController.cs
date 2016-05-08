@@ -117,7 +117,7 @@ namespace app.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     // Adding default role as "Student" when the user registers.
-                    await _userManager.AddToRoleAsync(user, "Student");
+                    await _userManager.AddToRoleAsync(user, Constants.Student);
 
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToAction(nameof(HomeController.Index), "Home");

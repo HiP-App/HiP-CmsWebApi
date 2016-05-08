@@ -20,9 +20,9 @@ namespace app.Models
 
             // Defining list of roles. 
             List<IdentityRole> roles = new List<IdentityRole>();
-            roles.Add(new IdentityRole { Name = "Admin", NormalizedName = "ADMINISTRATOR" });
-            roles.Add(new IdentityRole { Name = "Supervisor", NormalizedName = "SUPERVISOR" });
-            roles.Add(new IdentityRole { Name = "Student", NormalizedName = "STUDENT" });
+            roles.Add(new IdentityRole { Name = Constants.Admin, NormalizedName = Constants.NormalizedAdmin });
+            roles.Add(new IdentityRole { Name = Constants.Supervisor, NormalizedName = Constants.NormalizedSupervisor });
+            roles.Add(new IdentityRole { Name = Constants.Student, NormalizedName = Constants.NormalizedStudent });
 
             // Adding these roles to the DbContext.
             foreach (var role in roles)
@@ -51,8 +51,8 @@ namespace app.Models
             if (adminUser != null)
             {
                 // Assigning Superuser role if user admin already exists.
-                if (!(await userManager.IsInRoleAsync(adminUser, "Admin")))
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                if (!(await userManager.IsInRoleAsync(adminUser, Constants.Admin)))
+                    await userManager.AddToRoleAsync(adminUser, Constants.Admin);
             }
             else
             {
@@ -65,7 +65,7 @@ namespace app.Models
 
                 string userPWD = adminPassword;
                 await userManager.CreateAsync(newAdmin, userPWD);
-                await userManager.AddToRoleAsync(newAdmin, "Admin");
+                await userManager.AddToRoleAsync(newAdmin, Constants.Admin);
             }
         }
     }
