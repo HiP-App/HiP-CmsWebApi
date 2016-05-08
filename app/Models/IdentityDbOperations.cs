@@ -4,13 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using app.ViewModels.UserProfile;
+using Microsoft.Extensions.OptionsModel;
 
 namespace app.Models
 {
     public class IdentityDbOperations
     {
         // Using RoleManagers to Create Roles.
-        public async Task CreateRoles(ApplicationDbContext context, IServiceProvider serviceProvider)
+        public async Task CreateRoles(ApplicationDbContext context, IServiceProvider serviceProvider, IOptions<AdminCredentialsViewModel> userCredentials)
         {
 
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -34,14 +36,18 @@ namespace app.Models
             }
 
             // Invoking method to create a default admin user.
-            await CreateUser(context, userManager);
+            await CreateUser(context, userManager, userCredentials);
         }
 
         // Create Superuser Admin User.
-        public async Task CreateUser(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public async Task CreateUser(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IOptions<AdminCredentialsViewModel> userCredentials)
         {
+            var adminUserName = userCredentials.Value.UserName;
+            var adminPassword = userCredentials.Value.Password;
+
             // Checking if the user exixts.
-            var adminUser = await userManager.FindByEmailAsync("admin@hipapp.de");
+            var adminUser = await userManager.FindByEmailAsync(adminUserName);
+
             if (adminUser != null)
             {
                 // Assigning Superuser role if user admin already exists.
@@ -53,11 +59,11 @@ namespace app.Models
                 // Creating a new user and giving the user the Superuser role.
                 var newAdmin = new ApplicationUser()
                 {
-                    UserName = "admin@hipapp.de",
-                    Email = "admin@hipapp.de",
+                    UserName = adminUserName,
+                    Email = adminUserName,
                 };
 
-                string userPWD = "Hipapp@123";
+                string userPWD = adminPassword;
                 await userManager.CreateAsync(newAdmin, userPWD);
                 await userManager.AddToRoleAsync(newAdmin, "Admin");
             }
