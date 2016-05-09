@@ -7,11 +7,17 @@ namespace app
 {
     public static class Constants
     {
-        public static readonly string Admin = "Admin";
-        public static readonly string NormalizedAdmin = "ADMINISTRATOR";
-        public static readonly string Supervisor = "Supervisor";
-        public static readonly string NormalizedSupervisor = "SUPERVISOR";
-        public static readonly string Student = "Student";
-        public static readonly string NormalizedStudent = "STUDENT";
+        // The below class is for defining constants for Roles.
+        public static class Roles
+        {
+            private static readonly string[] listOfRoles = { "Admin", "Supervisor", "Student" };
+
+            public static string Admin { get { return listOfRoles[0]; } }
+            public static string Supervisor { get { return listOfRoles[1]; } }
+            public static string Student { get { return listOfRoles[2]; } }
+
+            // Get All Roles in a Single Variable.
+            public static IEnumerable<string> AllRoles { get { return listOfRoles; } }
+        }
     }
 }
