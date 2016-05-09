@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using app.ViewModels.UserProfile;
 using Microsoft.Extensions.OptionsModel;
+using app.Models;
 
-namespace app.Models
+namespace app.Migrations
 {
-    public class IdentityDbOperations
+    public class IdentityRolesDbOperations
     {
         // Using RoleManagers to Create Roles.
         public async Task CreateRoles(ApplicationDbContext context, IServiceProvider serviceProvider, IOptions<AdminCredentialsViewModel> userCredentials)
@@ -18,19 +19,17 @@ namespace app.Models
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // Defining list of roles. 
-            List<IdentityRole> roles = new List<IdentityRole>();
-            roles.Add(new IdentityRole { Name = Constants.Admin, NormalizedName = Constants.NormalizedAdmin });
-            roles.Add(new IdentityRole { Name = Constants.Supervisor, NormalizedName = Constants.NormalizedSupervisor });
-            roles.Add(new IdentityRole { Name = Constants.Student, NormalizedName = Constants.NormalizedStudent });
+            // Variable to Create New role. 
+            IdentityRole identityRole;
 
             // Adding these roles to the DbContext.
-            foreach (var role in roles)
+            foreach (var role in Constants.Roles.AllRoles)
             {
-                var roleExit = await roleManager.RoleExistsAsync(role.NormalizedName);
+                identityRole = new IdentityRole { Name = role , NormalizedName = role.ToUpper()};
+                var roleExit = await roleManager.RoleExistsAsync(identityRole.NormalizedName);
                 if (!roleExit)
                 {
-                    context.Roles.Add(role);
+                    context.Roles.Add(identityRole);
                     context.SaveChanges();
                 }
             }
@@ -51,8 +50,8 @@ namespace app.Models
             if (adminUser != null)
             {
                 // Assigning Superuser role if user admin already exists.
-                if (!(await userManager.IsInRoleAsync(adminUser, Constants.Admin)))
-                    await userManager.AddToRoleAsync(adminUser, Constants.Admin);
+                if (!(await userManager.IsInRoleAsync(adminUser, Constants.Roles.Admin)))
+                    await userManager.AddToRoleAsync(adminUser, Constants.Roles.Admin);
             }
             else
             {
@@ -65,7 +64,7 @@ namespace app.Models
 
                 string userPWD = adminPassword;
                 await userManager.CreateAsync(newAdmin, userPWD);
-                await userManager.AddToRoleAsync(newAdmin, Constants.Admin);
+                await userManager.AddToRoleAsync(newAdmin, Constants.Roles.Admin);
             }
         }
     }

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using app.Models;
+using app.Migrations;
 using app.Services;
 using Swashbuckle.SwaggerGen;
 using Microsoft.AspNet.Identity;
@@ -141,8 +142,12 @@ namespace app
             app.UseSwaggerUi();
 
             //Call to create user roles
-            IdentityDbOperations identityOperations = new IdentityDbOperations();
-            await identityOperations.CreateRoles(context, serviceProvider, userCredentials);            
+            // IdentityDbOperations identityOperations = new IdentityDbOperations();
+            // await identityOperations.CreateRoles(context, serviceProvider, userCredentials);
+
+            //Call to create user roles
+            IdentityRolesDbOperations identityRolesOperations = new IdentityRolesDbOperations();
+            await identityRolesOperations.CreateRoles(context, serviceProvider, userCredentials);
         }
 
         // Entry point for the application.
