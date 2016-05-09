@@ -10,8 +10,8 @@ before_install:
 
 before_script:
     #create database and user
-    - psql -c 'CREATE DATABASE $DB_NAME' -U postgres
-    - psql $DB_NAME --command="CREATE USER "$DB_USER" WITH PASSWORD '"$DB_PSWD"';" -U postgres
+    - psql -c "CREATE DATABASE $DB_NAME" -U postgres
+    - psql "$DB_NAME" --command="CREATE USER "$DB_USER" WITH PASSWORD '"$DB_PSWD"';" -U postgres
     - psql $DB_NAME --command="GRANT ALL PRIVILEGES ON DATABASE "$DB_NAME" TO "$DB_USER";"
     #change postgresql config to work with docker
     - chmod +x database-setup.sh
