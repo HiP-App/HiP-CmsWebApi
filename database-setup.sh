@@ -1,12 +1,13 @@
 #!/bin/bash
 
+DB_NAME=$1
+DB_USER=$2
+
 #get docker host ip, we need it to listen on that port
 
 DOCKER_HOST_IP=$( ip addr show docker0 | grep inet | grep -Eo '(([0-9]+\.){3}[0-9]+)' )
 
 echo "Docker Host IP: " $DOCKER_HOST_IP 
-
-
 
 #get the postgres config file
 

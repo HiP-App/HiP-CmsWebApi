@@ -18,7 +18,7 @@ before_script:
 
 script:  
     #change postgresql config to work with docker
-    - sudo ./database-setup.sh
+    - sudo ./database-setup.sh "$DB_NAME" "$DB_USER"
     #build the image
     - docker build --no-cache -t hipcms/hipcmsrepository .
     #tag the build
