@@ -16,7 +16,7 @@ namespace test
             _client = _server.CreateClient();
         }*/
 
-        private async Task<string> GetCheckPrimeResponseString(string querystring = "") {
+        /*private async Task<string> GetCheckPrimeResponseString(string querystring = "") {
             string request = "/checkprime";
             if (!String.IsNullOrEmpty(querystring)) {
                 request += "?" + querystring;
@@ -25,7 +25,7 @@ namespace test
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadAsStringAsync();
-        }
+        }*/
 
         /*[Fact]
         public async Task ReturnHelloWorld() {
@@ -39,7 +39,7 @@ namespace test
             Assert.Equal("Hello World!", responseString);
         }*/
 
-        [Fact]
+        /*[Fact]
         public async Task ReturnInstructionsGivenEmptyQueryString() {
             // Act
             var responseString = await GetCheckPrimeResponseString();
@@ -63,6 +63,6 @@ namespace test
 
             // Assert
             Assert.Equal("6 is NOT prime!", responseString);
-        }
+        }*/
     }
 }

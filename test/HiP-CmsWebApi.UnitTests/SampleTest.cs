@@ -10,6 +10,7 @@ namespace test
     // https://xunit.github.io/docs/getting-started-dnx.html
     public class SampleTest
     {
+		/*
         [Fact]
         public void TrueIsTrue() {
             Assert.True(true);
@@ -48,5 +49,6 @@ namespace test
         public async Task SampleAsyncTest() {
             await Task.Delay(01);
         }
+		*/
     }
 }
