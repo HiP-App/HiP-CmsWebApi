@@ -11,8 +11,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using app.Models;
+using app.Migrations;
 using app.Services;
 using Swashbuckle.SwaggerGen;
+using Microsoft.AspNet.Identity;
+using Microsoft.Extensions.OptionsModel;
+using app.ViewModels.UserProfile;
 
 namespace app
 {
@@ -59,6 +63,14 @@ namespace app
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
+
+            //Add Set the Admin Credentials from appsettings to a POCO Object
+            services.Configure<AdminCredentialsViewModel>(myoptions =>
+            {
+                myoptions.UserName = Configuration.Get<string>("AppCredentials:Admin:Username");
+                myoptions.Password = Configuration.Get<string>("AppCredentials:Admin:Password");
+            });            
+
             //swagger configurations
             services.AddSwaggerGen();
             services.ConfigureSwaggerDocument(options =>
@@ -80,8 +92,11 @@ namespace app
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, ApplicationDbContext context)
         {
+            //Get the Admin Credentials
+            var userCredentials = app.ApplicationServices.GetService<IOptions<AdminCredentialsViewModel>>();
+            
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -125,6 +140,14 @@ namespace app
             //Registering the swagger configurations
             app.UseSwaggerGen();
             app.UseSwaggerUi();
+
+            //Call to create user roles
+            // IdentityDbOperations identityOperations = new IdentityDbOperations();
+            // await identityOperations.CreateRoles(context, serviceProvider, userCredentials);
+
+            //Call to create user roles
+            IdentityRolesDbOperations identityRolesOperations = new IdentityRolesDbOperations();
+            await identityRolesOperations.CreateRoles(context, serviceProvider, userCredentials);
         }
 
         // Entry point for the application.
