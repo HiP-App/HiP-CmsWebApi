@@ -32,7 +32,7 @@ sed -i "/listen_addresses/s/'.*'/'"$DOCKER_HOST_IP"'/" $POSTGRES_CONFIG_PATH
 
 
 
-PG_HBA_LINE='host	'"$DB_NAME"'	'"$DB_USER"'	172.16.0.1/12	password'
+PG_HBA_LINE="host	$DB_NAME	$DB_USER	172.16.0.1/12	password"
 
 echo $PG_HBA_LINE
 
