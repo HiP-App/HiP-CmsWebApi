@@ -41,31 +41,24 @@ namespace app.Migrations
         // Create Superuser Admin User.
         public async Task CreateUser(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IOptions<AdminCredentialsViewModel> userCredentials)
         {
-            var adminUserName = userCredentials.Value.UserName;
-            var adminPassword = userCredentials.Value.Password;
-
             // Checking if the user exixts.
-            var adminUser = await userManager.FindByEmailAsync(adminUserName);
+            var adminUser = await userManager.FindByEmailAsync(userCredentials.Value.UserName);
 
-            if (adminUser != null)
-            {
-                // Assigning Superuser role if user admin already exists.
-                if (!(await userManager.IsInRoleAsync(adminUser, Constants.Roles.Admin)))
-                    await userManager.AddToRoleAsync(adminUser, Constants.Roles.Admin);
-            }
-            else
+            if (adminUser == null)
             {
                 // Creating a new user and giving the user the Superuser role.
-                var newAdmin = new ApplicationUser()
+                adminUser = new ApplicationUser()
                 {
-                    UserName = adminUserName,
-                    Email = adminUserName,
+                    UserName = userCredentials.Value.UserName,
+                    Email = userCredentials.Value.UserName,
                 };
 
-                string userPWD = adminPassword;
-                await userManager.CreateAsync(newAdmin, userPWD);
-                await userManager.AddToRoleAsync(newAdmin, Constants.Roles.Admin);
+                await userManager.CreateAsync(adminUser, userCredentials.Value.Password);
             }
+
+            // Assigning Superuser role if user admin already exists.
+            if (!(await userManager.IsInRoleAsync(adminUser, Constants.Roles.Admin)))
+                await userManager.AddToRoleAsync(adminUser, Constants.Roles.Admin);
         }
     }
 }
