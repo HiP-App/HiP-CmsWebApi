@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using HiP_CmsWebApi.Data;
 using HiP_CmsWebApi.Models;
 using HiP_CmsWebApi.Services;
+using OpenIddict.Models;
 
 namespace HiP_CmsWebApi
 {
@@ -48,9 +49,11 @@ namespace HiP_CmsWebApi
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            // add identity: note the AddOpenIddictCore call
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddOpenIddictCore<Application>(config => config.UseEntityFramework());
 
             services.AddMvc();
 
@@ -65,6 +68,9 @@ namespace HiP_CmsWebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            //To Server DefaultFiles like index.html
+            app.UseDefaultFiles();
+            
             app.UseApplicationInsightsRequestTelemetry();
 
             if (env.IsDevelopment())
@@ -82,7 +88,25 @@ namespace HiP_CmsWebApi
 
             app.UseStaticFiles();
 
-            app.UseIdentity();
+            app.UseOpenIddictCore(builder =>
+            {
+                // tell openiddict you're wanting to use jwt tokens
+                builder.Options.UseJwtTokens();
+                // NOTE: for dev consumption only! for live, this is not encouraged!
+                builder.Options.AllowInsecureHttp = true;
+                builder.Options.ApplicationCanDisplayErrors = true;
+            });
+
+            // use jwt bearer authentication
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                RequireHttpsMetadata = false,
+                Audience = "http://localhost:58292/",
+                Authority = "http://localhost:58292/"
+            });
+            
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 

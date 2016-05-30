@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using HiP_CmsWebApi.Models;
+using OpenIddict;
+using OpenIddict.Models;
 
 namespace HiP_CmsWebApi.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : OpenIddictContext<ApplicationUser, Application, ApplicationRole, string>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+        public ApplicationDbContext(DbContextOptions options) : base(options)
+        { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
