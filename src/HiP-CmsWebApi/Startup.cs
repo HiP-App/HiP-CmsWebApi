@@ -47,7 +47,7 @@ namespace HiP_CmsWebApi
             services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             // add identity: note the AddOpenIddictCore call
             services.AddIdentity<ApplicationUser, ApplicationRole>()
