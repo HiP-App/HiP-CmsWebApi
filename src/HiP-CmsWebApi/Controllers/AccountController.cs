@@ -45,11 +45,13 @@ namespace HiP_CmsWebApi.Controllers
         [Route("api/register")]
         public async Task<IdentityResult> Register(RegisterViewModel model, string returnUrl = null)
         {
-            var result =  await _userManager.CreateAsync(new ApplicationUser { UserName = model.Email, Email = model.Email }, model.Password);
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var result =  await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
                 _logger.LogInformation(3, "User created a new account with password.");
+                await _userManager.AddToRoleAsync(user, Constants.Roles.Student);
                 return result;
             }
             return result;            
