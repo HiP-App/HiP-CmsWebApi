@@ -21,7 +21,7 @@ for a list of code contributions.
 
 ## Requirements:
 
- * [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs-2015-product-editions.aspx) and make sure you have [rc1-Update2](https://www.visualstudio.com/news/vs2015-update2-vs) installed
+ * [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs-2015-product-editions.aspx) and make sure you have [.NET Core](https://www.microsoft.com/net/core#windows) installed
  * ASP.NET 5 for [Windows](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html) or [Linux](http://docs.asp.net/en/latest/getting-started/installing-on-linux.html).
  * [PostgreSQL](http://www.postgresql.org/download/)
  * [NuGet Package Manager](https://www.nuget.org/), an extension of Visual Studio.
@@ -31,20 +31,14 @@ for a list of code contributions.
 
 HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the runtime specifications we use
 
- * For Windows : [coreclr](http://docs.asp.net/en/latest/getting-started/installing-on-windows.html)
- * For Linux	: [Mono v4.0.5](http://www.mono-project.com/docs/getting-started/install/linux/#debian-ubuntu-and-derivatives)
+ * For Windows : [dotnet cli](https://www.microsoft.com/net/core#windows)
+ * For Linux	: TODO
 
 ## Getting started
 
  * Clone the repository.
- * Update the database connection string in the appsettings.json file.
- * Then run 'dnx ef database update' seeds and updates your database.
- * Use ```setup.sh``` to install all dependencies.
- * Use ```test.sh``` to execute the tests
-
-Note: the scripts setup.sh and test.sh are also used by TravisCI; they were 
-created to keep setup and test-execution independent of a CI server.
-
+ * Update the database connection string & Admin Credentials in the appsettings.json file.
+ * Then run 'dotnet ef database update' seeds and updates your database.
 
 ## How to develop
 
