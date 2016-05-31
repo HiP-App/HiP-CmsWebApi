@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +9,9 @@ using HiP_CmsWebApi.Data;
 using HiP_CmsWebApi.Models;
 using HiP_CmsWebApi.Services;
 using OpenIddict.Models;
+using HiP_CmsWebApi.Models.AccountViewModels;
+using Microsoft.Extensions.Options;
+using HiP_CmsWebApi.Migrations;
 
 namespace HiP_CmsWebApi
 {
@@ -60,11 +59,21 @@ namespace HiP_CmsWebApi
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            //Add Set the Admin Credentials from appsettings to a POCO Object
+            services.Configure<LoginViewModel>(myoptions =>
+            {
+                myoptions.Email = Configuration.GetValue<string>("AppCredentials:Admin:Username");
+                myoptions.Password = Configuration.GetValue<string>("AppCredentials:Admin:Password");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider, ApplicationDbContext context)
         {
+            //Get the Admin Credentials
+            var userCredentials = app.ApplicationServices.GetService<IOptions<LoginViewModel>>();
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -116,6 +125,10 @@ namespace HiP_CmsWebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Call to create user roles
+            IdentityRolesDbOperations identityRolesOperations = new IdentityRolesDbOperations();
+            await identityRolesOperations.CreateRoles(context, serviceProvider, userCredentials);
         }
     }
 }
