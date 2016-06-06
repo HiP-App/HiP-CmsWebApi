@@ -43,18 +43,31 @@ namespace HiP_CmsWebApi.Controllers
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [Route("api/register")]
-        public async Task<IdentityResult> Register(RegisterViewModel model, string returnUrl = null)
-        {
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-            var result =  await _userManager.CreateAsync(user, model.Password);
+        public async Task<IActionResult> Register([FromBody]RegisterViewModel register)
+        {           
+            var user = new ApplicationUser { UserName = register.Email, Email = register.Email };
 
-            if (result.Succeeded)
+            try
             {
-                _logger.LogInformation(3, "User created a new account with password.");
-                await _userManager.AddToRoleAsync(user, Constants.Roles.Student);
-                return result;
+                // Creating new user
+                var result = await _userManager.CreateAsync(user, register.Password);
+
+                if (result.Succeeded)
+                {
+                    //when user is successfully created.
+                    _logger.LogInformation(3, "User created a new account with password.");
+                    await _userManager.AddToRoleAsync(user, Constants.Roles.Student);
+                }
+
+            //If user already exists or if user cannot be stored in the database.
+            _logger.LogInformation(4, "User Already Exists");
+            return new ObjectResult(result);
             }
-            return result;            
+            catch (Exception ex)
+            {
+                //Something bad has happened if it came till here.
+                return new ObjectResult(ex.Message);
+            }              
         }
 
         //
@@ -64,7 +77,7 @@ namespace HiP_CmsWebApi.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
+            _logger.LogInformation(5, "User logged out.");
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }        
 
