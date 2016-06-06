@@ -234,4 +234,4 @@ _Pvt_Extensions
 .fake/
 
 # Database settings
-app/appsettings.json
+src/HiP-CmsWebApi/appsettings.json
