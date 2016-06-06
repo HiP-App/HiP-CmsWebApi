@@ -45,8 +45,8 @@
       "type": "build"
     },
     "AspNet.Security.OAuth.Validation": "1.0.0-alpha1-*",
-    "OpenIddict.Core": "1.0.0-*",
-    "OpenIddict.EF": "1.0.0-*",
+    "OpenIddict.Core": "1.0.0-alpha2-0288",
+    "OpenIddict.EF": "1.0.0-alpha2-0288",
     "Microsoft.Extensions.Configuration.Binder": "1.0.0-rc2-final"
   },
 
