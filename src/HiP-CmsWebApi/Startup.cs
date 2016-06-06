@@ -12,6 +12,7 @@ using OpenIddict.Models;
 using HiP_CmsWebApi.Models.AccountViewModels;
 using Microsoft.Extensions.Options;
 using HiP_CmsWebApi.Migrations;
+using Swashbuckle.SwaggerGen;
 
 namespace HiP_CmsWebApi
 {
@@ -66,6 +67,9 @@ namespace HiP_CmsWebApi
                 myoptions.Email = Configuration.GetValue<string>("AppCredentials:Admin:Username");
                 myoptions.Password = Configuration.GetValue<string>("AppCredentials:Admin:Password");
             });
+
+            //swagger configurations
+            services.AddSwaggerGen();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -125,6 +129,12 @@ namespace HiP_CmsWebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint
+            app.UseSwaggerGen();
+
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUi();
 
             //Call to create user roles
             IdentityRolesDbOperations identityRolesOperations = new IdentityRolesDbOperations();

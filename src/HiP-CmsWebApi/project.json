@@ -47,7 +47,9 @@
     "AspNet.Security.OAuth.Validation": "1.0.0-alpha1-*",
     "OpenIddict.Core": "1.0.0-alpha2-0288",
     "OpenIddict.EF": "1.0.0-alpha2-0288",
-    "Microsoft.Extensions.Configuration.Binder": "1.0.0-rc2-final"
+    "Microsoft.Extensions.Configuration.Binder": "1.0.0-rc2-final",
+    "Swashbuckle.SwaggerGen": "6.0.0-beta9",
+    "Swashbuckle.SwaggerUi": "6.0.0-beta9"
   },
 
   "tools": {
