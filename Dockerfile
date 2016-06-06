@@ -9,7 +9,7 @@ RUN chmod +x docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-#COPY . /src
+COPY . /src
 WORKDIR /src/HiP-CmsWebApi
 
 RUN ["dotnet", "restore"]
