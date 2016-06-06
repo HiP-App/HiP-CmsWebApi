@@ -133,25 +133,33 @@ namespace HiP_CmsWebApi.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        [Route("api/reset")]
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel reset)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            var user = await _userManager.FindByNameAsync(model.Email);
+            var user = await _userManager.FindByNameAsync(reset.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                return new ObjectResult(false);
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
+
+            try
             {
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                // Resetting requires new password and the token receiver via email.
+                var result = await _userManager.ResetPasswordAsync(user, reset.Code, reset.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                }
+
+                // Resetting requires new password and the token receiver via email.
+                return new ObjectResult(result);
             }
-            AddErrors(result);
-            return View();
+            catch(Exception ex)
+            {
+                //Handling the exception
+                return new ObjectResult(ex.Message);
+            }
         }
 
         //
