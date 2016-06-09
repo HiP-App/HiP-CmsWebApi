@@ -1,4 +1,5 @@
 ﻿using Api.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Api
 {
@@ -35,10 +39,46 @@ namespace Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, CmsDbContext db)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            var a = Configuration.GetSection("Auth0:ClientId").Value;
+            var b = Configuration.GetSection("Auth0:Domain").Value;
+
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                Audience = a,
+                Authority = b,
+                AutomaticChallenge = true,
+                AutomaticAuthenticate = true,
+                Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        return Task.FromResult(0);
+                    },
+
+                    OnTokenValidated = context =>
+                    {
+                        var claimsIdentity = context.Ticket.Principal.Identity as ClaimsIdentity;
+                        claimsIdentity.AddClaim(new Claim("id_token",
+                            context.Request.Headers["Authorization"][0].Substring(context.Ticket.AuthenticationScheme.Length + 1)));
+
+                        var user = db.Members.FirstOrDefault(u => u.Email == claimsIdentity.FindFirst("name").Value);
+
+                        if (user != null)
+                        {   // Add claims for current request user
+                            claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+                            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
+                            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, user.Role));
+                        }
+
+                        return Task.FromResult(0);
+                    }
+                }
+            });
 
             app.UseMvc();
         }
