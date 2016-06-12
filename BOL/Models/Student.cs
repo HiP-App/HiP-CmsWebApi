@@ -1,6 +1,6 @@
 ﻿namespace BOL.Models
 {
-    public class Student : Member
+    public class Student : User
     {
     }
 }

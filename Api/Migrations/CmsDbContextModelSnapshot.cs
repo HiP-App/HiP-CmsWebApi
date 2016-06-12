@@ -15,7 +15,7 @@ namespace Api.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rc2-20901");
 
-            modelBuilder.Entity("BOL.Models.Member", b =>
+            modelBuilder.Entity("BOL.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -35,14 +35,14 @@ namespace Api.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Member");
+                    b.ToTable("User");
 
-                    b.HasDiscriminator<string>("Role").HasValue("Member");
+                    b.HasDiscriminator<string>("Role").HasValue("User");
                 });
 
             modelBuilder.Entity("BOL.Models.Administrator", b =>
                 {
-                    b.HasBaseType("BOL.Models.Member");
+                    b.HasBaseType("BOL.Models.User");
 
 
                     b.ToTable("Administrator");
@@ -52,7 +52,7 @@ namespace Api.Migrations
 
             modelBuilder.Entity("BOL.Models.Student", b =>
                 {
-                    b.HasBaseType("BOL.Models.Member");
+                    b.HasBaseType("BOL.Models.User");
 
 
                     b.ToTable("Student");
@@ -62,7 +62,7 @@ namespace Api.Migrations
 
             modelBuilder.Entity("BOL.Models.Supervisor", b =>
                 {
-                    b.HasBaseType("BOL.Models.Member");
+                    b.HasBaseType("BOL.Models.User");
 
 
                     b.ToTable("Supervisor");

@@ -1,6 +1,6 @@
 ﻿namespace BOL.Models
 {
-    public class Supervisor : Member
+    public class Supervisor : User
     {
     }
 }

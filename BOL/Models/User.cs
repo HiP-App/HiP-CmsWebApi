@@ -2,7 +2,7 @@
 
 namespace BOL.Models
 {
-    public abstract class Member
+    public abstract class User
     {
         [Key]
         public int Id { get; set; }

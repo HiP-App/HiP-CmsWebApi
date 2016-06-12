@@ -66,7 +66,7 @@ namespace Api
                         claimsIdentity.AddClaim(new Claim("id_token",
                             context.Request.Headers["Authorization"][0].Substring(context.Ticket.AuthenticationScheme.Length + 1)));
 
-                        var user = db.Members.FirstOrDefault(u => u.Email == claimsIdentity.FindFirst("name").Value);
+                        var user = db.Users.FirstOrDefault(u => u.Email == claimsIdentity.FindFirst("name").Value);
 
                         if (user != null)
                         {   // Add claims for current request user

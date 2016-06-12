@@ -1,6 +1,6 @@
 ﻿namespace BOL.Models
 {
-    public class Administrator : Member
+    public class Administrator : User
     {
     }
 }
