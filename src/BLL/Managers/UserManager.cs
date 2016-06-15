@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BOL.Data;
@@ -12,7 +11,7 @@ namespace BLL.Managers
     {
         public UserManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public IQueryable<User> GetAllUsers(string query = null, string role = null, int page = 1)
+        public virtual async Task<IEnumerable<User>> GetAllUsersAsync(string query, string role, int page, int pageSize)
         {
             var users = from u in dbContext.Users
                         select u;
@@ -26,22 +25,30 @@ namespace BLL.Managers
             if (!string.IsNullOrEmpty(role))
                 users = users.Where(u => u.Role == role);
 
-            return users;
+            return await users.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public User GetUserById(int id)
+        public virtual async Task<User> GetUserByIdAsync(int id)
         {
-            return dbContext.Users.FirstOrDefault(u => u.Id == id);
+            return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public void UpdateUserRole(int userId, string newRole)
+        public virtual async Task<bool> UpdateUserRoleAsync(int userId, string newRole)
         {
-            dbContext.Database.ExecuteSqlCommand($"UPDATE \"User\" SET \"Role\" = '{newRole}' where \"Id\" = {userId}");
+            var user = await GetUserByIdAsync(userId);
+
+            if (user != null)
+            {
+                await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"User\" SET \"Role\" = '{newRole}' where \"Id\" = {userId}");
+                return true;
+            }
+            else
+                return false;
         }
 
-        public int GetUsersCount()
+        public virtual async Task<int> GetUsersCountAsync()
         {
-            return dbContext.Users.Count();
+            return await dbContext.Users.CountAsync();
         }
     }
 }

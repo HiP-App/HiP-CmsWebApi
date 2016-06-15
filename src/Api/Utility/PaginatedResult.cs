@@ -5,9 +5,9 @@ namespace Api.Utility
 {
     public class PagedResult<TEntity>
     {
-        public PagedResult(IQueryable<TEntity> list, int page, int total)
+        public PagedResult(IEnumerable<TEntity> list, int page, int total)
         {
-            Items = list.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize);
+            Items = list;
 
             Metadata = new Pagination {
                 ItemsCount = Items.Count(),

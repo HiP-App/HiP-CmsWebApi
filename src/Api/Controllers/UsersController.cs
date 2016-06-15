@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using BLL.Managers;
 using Api.Data;
+using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
@@ -20,16 +21,19 @@ namespace Api.Controllers
 
         // GET: api/users
         [HttpGet]
-        public IActionResult Get(string query, string role, int page = 1)
+        public async Task<IActionResult> Get(string query, string role, int page = 1)
         {
-            return Ok(new PagedResult<User>(userManager.GetAllUsers(), page, userManager.GetUsersCount()));
+            var users = await userManager.GetAllUsersAsync(query, role, page, Constants.PageSize);
+            int count = await userManager.GetUsersCountAsync();
+
+            return Ok(new PagedResult<User>(users, page, count));
         }
 
         // GET api/users/:id
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var user = userManager.GetUserById(id);
+            var user = await userManager.GetUserByIdAsync(id);
 
             if (user != null)
                 return Ok(user);
@@ -46,7 +50,7 @@ namespace Api.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, ChangeRoleModel model)
+        public async Task<IActionResult> Put(int id, ChangeRoleModel model)
         {
             if(ModelState.IsValid)
             {
@@ -54,8 +58,10 @@ namespace Api.Controllers
                     ModelState.AddModelError("Role", "Invalid Role");
                 else
                 {
-                    userManager.UpdateUserRole(id, model.Role);
-                    return Ok();
+                    bool success = await userManager.UpdateUserRoleAsync(id, model.Role);
+
+                    if(success)
+                        return Ok();
                 }
             }
 
