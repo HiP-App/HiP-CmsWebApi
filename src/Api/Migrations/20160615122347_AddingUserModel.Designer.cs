@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20160612015203_AddingUserModel")]
+    [Migration("20160615122347_AddingUserModel")]
     partial class AddingUserModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,7 @@ namespace Api.Migrations
                 {
                     b.HasBaseType("BOL.Models.User");
 
+                    b.Property<string>("MatriculationNumber");
 
                     b.ToTable("Student");
 

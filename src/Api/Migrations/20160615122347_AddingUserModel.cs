@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
@@ -15,7 +17,8 @@ namespace Api.Migrations
                     Email = table.Column<string>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
-                    Role = table.Column<string>(nullable: false)
+                    Role = table.Column<string>(nullable: false),
+                    MatriculationNumber = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

@@ -2,5 +2,6 @@
 {
     public class Student : User
     {
+        public string MatriculationNumber { get; set; }
     }
 }

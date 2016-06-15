@@ -54,6 +54,7 @@ namespace Api.Migrations
                 {
                     b.HasBaseType("BOL.Models.User");
 
+                    b.Property<string>("MatriculationNumber");
 
                     b.ToTable("Student");
 
