@@ -7,11 +7,11 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class ApiController : Controller
     {
-        protected readonly CmsDbContext db;
+        protected readonly ApplicationDbContext dbContext;
 
-        public ApiController(CmsDbContext db)
+        public ApiController(ApplicationDbContext dbContext)
         {
-            this.db = db;
+            this.dbContext = dbContext;
         }
     }
 }
