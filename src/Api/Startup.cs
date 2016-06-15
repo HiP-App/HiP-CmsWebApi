@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Swashbuckle.SwaggerGen;
 
 namespace Api
 {
@@ -36,6 +37,9 @@ namespace Api
 
             // Add framework services.
             services.AddMvc();
+
+            // Add Swagger service
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +85,12 @@ namespace Api
             });
 
             app.UseMvc();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint
+            app.UseSwaggerGen();
+            
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUi();
         }
 
         public static void Main(string[] args)
