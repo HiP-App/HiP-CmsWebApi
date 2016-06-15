@@ -7,7 +7,7 @@ namespace BOL.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
