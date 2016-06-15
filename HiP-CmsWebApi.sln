@@ -3,9 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Api", "Api\Api.xproj", "{6931CA43-19CC-4DD4-8A58-2E951680EE61}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{34D82A28-5BE4-41C7-AE05-91C8B206E0CF}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BOL", "BOL\BOL.xproj", "{F23FF837-D168-48F1-B821-1719541ACE41}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DAD39787-B207-4A1A-8A36-333EA761B6B4}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Api", "src\Api\Api.xproj", "{6931CA43-19CC-4DD4-8A58-2E951680EE61}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BOL", "src\BOL\BOL.xproj", "{F23FF837-D168-48F1-B821-1719541ACE41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +31,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6931CA43-19CC-4DD4-8A58-2E951680EE61} = {34D82A28-5BE4-41C7-AE05-91C8B206E0CF}
+		{F23FF837-D168-48F1-B821-1719541ACE41} = {34D82A28-5BE4-41C7-AE05-91C8B206E0CF}
 	EndGlobalSection
 EndGlobal
