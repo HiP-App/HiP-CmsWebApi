@@ -32,13 +32,13 @@ for a list of code contributions.
 HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the runtime specifications we use
 
  * For Windows : [dotnet cli](https://www.microsoft.com/net/core#windows)
- * For Linux	: TODO
+ * For Linux	: [dotnet cli](https://www.microsoft.com/net/core#ubuntu)
 
 ## Getting started
 
  * Clone the repository.
  * Update the database connection string & Admin Credentials in the appsettings.json file.
- * Then run 'dotnet ef database update' seeds and updates your database.
+ * Then run `dotnet ef database update` seeds and updates your database.
 
 ## How to develop
 
@@ -52,7 +52,7 @@ We are using [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs
 
 
 ## How to test
-TODO
+`dotnet test`
 
 
 ## How to submit Defects and Feature Proposals
