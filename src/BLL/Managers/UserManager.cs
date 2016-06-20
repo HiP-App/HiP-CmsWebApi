@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BOL.Data;
 using BOL.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace BLL.Managers
 {
@@ -33,6 +34,18 @@ namespace BLL.Managers
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        //To Check the user with email
+        public virtual async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+       
+        public virtual async Task<int> GetUsersCountAsync()
+        {
+            return await dbContext.Users.CountAsync();
+        }
+
         public virtual async Task<bool> UpdateUserRoleAsync(int userId, string newRole)
         {
             var user = await GetUserByIdAsync(userId);
@@ -44,11 +57,44 @@ namespace BLL.Managers
             }
             else
                 return false;
+        }        
+
+        //Method to Add a User
+        public virtual async Task<User> AddUserAsync(string username, string role)
+        {
+            var user = dbContext.Users.FirstOrDefault(u => u.Email == username);
+            if (user == null)
+            {                
+                //Check if the user is an Admin or default
+                if (role == Role.Administrator)
+                {
+                    user = new Administrator()
+                    {
+                        Email = username
+                    };
+                }
+                else
+                {
+                    user = new Student()
+                    {
+                        Email = username
+                    };
+                }
+
+                try
+                {
+                    dbContext.Add(user);
+                    await dbContext.SaveChangesAsync();
+                }catch(Exception ex)
+                {
+                    return user;
+                }
+                
+                return user;
+            }
+            //If user already exists then return false
+            return user;
         }
 
-        public virtual async Task<int> GetUsersCountAsync()
-        {
-            return await dbContext.Users.CountAsync();
-        }
     }
 }
