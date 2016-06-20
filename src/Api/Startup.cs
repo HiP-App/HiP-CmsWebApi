@@ -1,4 +1,5 @@
 ﻿using Api.Data;
+using BOL.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +51,12 @@ namespace Api
             var a = Configuration.GetSection("Auth0:ClientId").Value;
             var b = Configuration.GetSection("Auth0:Domain").Value;
 
+            //For Seeding the User
+            StartupTasks user = new StartupTasks(db);
+
+            //Seed the Database with the Administrator
+            user.CreateUser(Configuration.GetSection("AppCredentials:Admin:Username").Value, Role.Administrator);
+
             app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
                 Audience = a,
@@ -69,14 +76,8 @@ namespace Api
                         claimsIdentity.AddClaim(new Claim("id_token",
                             context.Request.Headers["Authorization"][0].Substring(context.Ticket.AuthenticationScheme.Length + 1)));
 
-                        var user = db.Users.FirstOrDefault(u => u.Email == claimsIdentity.FindFirst("name").Value);
-
-                        if (user != null)
-                        {   // Add claims for current request user
-                            claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
-                            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
-                            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, user.Role));
-                        }
+                        //var newuser = user.CheckUser(claimsIdentity.Name);
+                        user.CheckandCreateUser(claimsIdentity);
 
                         return Task.FromResult(0);
                     }
@@ -90,6 +91,7 @@ namespace Api
             
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUi();
+            
         }
 
         public static void Main(string[] args)
