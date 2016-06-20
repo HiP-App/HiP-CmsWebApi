@@ -19,9 +19,9 @@ namespace BOL.Data
                 .IsUnique();
 
             modelBuilder.Entity<User>().HasDiscriminator<string>("Role")
-                .HasValue<Student>("Student")
-                .HasValue<Supervisor>("Supervisor")
-                .HasValue<Administrator>("Administrator");
+                .HasValue<Student>(Role.Student)
+                .HasValue<Supervisor>(Role.Supervisor)
+                .HasValue<Administrator>(Role.Administrator);
         }
     }
 }
