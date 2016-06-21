@@ -48,8 +48,8 @@ namespace Api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            var a = Configuration.GetSection("Auth0:ClientId").Value;
-            var b = Configuration.GetSection("Auth0:Domain").Value;
+            var a = Configuration.GetSection("Auth:ClientId").Value;
+            var b = Configuration.GetSection("Auth:Domain").Value;
 
             //For Seeding the User
             StartupTasks user = new StartupTasks(db);
