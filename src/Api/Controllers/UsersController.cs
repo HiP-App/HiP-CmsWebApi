@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using BLL.Managers;
 using Api.Data;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
@@ -14,7 +16,7 @@ namespace Api.Controllers
     {
         private UserManager userManager;
 
-        public UsersController(ApplicationDbContext dbContext) : base(dbContext)
+        public UsersController(ApplicationDbContext dbContext, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
         }
@@ -26,6 +28,7 @@ namespace Api.Controllers
             var users = await userManager.GetAllUsersAsync(query, role, page, Constants.PageSize);
             int count = await userManager.GetUsersCountAsync();
 
+            _logger.LogInformation(1, "Number of Users successfully retrieved: " + count);
             return Ok(new PagedResult<User>(users, page, count));
         }
 
@@ -36,9 +39,15 @@ namespace Api.Controllers
             var user = await userManager.GetUserByIdAsync(id);
 
             if (user != null)
+            {
+                _logger.LogInformation(2, "The User Id: " + id + " exists");
                 return Ok(user);
+            }               
             else
+            {
+                _logger.LogInformation(3, "The User Id: " + id + " does not exists");
                 return NotFound();
+            }                
         }
 
         // POST api/users
@@ -55,10 +64,14 @@ namespace Api.Controllers
             if(ModelState.IsValid)
             {
                 if (!Role.IsRoleValid(model.Role))
+                {
+                    _logger.LogInformation(4, "The Role: " + model.Role + " is not valid");
                     ModelState.AddModelError("Role", "Invalid Role");
+                }                   
                 else
                 {
                     bool success = await userManager.UpdateUserRoleAsync(id, model.Role);
+                    _logger.LogInformation(5, "The information for : " + id + " successfully updated");
 
                     if(success)
                         return Ok();
