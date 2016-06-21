@@ -5,7 +5,7 @@ Develop: [![Build Status](https://travis-ci.org/HiP-App/HiP-CmsWebApi.svg?branch
 HiP-CmsWebApi is a content management system which is developed by the project group [History in 
 Paderborn](http://is.uni-paderborn.de/fachgebiete/fg-engels/lehre/ss15/hip-app/pg-hip-app.html).
 It is developed to fill the system 'History in Paderborn' with data. This is only a REST API with service end points. We 
-also develop client applicaion to consume this REST API. The client application is built on AngularJS.
+also develop [client application](https://github.com/HiP-App/HiP-CmsAngularApp) to consume this REST API. The client application is built on AngularJS2. For Authentication and Authorization we are using a Microservice [HiP-Auth](https://github.com/HiP-App/HiP-Auth).
 
 In another team of the project group, an Android app is developed that will 
 make the content of HiPCMS accessable to the public. Information about the app 
@@ -31,14 +31,14 @@ for a list of code contributions.
 
 HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the runtime specifications we use
 
- * For Windows : [dotnet cli](https://www.microsoft.com/net/core#windows)
- * For Linux	: TODO
+ * For Windows : [dotnet cli for windows](https://www.microsoft.com/net/core#windows)
+ * For Linux	: [dotnet cli for ubuntu](https://www.microsoft.com/net/core#ubuntu)
 
 ## Getting started
 
  * Clone the repository.
  * Update the database connection string & Admin Credentials in the appsettings.json file.
- * Then run 'dotnet ef database update' seeds and updates your database.
+ * `dotnet ef database update` seeds and updates your database.
 
 ## How to develop
 
@@ -52,7 +52,7 @@ We are using [Visual Studio 2015](https://www.visualstudio.com/en-us/products/vs
 
 
 ## How to test
-TODO
+Navigate to `\test` folder and run `dotnet test`.
 
 
 ## How to submit Defects and Feature Proposals
