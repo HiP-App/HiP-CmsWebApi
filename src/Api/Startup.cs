@@ -31,6 +31,9 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Adding Cross Orign Requests 
+            services.AddCors();
+
             // Add database service for Postgres
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
@@ -48,6 +51,14 @@ namespace Api
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            app.UseCors(builder =>
+                // This will allow any request from any server. Tweak to fit your needs!
+                // The fluent API is pretty pleasant to work with.
+                builder.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin()
+            );
+            
             var a = Configuration.GetSection("Auth:ClientId").Value;
             var b = Configuration.GetSection("Auth:Domain").Value;
 
@@ -63,6 +74,7 @@ namespace Api
                 Authority = b,
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
+                RequireHttpsMetadata = false,
                 Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
