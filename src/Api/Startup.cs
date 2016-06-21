@@ -75,8 +75,8 @@ namespace Api
                         var claimsIdentity = context.Ticket.Principal.Identity as ClaimsIdentity;
                         claimsIdentity.AddClaim(new Claim("id_token",
                             context.Request.Headers["Authorization"][0].Substring(context.Ticket.AuthenticationScheme.Length + 1)));
-
-                        //var newuser = user.CheckUser(claimsIdentity.Name);
+                        
+                        //Adding User to the database if not eists
                         user.CheckandCreateUser(claimsIdentity);
 
                         return Task.FromResult(0);
@@ -96,8 +96,14 @@ namespace Api
 
         public static void Main(string[] args)
         {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json")
+                .Build();
+
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

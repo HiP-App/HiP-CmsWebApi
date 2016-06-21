@@ -62,6 +62,7 @@
     "include": [
       "Views",
       "appsettings.json",
+      "hosting.json",
       "web.config"
     ]
   },
