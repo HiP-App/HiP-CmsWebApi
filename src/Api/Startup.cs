@@ -110,7 +110,7 @@ namespace Api
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json")
+                .AddJsonFile("appsettings.json")
                 .Build();
 
             var host = new WebHostBuilder()

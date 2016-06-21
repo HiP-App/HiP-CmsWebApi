@@ -1,3 +1,0 @@
-﻿{
-  "server.urls": "http://localhost:5000/"     //Multiple Servers can be mentioned by adding semi-colon(;)
-}
