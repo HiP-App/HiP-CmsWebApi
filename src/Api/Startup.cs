@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -75,6 +76,10 @@ namespace Api
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = false,
+                TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false
+                },
                 Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
