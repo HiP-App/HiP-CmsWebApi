@@ -78,7 +78,7 @@ namespace Api
                 RequireHttpsMetadata = false,
                 TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateAudience = false
+                    ValidateAudience = true     //Security check to validate the Audience. switch to false to bypass the check.
                 },
                 Events = new JwtBearerEvents
                 {
