@@ -38,6 +38,7 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the ru
 
  * Clone the repository.
  * Update the database connection string & Admin Credentials in the appsettings.json file.
+ * Navigate your console to `src/HiP-CmsWebApi`
  * Then run `dotnet ef database update` seeds and updates your database.
 
 ## How to develop
