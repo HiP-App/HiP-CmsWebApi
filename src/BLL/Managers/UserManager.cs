@@ -33,14 +33,12 @@ namespace BLL.Managers
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
-
-        //To Check the user with email
+        
         public virtual async Task<User> GetUserByEmailAsync(string email)
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-       
         public virtual async Task<int> GetUsersCountAsync()
         {
             return await dbContext.Users.CountAsync();
@@ -59,41 +57,19 @@ namespace BLL.Managers
                 return false;
         }        
 
-        //Method to Add a User
-        public virtual async Task<User> AddUserAsync(string username, string role)
+        public virtual async Task<bool> AddUserAsync(User user)
         {
-            var user = dbContext.Users.FirstOrDefault(u => u.Email == username);
-            if (user == null)
-            {                
-                //Check if the user is an Admin or default
-                if (role == Role.Administrator)
-                {
-                    user = new Administrator()
-                    {
-                        Email = username
-                    };
-                }
-                else
-                {
-                    user = new Student()
-                    {
-                        Email = username
-                    };
-                }
+            try
+            {
+                dbContext.Add(user);
+                await dbContext.SaveChangesAsync();
 
-                try
-                {
-                    dbContext.Add(user);
-                    await dbContext.SaveChangesAsync();
-                }catch(Exception ex)
-                {
-                    return user;
-                }
-                
-                return user;
+                return true;
             }
-            //If user already exists then return false
-            return user;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
     }

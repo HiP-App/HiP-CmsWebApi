@@ -1,5 +1,6 @@
 ﻿using Api.Data;
-using BOL.Models;
+using Api.Utility;
+using BLL.Managers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,9 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -21,9 +20,10 @@ namespace Api
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -32,6 +32,9 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Register AppConfig in Services 
+            services.AddSingleton(new AppConfig(Configuration));
+
             //Adding Cross Orign Requests 
             services.AddCors();
 
@@ -47,39 +50,26 @@ namespace Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApplicationDbContext db)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppConfig appConfig)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseCors(builder =>
                 // This will allow any request from any server. Tweak to fit your needs!
-                // The fluent API is pretty pleasant to work with.
                 builder.AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyOrigin()
             );
-            
-            var a = Configuration.GetSection("Auth:ClientId").Value;
-            var b = Configuration.GetSection("Auth:Domain").Value;
-
-            //For Seeding the User
-            StartupTasks user = new StartupTasks(db);
-
-            //Seed the Database with the Administrator
-            user.CreateUser(Configuration.GetSection("AppCredentials:Admin:Username").Value, Role.Administrator);
 
             app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
-                Audience = a,
-                Authority = b,
+                Audience = appConfig.ClientId,
+                Authority = appConfig.Domain,
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
-                RequireHttpsMetadata = false,
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true     //Security check to validate the Audience. switch to false to bypass the check.
-                },
+                RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
+                
                 Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
@@ -94,7 +84,7 @@ namespace Api
                             context.Request.Headers["Authorization"][0].Substring(context.Ticket.AuthenticationScheme.Length + 1)));
                         
                         //Adding User to the database if not eists
-                        user.CheckandCreateUser(claimsIdentity);
+                        //user.CheckandCreateUser(claimsIdentity);
 
                         return Task.FromResult(0);
                     }
@@ -108,7 +98,9 @@ namespace Api
             
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUi();
-            
+
+            // Seed Database with Administrator Account
+            app.SeedDbWithAdministrator();
         }
 
         public static void Main(string[] args)

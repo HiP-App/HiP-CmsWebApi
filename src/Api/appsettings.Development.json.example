@@ -1,0 +1,14 @@
+﻿{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Username=postgres;Password=postgres;Database=hipcmsdb"
+  },
+
+  "Configurations": {
+    "Auth": {
+      "ClientId": "HiP-CmsWebApiClientId",
+      "Domain": "http://localhost:5001/"
+    },
+    "RequireHttpsMetadata": false,
+    "AdminEmail": "admin@hipapp.de"
+  }
+}
