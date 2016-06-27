@@ -1,6 +1,5 @@
 ﻿using Api.Data;
 using Api.Utility;
-using BLL.Managers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -79,12 +78,9 @@ namespace Api
 
                     OnTokenValidated = context =>
                     {
-                        var claimsIdentity = context.Ticket.Principal.Identity as ClaimsIdentity;
-                        claimsIdentity.AddClaim(new Claim("id_token",
-                            context.Request.Headers["Authorization"][0].Substring(context.Ticket.AuthenticationScheme.Length + 1)));
-                        
-                        //Adding User to the database if not eists
-                        //user.CheckandCreateUser(claimsIdentity);
+                        Auth.OnTokenValidationSuccess(
+                            context.Ticket.Principal.Identity as ClaimsIdentity, 
+                            app.ApplicationServices.GetRequiredService<ApplicationDbContext>());
 
                         return Task.FromResult(0);
                     }
