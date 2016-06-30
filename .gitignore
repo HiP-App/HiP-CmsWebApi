@@ -234,3 +234,5 @@ _Pvt_Extensions
 .fake/
 
 web.config
+
+appsettings.Development.json

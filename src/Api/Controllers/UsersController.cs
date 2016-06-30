@@ -2,8 +2,6 @@
 using Api.ViewModels.Users;
 using BOL.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using BLL.Managers;
 using Api.Data;
 using System.Threading.Tasks;
