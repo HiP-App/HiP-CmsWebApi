@@ -45,7 +45,8 @@ namespace Api
             services.AddMvc();
 
             // Add Swagger service
-            services.AddSwaggerGen();
+            // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
+            //services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,10 +91,12 @@ namespace Api
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
-            app.UseSwaggerGen();
-            
+            // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
+            //app.UseSwaggerGen();
+
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-            app.UseSwaggerUi();
+            // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
+            //app.UseSwaggerUi();
 
             // Seed Database with Administrator Account
             app.SeedDbWithAdministrator();
