@@ -233,5 +233,6 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-# Database settings
-src/HiP-CmsWebApi/appsettings.json
+web.config
+
+appsettings.Development.json
