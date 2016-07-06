@@ -110,8 +110,6 @@ namespace Api
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
-                .AddCommandLine(args)
-                .AddEnvironmentVariables()
                 .Build();
 
             var host = new WebHostBuilder()
