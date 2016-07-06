@@ -1,5 +1,4 @@
-﻿using Api.Controllers;
-using MyTested.AspNetCore.Mvc;
+﻿using MyTested.AspNetCore.Mvc;
 using Xunit;
 
 namespace Api.IntegrationTests.UserManagementTests

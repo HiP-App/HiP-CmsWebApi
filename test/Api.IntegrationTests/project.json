@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "testRunner": "xunit",
   "dependencies": {
-    "NETStandard.Library": "1.5.0-rc2-24027",
+    "NETStandard.Library": "1.6.0",
     "dotnet-test-xunit": "1.0.0-*",
     "XUnit": "2.1.0",
     "MyTested.AspNetCore.Mvc": "1.0.0-*",
@@ -14,8 +14,8 @@
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
-          "type": "platform",
-          "version": "1.0.0-rc2-3002702"
+          "version": "1.0.0",
+          "type": "platform"
         }
       },
       "imports": [

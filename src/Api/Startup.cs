@@ -31,15 +31,18 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Read configurations from json
+            var appConfig = new AppConfig(Configuration);
+
             // Register AppConfig in Services 
-            services.AddSingleton(new AppConfig(Configuration));
+            services.AddSingleton(appConfig);
 
             //Adding Cross Orign Requests 
             services.AddCors();
 
             // Add database service for Postgres
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
 
             // Add framework services.
             services.AddMvc();
@@ -64,8 +67,8 @@ namespace Api
 
             app.UseJwtBearerAuthentication(new JwtBearerOptions
             {
-                Audience = appConfig.ClientId,
-                Authority = appConfig.Domain,
+                Audience = appConfig.AuthConfig.ClientId,
+                Authority = appConfig.AuthConfig.Domain,
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,

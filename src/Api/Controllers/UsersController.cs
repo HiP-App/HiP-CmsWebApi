@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using BLL.Managers;
 using Api.Data;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers

@@ -1,19 +1,20 @@
 {
   "version": "1.0.0-*",
 
+  "buildOptions": {
+    "debugType": "portable"
+  },
+
   "dependencies": {
-    "NETStandard.Library": "1.5.0-rc2-24027",
-    "Microsoft.EntityFrameworkCore.Relational": "1.0.0-rc2-final",
+    "Microsoft.EntityFrameworkCore.Relational": "1.0.0",
     "BOL": "1.0.0-*"
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
-      "imports": [
-        "dotnet5.6",
-        "dnxcore50",
-        "portable-net45+win8"
-      ]
+    "netstandard1.6": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      }
     }
   }
 }
