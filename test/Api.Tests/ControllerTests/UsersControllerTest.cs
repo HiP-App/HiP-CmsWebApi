@@ -3,35 +3,34 @@ using Api.ViewModels.Users;
 using MyTested.AspNetCore.Mvc;
 using Xunit;
 
-namespace Api.UnitTests.Controller
+namespace Api.Tests.ControllerTests
 {
     public class UsersControllerTest
     {
         /// <summary>
-        /// GetValidUsersTest is a Test method to get valid users.
+        /// Tests response from Get action of UsersController.
         /// </summary>
         [Fact]
-        public void GetValidUsersTest()
+        public void GetUserListTest()
         {
-            const int page = 1;
             MyMvc
                 .Controller<UsersController>()
-                .Calling(c => c.Get(null, null, page))
+                .Calling(c => c.Get(null, null, 1))
                 .ShouldReturn()
                 .Ok();
         }
 
         /// <summary>
-        /// UpdatedUsersTest is a Test method to update the user's role.
+        /// Tests response from Put(id) action of UsersController
         /// </summary>
         [Fact]
-        public void UpdatedUsersTest()
+        public void UpdateUserRoleTest()
         {
             MyMvc
                 .Controller<UsersController>()
                 .Calling(c => c.Put(4, new ChangeRoleModel
                 {
-                    Role = "AnonymousRole"
+                    Role = "InvalidRole"
                 }))
                 .ShouldReturn()
                 .BadRequest();

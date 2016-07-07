@@ -18,7 +18,7 @@ namespace Api
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
@@ -101,8 +101,8 @@ namespace Api
             // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
             //app.UseSwaggerUi();
 
-            // Seed Database with Administrator Account
-            app.SeedDbWithAdministrator();
+            // Run all pending Migrations and Seed DB with initial data
+            app.RunMigrationsAndSeedDb();
         }
 
         public static void Main(string[] args)
