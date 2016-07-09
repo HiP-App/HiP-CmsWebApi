@@ -35,9 +35,12 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
  * Update the new `appsettings.Development.json` file to match your needs.
  * To run using Visual Studio, just start the app with/without debugging.
  * To run through terminal,
-  * Navigate to `src\Api`
-  * Set Environment Varriable `ASPNETCORE_ENVIRONMENT=Development`
+  * Navigate to `src/Api`
+  * Set Environment Variable 
+		* Windows `set ASPNETCORE_ENVIRONMENT=Development`
+		* Linux	`export ASPNETCORE_ENVIRONMENT=Development`
   * Execute `dotnet run`
+  * `{{BaseUrl}}/swagger/ui` will give information about the service endpoints.
 
 ## How to develop
 
@@ -48,7 +51,7 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
 
 
 ## How to test
-Navigate to `\test` folder and run `dotnet test`.
+Navigate to `test/Api.Tests` folder and run `dotnet test`.
 
 
 ## How to submit Defects and Feature Proposals
