@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.Swagger.Model;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -48,8 +49,18 @@ namespace Api
             services.AddMvc();
 
             // Add Swagger service
-            // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
-            //services.AddSwaggerGen();
+            services.AddSwaggerGen();
+
+            // Configurig Metadata in Swagger
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.SingleApiVersion(new Info
+                {
+                    Version = "v1",
+                    Title = "HiPCMS API",
+                    Description = "A REST api to serve History in Paderborn CMS System"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,12 +105,10 @@ namespace Api
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
-            // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
-            //app.UseSwaggerGen();
+            app.UseSwagger();
 
             // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-            // TODO: Enable the below line, once swagger packages are available for .NET Core 1.0
-            //app.UseSwaggerUi();
+            app.UseSwaggerUi();
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
