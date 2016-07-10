@@ -6,9 +6,11 @@ using BLL.Managers;
 using Api.Data;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
+    [Authorize(Roles = Role.Administrator)]
     public class UsersController : ApiController
     {
         private UserManager userManager;

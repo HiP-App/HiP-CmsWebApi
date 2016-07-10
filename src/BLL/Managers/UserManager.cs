@@ -57,12 +57,12 @@ namespace BLL.Managers
                 return false;
         }        
 
-        public virtual async Task<bool> AddUserAsync(User user)
+        public virtual bool AddUserAsync(User user)
         {
             try
             {
                 dbContext.Add(user);
-                await dbContext.SaveChangesAsync();
+                dbContext.SaveChanges();
 
                 return true;
             }
