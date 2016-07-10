@@ -24,7 +24,7 @@ namespace Api.Data
             if (admin == null)
             {
                 admin = new Administrator() { Email = appConfig.AdminEmail };
-                var result = userManager.AddUserAsync(admin).Result;
+                userManager.AddUserAsync(admin);
             }
         }
     }

@@ -17,16 +17,16 @@ namespace Api.Utility
             return int.Parse((identity as ClaimsIdentity).FindFirst("Id").Value);
         }
 
-        public static async void OnTokenValidationSuccess(ClaimsIdentity identity, ApplicationDbContext dbContext)
+        public static void OnTokenValidationSuccess(ClaimsIdentity identity, ApplicationDbContext dbContext)
         {
             var userManager = new UserManager(dbContext);
 
-            var user = await userManager.GetUserByEmailAsync(identity.Name);
+            var user = userManager.GetUserByEmailAsync(identity.Name).Result;
 
             if (user == null)
             {
                 user = new Student { Email = identity.Name };
-                await userManager.AddUserAsync(user);
+                userManager.AddUserAsync(user);
             }
 
             // Adding Claims for the current request user.
