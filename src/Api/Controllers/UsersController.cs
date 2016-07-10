@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
-    [Authorize(Roles = Role.Administrator)]
+    [Authorize]
     public class UsersController : ApiController
     {
         private UserManager userManager;
@@ -42,9 +42,23 @@ namespace Api.Controllers
                 return NotFound();             
         }
 
+        // GET api/users/current
+        [HttpGet]
+        [Route("Current")]
+        public async Task<IActionResult> CurrentUser()
+        {
+            var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
+
+            if (user != null)
+                return Ok(user);
+            else
+                return NotFound();             
+        }
+
 
         // PUT api/values/5
         [HttpPut("{id}")]
+        [Authorize(Roles = Role.Administrator)]
         public async Task<IActionResult> Put(int id, ChangeRoleModel model)
         {
             if(ModelState.IsValid)
