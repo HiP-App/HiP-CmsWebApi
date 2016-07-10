@@ -27,7 +27,6 @@ namespace Api.Controllers
             var users = await userManager.GetAllUsersAsync(query, role, page, Constants.PageSize);
             int count = await userManager.GetUsersCountAsync();
 
-            _logger.LogInformation(1, "Number of Users successfully retrieved: " + count);
             return Ok(new PagedResult<User>(users, page, count));
         }
 
@@ -38,23 +37,11 @@ namespace Api.Controllers
             var user = await userManager.GetUserByIdAsync(id);
 
             if (user != null)
-            {
-                _logger.LogInformation(2, "The User Id: " + id + " exists");
                 return Ok(user);
-            }               
             else
-            {
-                _logger.LogInformation(3, "The User Id: " + id + " does not exists");
-                return NotFound();
-            }                
+                return NotFound();             
         }
 
-        // POST api/users
-        [HttpPost]
-        public IActionResult Post()
-        {
-            return NotFound(); 
-        }
 
         // PUT api/values/5
         [HttpPut("{id}")]
@@ -64,27 +51,20 @@ namespace Api.Controllers
             {
                 if (!Role.IsRoleValid(model.Role))
                 {
-                    _logger.LogInformation(4, "The Role: " + model.Role + " is not valid");
                     ModelState.AddModelError("Role", "Invalid Role");
                 }                   
                 else
                 {
-                    bool success = await userManager.UpdateUserRoleAsync(id, model.Role);
-                    _logger.LogInformation(5, "The information for : " + id + " successfully updated");
+                    if(await userManager.UpdateUserRoleAsync(id, model.Role))
+                    {
+                        _logger.LogInformation(5, "The information for : " + id + " successfully updated");
 
-                    if(success)
                         return Ok();
+                    }
                 }
             }
 
             return BadRequest(ModelState);
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            return NotFound();
         }
     }
 }
