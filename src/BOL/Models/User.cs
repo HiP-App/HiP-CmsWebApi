@@ -26,5 +26,6 @@ namespace BOL.Models
             }
         }
 
+        public virtual ICollection<UserTopic> Topics { get; set; }
     }
 }
