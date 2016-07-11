@@ -22,6 +22,20 @@ namespace BOL.Data
                 .HasValue<Student>(Role.Student)
                 .HasValue<Supervisor>(Role.Supervisor)
                 .HasValue<Administrator>(Role.Administrator);
+
+            modelBuilder.Entity<UserTopic>().HasKey(x => new { x.UserId, x.TopicId });
+
+            modelBuilder.Entity<UserTopic>()
+                .HasOne(pt => pt.Topic)
+                .WithMany(p => p.Students)
+                .HasForeignKey(pt => pt.TopicId);
+            
+            modelBuilder.Entity<UserTopic>()
+                .HasOne(pt => pt.User)
+                .WithMany(t => t.Topics)
+                .HasForeignKey(pt => pt.UserId);
+
+
         }
     }
 }
