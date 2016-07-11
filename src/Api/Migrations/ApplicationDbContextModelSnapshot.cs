@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
 
 namespace Api.Migrations
@@ -14,28 +11,6 @@ namespace Api.Migrations
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
-
-            modelBuilder.Entity("BOL.Models.Topic", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("DateCreated");
-
-                    b.Property<DateTime>("Deadline");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Status")
-                        .IsRequired();
-
-                    b.Property<string>("Title")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Topic");
-                });
 
             modelBuilder.Entity("BOL.Models.User", b =>
                 {
@@ -60,25 +35,6 @@ namespace Api.Migrations
                     b.ToTable("Users");
 
                     b.HasDiscriminator<string>("Role").HasValue("User");
-                });
-
-            modelBuilder.Entity("BOL.Models.UserTopic", b =>
-                {
-                    b.Property<int>("UserId");
-
-                    b.Property<int>("TopicId");
-
-                    b.Property<int?>("TopicId2");
-
-                    b.HasKey("UserId", "TopicId");
-
-                    b.HasIndex("TopicId");
-
-                    b.HasIndex("TopicId2");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTopic");
                 });
 
             modelBuilder.Entity("BOL.Models.Administrator", b =>
@@ -110,23 +66,6 @@ namespace Api.Migrations
                     b.ToTable("Supervisor");
 
                     b.HasDiscriminator().HasValue("Supervisor");
-                });
-
-            modelBuilder.Entity("BOL.Models.UserTopic", b =>
-                {
-                    b.HasOne("BOL.Models.Topic", "Topic")
-                        .WithMany("Students")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("BOL.Models.Topic")
-                        .WithMany("Supervisors")
-                        .HasForeignKey("TopicId2");
-
-                    b.HasOne("BOL.Models.User", "User")
-                        .WithMany("Topics")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }
