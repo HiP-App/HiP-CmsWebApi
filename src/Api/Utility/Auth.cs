@@ -9,11 +9,8 @@ namespace Api.Utility
     public static class Auth
     {
         // Adds function to get User Id from Context.User.Identity
-        public static int? GetUserId(this IIdentity identity)
+        public static int GetUserId(this IIdentity identity)
         {
-            if (identity == null)
-                return null;
-
             return int.Parse((identity as ClaimsIdentity).FindFirst("Id").Value);
         }
 
