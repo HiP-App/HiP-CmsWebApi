@@ -1,17 +1,19 @@
-﻿namespace BOL.Models
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BOL.Models
 {
     public class UserTopic
     {
-        public int StudentId { get; set; }
-        public Student Student { get; set; }
+        [Key]
+        public int UserId { get; set; }
+        public User User { get; set; }
 
-        public int SupervisorId { get; set; }
-        public Supervisor Supervisor { get; set; }
-
-        public int StudentTopicId { get; set; }
-        public StudentTopic StudentTopic { get; set; }
-
-        public int SupervisorTopicId { get; set; }
-        public SupervisorTopic SupervisorTopic { get; set; }
+        [Key]
+        public int TopicId { get; set; }
+        public Topic Topic { get; set; }
     }
 }

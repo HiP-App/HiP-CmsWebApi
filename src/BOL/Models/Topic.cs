@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace BOL.Models
@@ -7,7 +8,7 @@ namespace BOL.Models
     public class Topic
     {
         [Key]
-        public int TopicId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Title { get; set; }
@@ -15,7 +16,7 @@ namespace BOL.Models
         public string Description { get; set; }
               
         [Required] 
-        public DateTime CreationDate
+        public DateTime DateCreated
         {
             get
             {
@@ -29,21 +30,16 @@ namespace BOL.Models
 
         private DateTime? dateCreated = null;
 
+
+
         [Required]
         public DateTime Deadline { get; set; }
 
         [Required]
         public string Status { get; set; }
-                
-    }
 
-    public class StudentTopic: Topic
-    {
         public virtual ICollection<UserTopic> Students { get; set; }
-    }
 
-    public class SupervisorTopic : Topic
-    {
         public virtual ICollection<UserTopic> Supervisors { get; set; }
     }
 }
