@@ -61,6 +61,7 @@ namespace Api.Controllers
             if (ModelState.IsValid)
             {
                 bool success = await topicManager.UpdateTopicAsync(id, model);
+                return new ObjectResult(success); ;
             }
 
             return BadRequest(ModelState);
@@ -68,11 +69,10 @@ namespace Api.Controllers
 
         // DELETE api/topics/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public bool Delete(int id)
         {
             bool deletion = topicManager.DeleteTopicAsync(id);
-
-            return BadRequest();
+            return deletion;
         }
 
     }

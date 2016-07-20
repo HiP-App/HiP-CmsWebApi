@@ -48,20 +48,12 @@ namespace BLL.Managers
             return await dbContext.Topics.CountAsync();
         }
 
-        public virtual Object AddTopicAsync(TopicFormModel topic)
+        public virtual Object AddTopicAsync(TopicFormModel model)
         {
-            Topic _topic = new Topic();
-            _topic.Title = topic.Title;
-            _topic.Description = topic.Description;
-            _topic.Deadline = topic.Deadline;
-            _topic.Students = topic.Students;
-            _topic.Supervisors = topic.Supervisors;
-            _topic.Requirements = topic.Requirements;
-            _topic.ReviewerId = topic.ReviewerId;
-            _topic.Status = topic.Status;
+            Topic topic = new Topic(model);            
             try
             {
-                dbContext.Topics.Add(_topic);
+                dbContext.Topics.Add(topic);
                 dbContext.SaveChanges();
 
                 return true;
@@ -72,30 +64,18 @@ namespace BLL.Managers
             }
         }
 
-        public virtual async Task<bool> UpdateTopicAsync(int id, TopicFormModel topic)
+        public virtual async Task<bool> UpdateTopicAsync(int id, TopicFormModel model)
         {
-            var _topic = await GetTopicByIdAsync(id);
-
-
-            if (_topic != null)
+            var _topic = new Topic(model);
+            _topic.Id = id;
+            
+            if (dbContext.Topics.FirstOrDefault(u => u.Id == id) != null)
             {
-                _topic.Title = topic.Title;
-                _topic.Description = topic.Description;
-                _topic.Deadline = topic.Deadline;
-                _topic.Students = topic.Students;
-                _topic.Supervisors = topic.Supervisors;
-                _topic.ReviewerId = topic.ReviewerId;
-                _topic.Requirements = topic.Requirements;
-                _topic.Status = topic.Status;
-                try
-                {
-                    dbContext.Entry(_topic).State = EntityState.Modified;
-                    dbContext.SaveChanges();
-                }
-                catch(Exception ex)
-                {
-                    return false;
-                }                
+
+                dbContext.Topics.Attach(_topic);
+                dbContext.Entry(_topic).State = EntityState.Modified;
+                await dbContext.SaveChangesAsync();
+                            
                 return true;
             }
             return false;
@@ -103,23 +83,23 @@ namespace BLL.Managers
 
         public virtual bool DeleteTopicAsync(int id)
         {
-            var topic = dbContext.Topics.FirstOrDefaultAsync(u => u.Id == id);
+            var topic = dbContext.Topics.FirstOrDefault(u => u.Id == id);
 
-            if(topic != null)
+            if (topic != null)
             {
                 try
                 {
-                    dbContext.Remove(dbContext.Topics.FirstOrDefaultAsync(u => u.Id == id));
+                    dbContext.Remove(topic);
                     dbContext.SaveChanges();
                     return true;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return false;
-                }                
+                }
             }
 
-            return false;            
+            return false;
         }
 
     }

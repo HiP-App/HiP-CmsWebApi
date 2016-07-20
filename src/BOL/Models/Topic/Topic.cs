@@ -45,5 +45,17 @@ namespace BOL.Models
 
         public int ReviewerId { get; set; }
         public Supervisor Reviewer { get; set; }
+
+        public Topic(TopicFormModel model)
+        {
+            Title = model.Title;
+            Description = model.Description;
+            Deadline = model.Deadline;
+            Students = model.Students;
+            Supervisors = model.Supervisors;
+            Requirements = model.Requirements;
+            ReviewerId = model.ReviewerId;
+            Status = model.Status;
+        }
     }
 }
