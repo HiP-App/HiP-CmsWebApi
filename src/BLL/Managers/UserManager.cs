@@ -50,7 +50,7 @@ namespace BLL.Managers
 
             if (user != null)
             {
-                await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"User\" SET \"Role\" = '{newRole}' where \"Id\" = {userId}");
+                await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{newRole}' where \"Id\" = {userId}");
                 return true;
             }
             else
