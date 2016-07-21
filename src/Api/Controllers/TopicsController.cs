@@ -61,7 +61,7 @@ namespace Api.Controllers
             if (ModelState.IsValid)
             {
                 bool success = await topicManager.UpdateTopicAsync(id, model);
-                return new ObjectResult(success); ;
+                return new ObjectResult(success);
             }
 
             return BadRequest(ModelState);

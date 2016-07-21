@@ -55,8 +55,8 @@ namespace BLL.Managers
             {
                 dbContext.Topics.Add(topic);
                 dbContext.SaveChanges();
-
-                return true;
+                
+                return topic.Id;
             }
             catch (Exception ex)
             {
@@ -66,14 +66,14 @@ namespace BLL.Managers
 
         public virtual async Task<bool> UpdateTopicAsync(int id, TopicFormModel model)
         {
-            var _topic = new Topic(model);
-            _topic.Id = id;
+            var topic = new Topic(model);
+            topic.Id = id;
             
             if (dbContext.Topics.FirstOrDefault(u => u.Id == id) != null)
             {
 
-                dbContext.Topics.Attach(_topic);
-                dbContext.Entry(_topic).State = EntityState.Modified;
+                dbContext.Topics.Attach(topic);
+                dbContext.Entry(topic).State = EntityState.Modified;
                 await dbContext.SaveChangesAsync();
                             
                 return true;
