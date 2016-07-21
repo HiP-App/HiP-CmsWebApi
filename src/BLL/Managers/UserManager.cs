@@ -8,7 +8,7 @@ using System;
 
 namespace BLL.Managers
 {
-    public class UserManager : BaseManager
+    public class UserManager : BaseManager  
     {
         public UserManager(CmsDbContext dbContext) : base(dbContext) { }
 

@@ -24,5 +24,6 @@ namespace BOL.Models
                 return FirstName + ' ' + LastName;
             }
         }
+
     }
 }
