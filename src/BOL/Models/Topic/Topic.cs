@@ -46,6 +46,8 @@ namespace BOL.Models
         public int ReviewerId { get; set; }
         public Supervisor Reviewer { get; set; }
 
+        public Topic() { }
+
         public Topic(TopicFormModel model)
         {
             Title = model.Title;

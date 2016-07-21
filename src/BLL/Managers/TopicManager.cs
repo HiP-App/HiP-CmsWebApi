@@ -56,7 +56,7 @@ namespace BLL.Managers
                 dbContext.Topics.Add(topic);
                 dbContext.SaveChanges();
                 
-                return topic.Id;
+                return topic;
             }
             catch (Exception ex)
             {
@@ -64,19 +64,18 @@ namespace BLL.Managers
             }
         }
 
-        public virtual async Task<bool> UpdateTopicAsync(int id, TopicFormModel model)
+        public virtual async Task<object> UpdateTopicAsync(int id, TopicFormModel model)
         {
-            var topic = new Topic(model);
-            topic.Id = id;
-            
-            if (dbContext.Topics.FirstOrDefault(u => u.Id == id) != null)
+            //Finding whether the record exists as NoTracting, since we are tracking while updating and multiple tracking on same instance throws an error.
+            if (dbContext.Topics.AsNoTracking().FirstOrDefault(u => u.Id == id) != null)
             {
-
+                Topic topic = new Topic(model);
+                topic.Id = id;
                 dbContext.Topics.Attach(topic);
                 dbContext.Entry(topic).State = EntityState.Modified;
                 await dbContext.SaveChangesAsync();
                             
-                return true;
+                return topic;
             }
             return false;
         }
