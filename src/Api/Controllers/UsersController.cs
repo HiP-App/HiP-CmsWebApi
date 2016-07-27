@@ -20,7 +20,7 @@ namespace Api.Controllers
             userManager = new UserManager(dbContext);
         }
 
-        // GET: api/users
+        // GET api/users
         [HttpGet]
         public async Task<IActionResult> Get(string query, string role, int page = 1)
         {
@@ -71,7 +71,7 @@ namespace Api.Controllers
                 {
                     if(await userManager.UpdateUserRoleAsync(id, model.Role))
                     {
-                        _logger.LogInformation(5, "The information for : " + id + " successfully updated");
+                        _logger.LogInformation(5, "Role for user with ID: " + id + " updated to " + model.Role);
 
                         return Ok();
                     }

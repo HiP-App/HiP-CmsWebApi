@@ -71,6 +71,5 @@ namespace BLL.Managers
                 return false;
             }
         }
-
     }
 }

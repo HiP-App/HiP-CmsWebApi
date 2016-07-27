@@ -38,7 +38,7 @@ namespace Api
             // Register AppConfig in Services 
             services.AddSingleton(appConfig);
 
-            //Adding Cross Orign Requests 
+            // Adding Cross Orign Requests 
             services.AddCors();
 
             // Add database service for Postgres
