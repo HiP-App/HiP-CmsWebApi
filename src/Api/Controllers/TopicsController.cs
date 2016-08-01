@@ -20,7 +20,7 @@ namespace Api.Controllers
 
         // GET api/topics
         [HttpGet]
-        public async Task<IActionResult> Get(string query, string status, DateTime deadline, int page = 1)
+        public async Task<IActionResult> Get(string query, string status, DateTime? deadline, int page = 1)
         {
             var topics = await topicManager.GetAllTopicsAsync(query, status, deadline, page, Constants.PageSize);
             int count = await topicManager.GetTopicsCountAsync();

@@ -12,10 +12,10 @@ namespace BLL.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) {}
 
-        public virtual async Task<IEnumerable<Topic>> GetAllTopicsAsync(string query, string status, DateTime deadline, int page, int pageSize)
+        public virtual async Task<IEnumerable<Topic>> GetAllTopicsAsync(string query, string status, DateTime? deadline, int page, int pageSize)
         {
-            var topics = from u in dbContext.Topics
-                         select u;
+            var topics = from t in dbContext.Topics
+                         select t;
 
             if (!string.IsNullOrEmpty(query))
                 topics = topics.Where(t =>
@@ -26,14 +26,53 @@ namespace BLL.Managers
                 topics = topics.Where(t => t.Status.CompareTo(status) == 0);
 
             if (deadline != null)
-                topics = topics.Where(t => DateTime.Compare(t.Deadline, deadline) == 0);
+                topics = topics.Where(t => DateTime.Compare(t.Deadline, (DateTime)deadline) == 0);
 
             return await topics.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public virtual async Task<Topic> GetTopicByIdAsync(int id)
+        public virtual async Task<TopicDetailsDTO> GetTopicByIdAsync(int topicId)
         {
-            return await dbContext.Topics.FirstOrDefaultAsync(u => u.Id == id);
+            var topic = await dbContext.Topics
+                            .Select(t => new TopicDetailsDTO()
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                Status = t.Status,
+                                Deadline = t.Deadline,
+                                Description = t.Description,
+                                Requirements = t.Requirements,
+                                CreatedAt = t.CreatedAt,
+                                UpdatedAt = t.UpdatedAt
+
+                            })
+                            .SingleOrDefaultAsync(t => t.Id == topicId);
+            
+            topic.Students    = await (from u in dbContext.Users
+                                join tu in dbContext.TopicUsers
+                                on u.Id equals tu.UserId
+                                where tu.TopicId == topicId && tu.Role.CompareTo(Role.Student) == 0
+                                select u).ToListAsync();
+
+            topic.Supervisors = await (from u in dbContext.Users
+                                join tu in dbContext.TopicUsers
+                                on u.Id equals tu.UserId
+                                where tu.TopicId == topicId && tu.Role.CompareTo(Role.Supervisor) == 0
+                                select u).ToListAsync();
+
+            topic.Reviewers   = await (from u in dbContext.Users
+                                join tu in dbContext.TopicUsers
+                                on u.Id equals tu.UserId
+                                where tu.TopicId == topicId && tu.Role.CompareTo(Role.Reviewer) == 0
+                                select u).ToListAsync();
+
+            topic.SubTopics   = await (from t in dbContext.Topics
+                                join at in dbContext.AssociatedTopics
+                                on t.Id equals at.ChildTopicId
+                                where at.ParentTopicId == topicId
+                                select t).ToListAsync() ;
+                            
+            return topic; 
         }
 
         public virtual async Task<int> GetTopicsCountAsync()
