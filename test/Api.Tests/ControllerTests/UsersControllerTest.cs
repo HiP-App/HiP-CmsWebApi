@@ -1,5 +1,5 @@
 ﻿using Api.Controllers;
-using Api.ViewModels.Users;
+using BOL.Models;
 using MyTested.AspNetCore.Mvc;
 using Xunit;
 
@@ -24,12 +24,14 @@ namespace Api.Tests.ControllerTests
         /// Tests response from Put(id) action of UsersController
         /// </summary>
         [Fact]
-        public void UpdateUserRoleTest()
+        public void UpdateUserTest()
         {
             MyMvc
                 .Controller<UsersController>()
-                .Calling(c => c.Put(4, new ChangeRoleModel
+                .Calling(c => c.Put(4, new UserFormModel
                 {
+                    FirstName = "First Name",
+                    LastName = "Last Name",
                     Role = "InvalidRole"
                 }))
                 .ShouldReturn()

@@ -91,7 +91,7 @@ namespace BLL.Managers
 
         public virtual async Task<bool> UpdateTopicAsync(int topicId, TopicFormModel model)
         {            
-            if (await dbContext.Topics.AsNoTracking().FirstOrDefaultAsync(u => u.Id == topicId) != null)
+            if (await dbContext.Topics.AsNoTracking().FirstOrDefaultAsync(t => t.Id == topicId) != null)
             {
                 using (var transaction = await dbContext.Database.BeginTransactionAsync())
                 {
