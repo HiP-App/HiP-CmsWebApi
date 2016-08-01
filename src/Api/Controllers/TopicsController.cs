@@ -18,6 +18,7 @@ namespace Api.Controllers
             topicManager = new TopicManager(dbContext);
         }
 
+
         // GET api/topics
         [HttpGet]
         public async Task<IActionResult> Get(string query, string status, DateTime? deadline, int page = 1)
@@ -27,6 +28,7 @@ namespace Api.Controllers
             
             return Ok(new PagedResult<Topic>(topics, page, count));
         }
+
 
         // GET api/topics/:id
         [HttpGet("{id}")]
@@ -39,6 +41,39 @@ namespace Api.Controllers
             else
                 return NotFound();
         }
+
+
+        // GET api/topics/:id/students
+        [HttpGet("{id}/students")]
+        public async Task<IActionResult> GetTopicStudents(int id)
+        {
+            return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Student));
+        }
+
+
+        // GET api/topics/:id/supervisors
+        [HttpGet("{id}/supervisors")]
+        public async Task<IActionResult> GetTopicSupervisors(int id)
+        {
+            return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Supervisor));
+        }
+
+
+        // GET api/topics/:id/reviewers
+        [HttpGet("{id}/reviewers")]
+        public async Task<IActionResult> GetTopicReviewers(int id)
+        {
+            return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Reviewer));
+        }
+
+
+        // GET api/topics/:id/subtopics
+        [HttpGet("{id}/subtopics")]
+        public async Task<IActionResult> GetTopicSubtopics(int id)
+        {
+            return Ok(await topicManager.GetSubTopics(id));
+        }
+
 
         // POST api/topics
         [HttpPost]
@@ -62,7 +97,8 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
-        // PUT api/topics/5
+
+        // PUT api/topics/:id
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, TopicFormModel model)
         {
@@ -77,7 +113,8 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
-        // DELETE api/topics/5
+
+        // DELETE api/topics/:id
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -88,6 +125,5 @@ namespace Api.Controllers
             else
                 return BadRequest();
         }
-
     }
 }

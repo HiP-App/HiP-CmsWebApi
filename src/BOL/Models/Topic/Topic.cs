@@ -26,6 +26,8 @@ namespace BOL.Models
         [Required]
         public int CreatedById { get; set; }
 
+        public virtual Supervisor CreatedBy { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }

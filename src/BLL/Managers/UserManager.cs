@@ -29,6 +29,11 @@ namespace BLL.Managers
             return await users.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
+        public virtual async Task<int> GetUsersCountAsync()
+        {
+            return await dbContext.Users.CountAsync();
+        }
+
         public virtual async Task<User> GetUserByIdAsync(int id)
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
@@ -37,11 +42,6 @@ namespace BLL.Managers
         public virtual async Task<User> GetUserByEmailAsync(string email)
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public virtual async Task<int> GetUsersCountAsync()
-        {
-            return await dbContext.Users.CountAsync();
         }
 
         public virtual async Task<bool> UpdateUserRoleAsync(int userId, string newRole)

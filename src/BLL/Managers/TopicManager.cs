@@ -31,53 +31,32 @@ namespace BLL.Managers
             return await topics.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public virtual async Task<TopicDetailsDTO> GetTopicByIdAsync(int topicId)
-        {
-            var topic = await dbContext.Topics
-                            .Select(t => new TopicDetailsDTO()
-                            {
-                                Id = t.Id,
-                                Title = t.Title,
-                                Status = t.Status,
-                                Deadline = t.Deadline,
-                                Description = t.Description,
-                                Requirements = t.Requirements,
-                                CreatedAt = t.CreatedAt,
-                                UpdatedAt = t.UpdatedAt
-
-                            })
-                            .SingleOrDefaultAsync(t => t.Id == topicId);
-            
-            topic.Students    = await (from u in dbContext.Users
-                                join tu in dbContext.TopicUsers
-                                on u.Id equals tu.UserId
-                                where tu.TopicId == topicId && tu.Role.CompareTo(Role.Student) == 0
-                                select u).ToListAsync();
-
-            topic.Supervisors = await (from u in dbContext.Users
-                                join tu in dbContext.TopicUsers
-                                on u.Id equals tu.UserId
-                                where tu.TopicId == topicId && tu.Role.CompareTo(Role.Supervisor) == 0
-                                select u).ToListAsync();
-
-            topic.Reviewers   = await (from u in dbContext.Users
-                                join tu in dbContext.TopicUsers
-                                on u.Id equals tu.UserId
-                                where tu.TopicId == topicId && tu.Role.CompareTo(Role.Reviewer) == 0
-                                select u).ToListAsync();
-
-            topic.SubTopics   = await (from t in dbContext.Topics
-                                join at in dbContext.AssociatedTopics
-                                on t.Id equals at.ChildTopicId
-                                where at.ParentTopicId == topicId
-                                select t).ToListAsync() ;
-                            
-            return topic; 
-        }
-
         public virtual async Task<int> GetTopicsCountAsync()
         {
             return await dbContext.Topics.CountAsync();
+        }
+
+        public virtual async Task<Topic> GetTopicByIdAsync(int topicId)
+        {
+            return await dbContext.Topics.Include(t => t.CreatedBy).FirstOrDefaultAsync(t => t.Id == topicId);
+        }
+
+        public virtual async Task<IEnumerable<User>> GetAssociatedUsersByRole(int topicId, string role)
+        {
+            return await (from u in dbContext.Users
+                          join tu in dbContext.TopicUsers
+                          on u.Id equals tu.UserId
+                          where tu.TopicId == topicId && tu.Role.CompareTo(role) == 0
+                          select u).ToListAsync();
+        }
+
+        public virtual async Task<IEnumerable<Topic>> GetSubTopics(int topicId)
+        {
+            return await (from t in dbContext.Topics
+                          join at in dbContext.AssociatedTopics
+                          on t.Id equals at.ChildTopicId
+                          where at.ParentTopicId == topicId
+                          select t).ToListAsync();
         }
 
         public virtual async Task<AddEntityResult> AddTopicAsync(int userId, TopicFormModel model)
@@ -92,9 +71,9 @@ namespace BLL.Managers
                     await dbContext.SaveChangesAsync();
 
                     // Add all associations
-                    AssociateStudentsToTopic(topic.Id, model.Students);
-                    AssociateSupervisorsToTopic(topic.Id, model.Supervisors);
-                    AssociateReviewersToTopic(topic.Id, model.Reviewers);
+                    AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
+                    AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
+                    AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
                     AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
                     await dbContext.SaveChangesAsync();
@@ -128,9 +107,9 @@ namespace BLL.Managers
                         await dbContext.SaveChangesAsync();
 
                         // Add all associations
-                        AssociateStudentsToTopic(topic.Id, model.Students);
-                        AssociateSupervisorsToTopic(topic.Id, model.Supervisors);
-                        AssociateReviewersToTopic(topic.Id, model.Reviewers);
+                        AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
+                        AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
+                        AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
                         AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
                         await dbContext.SaveChangesAsync();
@@ -164,50 +143,20 @@ namespace BLL.Managers
             return false;
         }
 
-        
-        private void AssociateStudentsToTopic(int topicId, int[] studentIds)
-        {
-            if (studentIds != null)
-            {
-                foreach (int studentId in studentIds)
-                {
-                    dbContext.TopicUsers.Add(new TopicUser() 
-                    { 
-                        UserId = studentId, 
-                        TopicId = topicId, 
-                        Role = Role.Student 
-                    });
-                }
-            }
-        }
+    
+        // Private Region
 
-        private void AssociateSupervisorsToTopic(int topicId, int[] supervisorIds)
+        private void AssociateUsersToTopicByRole(int topicId, string role, int[] userIds)
         {
-            if (supervisorIds != null)
+            if (userIds != null)
             {
-                foreach (int supervisorId in supervisorIds)
+                foreach (int userId in userIds)
                 {
                     dbContext.TopicUsers.Add(new TopicUser() 
                     { 
-                        UserId = supervisorId, 
+                        UserId = userId, 
                         TopicId = topicId, 
-                        Role = Role.Supervisor 
-                    });
-                }
-            }
-        }
-
-        private void AssociateReviewersToTopic(int topicId, int[] reviewerIds)
-        {
-            if (reviewerIds != null)
-            {
-                foreach (int reviewerId in reviewerIds)
-                {
-                    dbContext.TopicUsers.Add(new TopicUser() 
-                    { 
-                        UserId = reviewerId, 
-                        TopicId = topicId, 
-                        Role = Role.Reviewer 
+                        Role = role 
                     });
                 }
             }
