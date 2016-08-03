@@ -59,6 +59,15 @@ namespace BLL.Managers
                           select t).ToListAsync();
         }
 
+        public virtual async Task<IEnumerable<Topic>> GetParentTopics(int topicId)
+        {
+            return await (from t in dbContext.Topics
+                          join at in dbContext.AssociatedTopics
+                          on t.Id equals at.ParentTopicId
+                          where at.ChildTopicId == topicId
+                          select t).ToListAsync();
+        }
+
         public virtual async Task<AddEntityResult> AddTopicAsync(int userId, TopicFormModel model)
         {     
             using (var transaction = await dbContext.Database.BeginTransactionAsync())

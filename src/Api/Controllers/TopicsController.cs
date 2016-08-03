@@ -44,7 +44,7 @@ namespace Api.Controllers
 
 
         // GET api/topics/:id/students
-        [HttpGet("{id}/students")]
+        [HttpGet("{id}/Students")]
         public async Task<IActionResult> GetTopicStudents(int id)
         {
             return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Student));
@@ -52,7 +52,7 @@ namespace Api.Controllers
 
 
         // GET api/topics/:id/supervisors
-        [HttpGet("{id}/supervisors")]
+        [HttpGet("{id}/Supervisors")]
         public async Task<IActionResult> GetTopicSupervisors(int id)
         {
             return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Supervisor));
@@ -60,7 +60,7 @@ namespace Api.Controllers
 
 
         // GET api/topics/:id/reviewers
-        [HttpGet("{id}/reviewers")]
+        [HttpGet("{id}/Reviewers")]
         public async Task<IActionResult> GetTopicReviewers(int id)
         {
             return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Reviewer));
@@ -68,10 +68,18 @@ namespace Api.Controllers
 
 
         // GET api/topics/:id/subtopics
-        [HttpGet("{id}/subtopics")]
-        public async Task<IActionResult> GetTopicSubtopics(int id)
+        [HttpGet("{id}/SubTopics")]
+        public async Task<IActionResult> GetSubTopics(int id)
         {
             return Ok(await topicManager.GetSubTopics(id));
+        }
+
+
+        // GET api/topics/:id/parenttopics
+        [HttpGet("{id}/ParentTopics")]
+        public async Task<IActionResult> GetParentTopics(int id)
+        {
+            return Ok(await topicManager.GetParentTopics(id));
         }
 
 

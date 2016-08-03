@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     public class ApiController : Controller
     {
         protected readonly ApplicationDbContext dbContext;
