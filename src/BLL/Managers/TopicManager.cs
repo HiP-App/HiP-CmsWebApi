@@ -12,7 +12,7 @@ namespace BLL.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) {}
 
-        public virtual async Task<IEnumerable<Topic>> GetAllTopicsAsync(string query, string status, DateTime? deadline, int page, int pageSize)
+        public virtual async Task<IEnumerable<Topic>> GetAllTopicsAsync(string query, string status, DateTime? deadline, bool onlyParents, int page, int pageSize)
         {
             var topics = from t in dbContext.Topics
                          select t;
@@ -27,6 +27,16 @@ namespace BLL.Managers
 
             if (deadline != null)
                 topics = topics.Where(t => DateTime.Compare(t.Deadline, (DateTime)deadline) == 0);
+
+            if (onlyParents)
+            {
+                var childTopics = from at in dbContext.AssociatedTopics
+                                  join t in topics
+                                  on at.ChildTopicId equals t.Id
+                                  select t;
+
+                topics = topics.Except(childTopics);
+            }
 
             return await topics.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
