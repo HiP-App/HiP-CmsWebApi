@@ -2,6 +2,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOL.Models
 {
@@ -31,6 +33,8 @@ namespace BOL.Models
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
+
+        public virtual List<TopicUser> TopicUsers { get; set; }
 
         public Topic(TopicFormModel model)
         {

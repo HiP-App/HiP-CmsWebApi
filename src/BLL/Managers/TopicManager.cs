@@ -76,14 +76,14 @@ namespace BLL.Managers
                 {       
                     var topic = new Topic(model);
                     topic.CreatedById = userId;
-                    dbContext.Topics.Add(topic);
-                    await dbContext.SaveChangesAsync();
 
                     // Add all associations
-                    AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
-                    AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
-                    AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
+                    topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
+                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
+                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
                     AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+
+                    dbContext.Topics.Add(topic);
 
                     await dbContext.SaveChangesAsync();
 
@@ -116,10 +116,10 @@ namespace BLL.Managers
                         await dbContext.SaveChangesAsync();
 
                         // Add all associations
-                        AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
-                        AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
-                        AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
-                        AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+                        //AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
+                        //AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
+                        //AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
+                        //AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
                         await dbContext.SaveChangesAsync();
 
@@ -155,20 +155,19 @@ namespace BLL.Managers
     
         // Private Region
 
-        private void AssociateUsersToTopicByRole(int topicId, string role, int[] userIds)
+        private List<TopicUser> AssociateUsersToTopicByRole(string role, int[] userIds)
         {
+            var topicUsers = new List<TopicUser>();
+
             if (userIds != null)
             {
                 foreach (int userId in userIds)
                 {
-                    dbContext.TopicUsers.Add(new TopicUser() 
-                    { 
-                        UserId = userId, 
-                        TopicId = topicId, 
-                        Role = role 
-                    });
+                    topicUsers.Add(new TopicUser() { UserId = userId, Role = role });
                 }
             }
+
+            return topicUsers;
         }
 
         private void AssociateTopicsToTopic(int topicId, int[] associatedTopicIds)
