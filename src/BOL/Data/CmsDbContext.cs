@@ -12,6 +12,12 @@ namespace BOL.Data
         // Add all Tables here
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Topic> Topics { get; set; }
+
+        public DbSet<TopicUser> TopicUsers { get; set; }
+
+        public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -22,6 +28,10 @@ namespace BOL.Data
                 .HasValue<Student>(Role.Student)
                 .HasValue<Supervisor>(Role.Supervisor)
                 .HasValue<Administrator>(Role.Administrator);
+
+            new TopicMap(modelBuilder.Entity<Topic>());
+            new TopicUserMap(modelBuilder.Entity<TopicUser>());
+            new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
         }
     }
 }

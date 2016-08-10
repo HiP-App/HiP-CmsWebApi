@@ -1,15 +1,16 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
 
 namespace Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160727094011_AddingTopicModel")]
+    partial class AddingTopicModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
@@ -53,8 +54,6 @@ namespace Api.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
 
                     b.ToTable("Topics");
                 });
@@ -126,14 +125,6 @@ namespace Api.Migrations
                     b.ToTable("Supervisor");
 
                     b.HasDiscriminator().HasValue("Supervisor");
-                });
-
-            modelBuilder.Entity("BOL.Models.Topic", b =>
-                {
-                    b.HasOne("BOL.Models.Supervisor", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }

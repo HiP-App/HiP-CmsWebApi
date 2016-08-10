@@ -1,5 +1,4 @@
 ﻿using Api.Utility;
-using Api.ViewModels.Users;
 using BOL.Models;
 using Microsoft.AspNetCore.Mvc;
 using BLL.Managers;
@@ -20,7 +19,8 @@ namespace Api.Controllers
             userManager = new UserManager(dbContext);
         }
 
-        // GET: api/users
+
+        // GET api/users
         [HttpGet]
         public async Task<IActionResult> Get(string query, string role, int page = 1)
         {
@@ -29,6 +29,7 @@ namespace Api.Controllers
 
             return Ok(new PagedResult<User>(users, page, count));
         }
+
 
         // GET api/users/:id
         [HttpGet("{id}")]
@@ -41,6 +42,7 @@ namespace Api.Controllers
             else
                 return NotFound();             
         }
+
 
         // GET api/users/current
         [HttpGet]
@@ -59,7 +61,7 @@ namespace Api.Controllers
         // PUT api/values/5
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Administrator)]
-        public async Task<IActionResult> Put(int id, ChangeRoleModel model)
+        public async Task<IActionResult> Put(int id, UserFormModel model)
         {
             if(ModelState.IsValid)
             {
@@ -69,9 +71,9 @@ namespace Api.Controllers
                 }                   
                 else
                 {
-                    if(await userManager.UpdateUserRoleAsync(id, model.Role))
+                    if(await userManager.UpdateUserAsync(id, model))
                     {
-                        _logger.LogInformation(5, "The information for : " + id + " successfully updated");
+                        _logger.LogInformation(5, "User with ID: " + id + " updated.");
 
                         return Ok();
                     }

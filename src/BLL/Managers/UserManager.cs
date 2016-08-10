@@ -29,9 +29,14 @@ namespace BLL.Managers
             return await users.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         }
 
-        public virtual async Task<User> GetUserByIdAsync(int id)
+        public virtual async Task<int> GetUsersCountAsync()
         {
-            return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await dbContext.Users.CountAsync();
+        }
+
+        public virtual async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
         
         public virtual async Task<User> GetUserByEmailAsync(string email)
@@ -39,22 +44,33 @@ namespace BLL.Managers
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public virtual async Task<int> GetUsersCountAsync()
-        {
-            return await dbContext.Users.CountAsync();
-        }
-
-        public virtual async Task<bool> UpdateUserRoleAsync(int userId, string newRole)
+        public virtual async Task<bool> UpdateUserAsync(int userId, UserFormModel model)
         {
             var user = await GetUserByIdAsync(userId);
 
             if (user != null)
             {
-                await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{newRole}' where \"Id\" = {userId}");
-                return true;
+                using (var transaction = await dbContext.Database.BeginTransactionAsync())
+                {
+                    try
+                    {   
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;    
+                        
+                        await dbContext.SaveChangesAsync();
+                        await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{model.Role}' where \"Id\" = {userId}");
+                        transaction.Commit();
+
+                        return true;
+                    }
+                    catch(Exception)
+                    {
+                        transaction.Rollback();
+                    }
+                }
             }
-            else
-                return false;
+            
+            return false;
         }        
 
         public virtual bool AddUserAsync(User user)
@@ -71,6 +87,5 @@ namespace BLL.Managers
                 return false;
             }
         }
-
     }
 }
