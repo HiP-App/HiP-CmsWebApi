@@ -115,7 +115,6 @@ namespace BLL.Managers
                     try
                     {       
                         var topic = new Topic(model);
-                        topic.CreatedById = 4;
                         topic.Id = topicId;
                         dbContext.Topics.Attach(topic);
                         dbContext.Entry(topic).State = EntityState.Modified;
