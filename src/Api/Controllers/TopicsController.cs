@@ -6,6 +6,9 @@ using BLL.Managers;
 using Microsoft.AspNetCore.Mvc;
 using BOL.Models;
 using Api.Utility;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
@@ -85,6 +88,7 @@ namespace Api.Controllers
 
         // POST api/topics
         [HttpPost]
+        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Post(TopicFormModel model)
         {
             if (ModelState.IsValid)
@@ -108,6 +112,7 @@ namespace Api.Controllers
 
         // PUT api/topics/:id
         [HttpPut("{id}")]
+        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Put(int id, TopicFormModel model)
         {
             if (ModelState.IsValid)
@@ -124,6 +129,7 @@ namespace Api.Controllers
 
         // DELETE api/topics/:id
         [HttpDelete("{id}")]
+        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Delete(int id)
         {
             bool success = await topicManager.DeleteTopicAsync(id);

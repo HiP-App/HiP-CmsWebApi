@@ -1,4 +1,5 @@
 ﻿using Api.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -6,6 +7,7 @@ namespace Api.Controllers
 {
     [Produces("application/json")]
     [Route("Api/[controller]")]
+    [Authorize]
     public class ApiController : Controller
     {
         protected readonly ApplicationDbContext dbContext;
