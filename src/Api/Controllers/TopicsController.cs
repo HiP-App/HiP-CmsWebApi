@@ -26,10 +26,13 @@ namespace Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
-            var topics = await topicManager.GetAllTopicsAsync(query, status, deadline, onlyParents, page, Constants.PageSize);
-            int count = await topicManager.GetTopicsCountAsync();
-            
-            return Ok(new PagedResult<Topic>(topics, page, count));
+            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
+            int count = await topics.CountAsync();
+                        
+            return Ok(new PagedResult<Topic>(topics.Skip((page - 1) * Constants.PageSize)
+                                            .Take(Constants.PageSize)
+                                            .ToListAsync()
+                                            .Result, page, count));
         }
 
 

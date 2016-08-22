@@ -36,6 +36,9 @@ namespace BOL.Models
 
         public virtual List<TopicUser> TopicUsers { get; set; }
 
+        [ForeignKey("ChildTopicId")]
+        public virtual List<AssociatedTopic> AssociatedTopics { get; set; }
+
         public Topic(TopicFormModel model)
         {
             Title = model.Title;
@@ -43,6 +46,9 @@ namespace BOL.Models
             Deadline = (DateTime)model.Deadline;
             Description = model.Description;
             Requirements = model.Requirements;
+
+            TopicUsers = new List<TopicUser>();
+            AssociatedTopics = new List<AssociatedTopic>();
         }
 
         public Topic() {}
