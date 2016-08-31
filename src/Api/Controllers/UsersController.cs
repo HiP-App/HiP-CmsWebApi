@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
-    [Authorize]
     public class UsersController : ApiController
     {
         private UserManager userManager;

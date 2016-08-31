@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BOL.Models
 {
@@ -24,5 +25,7 @@ namespace BOL.Models
                 return FirstName + ' ' + LastName;
             }
         }
+
+        public virtual ICollection<TopicUser> TopicUsers { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace BLL.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) {}
 
-        public virtual async Task<IEnumerable<Topic>> GetAllTopicsAsync(string query, string status, DateTime? deadline, int page, int pageSize)
+        public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
         {
             var topics = from t in dbContext.Topics
                          select t;
@@ -28,7 +28,13 @@ namespace BLL.Managers
             if (deadline != null)
                 topics = topics.Where(t => DateTime.Compare(t.Deadline, (DateTime)deadline) == 0);
 
-            return await topics.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            if (onlyParents)
+                topics = topics.Except(from at in dbContext.AssociatedTopics
+                                       join t in topics
+                                       on at.ChildTopicId equals t.Id
+                                       select t);
+
+            return topics;
         }
 
         public virtual async Task<int> GetTopicsCountAsync()
@@ -76,14 +82,16 @@ namespace BLL.Managers
                 {       
                     var topic = new Topic(model);
                     topic.CreatedById = userId;
-                    dbContext.Topics.Add(topic);
-                    await dbContext.SaveChangesAsync();
 
-                    // Add all associations
-                    AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
-                    AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
-                    AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
-                    AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+                    // Add User associations
+                    topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
+                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
+                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
+
+                    // Add Topic Associations
+                    topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+
+                    dbContext.Topics.Add(topic);
 
                     await dbContext.SaveChangesAsync();
 
@@ -110,23 +118,23 @@ namespace BLL.Managers
                         topic.Id = topicId;
                         dbContext.Topics.Attach(topic);
                         dbContext.Entry(topic).State = EntityState.Modified;
-                        
-                        // Deassociated previous Links
-                        DeassociateAllLinksFromTopic(topicId);
-                        await dbContext.SaveChangesAsync();
 
-                        // Add all associations
-                        AssociateUsersToTopicByRole(topic.Id, Role.Student, model.Students);
-                        AssociateUsersToTopicByRole(topic.Id, Role.Supervisor, model.Supervisors);
-                        AssociateUsersToTopicByRole(topic.Id, Role.Reviewer, model.Reviewers);
-                        AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+                        DeassociateAllLinksFromTopic(topicId);
+
+                        // Add User associations
+                        topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
+                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
+                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
+
+                        // Add Topic associations
+                        topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
                         await dbContext.SaveChangesAsync();
 
                         transaction.Commit();
                         return true;
                     }
-                    catch(Exception)
+                    catch(Exception e)
                     {
                         transaction.Rollback();
                     }
@@ -138,11 +146,10 @@ namespace BLL.Managers
 
         public virtual async Task<bool> DeleteTopicAsync(int topicId)
         {
-            var topic = await dbContext.Topics.AsNoTracking().FirstOrDefaultAsync(u => u.Id == topicId);
+            var topic = await dbContext.Topics.FirstOrDefaultAsync(u => u.Id == topicId);
             
             if (topic != null)
             {
-                DeassociateAllLinksFromTopic(topicId);
                 dbContext.Remove(topic);
                 await dbContext.SaveChangesAsync();
 
@@ -155,41 +162,40 @@ namespace BLL.Managers
     
         // Private Region
 
-        private void AssociateUsersToTopicByRole(int topicId, string role, int[] userIds)
+        private List<TopicUser> AssociateUsersToTopicByRole(string role, int[] userIds)
         {
+            var topicUsers = new List<TopicUser>();
+
             if (userIds != null)
             {
                 foreach (int userId in userIds)
                 {
-                    dbContext.TopicUsers.Add(new TopicUser() 
-                    { 
-                        UserId = userId, 
-                        TopicId = topicId, 
-                        Role = role 
-                    });
+                    topicUsers.Add(new TopicUser() { UserId = userId, Role = role });
                 }
             }
+
+            return topicUsers;
         }
 
-        private void AssociateTopicsToTopic(int topicId, int[] associatedTopicIds)
+        private List<AssociatedTopic> AssociateTopicsToTopic(int topicId, int[] associatedTopicIds)
         {
+            var associatedTopics = new List<AssociatedTopic>();
+
             if (associatedTopicIds != null)
             {
                 foreach (int associatedTopicId in associatedTopicIds)
                 {
-                    dbContext.AssociatedTopics.Add(new AssociatedTopic() 
-                    { 
-                        ChildTopicId = topicId, 
-                        ParentTopicId = associatedTopicId
-                    });
+                    associatedTopics.Add(new AssociatedTopic() { ParentTopicId = associatedTopicId });
                 }
             }
+
+            return associatedTopics;
         }
 
         private void DeassociateAllLinksFromTopic(int topicId)
         {
-            dbContext.TopicUsers.RemoveRange(dbContext.TopicUsers.Where(tu => tu.TopicId == topicId));
-            dbContext.AssociatedTopics.RemoveRange(dbContext.AssociatedTopics.Where(tu => tu.ParentTopicId == topicId));
+            dbContext.Database.ExecuteSqlCommand($"delete from \"TopicUsers\" where  \"TopicId\" = '{topicId}'");
+            dbContext.Database.ExecuteSqlCommand($"delete from \"AssociatedTopics\" where  \"ChildTopicId\" = '{topicId}'");
         }
     }
 }

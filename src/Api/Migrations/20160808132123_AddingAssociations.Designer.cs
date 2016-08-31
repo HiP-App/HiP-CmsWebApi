@@ -8,9 +8,10 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20160808132123_AddingAssociations")]
+    partial class AddingAssociations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
@@ -22,8 +23,6 @@ namespace Api.Migrations
                     b.Property<int>("ChildTopicId");
 
                     b.HasKey("ParentTopicId", "ChildTopicId");
-
-                    b.HasIndex("ChildTopicId");
 
                     b.ToTable("AssociatedTopics");
                 });
@@ -135,14 +134,6 @@ namespace Api.Migrations
                     b.HasDiscriminator().HasValue("Supervisor");
                 });
 
-            modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
-                {
-                    b.HasOne("BOL.Models.Topic")
-                        .WithMany("AssociatedTopics")
-                        .HasForeignKey("ChildTopicId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("BOL.Models.Topic", b =>
                 {
                     b.HasOne("BOL.Models.Supervisor", "CreatedBy")
@@ -154,7 +145,7 @@ namespace Api.Migrations
             modelBuilder.Entity("BOL.Models.TopicUser", b =>
                 {
                     b.HasOne("BOL.Models.Topic")
-                        .WithMany("TopicUsers")
+                        .WithMany("TopicSupervisors")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 

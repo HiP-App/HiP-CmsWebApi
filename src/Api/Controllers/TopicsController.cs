@@ -6,6 +6,9 @@ using BLL.Managers;
 using Microsoft.AspNetCore.Mvc;
 using BOL.Models;
 using Api.Utility;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
@@ -21,12 +24,15 @@ namespace Api.Controllers
 
         // GET api/topics
         [HttpGet]
-        public async Task<IActionResult> Get(string query, string status, DateTime? deadline, int page = 1)
+        public async Task<IActionResult> Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
-            var topics = await topicManager.GetAllTopicsAsync(query, status, deadline, page, Constants.PageSize);
-            int count = await topicManager.GetTopicsCountAsync();
-            
-            return Ok(new PagedResult<Topic>(topics, page, count));
+            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
+            int count = await topics.CountAsync();
+                        
+            return Ok(new PagedResult<Topic>(topics.Skip((page - 1) * Constants.PageSize)
+                                            .Take(Constants.PageSize)
+                                            .ToListAsync()
+                                            .Result, page, count));
         }
 
 
@@ -85,6 +91,7 @@ namespace Api.Controllers
 
         // POST api/topics
         [HttpPost]
+        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Post(TopicFormModel model)
         {
             if (ModelState.IsValid)
@@ -108,6 +115,7 @@ namespace Api.Controllers
 
         // PUT api/topics/:id
         [HttpPut("{id}")]
+        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Put(int id, TopicFormModel model)
         {
             if (ModelState.IsValid)
@@ -124,6 +132,7 @@ namespace Api.Controllers
 
         // DELETE api/topics/:id
         [HttpDelete("{id}")]
+        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Delete(int id)
         {
             bool success = await topicManager.DeleteTopicAsync(id);
