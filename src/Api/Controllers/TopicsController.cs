@@ -15,9 +15,11 @@ namespace Api.Controllers
     public class TopicsController : ApiController
     {
         private TopicManager topicManager;
+        private IAuthorizationService authorizationService;
 
-        public TopicsController(ApplicationDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public TopicsController(ApplicationDbContext dbContext, ILoggerFactory loggerFactory, IAuthorizationService authorizationService) : base(dbContext, loggerFactory)
         {
+            this.authorizationService = authorizationService;
             topicManager = new TopicManager(dbContext);
         }
 
@@ -135,12 +137,21 @@ namespace Api.Controllers
         [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Delete(int id)
         {
-            bool success = await topicManager.DeleteTopicAsync(id);
-            
-            if (success)
+            Topic topic = await topicManager.GetTopicByIdAsync(id);
+
+            if (topic == null)
+                return NotFound();
+
+            if (await authorizationService.AuthorizeAsync(User, topic, Operations.Delete))
+            {
+                bool success = await topicManager.DeleteTopicAsync(id);
+
                 return Ok();
+            }
             else
-                return BadRequest();
+            {
+                return Forbid();
+            }
         }
     }
 }

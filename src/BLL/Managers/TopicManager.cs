@@ -134,7 +134,7 @@ namespace BLL.Managers
                         transaction.Commit();
                         return true;
                     }
-                    catch(Exception e)
+                    catch(Exception)
                     {
                         transaction.Rollback();
                     }
@@ -150,7 +150,7 @@ namespace BLL.Managers
             
             if (topic != null)
             {
-                dbContext.Remove(topic);
+                // dbContext.Remove(topic);
                 await dbContext.SaveChangesAsync();
 
                 return true;
