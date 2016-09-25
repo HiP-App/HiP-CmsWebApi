@@ -19,6 +19,8 @@ namespace BOL.Models
         [Required]
         public string Role { get; set; }
 
+        public string ProfilePicture { get; set; }
+
         public string FullName {
             get
             {

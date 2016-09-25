@@ -6,6 +6,10 @@ using Api.Data;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Razor.CodeGenerators;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Api.Controllers
 {
@@ -39,7 +43,7 @@ namespace Api.Controllers
             if (user != null)
                 return Ok(user);
             else
-                return NotFound();             
+                return NotFound();
         }
 
 
@@ -53,7 +57,7 @@ namespace Api.Controllers
             if (user != null)
                 return Ok(user);
             else
-                return NotFound();             
+                return NotFound();
         }
 
 
@@ -62,15 +66,15 @@ namespace Api.Controllers
         [Authorize(Roles = Role.Administrator)]
         public async Task<IActionResult> Put(int id, UserFormModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 if (!Role.IsRoleValid(model.Role))
                 {
                     ModelState.AddModelError("Role", "Invalid Role");
-                }                   
+                }
                 else
                 {
-                    if(await userManager.UpdateUserAsync(id, model))
+                    if (await userManager.UpdateUserAsync(id, model))
                     {
                         _logger.LogInformation(5, "User with ID: " + id + " updated.");
 
@@ -79,6 +83,24 @@ namespace Api.Controllers
                 }
             }
 
+            return BadRequest(ModelState);
+        }
+
+
+        // PUT api/users/picture/:id
+        [HttpPut("picture/{id}")]
+
+        public async Task<IActionResult> PutPicture(int userId, IFormFile file)
+        {
+            var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
+            if (file.Length > 0)
+            {
+                string fileName = userId + Path.GetExtension(file.FileName);
+                file.CopyTo(new FileStream(Path.Combine(uploads, fileName), FileMode.Create));
+                await userManager.UpdateProfilePicture(userId, fileName);
+
+                return Ok();
+            }
             return BadRequest(ModelState);
         }
     }

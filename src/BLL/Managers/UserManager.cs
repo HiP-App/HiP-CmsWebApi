@@ -38,7 +38,7 @@ namespace BLL.Managers
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
-        
+
         public virtual async Task<User> GetUserByEmailAsync(string email)
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -53,25 +53,25 @@ namespace BLL.Managers
                 using (var transaction = await dbContext.Database.BeginTransactionAsync())
                 {
                     try
-                    {   
+                    {
                         user.FirstName = model.FirstName;
-                        user.LastName = model.LastName;    
-                        
+                        user.LastName = model.LastName;
+
                         await dbContext.SaveChangesAsync();
                         await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{model.Role}' where \"Id\" = {userId}");
                         transaction.Commit();
 
                         return true;
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         transaction.Rollback();
                     }
                 }
             }
-            
+
             return false;
-        }        
+        }
 
         public virtual bool AddUserAsync(User user)
         {
@@ -87,5 +87,25 @@ namespace BLL.Managers
                 return false;
             }
         }
+
+        public virtual async Task<bool> UpdateProfilePicture(int userId, String fileName)
+        {
+            using (var transaction = await dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await dbContext.SaveChangesAsync();
+                    await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"ProfilePicture\" = '{fileName}' where \"Id\" = {userId}");
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                }
+            }
+            return false;
+        }
+
     }
 }
