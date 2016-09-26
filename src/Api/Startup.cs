@@ -18,7 +18,7 @@ namespace Api
 {
     public class Startup
     {
-        public static readonly string ProfilePictureFolder = @"wwwroot\profilepictures";
+        public static readonly string ProfilePictureFolder = @"wwwroot/profilepictures";
 
         public Startup(IHostingEnvironment env)
         {
