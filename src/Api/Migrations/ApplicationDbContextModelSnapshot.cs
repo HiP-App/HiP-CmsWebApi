@@ -91,6 +91,8 @@ namespace Api.Migrations
 
                     b.Property<string>("LastName");
 
+                    b.Property<string>("Picture");
+
                     b.Property<string>("ProfilePicture");
 
                     b.Property<string>("Role")
