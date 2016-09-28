@@ -1,0 +1,16 @@
+﻿{
+  // Database Configurations
+  "DB_HOST": "localhost",
+  "DB_USERNAME": "postgres",
+  "DB_PASSWORD": "postgres",
+  "DB_NAME": "hipcmsdb",
+
+  // Auth Configurations
+  "CLIENT_ID": "HiP-CmsWebApiClientId",
+  "DOMAIN": "http://localhost:5001/",
+
+  // Admin Details
+  "ADMIN_EMAIL": "admin@hipapp.de",
+
+  "ALLOW_HTTP": true
+}
