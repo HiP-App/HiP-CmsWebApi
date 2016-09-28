@@ -15,8 +15,10 @@ namespace Api.Data
             var appConfig = app.ApplicationServices.GetRequiredService<AppConfig>();
             var userManager = new UserManager(dbContext);
 
+            dbContext.Database.EnsureCreated();
+
             // Run Migrations to apply any pending migrations. (if any)
-            dbContext.Database.Migrate();
+            //dbContext.Database.Migrate();
 
             // Seed Db with Admin Account if its not already created.
             var admin = userManager.GetUserByEmailAsync(appConfig.AdminEmail).Result;

@@ -47,7 +47,7 @@ namespace Api
 
             // Add database service for Postgres
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
+                options.UseMySql(appConfig.DatabaseConfig.ConnectionString));
 
             // Add framework services.
             services.AddMvc();
