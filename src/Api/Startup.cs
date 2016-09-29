@@ -11,7 +11,7 @@ using Swashbuckle.Swagger.Model;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Api.Filters;
 
 namespace Api
 {
@@ -49,6 +49,8 @@ namespace Api
             // Add framework services.
             services.AddMvc();
 
+            services.AddScoped<TopicActionFilter>();
+
             // Add Swagger service
             services.AddSwaggerGen();
 
@@ -62,8 +64,6 @@ namespace Api
                     Description = "A REST api to serve History in Paderborn CMS System"
                 });
             });
-
-            services.AddSingleton<IAuthorizationHandler, TopicAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
