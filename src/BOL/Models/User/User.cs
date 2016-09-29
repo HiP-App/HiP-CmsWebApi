@@ -19,13 +19,21 @@ namespace BOL.Models
         [Required]
         public string Role { get; set; }
 
-        public string FullName {
-            get
-            {
-                return FirstName + ' ' + LastName;
-            }
+        public virtual ICollection<TopicUser> TopicUsers { get; set; }
+
+        public bool IsAdministrator()
+        {
+            return Role == BOL.Models.Role.Administrator;
         }
 
-        public virtual ICollection<TopicUser> TopicUsers { get; set; }
+        public bool IsSupervisor()
+        {
+            return Role == BOL.Models.Role.Supervisor;
+        }
+
+        public bool IsStudent()
+        {
+            return Role == BOL.Models.Role.Student;
+        }
     }
 }

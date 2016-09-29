@@ -108,55 +108,43 @@ namespace BLL.Managers
 
         public virtual async Task<bool> UpdateTopicAsync(int topicId, TopicFormModel model)
         {            
-            if (await dbContext.Topics.AsNoTracking().FirstOrDefaultAsync(t => t.Id == topicId) != null)
+            using (var transaction = await dbContext.Database.BeginTransactionAsync())
             {
-                using (var transaction = await dbContext.Database.BeginTransactionAsync())
+                try
+                {       
+                    var topic = new Topic(model);
+                    topic.Id = topicId;
+                    dbContext.Topics.Attach(topic);
+                    dbContext.Entry(topic).State = EntityState.Modified;
+
+                    DeassociateAllLinksFromTopic(topicId);
+
+                    // Add User associations
+                    topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
+                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
+                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
+
+                    // Add Topic associations
+                    topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+
+                    await dbContext.SaveChangesAsync();
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch(Exception)
                 {
-                    try
-                    {       
-                        var topic = new Topic(model);
-                        topic.Id = topicId;
-                        dbContext.Topics.Attach(topic);
-                        dbContext.Entry(topic).State = EntityState.Modified;
-
-                        DeassociateAllLinksFromTopic(topicId);
-
-                        // Add User associations
-                        topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
-                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
-                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
-
-                        // Add Topic associations
-                        topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
-
-                        await dbContext.SaveChangesAsync();
-
-                        transaction.Commit();
-                        return true;
-                    }
-                    catch(Exception e)
-                    {
-                        transaction.Rollback();
-                    }
+                    transaction.Rollback();
                 }
             }
-
+            
             return false;
         }
 
-        public virtual async Task<bool> DeleteTopicAsync(int topicId)
+        public virtual async Task DeleteTopicAsync(Topic topic)
         {
-            var topic = await dbContext.Topics.FirstOrDefaultAsync(u => u.Id == topicId);
-            
-            if (topic != null)
-            {
-                dbContext.Remove(topic);
-                await dbContext.SaveChangesAsync();
-
-                return true;
-            }
-
-            return false;
+            dbContext.Topics.Remove(topic);
+            await dbContext.SaveChangesAsync();
         }
 
     

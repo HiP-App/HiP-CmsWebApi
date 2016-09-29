@@ -11,6 +11,7 @@ using Swashbuckle.Swagger.Model;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Api.Filters;
 
 namespace Api
 {
@@ -47,6 +48,8 @@ namespace Api
 
             // Add framework services.
             services.AddMvc();
+
+            services.AddScoped<TopicActionFilter>();
 
             // Add Swagger service
             services.AddSwaggerGen();

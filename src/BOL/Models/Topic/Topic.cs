@@ -19,6 +19,7 @@ namespace BOL.Models
         public string Status { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
         public DateTime Deadline { get; set; }
 
         public string Description { get; set; }

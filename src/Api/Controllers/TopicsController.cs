@@ -6,16 +6,17 @@ using BLL.Managers;
 using Microsoft.AspNetCore.Mvc;
 using BOL.Models;
 using Api.Utility;
+using Api.Filters;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers
 {
+    [ServiceFilter(typeof(TopicActionFilter))] // Run 'TopicActionFilter' before executing any action.
     public class TopicsController : ApiController
     {
         private TopicManager topicManager;
-
+        
         public TopicsController(ApplicationDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
             topicManager = new TopicManager(dbContext);
@@ -25,7 +26,7 @@ namespace Api.Controllers
         // GET api/topics
         [HttpGet]
         public async Task<IActionResult> Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
-        {
+        {            
             var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
             int count = await topics.CountAsync();
                         
@@ -40,12 +41,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var topics = await topicManager.GetTopicByIdAsync(id);
-            
-            if (topics != null)
-                return Ok(topics);
-            else
-                return NotFound();
+            return Ok(await topicManager.GetTopicByIdAsync(id));
         }
 
 
@@ -81,7 +77,7 @@ namespace Api.Controllers
         }
 
 
-        // GET api/topics/:id/parenttopics
+        // GET api/topics/:id/parentTopics
         [HttpGet("{id}/ParentTopics")]
         public async Task<IActionResult> GetParentTopics(int id)
         {
@@ -91,23 +87,17 @@ namespace Api.Controllers
 
         // POST api/topics
         [HttpPost]
-        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Post(TopicFormModel model)
         {
-            if (ModelState.IsValid)
+            if (Status.IsStatusValid(model.Status))
             {
-                if (!Status.IsStatusValid(model.Status))
-                {
-                    ModelState.AddModelError("Status", "Invalid Topic Status");
-                }
-                else
-                {
-                    var result = await topicManager.AddTopicAsync(User.Identity.GetUserId(), model);
+                var result = await topicManager.AddTopicAsync(User.Identity.GetUserId(), model);
 
-                    if(result.Success)
-                        return new ObjectResult(result);
-                }
+                if(result.Success)
+                    return new ObjectResult(result);
             }
+
+            ModelState.AddModelError("Status", "Invalid Topic Status");
 
             return BadRequest(ModelState);
         }
@@ -115,16 +105,17 @@ namespace Api.Controllers
 
         // PUT api/topics/:id
         [HttpPut("{id}")]
-        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Put(int id, TopicFormModel model)
         {
-            if (ModelState.IsValid)
+            if (Status.IsStatusValid(model.Status))
             {
                 bool success = await topicManager.UpdateTopicAsync(id, model);
-                
+
                 if(success)
                     return Ok();
             }
+
+            ModelState.AddModelError("Status", "Invalid Topic Status");
 
             return BadRequest(ModelState);
         }
@@ -132,15 +123,12 @@ namespace Api.Controllers
 
         // DELETE api/topics/:id
         [HttpDelete("{id}")]
-        [Authorize(Roles = Role.Supervisor)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int topicId)
         {
-            bool success = await topicManager.DeleteTopicAsync(id);
-            
-            if (success)
-                return Ok();
-            else
-                return BadRequest();
+            var topic = await topicManager.GetTopicByIdAsync(topicId);
+            await topicManager.DeleteTopicAsync(topic);
+
+            return Ok();
         }
     }
 }
