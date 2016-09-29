@@ -116,11 +116,11 @@ namespace Api.Controllers
         // PUT api/topics/:id
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Supervisor)]
-        public async Task<IActionResult> Put(int topicId, TopicFormModel model)
+        public async Task<IActionResult> Put(int id, TopicFormModel model)
         {
             if (ModelState.IsValid)
             {
-                bool success = await topicManager.UpdateTopicAsync(User.Identity.GetUserId(), topicId, model);
+                bool success = await topicManager.UpdateTopicAsync(User.Identity.GetUserId(), id, model);
                 
                 if(success)
                     return Ok();
