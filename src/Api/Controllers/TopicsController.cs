@@ -120,7 +120,7 @@ namespace Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool success = await topicManager.UpdateTopicAsync(id, model);
+                bool success = await topicManager.UpdateTopicAsync(User.Identity.GetUserId(), id, model);
                 
                 if(success)
                     return Ok();
