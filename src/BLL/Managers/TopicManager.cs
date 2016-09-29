@@ -106,7 +106,7 @@ namespace BLL.Managers
             }
         }
 
-        public virtual async Task<bool> UpdateTopicAsync(int topicId, TopicFormModel model)
+        public virtual async Task<bool> UpdateTopicAsync(int userId, int topicId, TopicFormModel model)
         {            
             if (await dbContext.Topics.AsNoTracking().FirstOrDefaultAsync(t => t.Id == topicId) != null)
             {
@@ -116,6 +116,8 @@ namespace BLL.Managers
                     {       
                         var topic = new Topic(model);
                         topic.Id = topicId;
+                        topic.CreatedById = userId;
+
                         dbContext.Topics.Attach(topic);
                         dbContext.Entry(topic).State = EntityState.Modified;
 
