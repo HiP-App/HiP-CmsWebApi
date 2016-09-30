@@ -51,7 +51,7 @@ namespace Api.Utility
                 connectionString.Append($"Host={Host};");
                 connectionString.Append($"uid={Username};");
                 connectionString.Append($"pwd={Password};");
-                connectionString.Append($"Database={Name}");
+                connectionString.Append($"Database={Name};sslmode=none");
                 
                 return connectionString.ToString();
             }

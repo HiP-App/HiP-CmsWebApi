@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using MySQL.Data.EntityFrameworkCore.Extensions;
 using Swashbuckle.Swagger.Model;
 using System.IO;
 using System.Security.Claims;
@@ -47,7 +48,7 @@ namespace Api
 
             // Add database service for Postgres
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseMySql(appConfig.DatabaseConfig.ConnectionString));
+                options.UseMySQL(appConfig.DatabaseConfig.ConnectionString));
 
             // Add framework services.
             services.AddMvc();
