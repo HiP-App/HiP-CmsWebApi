@@ -87,11 +87,16 @@ namespace Api.Controllers
         }
 
 
-        // PUT api/users/picture/:id
-        [HttpPut("picture/{id}")]
-        public async Task<IActionResult> PutPicture(int userId, IFormFile file)
+        // PUT api/users/picture/
+        [HttpPut("picture/")]
+        public async Task<IActionResult> PutPicture(IFormFile file)
         {
+            if (file == null) return BadRequest("File is null");
+            if (file.Length == 0) return BadRequest("File is empty");
+
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
+            int userId = 1;
+
             if (file.Length > 1024 * 1024) // Limit to 1 MB
                 return BadRequest("Picture is to large");
             else if (file.Length > 0)
@@ -106,21 +111,21 @@ namespace Api.Controllers
         }
 
 
-        [HttpDelete("picture/{id}")]
+        [HttpDelete("picture/")]
         [Authorize(Roles = Role.Supervisor)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete()
         {
             // Fetch user
-            var user = await userManager.GetUserByIdAsync(id);
+            var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
             if (user == null)
                 return BadRequest("Could not find User");
             // Has A Picture?
             if (!user.HasProfilePicture())
                 return BadRequest("No picture set");
 
-            bool success = await userManager.UpdateProfilePicture(id, "");
+            bool success = await userManager.UpdateProfilePicture(user.Id, "");
             // Delete Picture If Exists
-            string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.ProfilePicture);
+            string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.Picture);
             if (System.IO.File.Exists(fileName))
                 System.IO.File.Delete(fileName);
 

@@ -87,21 +87,21 @@ namespace BLL.Managers
                 return false;
             }
         }
-
+        // Use dataobject
         public virtual async Task<bool> UpdateProfilePicture(int userId, String fileName)
         {
-            using (var transaction = await dbContext.Database.BeginTransactionAsync())
+            var user = await GetUserByIdAsync(userId);
+            if (user != null)
             {
                 try
                 {
+                    user.Picture = fileName;
                     await dbContext.SaveChangesAsync();
-                    await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"ProfilePicture\" = '{fileName}' where \"Id\" = {userId}");
-                    transaction.Commit();
                     return true;
                 }
                 catch (Exception)
                 {
-                    transaction.Rollback();
+                    return false;
                 }
             }
             return false;
