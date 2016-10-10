@@ -97,14 +97,18 @@ namespace Api.Controllers
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
             var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
 
-            if (file.Length > 1024 * 1024) // Limit to 1 MB
-                return BadRequest("Picture is to large");
+            //if (file.Length > 1024 * 1024) // Limit to 1 MB
+            //    return BadRequest("Picture is to large");
             else if (file.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(file.FileName);
                 DeleteFile(Path.Combine(uploads, fileName));
 
-                    file.CopyTo(new FileStream(Path.Combine(uploads, fileName), FileMode.Create));
+                using (FileStream outputStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
+                {
+                    file.CopyTo(outputStream);
+                }
+
                 await userManager.UpdateProfilePicture(user, fileName);
 
                 return Ok();
