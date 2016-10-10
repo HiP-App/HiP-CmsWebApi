@@ -102,7 +102,9 @@ namespace Api.Controllers
             else if (file.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(file.FileName);
-                file.CopyTo(new FileStream(Path.Combine(uploads, fileName), FileMode.Create));
+                DeleteFile(Path.Combine(uploads, fileName));
+
+                    file.CopyTo(new FileStream(Path.Combine(uploads, fileName), FileMode.Create));
                 await userManager.UpdateProfilePicture(user, fileName);
 
                 return Ok();
@@ -125,13 +127,20 @@ namespace Api.Controllers
             bool success = await userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
             string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.Picture);
-            if (System.IO.File.Exists(fileName))
-                System.IO.File.Delete(fileName);
+
+            DeleteFile(fileName);
 
             if (success)
                 return Ok();
             else
                 return BadRequest();
         }
+
+        private void DeleteFile(string path)
+        {
+            if (System.IO.File.Exists(path))
+                System.IO.File.Delete(path);
+        }
     }
+
 }

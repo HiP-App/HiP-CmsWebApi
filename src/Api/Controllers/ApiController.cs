@@ -7,7 +7,7 @@ namespace Api.Controllers
 {
     [Produces("application/json")]
     [Route("Api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class ApiController : Controller
     {
         protected readonly ApplicationDbContext dbContext;
