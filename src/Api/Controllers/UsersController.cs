@@ -99,7 +99,7 @@ namespace Api.Controllers
 
             //if (file.Length > 1024 * 1024) // Limit to 1 MB
             //    return BadRequest("Picture is to large");
-            else if (file.Length > 0)
+            if (file.Length > 0)
             {
                 string fileName = user.Id + Path.GetExtension(file.FileName);
                 DeleteFile(Path.Combine(uploads, fileName));
