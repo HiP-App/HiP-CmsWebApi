@@ -136,8 +136,9 @@ namespace BLL.Managers
                         transaction.Commit();
                         return true;
                     }
-                    catch(Exception e)
+                    catch(Exception ex)
                     {
+                        Console.WriteLine(ex.ToString());
                         transaction.Rollback();
                     }
                 }

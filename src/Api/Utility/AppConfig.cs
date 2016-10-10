@@ -49,9 +49,9 @@ namespace Api.Utility
                 StringBuilder connectionString = new StringBuilder();
                 
                 connectionString.Append($"Host={Host};");
-                connectionString.Append($"uid={Username};");
-                connectionString.Append($"pwd={Password};");
-                connectionString.Append($"Database={Name};sslmode=none");
+                connectionString.Append($"Username={Username};");
+                connectionString.Append($"Password={Password};");
+                connectionString.Append($"Database={Name};");
                 
                 return connectionString.ToString();
             }
