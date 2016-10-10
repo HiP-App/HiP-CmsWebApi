@@ -88,19 +88,19 @@ namespace BLL.Managers
             }
         }
         // Use dataobject
-        public virtual async Task<bool> UpdateProfilePicture(int userId, String fileName)
+        public virtual async Task<bool> UpdateProfilePicture(User user, String fileName)
         {
-            var user = await GetUserByIdAsync(userId);
             if (user != null)
             {
                 try
                 {
-                    user.Picture = fileName;
+                    user.ProfilePicture = fileName;
                     await dbContext.SaveChangesAsync();
                     return true;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Console.Error.Write(e);
                     return false;
                 }
             }

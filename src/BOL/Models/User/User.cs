@@ -20,7 +20,7 @@ namespace BOL.Models
         [Required]
         public string Role { get; set; }
 
-        private string ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }
 
         [NotMapped]
         public string Picture {
@@ -31,7 +31,6 @@ namespace BOL.Models
                 return ProfilePicture;
 
             }
-            set { ProfilePicture = Picture; }
         }
 
         public bool HasProfilePicture()

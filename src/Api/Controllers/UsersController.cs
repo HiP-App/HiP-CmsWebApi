@@ -95,15 +95,15 @@ namespace Api.Controllers
             if (file.Length == 0) return BadRequest("File is empty");
 
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
-            int userId = 1;
+            var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
 
             if (file.Length > 1024 * 1024) // Limit to 1 MB
                 return BadRequest("Picture is to large");
             else if (file.Length > 0)
             {
-                string fileName = userId + Path.GetExtension(file.FileName);
+                string fileName = user.Id + Path.GetExtension(file.FileName);
                 file.CopyTo(new FileStream(Path.Combine(uploads, fileName), FileMode.Create));
-                await userManager.UpdateProfilePicture(userId, fileName);
+                await userManager.UpdateProfilePicture(user, fileName);
 
                 return Ok();
             }
@@ -112,7 +112,6 @@ namespace Api.Controllers
 
 
         [HttpDelete("picture/")]
-        [Authorize(Roles = Role.Supervisor)]
         public async Task<IActionResult> Delete()
         {
             // Fetch user
@@ -123,7 +122,7 @@ namespace Api.Controllers
             if (!user.HasProfilePicture())
                 return BadRequest("No picture set");
 
-            bool success = await userManager.UpdateProfilePicture(user.Id, "");
+            bool success = await userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
             string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.Picture);
             if (System.IO.File.Exists(fileName))
