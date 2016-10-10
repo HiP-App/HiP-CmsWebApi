@@ -87,8 +87,8 @@ namespace Api.Controllers
         }
 
 
-        // PUT api/users/picture/
-        [HttpPut("picture/")]
+        // Post api/users/picture/
+        [HttpPost("picture/")]
         public async Task<IActionResult> PutPicture(IFormFile file)
         {
             if (file == null) return BadRequest("File is null");
