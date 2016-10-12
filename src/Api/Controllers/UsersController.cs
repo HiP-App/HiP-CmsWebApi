@@ -22,7 +22,7 @@ namespace Api.Controllers
             userManager = new UserManager(dbContext);
         }
 
-
+        #region GET user
         // GET api/users
         [HttpGet]
         public async Task<IActionResult> Get(string query, string role, int page = 1)
@@ -59,12 +59,26 @@ namespace Api.Controllers
             else
                 return NotFound();
         }
+        #endregion
 
+        #region PUT user
+        // PUT api/users/current
 
-        // PUT api/values/5
+        [HttpPut("current")]
+        public async Task<IActionResult> Put(UserFormModel model)
+        {
+            return await PutUser(User.Identity.GetUserId(), model);
+        }
+
+        // PUT api/users/5
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Administrator)]
         public async Task<IActionResult> Put(int id, UserFormModel model)
+        {
+            return await PutUser(id, model);
+        }
+
+        private async Task<IActionResult> PutUser(int id, UserFormModel model)
         {
             if (ModelState.IsValid)
             {
@@ -77,7 +91,6 @@ namespace Api.Controllers
                     if (await userManager.UpdateUserAsync(id, model))
                     {
                         _logger.LogInformation(5, "User with ID: " + id + " updated.");
-
                         return Ok();
                     }
                 }
@@ -86,16 +99,35 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
+        #endregion
 
-        // Post api/users/picture/
-        [HttpPost("picture/")]
+        #region POST picture
+
+
+        // Post api/users/{id}/picture/
+        [HttpPost("{id}/picture/")]
+        [Authorize(Roles = Role.Administrator)]
+        public async Task<IActionResult> PutPicture(int id, IFormFile file)
+        {
+            return await PutUserPicture(id, file);
+        }
+
+        // Post api/users/current/picture/
+        [HttpPost("current/picture/")]
         public async Task<IActionResult> PutPicture(IFormFile file)
+        {
+            return await PutUserPicture(User.Identity.GetUserId(), file);
+        }
+
+        private async Task<IActionResult> PutUserPicture(int userId, IFormFile file)
         {
             if (file == null) return BadRequest("File is null");
             if (file.Length == 0) return BadRequest("File is empty");
 
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
-            var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
+            var user = await userManager.GetUserByIdAsync(userId);
+
+            if (user == null) return BadRequest("Unkonown User");
 
             //if (file.Length > 1024 * 1024) // Limit to 1 MB
             //    return BadRequest("Picture is to large");
@@ -116,12 +148,27 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
+        #endregion
 
-        [HttpDelete("picture/")]
+        #region DELETE picture
+
+        [HttpDelete("{id}/picture/")]
+        [Authorize(Roles = Role.Administrator)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return await DeletePicture(id);
+        }
+
+        [HttpDelete("current/picture/")]
         public async Task<IActionResult> Delete()
         {
+            return await DeletePicture(User.Identity.GetUserId());
+        }
+
+        private async Task<IActionResult> DeletePicture(int userId)
+        {
             // Fetch user
-            var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
+            var user = await userManager.GetUserByIdAsync(userId);
             if (user == null)
                 return BadRequest("Could not find User");
             // Has A Picture?
@@ -145,6 +192,8 @@ namespace Api.Controllers
             if (System.IO.File.Exists(path))
                 System.IO.File.Delete(path);
         }
+
+        #endregion
     }
 
 }
