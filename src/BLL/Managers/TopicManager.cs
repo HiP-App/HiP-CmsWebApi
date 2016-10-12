@@ -37,46 +37,46 @@ namespace BLL.Managers
             return topics;
         }
 
-        public virtual async Task<int> GetTopicsCountAsync()
+        public virtual int GetTopicsCount()
         {
-            return await dbContext.Topics.CountAsync();
+            return dbContext.Topics.Count();
         }
 
-        public virtual async Task<Topic> GetTopicByIdAsync(int topicId)
+        public virtual Topic GetTopicById(int topicId)
         {
-            return await dbContext.Topics.Include(t => t.CreatedBy).FirstOrDefaultAsync(t => t.Id == topicId);
+            return dbContext.Topics.Include(t => t.CreatedBy).FirstOrDefault(t => t.Id == topicId);
         }
 
-        public virtual async Task<IEnumerable<User>> GetAssociatedUsersByRole(int topicId, string role)
+        public virtual IEnumerable<User> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return await (from u in dbContext.Users
+            return (from u in dbContext.Users
                           join tu in dbContext.TopicUsers
                           on u.Id equals tu.UserId
                           where tu.TopicId == topicId && tu.Role.CompareTo(role) == 0
-                          select u).ToListAsync();
+                          select u).ToList();
         }
 
-        public virtual async Task<IEnumerable<Topic>> GetSubTopics(int topicId)
+        public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-            return await (from t in dbContext.Topics
+            return (from t in dbContext.Topics
                           join at in dbContext.AssociatedTopics
                           on t.Id equals at.ChildTopicId
                           where at.ParentTopicId == topicId
-                          select t).ToListAsync();
+                          select t).ToList();
         }
 
-        public virtual async Task<IEnumerable<Topic>> GetParentTopics(int topicId)
+        public virtual IEnumerable<Topic> GetParentTopics(int topicId)
         {
-            return await (from t in dbContext.Topics
+            return (from t in dbContext.Topics
                           join at in dbContext.AssociatedTopics
                           on t.Id equals at.ParentTopicId
                           where at.ChildTopicId == topicId
-                          select t).ToListAsync();
+                          select t).ToList();
         }
 
-        public virtual async Task<AddEntityResult> AddTopicAsync(int userId, TopicFormModel model)
+        public virtual AddEntityResult AddTopic(int userId, TopicFormModel model)
         {     
-            using (var transaction = await dbContext.Database.BeginTransactionAsync())
+            using (var transaction = dbContext.Database.BeginTransaction())
             {
                 try
                 {       
@@ -93,7 +93,7 @@ namespace BLL.Managers
 
                     dbContext.Topics.Add(topic);
 
-                    await dbContext.SaveChangesAsync();
+                    dbContext.SaveChanges();
 
                     transaction.Commit();
                     return new AddEntityResult() { Success = true, Value = topic.Id };
@@ -106,11 +106,11 @@ namespace BLL.Managers
             }
         }
 
-        public virtual async Task<bool> UpdateTopicAsync(int userId, int topicId, TopicFormModel model)
+        public virtual bool UpdateTopic(int userId, int topicId, TopicFormModel model)
         {            
-            if (await dbContext.Topics.AsNoTracking().FirstOrDefaultAsync(t => t.Id == topicId) != null)
+            if (dbContext.Topics.AsNoTracking().FirstOrDefault(t => t.Id == topicId) != null)
             {
-                using (var transaction = await dbContext.Database.BeginTransactionAsync())
+                using (var transaction = dbContext.Database.BeginTransaction())
                 {
                     try
                     {       
@@ -131,13 +131,14 @@ namespace BLL.Managers
                         // Add Topic associations
                         topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
-                        await dbContext.SaveChangesAsync();
+                        dbContext.SaveChanges();
 
                         transaction.Commit();
                         return true;
                     }
-                    catch(Exception e)
+                    catch(Exception ex)
                     {
+                        Console.WriteLine(ex.ToString());
                         transaction.Rollback();
                     }
                 }
@@ -146,15 +147,14 @@ namespace BLL.Managers
             return false;
         }
 
-        public virtual async Task<bool> DeleteTopicAsync(int topicId)
+        public virtual bool DeleteTopic(int topicId)
         {
-            var topic = await dbContext.Topics.FirstOrDefaultAsync(u => u.Id == topicId);
+            var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
             
             if (topic != null)
             {
                 dbContext.Remove(topic);
-                await dbContext.SaveChangesAsync();
-
+                dbContext.SaveChanges();
                 return true;
             }
 

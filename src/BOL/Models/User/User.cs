@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOL.Models
 {
@@ -18,6 +19,24 @@ namespace BOL.Models
 
         [Required]
         public string Role { get; set; }
+
+        public string ProfilePicture { get; set; }
+
+        [NotMapped]
+        public string Picture {
+            get {
+
+                if (!HasProfilePicture())
+                    return "default.jpg";
+                return ProfilePicture;
+
+            }
+        }
+
+        public bool HasProfilePicture()
+        {
+            return !(ProfilePicture == null || ProfilePicture.Length == 0);
+        }
 
         public string FullName {
             get

@@ -24,10 +24,10 @@ namespace Api.Controllers
 
         // GET api/topics
         [HttpGet]
-        public async Task<IActionResult> Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
+        public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
             var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
-            int count = await topics.CountAsync();
+            int count =  topics.Count();
                         
             return Ok(new PagedResult<Topic>(topics.Skip((page - 1) * Constants.PageSize)
                                             .Take(Constants.PageSize)
@@ -38,9 +38,9 @@ namespace Api.Controllers
 
         // GET api/topics/:id
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public IActionResult Get(int id)
         {
-            var topics = await topicManager.GetTopicByIdAsync(id);
+            var topics = topicManager.GetTopicById(id);
             
             if (topics != null)
                 return Ok(topics);
@@ -51,48 +51,48 @@ namespace Api.Controllers
 
         // GET api/topics/:id/students
         [HttpGet("{id}/Students")]
-        public async Task<IActionResult> GetTopicStudents(int id)
+        public IActionResult GetTopicStudents(int id)
         {
-            return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Student));
+            return Ok(topicManager.GetAssociatedUsersByRole(id, Role.Student));
         }
 
 
         // GET api/topics/:id/supervisors
         [HttpGet("{id}/Supervisors")]
-        public async Task<IActionResult> GetTopicSupervisors(int id)
+        public IActionResult GetTopicSupervisors(int id)
         {
-            return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Supervisor));
+            return Ok(topicManager.GetAssociatedUsersByRole(id, Role.Supervisor));
         }
 
 
         // GET api/topics/:id/reviewers
         [HttpGet("{id}/Reviewers")]
-        public async Task<IActionResult> GetTopicReviewers(int id)
+        public IActionResult GetTopicReviewers(int id)
         {
-            return Ok(await topicManager.GetAssociatedUsersByRole(id, Role.Reviewer));
+            return Ok(topicManager.GetAssociatedUsersByRole(id, Role.Reviewer));
         }
 
 
         // GET api/topics/:id/subtopics
         [HttpGet("{id}/SubTopics")]
-        public async Task<IActionResult> GetSubTopics(int id)
+        public IActionResult GetSubTopics(int id)
         {
-            return Ok(await topicManager.GetSubTopics(id));
+            return Ok(topicManager.GetSubTopics(id));
         }
 
 
         // GET api/topics/:id/parenttopics
         [HttpGet("{id}/ParentTopics")]
-        public async Task<IActionResult> GetParentTopics(int id)
+        public IActionResult GetParentTopics(int id)
         {
-            return Ok(await topicManager.GetParentTopics(id));
+            return Ok( topicManager.GetParentTopics(id));
         }
 
 
         // POST api/topics
         [HttpPost]
         [Authorize(Roles = Role.Supervisor)]
-        public async Task<IActionResult> Post(TopicFormModel model)
+        public IActionResult Post(TopicFormModel model)
         {
             if (ModelState.IsValid)
             {
@@ -102,7 +102,7 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    var result = await topicManager.AddTopicAsync(User.Identity.GetUserId(), model);
+                    var result = topicManager.AddTopic(User.Identity.GetUserId(), model);
 
                     if(result.Success)
                         return new ObjectResult(result);
@@ -116,12 +116,11 @@ namespace Api.Controllers
         // PUT api/topics/:id
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Supervisor)]
-        public async Task<IActionResult> Put(int id, TopicFormModel model)
+        public IActionResult Put(int id, TopicFormModel model)
         {
             if (ModelState.IsValid)
             {
-                bool success = await topicManager.UpdateTopicAsync(User.Identity.GetUserId(), id, model);
-                
+                bool success = topicManager.UpdateTopic(User.Identity.GetUserId(), id, model);
                 if(success)
                     return Ok();
             }
@@ -133,9 +132,9 @@ namespace Api.Controllers
         // DELETE api/topics/:id
         [HttpDelete("{id}")]
         [Authorize(Roles = Role.Supervisor)]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            bool success = await topicManager.DeleteTopicAsync(id);
+            bool success = topicManager.DeleteTopic(id);
             
             if (success)
                 return Ok();

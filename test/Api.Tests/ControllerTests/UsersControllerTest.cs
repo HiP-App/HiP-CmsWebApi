@@ -28,7 +28,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<UsersController>()
-                .Calling(c => c.Put(4, new UserFormModel
+                .Calling(c => c.Put(4, new AdminUserFormModel
                 {
                     FirstName = "First Name",
                     LastName = "Last Name",

@@ -3,9 +3,11 @@ using Api.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using System.IO;
@@ -16,6 +18,8 @@ namespace Api
 {
     public class Startup
     {
+        public static readonly string ProfilePictureFolder = @"wwwroot/profilepictures";
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -83,23 +87,7 @@ namespace Api
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                
-                Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        return Task.FromResult(0);
-                    },
-
-                    OnTokenValidated = context =>
-                    {
-                        Auth.OnTokenValidationSuccess(
-                            context.Ticket.Principal.Identity as ClaimsIdentity, 
-                            app.ApplicationServices.GetRequiredService<ApplicationDbContext>());
-
-                        return Task.FromResult(0);
-                    }
-                }
+                Events = new CmsApuJwtBearerEvents(app.ApplicationServices.GetRequiredService<ApplicationDbContext>())
             });
 
             app.UseMvc();
@@ -112,6 +100,14 @@ namespace Api
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
+
+            // Use Static files eg for profile pictures
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), ProfilePictureFolder)),
+                RequestPath = new PathString("/ProfilePictures")
+            });
         }
 
         public static void Main(string[] args)
