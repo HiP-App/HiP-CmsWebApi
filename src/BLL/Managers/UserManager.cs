@@ -58,7 +58,8 @@ namespace BLL.Managers
                         user.LastName = model.LastName;
 
                         await dbContext.SaveChangesAsync();
-                        await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{model.Role}' where \"Id\" = {userId}");
+                        if (model is AdminUserFormModel)
+                            await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{((AdminUserFormModel) model).Role}' where \"Id\" = {userId}");
                         transaction.Commit();
 
                         return true;

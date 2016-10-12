@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.AspNetCore.Razor.CodeGenerators;
 using Microsoft.AspNetCore.StaticFiles;
 
+
 namespace Api.Controllers
 {
     public class UsersController : ApiController
@@ -73,7 +74,7 @@ namespace Api.Controllers
         // PUT api/users/5
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Administrator)]
-        public async Task<IActionResult> Put(int id, UserFormModel model)
+        public async Task<IActionResult> Put(int id, AdminUserFormModel model)
         {
             return await PutUser(id, model);
         }
@@ -82,7 +83,7 @@ namespace Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (!Role.IsRoleValid(model.Role))
+                if (model is AdminUserFormModel && !Role.IsRoleValid(((AdminUserFormModel) model).Role))
                 {
                     ModelState.AddModelError("Role", "Invalid Role");
                 }
