@@ -19,12 +19,12 @@ namespace Api.Data
             dbContext.Database.Migrate();
 
             // Seed Db with Admin Account if its not already created.
-            var admin = userManager.GetUserByEmailAsync(appConfig.AdminEmail).Result;
+            var admin = userManager.GetUserByEmail(appConfig.AdminEmail);
 
             if (admin == null)
             {
                 admin = new Administrator() { Email = appConfig.AdminEmail };
-                userManager.AddUserAsync(admin);
+                userManager.AddUser(admin);
             }
         }
     }

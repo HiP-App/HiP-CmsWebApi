@@ -52,7 +52,8 @@ namespace Api.Utility
                 connectionString.Append($"Username={Username};");
                 connectionString.Append($"Password={Password};");
                 connectionString.Append($"Database={Name};");
-                
+                connectionString.Append($"Pooling=true;");
+
                 return connectionString.ToString();
             }
         }

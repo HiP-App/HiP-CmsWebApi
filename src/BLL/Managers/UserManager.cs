@@ -12,7 +12,7 @@ namespace BLL.Managers
     {
         public UserManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual async Task<IEnumerable<User>> GetAllUsersAsync(string query, string role, int page, int pageSize)
+        public virtual IEnumerable<User> GetAllUsers(string query, string role, int page, int pageSize)
         {
             var users = from u in dbContext.Users
                         select u;
@@ -26,40 +26,40 @@ namespace BLL.Managers
             if (!string.IsNullOrEmpty(role))
                 users = users.Where(u => u.Role == role);
 
-            return await users.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
-        public virtual async Task<int> GetUsersCountAsync()
+        public virtual int GetUsersCount()
         {
-            return await dbContext.Users.CountAsync();
+            return dbContext.Users.Count();
         }
 
-        public virtual async Task<User> GetUserByIdAsync(int userId)
+        public virtual User GetUserById(int userId)
         {
-            return await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return dbContext.Users.FirstOrDefault(u => u.Id == userId);
         }
 
-        public virtual async Task<User> GetUserByEmailAsync(string email)
+        public virtual User GetUserByEmail(string email)
         {
-            return await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return dbContext.Users.FirstOrDefault(u => u.Email == email);
         }
 
-        public virtual async Task<bool> UpdateUserAsync(int userId, UserFormModel model)
+        public virtual bool UpdateUser(int userId, UserFormModel model)
         {
-            var user = await GetUserByIdAsync(userId);
+            var user = GetUserById(userId);
 
             if (user != null)
             {
-                using (var transaction = await dbContext.Database.BeginTransactionAsync())
+                using (var transaction = dbContext.Database.BeginTransaction())
                 {
                     try
                     {
                         user.FirstName = model.FirstName;
                         user.LastName = model.LastName;
 
-                        await dbContext.SaveChangesAsync();
+                        dbContext.SaveChanges();
                         if (model is AdminUserFormModel)
-                            await dbContext.Database.ExecuteSqlCommandAsync($"UPDATE \"Users\" SET \"Role\" = '{((AdminUserFormModel) model).Role}' where \"Id\" = {userId}");
+                            dbContext.Database.ExecuteSqlCommand($"UPDATE \"Users\" SET \"Role\" = '{((AdminUserFormModel) model).Role}' where \"Id\" = {userId}");
                         transaction.Commit();
 
                         return true;
@@ -74,7 +74,7 @@ namespace BLL.Managers
             return false;
         }
 
-        public virtual bool AddUserAsync(User user)
+        public virtual bool AddUser(User user)
         {
             try
             {
@@ -89,14 +89,14 @@ namespace BLL.Managers
             }
         }
         // Use dataobject
-        public virtual async Task<bool> UpdateProfilePicture(User user, String fileName)
+        public virtual bool UpdateProfilePicture(User user, String fileName)
         {
             if (user != null)
             {
                 try
                 {
                     user.ProfilePicture = fileName;
-                    await dbContext.SaveChangesAsync();
+                    dbContext.SaveChanges();
                     return true;
                 }
                 catch (Exception e)

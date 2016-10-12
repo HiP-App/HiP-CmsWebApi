@@ -87,23 +87,7 @@ namespace Api
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                
-                Events = new JwtBearerEvents
-                {
-                    OnAuthenticationFailed = context =>
-                    {
-                        return Task.FromResult(0);
-                    },
-
-                    OnTokenValidated = context =>
-                    {
-                        Auth.OnTokenValidationSuccess(
-                            context.Ticket.Principal.Identity as ClaimsIdentity, 
-                            app.ApplicationServices.GetRequiredService<ApplicationDbContext>());
-
-                        return Task.FromResult(0);
-                    }
-                }
+                Events = new CmsApuJwtBearerEvents(app.ApplicationServices.GetRequiredService<ApplicationDbContext>())
             });
 
             app.UseMvc();

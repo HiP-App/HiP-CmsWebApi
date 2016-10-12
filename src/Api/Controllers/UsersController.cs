@@ -26,10 +26,10 @@ namespace Api.Controllers
         #region GET user
         // GET api/users
         [HttpGet]
-        public async Task<IActionResult> Get(string query, string role, int page = 1)
+        public IActionResult Get(string query, string role, int page = 1)
         {
-            var users = await userManager.GetAllUsersAsync(query, role, page, Constants.PageSize);
-            int count = await userManager.GetUsersCountAsync();
+            var users = userManager.GetAllUsers(query, role, page, Constants.PageSize);
+            int count = userManager.GetUsersCount();
 
             return Ok(new PagedResult<User>(users, page, count));
         }
@@ -37,9 +37,9 @@ namespace Api.Controllers
 
         // GET api/users/:id
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public IActionResult Get(int id)
         {
-            var user = await userManager.GetUserByIdAsync(id);
+            var user = userManager.GetUserById(id);
 
             if (user != null)
                 return Ok(user);
@@ -51,9 +51,9 @@ namespace Api.Controllers
         // GET api/users/current
         [HttpGet]
         [Route("Current")]
-        public async Task<IActionResult> CurrentUser()
+        public IActionResult CurrentUser()
         {
-            var user = await userManager.GetUserByIdAsync(User.Identity.GetUserId());
+            var user = userManager.GetUserById(User.Identity.GetUserId());
 
             if (user != null)
                 return Ok(user);
@@ -66,20 +66,20 @@ namespace Api.Controllers
         // PUT api/users/current
 
         [HttpPut("Current")]
-        public async Task<IActionResult> Put(UserFormModel model)
+        public IActionResult Put(UserFormModel model)
         {
-            return await PutUser(User.Identity.GetUserId(), model);
+            return PutUser(User.Identity.GetUserId(), model);
         }
 
         // PUT api/users/5
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Administrator)]
-        public async Task<IActionResult> Put(int id, AdminUserFormModel model)
+        public IActionResult Put(int id, AdminUserFormModel model)
         {
-            return await PutUser(id, model);
+            return PutUser(id, model);
         }
 
-        private async Task<IActionResult> PutUser(int id, UserFormModel model)
+        private IActionResult PutUser(int id, UserFormModel model)
         {
             if (ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    if (await userManager.UpdateUserAsync(id, model))
+                    if  (userManager.UpdateUser(id, model))
                     {
                         _logger.LogInformation(5, "User with ID: " + id + " updated.");
                         return Ok();
@@ -107,22 +107,22 @@ namespace Api.Controllers
         // Post api/users/{id}/picture/
         [HttpPost("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
-        public async Task<IActionResult> PutPicture(int id, IFormFile file)
+        public IActionResult PutPicture(int id, IFormFile file)
         {
-            return await PutUserPicture(id, file);
+            return PutUserPicture(id, file);
         }
 
         // Post api/users/current/picture/
         [HttpPost("Current/picture/")]
-        public async Task<IActionResult> PutPicture(IFormFile file)
+        public IActionResult PutPicture(IFormFile file)
         {
-            return await PutUserPicture(User.Identity.GetUserId(), file);
+            return PutUserPicture(User.Identity.GetUserId(), file);
         }
 
-        private async Task<IActionResult> PutUserPicture(int userId, IFormFile file)
+        private IActionResult PutUserPicture(int userId, IFormFile file)
         {
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
-            var user = await userManager.GetUserByIdAsync(userId);
+            var user =  userManager.GetUserById(userId);
 
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
@@ -140,8 +140,7 @@ namespace Api.Controllers
                     file.CopyTo(outputStream);
                 }
 
-                await userManager.UpdateProfilePicture(user, fileName);
-
+                userManager.UpdateProfilePicture(user, fileName);
                 return Ok();
             }
             else
@@ -161,28 +160,28 @@ namespace Api.Controllers
 
         [HttpDelete("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            return await DeletePicture(id);
+            return DeletePicture(id);
         }
 
         [HttpDelete("Current/picture/")]
-        public async Task<IActionResult> Delete()
+        public IActionResult Delete()
         {
-            return await DeletePicture(User.Identity.GetUserId());
+            return DeletePicture(User.Identity.GetUserId());
         }
 
-        private async Task<IActionResult> DeletePicture(int userId)
+        private IActionResult DeletePicture(int userId)
         {
             // Fetch user
-            var user = await userManager.GetUserByIdAsync(userId);
+            var user =  userManager.GetUserById(userId);
             if (user == null)
                 return BadRequest("Could not find User");
             // Has A Picture?
             if (!user.HasProfilePicture())
                 return BadRequest("No picture set");
 
-            bool success = await userManager.UpdateProfilePicture(user, "");
+            bool success = userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
             string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.Picture);
 
