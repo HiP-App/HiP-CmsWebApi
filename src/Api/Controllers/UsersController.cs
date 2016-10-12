@@ -121,17 +121,16 @@ namespace Api.Controllers
 
         private async Task<IActionResult> PutUserPicture(int userId, IFormFile file)
         {
-            if (file == null) return BadRequest("File is null");
-            if (file.Length == 0) return BadRequest("File is empty");
-
             var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
             var user = await userManager.GetUserByIdAsync(userId);
 
-            if (user == null) return BadRequest("Unkonown User");
-
-            //if (file.Length > 1024 * 1024) // Limit to 1 MB
-            //    return BadRequest("Picture is to large");
-            if (file.Length > 0)
+            if (file == null)
+                ModelState.AddModelError("file", "File is null");
+            else if (user == null)
+                 ModelState.AddModelError("userId", "Unkonown User");
+            else if (file.Length > 1024 * 1024 * 5) // Limit to 5 MB
+                ModelState.AddModelError("file", "Picture is to large");
+            else if (IsImage(file))
             {
                 string fileName = user.Id + Path.GetExtension(file.FileName);
                 DeleteFile(Path.Combine(uploads, fileName));
@@ -145,7 +144,15 @@ namespace Api.Controllers
 
                 return Ok();
             }
+            else
+                ModelState.AddModelError("file", "Invalid Image");
+
             return BadRequest(ModelState);
+        }
+
+        private bool IsImage(IFormFile file)
+        {
+            return ((file != null) && System.Text.RegularExpressions.Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
         }
 
         #endregion
