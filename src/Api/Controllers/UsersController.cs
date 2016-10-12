@@ -64,7 +64,7 @@ namespace Api.Controllers
         #region PUT user
         // PUT api/users/current
 
-        [HttpPut("current")]
+        [HttpPut("Current")]
         public async Task<IActionResult> Put(UserFormModel model)
         {
             return await PutUser(User.Identity.GetUserId(), model);
@@ -103,7 +103,6 @@ namespace Api.Controllers
 
         #region POST picture
 
-
         // Post api/users/{id}/picture/
         [HttpPost("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
@@ -113,7 +112,7 @@ namespace Api.Controllers
         }
 
         // Post api/users/current/picture/
-        [HttpPost("current/picture/")]
+        [HttpPost("Current/picture/")]
         public async Task<IActionResult> PutPicture(IFormFile file)
         {
             return await PutUserPicture(User.Identity.GetUserId(), file);
@@ -159,7 +158,7 @@ namespace Api.Controllers
             return await DeletePicture(id);
         }
 
-        [HttpDelete("current/picture/")]
+        [HttpDelete("Current/picture/")]
         public async Task<IActionResult> Delete()
         {
             return await DeletePicture(User.Identity.GetUserId());
