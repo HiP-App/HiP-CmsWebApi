@@ -1,5 +1,6 @@
 ﻿using Api.Data;
 using BLL.Managers;
+using BOL.Data;
 using BOL.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
@@ -14,7 +15,7 @@ namespace Api.Utility
     {
         protected readonly UserManager userManager;
 
-        public CmsApuJwtBearerEvents(ApplicationDbContext dbContext)
+        public CmsApuJwtBearerEvents(CmsDbContext dbContext)
         {
             this.userManager = new UserManager(dbContext);
         }
@@ -36,7 +37,7 @@ namespace Api.Utility
 
             if (user == null)
             {
-                user = new Student { Email = identity.Name };
+                user = new User { Email = identity.Name, Role = Role.Student };
                 userManager.AddUser(user);
             }
 

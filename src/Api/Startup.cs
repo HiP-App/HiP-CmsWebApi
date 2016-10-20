@@ -1,6 +1,6 @@
 ﻿using Api.Data;
 using Api.Utility;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BOL.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,8 +11,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using System.IO;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Api
 {
@@ -46,8 +44,7 @@ namespace Api
             services.AddCors();
 
             // Add database service for Postgres
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
+            services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
 
             // Add framework services.
             services.AddMvc();
@@ -87,7 +84,7 @@ namespace Api
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents(app.ApplicationServices.GetRequiredService<ApplicationDbContext>())
+                Events = new CmsApuJwtBearerEvents(app.ApplicationServices.GetRequiredService<CmsDbContext>())
             });
 
             app.UseMvc();

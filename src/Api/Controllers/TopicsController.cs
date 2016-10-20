@@ -9,6 +9,7 @@ using Api.Utility;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using BOL.Data;
 
 namespace Api.Controllers
 {
@@ -16,7 +17,7 @@ namespace Api.Controllers
     {
         private TopicManager topicManager;
 
-        public TopicsController(ApplicationDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
             topicManager = new TopicManager(dbContext);
         }
@@ -28,11 +29,9 @@ namespace Api.Controllers
         {
             var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
             int count =  topics.Count();
-                        
-            return Ok(new PagedResult<Topic>(topics.Skip((page - 1) * Constants.PageSize)
-                                            .Take(Constants.PageSize)
-                                            .ToListAsync()
-                                            .Result, page, count));
+            var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
+
+            return Ok(new PagedResult<Topic>(entities, page, count));
         }
 
 
@@ -41,7 +40,6 @@ namespace Api.Controllers
         public IActionResult Get(int id)
         {
             var topics = topicManager.GetTopicById(id);
-            
             if (topics != null)
                 return Ok(topics);
             else
@@ -99,11 +97,10 @@ namespace Api.Controllers
                 if (!Status.IsStatusValid(model.Status))
                 {
                     ModelState.AddModelError("Status", "Invalid Topic Status");
-                }
+                } // TODO createUser is Supervisor!
                 else
                 {
                     var result = topicManager.AddTopic(User.Identity.GetUserId(), model);
-
                     if(result.Success)
                         return new ObjectResult(result);
                 }
@@ -112,19 +109,17 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
-
         // PUT api/topics/:id
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Supervisor)]
         public IActionResult Put(int id, TopicFormModel model)
         {
             if (ModelState.IsValid)
-            {
+            { // TODO createUser is Supervisor!
                 bool success = topicManager.UpdateTopic(User.Identity.GetUserId(), id, model);
                 if(success)
                     return Ok();
             }
-
             return BadRequest(ModelState);
         }
 

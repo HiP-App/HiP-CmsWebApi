@@ -1,4 +1,5 @@
 ﻿using Api.Data;
+using BOL.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,10 +11,10 @@ namespace Api.Controllers
     [Authorize]
     public class ApiController : Controller
     {
-        protected readonly ApplicationDbContext dbContext;
+        protected readonly CmsDbContext dbContext;
         protected readonly ILogger _logger;
 
-        public ApiController(ApplicationDbContext dbContext, ILoggerFactory loggerFactory)
+        public ApiController(CmsDbContext dbContext, ILoggerFactory loggerFactory)
         {
             this.dbContext = dbContext;
             _logger = loggerFactory.CreateLogger<ApiController>();

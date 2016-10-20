@@ -2,15 +2,11 @@
 using BOL.Models;
 using Microsoft.AspNetCore.Mvc;
 using BLL.Managers;
-using Api.Data;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Microsoft.AspNetCore.Razor.CodeGenerators;
-using Microsoft.AspNetCore.StaticFiles;
-
+using BOL.Data;
 
 namespace Api.Controllers
 {
@@ -18,7 +14,7 @@ namespace Api.Controllers
     {
         private UserManager userManager;
 
-        public UsersController(ApplicationDbContext dbContext, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
         }

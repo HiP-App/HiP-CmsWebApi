@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
+using BOL.Data;
 
 namespace Api.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CmsDbContext))]
     [Migration("20160815093419_AddingForeignKeyForAssociatedTopics")]
     partial class AddingForeignKeyForAssociatedTopics
     {
