@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
+using BOL.Data;
 
 namespace Api.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CmsDbContext))]
     [Migration("20160727094011_AddingTopicModel")]
     partial class AddingTopicModel
     {

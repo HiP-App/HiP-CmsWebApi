@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BOL.Models
 {
-    public abstract class User
+    public class User
     {
         [Key]
         public int Id { get; set; }
@@ -23,8 +23,10 @@ namespace BOL.Models
         public string ProfilePicture { get; set; }
 
         [NotMapped]
-        public string Picture {
-            get {
+        public string Picture
+        {
+            get
+            {
 
                 if (!HasProfilePicture())
                     return "default.jpg";
@@ -38,7 +40,8 @@ namespace BOL.Models
             return !(ProfilePicture == null || ProfilePicture.Length == 0);
         }
 
-        public string FullName {
+        public string FullName
+        {
             get
             {
                 return FirstName + ' ' + LastName;
@@ -46,5 +49,21 @@ namespace BOL.Models
         }
 
         public virtual ICollection<TopicUser> TopicUsers { get; set; }
+
+
+        public bool IsAdministrator()
+        {
+            return Role == BOL.Models.Role.Administrator;
+        }
+
+        public bool IsSupervisor()
+        {
+            return Role == BOL.Models.Role.Supervisor;
+        }
+
+        public bool IsStudent()
+        {
+            return Role == BOL.Models.Role.Student;
+        }
     }
 }

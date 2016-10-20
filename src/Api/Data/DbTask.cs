@@ -1,5 +1,6 @@
 ﻿using Api.Utility;
 using BLL.Managers;
+using BOL.Data;
 using BOL.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace Api.Data
     {
         public static void RunMigrationsAndSeedDb(this IApplicationBuilder app)
         {
-            var dbContext = app.ApplicationServices.GetRequiredService<ApplicationDbContext>();
+            var dbContext = app.ApplicationServices.GetRequiredService<CmsDbContext>();
             var appConfig = app.ApplicationServices.GetRequiredService<AppConfig>();
             var userManager = new UserManager(dbContext);
 
@@ -23,7 +24,7 @@ namespace Api.Data
 
             if (admin == null)
             {
-                admin = new Administrator() { Email = appConfig.AdminEmail };
+                admin = new User() { Email = appConfig.AdminEmail, Role = Role.Administrator };
                 userManager.AddUser(admin);
             }
         }

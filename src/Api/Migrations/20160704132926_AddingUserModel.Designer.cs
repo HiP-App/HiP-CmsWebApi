@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
+using BOL.Data;
 
 namespace Api.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CmsDbContext))]
     [Migration("20160704132926_AddingUserModel")]
     partial class AddingUserModel
     {

@@ -47,30 +47,17 @@ namespace BLL.Managers
         public virtual bool UpdateUser(int userId, UserFormModel model)
         {
             var user = GetUserById(userId);
-
             if (user != null)
             {
-                using (var transaction = dbContext.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        user.FirstName = model.FirstName;
-                        user.LastName = model.LastName;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
 
-                        dbContext.SaveChanges();
-                        if (model is AdminUserFormModel)
-                            dbContext.Database.ExecuteSqlCommand($"UPDATE \"Users\" SET \"Role\" = '{((AdminUserFormModel) model).Role}' where \"Id\" = {userId}");
-                        transaction.Commit();
+                if (model is AdminUserFormModel)
+                    user.Role = ((AdminUserFormModel)model).Role;
 
-                        return true;
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                    }
-                }
+                dbContext.SaveChanges();
+                return true;
             }
-
             return false;
         }
 
