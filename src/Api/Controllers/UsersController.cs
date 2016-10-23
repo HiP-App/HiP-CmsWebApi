@@ -13,10 +13,28 @@ namespace Api.Controllers
     public class UsersController : ApiController
     {
         private UserManager userManager;
+        private EmailSender emailSender;
 
-        public UsersController(CmsDbContext dbContext, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, EmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
+            this.emailSender = emailSender;
+        }
+
+        // POST api/users/invite
+        [HttpPost("Invite")]
+        [Authorize(Roles = Role.Supervisor + "," + Role.Administrator)]
+        public IActionResult Post(InviteFormModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                foreach (string email in model.emails)
+                {
+                    emailSender.InviteAsync(email);
+                }
+                return Ok();
+            }
+            return BadRequest(ModelState);
         }
 
         #region GET user

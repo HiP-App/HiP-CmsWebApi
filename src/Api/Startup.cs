@@ -61,6 +61,8 @@ namespace Api
                     Description = "A REST api to serve History in Paderborn CMS System"
                 });
             });
+
+            services.AddTransient<EmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
