@@ -1,7 +1,7 @@
-﻿using BOL.Models;
+﻿using Api.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BOL.Data
+namespace Api.Data
 {
     public class CmsDbContext : DbContext
     {
@@ -25,6 +25,7 @@ namespace BOL.Data
             new TopicMap(modelBuilder.Entity<Topic>());
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
             new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
+            new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
         }
     }
 }

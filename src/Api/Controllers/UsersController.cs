@@ -1,12 +1,12 @@
 ﻿using Api.Utility;
-using BOL.Models;
+using Api.Models;
 using Microsoft.AspNetCore.Mvc;
-using BLL.Managers;
+using Api.Managers;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using BOL.Data;
+using Api.Data;
 
 namespace Api.Controllers
 {
@@ -117,7 +117,7 @@ namespace Api.Controllers
 
         private IActionResult PutUserPicture(int userId, IFormFile file)
         {
-            var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
+            var uploads = Path.Combine(Directory.GetCurrentDirectory(), Constants.ProfilePictureFolder);
             var user =  userManager.GetUserById(userId);
 
             if (file == null)
@@ -179,7 +179,7 @@ namespace Api.Controllers
 
             bool success = userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
-            string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.Picture);
+            string fileName = Path.Combine(Directory.GetCurrentDirectory(), Constants.ProfilePictureFolder, user.Picture);
 
             DeleteFile(fileName);
 

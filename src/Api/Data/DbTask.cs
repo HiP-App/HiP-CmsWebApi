@@ -1,7 +1,6 @@
 ﻿using Api.Utility;
-using BLL.Managers;
-using BOL.Data;
-using BOL.Models;
+using Api.Managers;
+using Api.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
