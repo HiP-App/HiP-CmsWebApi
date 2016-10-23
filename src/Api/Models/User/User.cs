@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BOL.Models
+namespace Api.Models
 {
     public class User
     {
@@ -53,17 +53,17 @@ namespace BOL.Models
 
         public bool IsAdministrator()
         {
-            return Role == BOL.Models.Role.Administrator;
+            return Role == Api.Models.Role.Administrator;
         }
 
         public bool IsSupervisor()
         {
-            return Role == BOL.Models.Role.Supervisor;
+            return Role == Api.Models.Role.Supervisor;
         }
 
         public bool IsStudent()
         {
-            return Role == BOL.Models.Role.Student;
+            return Role == Api.Models.Role.Student;
         }
     }
 }

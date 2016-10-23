@@ -1,6 +1,5 @@
 ﻿using Api.Data;
 using Api.Utility;
-using BOL.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +15,7 @@ namespace Api
 {
     public class Startup
     {
-        public static readonly string ProfilePictureFolder = @"wwwroot/profilepictures";
+
 
         public Startup(IHostingEnvironment env)
         {
@@ -91,8 +90,6 @@ namespace Api
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUi();
 
             // Run all pending Migrations and Seed DB with initial data
@@ -102,8 +99,14 @@ namespace Api
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions()
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), ProfilePictureFolder)),
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), Constants.ProfilePictureFolder)),
                 RequestPath = new PathString("/ProfilePictures")
+            });
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), Constants.AttatchmentFolder)),
+                RequestPath = new PathString("/Attatchments")
             });
         }
 

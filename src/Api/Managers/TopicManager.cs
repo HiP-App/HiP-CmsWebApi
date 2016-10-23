@@ -1,12 +1,11 @@
-using BOL.Data;
-using BOL.Models;
+using Api.Data;
+using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
 using System;
 
-namespace BLL.Managers
+namespace Api.Managers
 {
     public class TopicManager : BaseManager
     {

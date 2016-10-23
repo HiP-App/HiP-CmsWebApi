@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BOL.Models
+namespace Api.Models
 {
     public class Topic
     {
@@ -39,6 +39,9 @@ namespace BOL.Models
         [ForeignKey("ChildTopicId")]
         public virtual List<AssociatedTopic> AssociatedTopics { get; set; }
 
+        [ForeignKey("AttatchmentUser")]
+        public virtual List<TopicAttatchment> Attatchments { get; set; }
+
         public Topic(TopicFormModel model)
         {
             Title = model.Title;
@@ -51,7 +54,7 @@ namespace BOL.Models
             AssociatedTopics = new List<AssociatedTopic>();
         }
 
-        public Topic() {}
+        public Topic() { }
     }
 
     public class TopicMap
@@ -61,7 +64,7 @@ namespace BOL.Models
             entityBuilder.Property(t => t.CreatedAt)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
-                
+
             entityBuilder.Property(t => t.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");

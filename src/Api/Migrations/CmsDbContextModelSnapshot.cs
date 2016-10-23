@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
-using BOL.Data;
 
 namespace Api.Migrations
 {
@@ -14,9 +13,9 @@ namespace Api.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
+                .HasAnnotation("ProductVersion", "1.0.1");
 
-            modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
+            modelBuilder.Entity("Api.Models.AssociatedTopic", b =>
                 {
                     b.Property<int>("ParentTopicId");
 
@@ -29,7 +28,7 @@ namespace Api.Migrations
                     b.ToTable("AssociatedTopics");
                 });
 
-            modelBuilder.Entity("BOL.Models.Topic", b =>
+            modelBuilder.Entity("Api.Models.Topic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -63,7 +62,35 @@ namespace Api.Migrations
                     b.ToTable("Topics");
                 });
 
-            modelBuilder.Entity("BOL.Models.TopicUser", b =>
+            modelBuilder.Entity("Api.Models.TopicAttatchment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AttatchmentUser")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Path");
+
+                    b.Property<int>("TopicId");
+
+                    b.Property<string>("Type");
+
+                    b.Property<DateTime>("UpdatedAt");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttatchmentUser");
+
+                    b.ToTable("TopicAttatchment");
+                });
+
+            modelBuilder.Entity("Api.Models.TopicUser", b =>
                 {
                     b.Property<int>("TopicId");
 
@@ -80,7 +107,7 @@ namespace Api.Migrations
                     b.ToTable("TopicUsers");
                 });
 
-            modelBuilder.Entity("BOL.Models.User", b =>
+            modelBuilder.Entity("Api.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -103,34 +130,40 @@ namespace Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasDiscriminator<string>("Role").HasValue("User");
                 });
 
-            modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
+            modelBuilder.Entity("Api.Models.AssociatedTopic", b =>
                 {
-                    b.HasOne("BOL.Models.Topic")
+                    b.HasOne("Api.Models.Topic")
                         .WithMany("AssociatedTopics")
                         .HasForeignKey("ChildTopicId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("BOL.Models.Topic", b =>
+            modelBuilder.Entity("Api.Models.Topic", b =>
                 {
-                    b.HasOne("BOL.Models.Supervisor", "CreatedBy")
+                    b.HasOne("Api.Models.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("BOL.Models.TopicUser", b =>
+            modelBuilder.Entity("Api.Models.TopicAttatchment", b =>
                 {
-                    b.HasOne("BOL.Models.Topic")
+                    b.HasOne("Api.Models.Topic")
+                        .WithMany("Attatchments")
+                        .HasForeignKey("AttatchmentUser")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.TopicUser", b =>
+                {
+                    b.HasOne("Api.Models.Topic")
                         .WithMany("TopicUsers")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("BOL.Models.User")
+                    b.HasOne("Api.Models.User")
                         .WithMany("TopicUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

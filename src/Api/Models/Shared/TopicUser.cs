@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BOL.Models
+namespace Api.Models
 {
     public class TopicUser
     {
