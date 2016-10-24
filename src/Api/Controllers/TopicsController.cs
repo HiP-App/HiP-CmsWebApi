@@ -8,6 +8,7 @@ using Api.Managers;
 using Api.Models;
 using Api.Data;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Api.Controllers
 {
@@ -138,7 +139,6 @@ namespace Api.Controllers
 
         #endregion
 
-
         #region Attachments
 
 
@@ -146,10 +146,24 @@ namespace Api.Controllers
         [HttpGet("{topicId}/Attachments")]
         public IActionResult GetAttachments(int topicId)
         {
-            var attachments = attachmentsManager.GetAttachmentBy(topicId);
+            var attachments = attachmentsManager.GetAttachment(topicId);
             if (attachments != null)
                 return Ok(attachments);
             return NotFound();
+        }
+
+
+        [HttpGet("{topicId}/Attachments/{attachmentId}")]
+        public IActionResult GetPicture(int topicId, int attachmentId)
+        {
+            var attachment = attachmentsManager.GetAttachmentById(topicId, attachmentId);
+            if (attachment != null)
+            {
+                string fileName = Path.Combine(Constants.AttatchmentFolder, attachment.Path);
+                string contentType = MimeKit.MimeTypes.GetMimeType(fileName);
+                return base.File(fileName, contentType);
+            }
+            return BadRequest();
         }
 
         // POST api/topics/:id/attachments

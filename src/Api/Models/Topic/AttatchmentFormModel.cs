@@ -13,5 +13,7 @@ namespace Api.Models
 
         [Required]
         public String Description { get; set; }
+
+        public String Legal { get; set; }
     }
 }

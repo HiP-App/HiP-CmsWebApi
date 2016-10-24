@@ -14,7 +14,7 @@ namespace Api.Data
 
         public DbSet<TopicUser> TopicUsers { get; set; }
 
-        public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
+       public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,9 +22,9 @@ namespace Api.Data
                 .HasIndex(b => b.Email)
                 .IsUnique();
 
+            new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
             new TopicMap(modelBuilder.Entity<Topic>());
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
-            new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
         }
     }

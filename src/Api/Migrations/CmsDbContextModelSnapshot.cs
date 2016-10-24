@@ -67,25 +67,30 @@ namespace Api.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("AttatchmentUser")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
                     b.Property<string>("Description");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Legal");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<string>("Path");
+
+                    b.Property<int?>("TopicAttatchments");
 
                     b.Property<int>("TopicId");
 
                     b.Property<string>("Type");
 
-                    b.Property<DateTime>("UpdatedAt");
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("UserId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AttatchmentUser");
+                    b.HasIndex("TopicAttatchments");
 
                     b.ToTable("TopicAttatchment");
                 });
@@ -152,8 +157,7 @@ namespace Api.Migrations
                 {
                     b.HasOne("Api.Models.Topic")
                         .WithMany("Attatchments")
-                        .HasForeignKey("AttatchmentUser")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TopicAttatchments");
                 });
 
             modelBuilder.Entity("Api.Models.TopicUser", b =>

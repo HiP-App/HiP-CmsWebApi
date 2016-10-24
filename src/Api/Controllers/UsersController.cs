@@ -116,7 +116,22 @@ namespace Api.Controllers
 
         #endregion
 
+        #region GET picture
+
+        [HttpGet("{userId}/picture/")]
+
+        public IActionResult GetPicture(int userId)
+        {
+            var user = userManager.GetUserById(userId);
+            string fileName = Path.Combine(Constants.ProfilePictureFolder, user.Picture);
+            string contentType = MimeKit.MimeTypes.GetMimeType(fileName);
+            return base.File(fileName, contentType); 
+        }
+
+        #endregion
+
         #region POST picture
+
 
         // Post api/users/{id}/picture/
         [HttpPost("{id}/picture/")]
@@ -135,7 +150,7 @@ namespace Api.Controllers
 
         private IActionResult PutUserPicture(int userId, IFormFile file)
         {
-            var uploads = Path.Combine(Directory.GetCurrentDirectory(), Constants.ProfilePictureFolder);
+            var uploads = Path.Combine(Constants.ProfilePictureFolder);
             var user =  userManager.GetUserById(userId);
 
             if (file == null)
@@ -197,7 +212,7 @@ namespace Api.Controllers
 
             bool success = userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
-            string fileName = Path.Combine(Directory.GetCurrentDirectory(), Constants.ProfilePictureFolder, user.Picture);
+            string fileName = Path.Combine(Constants.ProfilePictureFolder, user.Picture);
 
             DeleteFile(fileName);
 

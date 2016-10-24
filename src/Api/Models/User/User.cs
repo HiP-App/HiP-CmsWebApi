@@ -27,11 +27,9 @@ namespace Api.Models
         {
             get
             {
-
                 if (!HasProfilePicture())
                     return "default.jpg";
                 return ProfilePicture;
-
             }
         }
 

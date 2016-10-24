@@ -96,20 +96,6 @@ namespace Api
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
-
-            // Use Static files eg for profile pictures
-            app.UseStaticFiles();
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), Constants.ProfilePictureFolder)),
-                RequestPath = new PathString("/ProfilePictures")
-            });
-
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), Constants.AttatchmentFolder)),
-                RequestPath = new PathString("/Attatchments")
-            });
         }
 
         public static void Main(string[] args)

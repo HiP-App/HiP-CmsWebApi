@@ -23,7 +23,8 @@
     "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.0.2",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
     "Swashbuckle.SwaggerUi": "6.0.0-beta902",
-    "MailKit":  "1.8.1"
+    "MailKit": "1.8.1",
+    "MimeTypes":  "1.0.5"
   },
 
   "tools": {

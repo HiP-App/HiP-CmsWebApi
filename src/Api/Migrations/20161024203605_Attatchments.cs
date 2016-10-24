@@ -76,23 +76,25 @@ namespace Api.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    AttatchmentUser = table.Column<int>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     Description = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
+                    Legal = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     Path = table.Column<string>(nullable: true),
+                    TopicAttatchments = table.Column<int>(nullable: true),
                     TopicId = table.Column<int>(nullable: false),
                     Type = table.Column<string>(nullable: true),
-                    UpdatedAt = table.Column<DateTime>(nullable: false)
+                    UpdatedAt = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TopicAttatchment", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TopicAttatchment_Topics_AttatchmentUser",
-                        column: x => x.AttatchmentUser,
+                        name: "FK_TopicAttatchment_Topics_TopicAttatchments",
+                        column: x => x.TopicAttatchments,
                         principalTable: "Topics",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,9 +133,9 @@ namespace Api.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicAttatchment_AttatchmentUser",
+                name: "IX_TopicAttatchment_TopicAttatchments",
                 table: "TopicAttatchment",
-                column: "AttatchmentUser");
+                column: "TopicAttatchments");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TopicUsers_TopicId",

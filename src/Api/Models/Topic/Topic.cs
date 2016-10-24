@@ -39,7 +39,7 @@ namespace Api.Models
         [ForeignKey("ChildTopicId")]
         public virtual List<AssociatedTopic> AssociatedTopics { get; set; }
 
-        [ForeignKey("AttatchmentUser")]
+        [ForeignKey("TopicAttatchments")]
         public virtual List<TopicAttatchment> Attatchments { get; set; }
 
         public Topic(TopicFormModel model)

@@ -23,11 +23,11 @@ namespace Api.Managers
             return null;
         }
 
-        public virtual List<TopicAttatchment> GetAttachmentBy(int topicId)
+        public virtual List<int> GetAttachment(int topicId)
         {
             var topic = dbContext.Topics.First(t => t.Id == topicId);
             if (topic != null)
-                return topic.Attatchments;
+                return topic.Attatchments.Select(o => o.Id).ToList();
             return null;
         }
 
@@ -38,7 +38,7 @@ namespace Api.Managers
             if (topic == null)
                 return new AddEntityResult() { Success = false, ErrorMessage = "Unknown Topic" };
 
-            string topicFolder = Path.Combine(Directory.GetCurrentDirectory(), Constants.AttatchmentFolder, topicId.ToString());
+            string topicFolder = Path.Combine(Constants.AttatchmentFolder, topicId.ToString());
             if (!System.IO.Directory.Exists(topicFolder))
                 System.IO.Directory.CreateDirectory(topicFolder);
 
@@ -53,7 +53,7 @@ namespace Api.Managers
                 try
                 {
                     var attatchment = new TopicAttatchment(model);
-                    attatchment.AttatchmentUser = userId;
+                    attatchment.UserId = userId;
                     attatchment.TopicId = topic.Id;
                     attatchment.Path = fileName;
                     attatchment.Type = "TODO";
@@ -78,7 +78,7 @@ namespace Api.Managers
             var attachment = GetAttachmentById(topicId, attachmentId);
             if (attachment != null)
             {
-                string fileName = Path.Combine(Directory.GetCurrentDirectory(), Constants.AttatchmentFolder, attachment.Path);
+                string fileName = Path.Combine(Constants.AttatchmentFolder, attachment.Path);
                 DeleteFile(fileName);
                 dbContext.Remove(attachment);
                 dbContext.SaveChanges();
