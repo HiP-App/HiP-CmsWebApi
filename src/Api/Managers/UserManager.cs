@@ -3,6 +3,7 @@ using System.Linq;
 using Api.Data;
 using Api.Models;
 using System;
+using Api.Models.Entity;
 
 namespace Api.Managers
 {

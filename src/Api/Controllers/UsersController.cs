@@ -1,5 +1,5 @@
 ﻿using Api.Utility;
-using Api.Models;
+using Api.Models.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Api.Managers;
 using Microsoft.Extensions.Logging;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Api.Data;
+using Api.Models;
 
 namespace Api.Controllers
 {

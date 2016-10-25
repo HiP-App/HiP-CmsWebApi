@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Api.Models
+namespace Api.Models.Entity
 {
     public class TopicAttatchment
     {
@@ -32,16 +33,17 @@ namespace Api.Models
 
         public String Type { get; set; }
 
-        [Required]
-        [ForeignKey("TopicAttatchments")]
         public int TopicId { get; set; }
 
-        [Required]
+        public virtual Topic Topic { get; set; }
+
         public int UserId { get; set; }
 
-        public DateTime UpdatedAt { get; set; }
+        public virtual User User { get; set; }
 
-        public TopicAttatchment() {}
+        public DateTime UpdatedAt { get; set; }
+        public TopicAttatchment() { }
+
     }
 
     public class TopicAttatchmentMap
@@ -51,6 +53,16 @@ namespace Api.Models
             entityBuilder.Property(t => t.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entityBuilder.HasOne(a => a.User)
+                .WithMany(u => u.Attatchments)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entityBuilder.HasOne(a => a.Topic)
+                .WithMany(t => t.Attatchments)
+                .HasForeignKey(a => a.TopicId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

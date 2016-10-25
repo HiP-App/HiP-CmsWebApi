@@ -1,6 +1,7 @@
 ﻿using Api.Data;
 using Api.Managers;
 using Api.Models;
+using Api.Models.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using System.Threading.Tasks;

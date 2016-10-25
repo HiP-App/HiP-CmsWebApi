@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Api.Models
+namespace Api.Models.Entity
 {
     public class User
     {
@@ -21,6 +21,12 @@ namespace Api.Models
         public string Role { get; set; }
 
         public string ProfilePicture { get; set; }
+
+        public virtual List<TopicAttatchment> Attatchments { get; set; }
+
+        public virtual List<TopicUser> TopicUsers { get; set; }
+
+        #region Utility Methods
 
         [NotMapped]
         public string Picture
@@ -46,9 +52,6 @@ namespace Api.Models
             }
         }
 
-        public virtual ICollection<TopicUser> TopicUsers { get; set; }
-
-
         public bool IsAdministrator()
         {
             return Role == Api.Models.Role.Administrator;
@@ -63,5 +66,7 @@ namespace Api.Models
         {
             return Role == Api.Models.Role.Student;
         }
+
+        #endregion
     }
 }

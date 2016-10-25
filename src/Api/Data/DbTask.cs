@@ -4,6 +4,7 @@ using Api.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Api.Models.Entity;
 
 namespace Api.Data
 {

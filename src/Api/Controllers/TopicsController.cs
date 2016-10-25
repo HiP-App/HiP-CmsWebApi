@@ -9,6 +9,7 @@ using Api.Models;
 using Api.Data;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Api.Models.Entity;
 
 namespace Api.Controllers
 {

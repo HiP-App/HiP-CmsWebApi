@@ -1,5 +1,6 @@
 ﻿using Api.Data;
 using Api.Models;
+using Api.Models.Entity;
 using Api.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

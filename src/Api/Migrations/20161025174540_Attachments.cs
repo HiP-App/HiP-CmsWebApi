@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
-    public partial class Attatchments : Migration
+    public partial class Attachments : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -80,7 +80,6 @@ namespace Api.Migrations
                     Legal = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     Path = table.Column<string>(nullable: true),
-                    TopicAttatchments = table.Column<int>(nullable: true),
                     TopicId = table.Column<int>(nullable: false),
                     Type = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -90,11 +89,17 @@ namespace Api.Migrations
                 {
                     table.PrimaryKey("PK_TopicAttatchment", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TopicAttatchment_Topics_TopicAttatchments",
-                        column: x => x.TopicAttatchments,
+                        name: "FK_TopicAttatchment_Topics_TopicId",
+                        column: x => x.TopicId,
                         principalTable: "Topics",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TopicAttatchment_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,7 +124,7 @@ namespace Api.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(
@@ -133,9 +138,14 @@ namespace Api.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicAttatchment_TopicAttatchments",
+                name: "IX_TopicAttatchment_TopicId",
                 table: "TopicAttatchment",
-                column: "TopicAttatchments");
+                column: "TopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopicAttatchment_UserId",
+                table: "TopicAttatchment",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TopicUsers_TopicId",

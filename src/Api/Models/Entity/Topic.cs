@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Api.Models
+namespace Api.Models.Entity
 {
     public class Topic
     {
@@ -36,10 +36,8 @@ namespace Api.Models
 
         public virtual List<TopicUser> TopicUsers { get; set; }
 
-        [ForeignKey("ChildTopicId")]
         public virtual List<AssociatedTopic> AssociatedTopics { get; set; }
 
-        [ForeignKey("TopicAttatchments")]
         public virtual List<TopicAttatchment> Attatchments { get; set; }
 
         public Topic(TopicFormModel model)
@@ -68,6 +66,7 @@ namespace Api.Models
             entityBuilder.Property(t => t.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
         }
     }
 }
