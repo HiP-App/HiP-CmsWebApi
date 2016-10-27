@@ -193,6 +193,22 @@ namespace Api.Controllers
             return BadRequest();
         }
 
+<<<<<<< HEAD
         #endregion
+=======
+        // PUT api/topic/:id/status
+        [HttpPut("{id}/Status")]
+        public IActionResult ChangeStatus(int id, string status)
+        {
+            bool success = topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status);
+
+            if (success)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
+        }
+>>>>>>> refs/remotes/origin/iss-hipcms-101-change-state
     }
 }
