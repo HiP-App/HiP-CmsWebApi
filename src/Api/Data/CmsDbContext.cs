@@ -16,6 +16,8 @@ namespace BOL.Data
 
         public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -25,6 +27,7 @@ namespace BOL.Data
             new TopicMap(modelBuilder.Entity<Topic>());
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
             new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
+            new NotificationMap(modelBuilder.Entity<Notification>());
         }
     }
 }

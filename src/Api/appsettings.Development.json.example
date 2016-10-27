@@ -1,4 +1,4 @@
-﻿{
+?{
   // Database Configurations
   "DB_HOST": "localhost",
   "DB_USERNAME": "postgres",

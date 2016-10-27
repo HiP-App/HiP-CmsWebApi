@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Api.Data;
 using BOL.Data;
 
 namespace Api.Migrations
@@ -14,7 +13,7 @@ namespace Api.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
+                .HasAnnotation("ProductVersion", "1.0.1");
 
             modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
                 {
@@ -27,6 +26,35 @@ namespace Api.Migrations
                     b.HasIndex("ChildTopicId");
 
                     b.ToTable("AssociatedTopics");
+                });
+
+            modelBuilder.Entity("BOL.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ChangedByUserId");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("false");
+
+                    b.Property<string>("Message")
+                        .IsRequired();
+
+                    b.Property<DateTime>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("TopicId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("BOL.Models.Topic", b =>
@@ -103,8 +131,6 @@ namespace Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasDiscriminator<string>("Role").HasValue("User");
                 });
 
             modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
@@ -115,9 +141,17 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("BOL.Models.Notification", b =>
+                {
+                    b.HasOne("BOL.Models.User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("BOL.Models.Topic", b =>
                 {
-                    b.HasOne("BOL.Models.Supervisor", "CreatedBy")
+                    b.HasOne("BOL.Models.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);

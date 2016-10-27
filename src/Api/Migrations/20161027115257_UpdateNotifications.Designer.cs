@@ -1,20 +1,20 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Api.Data;
 using BOL.Data;
 
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20160727094011_AddingTopicModel")]
-    partial class AddingTopicModel
+    [Migration("20161027115257_UpdateNotifications")]
+    partial class UpdateNotifications
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
+                .HasAnnotation("ProductVersion", "1.0.1");
 
             modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
                 {
@@ -24,7 +24,38 @@ namespace Api.Migrations
 
                     b.HasKey("ParentTopicId", "ChildTopicId");
 
+                    b.HasIndex("ChildTopicId");
+
                     b.ToTable("AssociatedTopics");
+                });
+
+            modelBuilder.Entity("BOL.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ChangedByUserId");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("false");
+
+                    b.Property<string>("Message")
+                        .IsRequired();
+
+                    b.Property<DateTime>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("TopicId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("BOL.Models.Topic", b =>
@@ -56,6 +87,8 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedById");
+
                     b.ToTable("Topics");
                 });
 
@@ -68,6 +101,10 @@ namespace Api.Migrations
                     b.Property<string>("Role");
 
                     b.HasKey("TopicId", "UserId", "Role");
+
+                    b.HasIndex("TopicId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("TopicUsers");
                 });
@@ -84,6 +121,8 @@ namespace Api.Migrations
 
                     b.Property<string>("LastName");
 
+                    b.Property<string>("ProfilePicture");
+
                     b.Property<string>("Role")
                         .IsRequired();
 
@@ -93,39 +132,43 @@ namespace Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasDiscriminator<string>("Role").HasValue("User");
                 });
 
-            modelBuilder.Entity("BOL.Models.Administrator", b =>
+            modelBuilder.Entity("BOL.Models.AssociatedTopic", b =>
                 {
-                    b.HasBaseType("BOL.Models.User");
-
-
-                    b.ToTable("Administrator");
-
-                    b.HasDiscriminator().HasValue("Administrator");
+                    b.HasOne("BOL.Models.Topic")
+                        .WithMany("AssociatedTopics")
+                        .HasForeignKey("ChildTopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("BOL.Models.Student", b =>
+            modelBuilder.Entity("BOL.Models.Notification", b =>
                 {
-                    b.HasBaseType("BOL.Models.User");
-
-                    b.Property<string>("MatriculationNumber");
-
-                    b.ToTable("Student");
-
-                    b.HasDiscriminator().HasValue("Student");
+                    b.HasOne("BOL.Models.User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("BOL.Models.Supervisor", b =>
+            modelBuilder.Entity("BOL.Models.Topic", b =>
                 {
-                    b.HasBaseType("BOL.Models.User");
+                    b.HasOne("BOL.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
+            modelBuilder.Entity("BOL.Models.TopicUser", b =>
+                {
+                    b.HasOne("BOL.Models.Topic")
+                        .WithMany("TopicUsers")
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.ToTable("Supervisor");
-
-                    b.HasDiscriminator().HasValue("Supervisor");
+                    b.HasOne("BOL.Models.User")
+                        .WithMany("TopicUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
         }
     }
