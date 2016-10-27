@@ -1,26 +1,30 @@
 using System;
-using System.Threading.Tasks;
-using Api.Data;
 using Microsoft.Extensions.Logging;
-using BLL.Managers;
 using Microsoft.AspNetCore.Mvc;
-using BOL.Models;
 using Api.Utility;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using BOL.Data;
+using Api.Managers;
+using Api.Models;
+using Api.Data;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Api.Models.Entity;
 
 namespace Api.Controllers
 {
     public class TopicsController : ApiController
     {
         private TopicManager topicManager;
+        private AttachmentsManager attachmentsManager;
 
         public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
             topicManager = new TopicManager(dbContext);
+            attachmentsManager = new AttachmentsManager(dbContext);
         }
+
+        #region topics
 
 
         // GET api/topics
@@ -28,7 +32,7 @@ namespace Api.Controllers
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
             var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
-            int count =  topics.Count();
+            int count = topics.Count();
             var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
 
             return Ok(new PagedResult<Topic>(entities, page, count));
@@ -42,8 +46,8 @@ namespace Api.Controllers
             var topics = topicManager.GetTopicById(id);
             if (topics != null)
                 return Ok(topics);
-            else
-                return NotFound();
+
+            return NotFound();
         }
 
 
@@ -83,7 +87,7 @@ namespace Api.Controllers
         [HttpGet("{id}/ParentTopics")]
         public IActionResult GetParentTopics(int id)
         {
-            return Ok( topicManager.GetParentTopics(id));
+            return Ok(topicManager.GetParentTopics(id));
         }
 
 
@@ -101,7 +105,7 @@ namespace Api.Controllers
                 else
                 {
                     var result = topicManager.AddTopic(User.Identity.GetUserId(), model);
-                    if(result.Success)
+                    if (result.Success)
                         return new ObjectResult(result);
                 }
             }
@@ -116,10 +120,21 @@ namespace Api.Controllers
         {
             if (ModelState.IsValid)
             { // TODO createUser is Supervisor!
-                bool success = topicManager.UpdateTopic(User.Identity.GetUserId(), id, model);
-                if(success)
+                if (topicManager.UpdateTopic(User.Identity.GetUserId(), id, model))
                     return Ok();
             }
+            return BadRequest(ModelState);
+        }
+
+        // PUT api/topic/:id/status
+        [HttpPut("{id}/Status")]
+        public IActionResult ChangeStatus(int id, string status)
+        {
+            if (!Status.IsStatusValid(status))
+                ModelState.AddModelError("status", "Invalid Status");
+            else if (topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status))
+                return Ok();
+
             return BadRequest(ModelState);
         }
 
@@ -129,26 +144,68 @@ namespace Api.Controllers
         [Authorize(Roles = Role.Supervisor)]
         public IActionResult Delete(int id)
         {
-            bool success = topicManager.DeleteTopic(id);
-            
-            if (success)
+            if (topicManager.DeleteTopic(id))
                 return Ok();
-            else
-                return BadRequest();
-        }
-
-        // PUT api/topic/:id/status
-        [HttpPut("{id}/Status")]
-        public IActionResult ChangeStatus(int id, string status)
-        {
-            bool success = topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status);
-
-            if (success)
-            {
-                return Ok();
-            }
 
             return BadRequest();
         }
+
+        #endregion
+
+        #region Attachments
+
+
+        // GET api/topics/:id/attachments
+        [HttpGet("{topicId}/Attachments")]
+        public IActionResult GetAttachments(int topicId)
+        {
+            var attachments = attachmentsManager.GetAttachments(topicId);
+            if (attachments != null)
+                return Ok(attachments);
+            return NotFound();
+        }
+
+
+        [HttpGet("{topicId}/Attachments/{attachmentId}")]
+        public IActionResult GetPicture(int topicId, int attachmentId)
+        {
+            var attachment = attachmentsManager.GetAttachmentById(topicId, attachmentId);
+            if (attachment != null)
+            {
+                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.AttatchmentPath, attachment.Path));
+                return base.File(Path.Combine(Constants.AttatchmentFolder, attachment.Path), contentType);
+            }
+            return BadRequest();
+        }
+
+        // POST api/topics/:id/attachments
+        [HttpPost("{topicId}/Attachments")]
+        public IActionResult PostAttachment(int topicId, AttatchmentFormModel model, IFormFile file)
+        {
+            if (file == null)
+                ModelState.AddModelError("file", "File is null");
+
+
+            if (ModelState.IsValid)
+            {
+                var result = attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model, file);
+                if (result.Success)
+                    return new ObjectResult(result);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        // DELETE api/topics/:id/attachments
+        [HttpDelete("{topicId}/Attachments/{attachmentId}")]
+        public IActionResult DeleteAttachment(int topicId, int attachmentId)
+        {
+            if (attachmentsManager.DeleteAttachment(topicId, attachmentId))
+                return Ok();
+            return BadRequest();
+        }
+
+        #endregion
+
     }
 }

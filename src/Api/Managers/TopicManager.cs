@@ -1,16 +1,16 @@
-using BOL.Data;
-using BOL.Models;
+using Api.Data;
+using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
 using System;
+using Api.Models.Entity;
 
-namespace BLL.Managers
+namespace Api.Managers
 {
     public class TopicManager : BaseManager
     {
-        public TopicManager(CmsDbContext dbContext) : base(dbContext) {}
+        public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
         public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
         {
@@ -21,7 +21,7 @@ namespace BLL.Managers
                 topics = topics.Where(t =>
                     t.Title.Contains(query) ||
                     t.Description.Contains(query));
-            
+
             if (!string.IsNullOrEmpty(status))
                 topics = topics.Where(t => t.Status.CompareTo(status) == 0);
 
@@ -49,37 +49,25 @@ namespace BLL.Managers
 
         public virtual IEnumerable<User> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return (from u in dbContext.Users
-                          join tu in dbContext.TopicUsers
-                          on u.Id equals tu.UserId
-                          where tu.TopicId == topicId && tu.Role.CompareTo(role) == 0
-                          select u).ToList();
+            return dbContext.TopicUsers.Where(tu => (tu.Role == role && tu.TopicId == topicId)).Select(u => u.User).ToList();
         }
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-            return (from t in dbContext.Topics
-                          join at in dbContext.AssociatedTopics
-                          on t.Id equals at.ChildTopicId
-                          where at.ParentTopicId == topicId
-                          select t).ToList();
+            return dbContext.AssociatedTopics.Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual IEnumerable<Topic> GetParentTopics(int topicId)
         {
-            return (from t in dbContext.Topics
-                          join at in dbContext.AssociatedTopics
-                          on t.Id equals at.ParentTopicId
-                          where at.ChildTopicId == topicId
-                          select t).ToList();
+            return dbContext.AssociatedTopics.Where(at => at.ChildTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual AddEntityResult AddTopic(int userId, TopicFormModel model)
-        {     
+        {
             using (var transaction = dbContext.Database.BeginTransaction())
             {
                 try
-                {       
+                {
                     var topic = new Topic(model);
                     topic.CreatedById = userId;
 
@@ -98,7 +86,7 @@ namespace BLL.Managers
                     transaction.Commit();
                     return new AddEntityResult() { Success = true, Value = topic.Id };
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     transaction.Rollback();
                     return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
@@ -107,13 +95,13 @@ namespace BLL.Managers
         }
 
         public virtual bool UpdateTopic(int userId, int topicId, TopicFormModel model)
-        {            
+        {
             if (dbContext.Topics.AsNoTracking().FirstOrDefault(t => t.Id == topicId) != null)
             {
                 using (var transaction = dbContext.Database.BeginTransaction())
                 {
                     try
-                    {       
+                    {
                         var topic = new Topic(model);
                         topic.Id = topicId;
                         topic.CreatedById = userId;
@@ -136,7 +124,7 @@ namespace BLL.Managers
                         transaction.Commit();
                         return true;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
                         transaction.Rollback();
@@ -149,15 +137,11 @@ namespace BLL.Managers
 
         public bool ChangeTopicStatus(int userId, int topicId, string status)
         {
-            if(!Status.IsStatusValid(status))
-            {
-                return false;
-            }
             var topic = dbContext.Topics.FirstOrDefault(t => t.Id == topicId);
             if (topic != null)
             {
                 bool isUserOfTopic = dbContext.TopicUsers.FirstOrDefault(
-                    tu => ( tu.TopicId == topicId && tu.UserId == userId)
+                    tu => (tu.TopicId == topicId && tu.UserId == userId)
                     ) != null;
                 if (isUserOfTopic)
                 {
@@ -165,20 +149,15 @@ namespace BLL.Managers
                     dbContext.Update(topic);
                     dbContext.SaveChanges();
                     return true;
-                } else
-                {
-                    return false;
                 }
-            } else
-            {
-                return false;
             }
+            return false;
         }
 
         public virtual bool DeleteTopic(int topicId)
         {
             var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
-            
+
             if (topic != null)
             {
                 dbContext.Remove(topic);
@@ -189,7 +168,7 @@ namespace BLL.Managers
             return false;
         }
 
-    
+
         // Private Region
 
         private List<TopicUser> AssociateUsersToTopicByRole(string role, int[] userIds)

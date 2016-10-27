@@ -2,9 +2,9 @@
 
 namespace Api.Models
 {
-    public class AdminUserFormModel : UserFormModel
+    public class InviteFormModel
     {
         [Required]
-        public string Role { get; set; }
+        public string[] emails { get; set; }
     }
 }

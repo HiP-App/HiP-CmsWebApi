@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BOL.Models
+namespace Api.Models.Entity
 {
     public class User
     {
@@ -22,16 +22,20 @@ namespace BOL.Models
 
         public string ProfilePicture { get; set; }
 
+        public List<TopicAttatchment> Attatchments { get; set; }
+
+        public List<TopicUser> TopicUsers { get; set; }
+
+        #region Utility Methods
+
         [NotMapped]
         public string Picture
         {
             get
             {
-
                 if (!HasProfilePicture())
                     return "default.jpg";
                 return ProfilePicture;
-
             }
         }
 
@@ -48,22 +52,21 @@ namespace BOL.Models
             }
         }
 
-        public virtual ICollection<TopicUser> TopicUsers { get; set; }
-
-
         public bool IsAdministrator()
         {
-            return Role == BOL.Models.Role.Administrator;
+            return Role == Api.Models.Role.Administrator;
         }
 
         public bool IsSupervisor()
         {
-            return Role == BOL.Models.Role.Supervisor;
+            return Role == Api.Models.Role.Supervisor;
         }
 
         public bool IsStudent()
         {
-            return Role == BOL.Models.Role.Student;
+            return Role == Api.Models.Role.Student;
         }
+
+        #endregion
     }
 }

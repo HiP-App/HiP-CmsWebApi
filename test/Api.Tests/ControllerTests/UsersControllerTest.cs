@@ -1,5 +1,5 @@
 ﻿using Api.Controllers;
-using BOL.Models;
+using Api.Models;
 using MyTested.AspNetCore.Mvc;
 using Xunit;
 
