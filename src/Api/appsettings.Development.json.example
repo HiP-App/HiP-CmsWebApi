@@ -12,6 +12,14 @@
   // Admin Details
   "ADMIN_EMAIL": "admin@hipapp.de",
 
-  "ALLOW_HTTP": true
+  "ALLOW_HTTP": true,
+
+  // SMTP Configurations
+  "SMTP_FROM": "hipapp@mail.upb.de",
+  "SMTP_SERVER": "mail.uni-paderborn.de",
+  "SMTP_PORT": 465,
+  "SMTP_WITH_SSL": true,
+  "SMTP_USER": "hipapp",
+  "SMTP_PASSWORD": "secret password"
 }
 
