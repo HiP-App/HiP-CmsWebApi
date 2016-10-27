@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
-    public partial class UpdateNotificationsToUsers : Migration
+    public partial class UpdateNotifications : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,21 +29,22 @@ namespace Api.Migrations
                 name: "Notifications",
                 columns: table => new
                 {
-                    key = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    ChangedById = table.Column<int>(nullable: false),
-                    Id = table.Column<int>(nullable: false),
-                    IsReadOrNot = table.Column<bool>(nullable: false),
+                    ChangedByUserId = table.Column<int>(nullable: false),
+                    IsRead = table.Column<bool>(nullable: false, defaultValueSql: "false")
+                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     Message = table.Column<string>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    TopicId = table.Column<int>(nullable: false)
+                    TopicId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notifications", x => x.key);
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_Users_Id",
-                        column: x => x.Id,
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -125,9 +126,9 @@ namespace Api.Migrations
                 column: "ChildTopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_Id",
+                name: "IX_Notifications_UserId",
                 table: "Notifications",
-                column: "Id");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Topics_CreatedById",

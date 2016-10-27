@@ -1,6 +1,8 @@
 ﻿using Api.Utility;
 using BLL.Managers;
 using BOL.Data;
+using BOL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -33,6 +35,17 @@ namespace Api.Controllers
                 return Ok(notifications);
             else
                 return NotFound();
+        }
+
+        // POST api/Notifications/:id/markread
+        [HttpPost("{id}")]        
+        public IActionResult Post(int userId)
+        {
+            var result = notificationManager.UpdateIsReadOrNot(userId);
+            if (result == true)
+                return Ok(true);
+            else
+                return BadRequest();
         }
     }
 }

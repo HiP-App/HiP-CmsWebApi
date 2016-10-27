@@ -8,8 +8,8 @@ using BOL.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20161025192621_UpdateNotificationsToUsers")]
-    partial class UpdateNotificationsToUsers
+    [Migration("20161027115257_UpdateNotifications")]
+    partial class UpdateNotifications
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,14 +31,14 @@ namespace Api.Migrations
 
             modelBuilder.Entity("BOL.Models.Notification", b =>
                 {
-                    b.Property<int>("key")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ChangedById");
+                    b.Property<int>("ChangedByUserId");
 
-                    b.Property<int>("Id");
-
-                    b.Property<bool>("IsReadOrNot");
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("false");
 
                     b.Property<string>("Message")
                         .IsRequired();
@@ -49,9 +49,11 @@ namespace Api.Migrations
 
                     b.Property<int>("TopicId");
 
-                    b.HasKey("key");
+                    b.Property<int>("UserId");
 
-                    b.HasIndex("Id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
                 });
@@ -143,8 +145,8 @@ namespace Api.Migrations
             modelBuilder.Entity("BOL.Models.Notification", b =>
                 {
                     b.HasOne("BOL.Models.User")
-                        .WithMany("NotificationsForUser")
-                        .HasForeignKey("Id")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

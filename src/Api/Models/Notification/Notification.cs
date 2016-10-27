@@ -12,15 +12,15 @@ namespace BOL.Models
     public class Notification
     {
         [Key]
-        public int key { get; set; }
+        public int Id { get; set; }
 
         [Required]
-        public int Id { get; set; }
+        public int UserId { get; set; }
 
         public DateTime TimeStamp { get; set; }
 
         [Required]
-        public int ChangedById { get; set; }
+        public int ChangedByUserId { get; set; }
 
         [Required]
         public string Message { get; set; }
@@ -29,16 +29,7 @@ namespace BOL.Models
         public int TopicId { get; set; }
 
         [Required]
-        public bool IsReadOrNot { get; set; }
-
-        public Notification(NotificationFormModel model)
-        {
-            Id = model.UserId;
-            ChangedById = model.ChangedById;
-            Message = model.Message;
-            TopicId = model.TopicId;
-            IsReadOrNot = model.IsReadOrNot;
-        }
+        public bool IsRead { get; set; }        
 
         public Notification() { }
     }
@@ -49,7 +40,10 @@ namespace BOL.Models
         {
             entityBuilder.Property(t => t.TimeStamp)
                 .ValueGeneratedOnAddOrUpdate()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");            
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entityBuilder.Property(t => t.IsRead)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("false");
         }
     }
 

@@ -66,7 +66,7 @@ namespace BOL.Models
             return Role == BOL.Models.Role.Student;
         }
 
-        [ForeignKey("Id")]
-        public virtual List<Notification> NotificationsForUser { get; set; }
+        [ForeignKey("UserId")]
+        public virtual List<Notification> Notifications { get; set; }
     }
 }
