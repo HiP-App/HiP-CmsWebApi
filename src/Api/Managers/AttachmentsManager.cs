@@ -15,28 +15,19 @@ namespace Api.Managers
     {
         public AttachmentsManager(CmsDbContext dbContext) : base(dbContext) { }
 
-
         public virtual TopicAttatchment GetAttachmentById(int topicId, int attachmentId)
         {
-            var topic = dbContext.Topics.First(t => t.Id == topicId);
-            if (topic != null)
-                return topic.Attatchments.First(a => a.Id == attachmentId);
-            return null;
+            return dbContext.TopicAttatchments.Single(ta => (ta.TopicId == topicId && ta.Id == attachmentId));
         }
 
-        public virtual List<int> GetAttachment(int topicId)
+        public virtual List<int> GetAttachments(int topicId)
         {
-            var topic = dbContext.Topics.First(t => t.Id == topicId);
-            if (topic != null)
-                return topic.Attatchments.Select(o => o.Id).ToList();
-            return null;
+            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Select(ta => ta.Id).ToList();
         }
-
 
         public AddEntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
         {
-            var topic = dbContext.Topics.First(t => t.Id == topicId);
-            if (topic == null)
+            if (dbContext.Topics.First(t => t.Id == topicId) == null)
                 return new AddEntityResult() { Success = false, ErrorMessage = "Unknown Topic" };
 
             string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
@@ -48,28 +39,21 @@ namespace Api.Managers
             {
                 file.CopyTo(outputStream);
             }
-
-            using (var transaction = dbContext.Database.BeginTransaction())
+            try
             {
-                try
-                {
-                    var attatchment = new TopicAttatchment(model);
-                    attatchment.UserId = userId;
-                    attatchment.TopicId = topic.Id;
-                    attatchment.Path = fileName;
-                    attatchment.Type = "TODO";
+                var attatchment = new TopicAttatchment(model);
+                attatchment.UserId = userId;
+                attatchment.TopicId = topicId;
+                attatchment.Path = fileName;
+                attatchment.Type = "TODO";
 
-                    topic.Attatchments.Add(attatchment);
-                    dbContext.SaveChanges();
-
-                    transaction.Commit();
-                    return new AddEntityResult() { Success = true, Value = attatchment.Id };
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
-                }
+                dbContext.TopicAttatchments.Add(attatchment);
+                dbContext.SaveChanges();
+                return new AddEntityResult() { Success = true, Value = attatchment.Id };
+            }
+            catch (Exception e)
+            {
+                return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
             }
         }
 
