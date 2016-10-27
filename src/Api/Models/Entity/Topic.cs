@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace BOL.Models
+namespace Api.Models.Entity
 {
     public class Topic
     {
@@ -28,16 +29,19 @@ namespace BOL.Models
         [Required]
         public int CreatedById { get; set; }
 
-        public virtual User CreatedBy { get; set; }
+        public User CreatedBy { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 
-        public virtual List<TopicUser> TopicUsers { get; set; }
+        public List<TopicUser> TopicUsers { get; set; }
 
-        [ForeignKey("ChildTopicId")]
-        public virtual List<AssociatedTopic> AssociatedTopics { get; set; }
+        public List<AssociatedTopic> AssociatedTopics { get; set; }
+
+        public List<AssociatedTopic> ParentTopics { get; set; }
+
+        public List<TopicAttatchment> Attatchments { get; set; }
 
         public Topic(TopicFormModel model)
         {
@@ -51,7 +55,7 @@ namespace BOL.Models
             AssociatedTopics = new List<AssociatedTopic>();
         }
 
-        public Topic() {}
+        public Topic() { }
     }
 
     public class TopicMap
@@ -61,7 +65,7 @@ namespace BOL.Models
             entityBuilder.Property(t => t.CreatedAt)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
-                
+
             entityBuilder.Property(t => t.UpdatedAt)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");

@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using BOL.Data;
-using BOL.Models;
-using Microsoft.EntityFrameworkCore;
+using Api.Data;
+using Api.Models;
 using System;
+using Api.Models.Entity;
 
-namespace BLL.Managers
+namespace Api.Managers
 {
     public class UserManager : BaseManager
     {

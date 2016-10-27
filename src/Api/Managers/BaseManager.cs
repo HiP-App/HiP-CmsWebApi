@@ -1,6 +1,6 @@
-﻿using BOL.Data;
+﻿using Api.Data;
 
-namespace BLL.Managers
+namespace Api.Managers
 {
     public class BaseManager
     {
@@ -9,6 +9,13 @@ namespace BLL.Managers
         public BaseManager(CmsDbContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+
+        protected void DeleteFile(string path)
+        {
+            if (System.IO.File.Exists(path))
+                System.IO.File.Delete(path);
         }
     }
 }

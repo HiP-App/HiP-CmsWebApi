@@ -1,22 +1,41 @@
 ﻿using Api.Utility;
-using BOL.Models;
+using Api.Models.Entity;
 using Microsoft.AspNetCore.Mvc;
-using BLL.Managers;
+using Api.Managers;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using BOL.Data;
+using Api.Data;
+using Api.Models;
 
 namespace Api.Controllers
 {
     public class UsersController : ApiController
     {
         private UserManager userManager;
+        private EmailSender emailSender;
 
-        public UsersController(CmsDbContext dbContext, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, EmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
+            this.emailSender = emailSender;
+        }
+
+        // POST api/users/invite
+        [HttpPost("Invite")]
+        [Authorize(Roles = Role.Supervisor + "," + Role.Administrator)]
+        public IActionResult Post(InviteFormModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                foreach (string email in model.emails)
+                {
+                    emailSender.InviteAsync(email);
+                }
+                return Ok();
+            }
+            return BadRequest(ModelState);
         }
 
         #region GET user
@@ -98,10 +117,29 @@ namespace Api.Controllers
 
         #endregion
 
+        #region GET picture
+
+        [HttpGet("{userId}/picture/")]
+
+        public IActionResult GetPicture(int userId)
+        {
+            var user = userManager.GetUserById(userId);
+            if (user != null)
+            {
+                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.ProfilePicturePath, user.Picture));
+                return base.File(Path.Combine(Constants.ProfilePictureFolder, user.Picture), contentType);
+            }
+            return BadRequest();
+        }
+        
+
+        #endregion
+
         #region POST picture
 
-        // Post api/users/{id}/picture/
-        [HttpPost("{id}/picture/")]
+
+       // Post api/users/{id}/picture/
+       [HttpPost("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
         public IActionResult PutPicture(int id, IFormFile file)
         {
@@ -117,7 +155,7 @@ namespace Api.Controllers
 
         private IActionResult PutUserPicture(int userId, IFormFile file)
         {
-            var uploads = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder);
+            var uploads = Path.Combine(Constants.ProfilePicturePath);
             var user =  userManager.GetUserById(userId);
 
             if (file == null)
@@ -179,7 +217,7 @@ namespace Api.Controllers
 
             bool success = userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
-            string fileName = Path.Combine(Directory.GetCurrentDirectory(), Startup.ProfilePictureFolder, user.Picture);
+            string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
 
             DeleteFile(fileName);
 

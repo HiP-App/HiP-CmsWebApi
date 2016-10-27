@@ -1,4 +1,4 @@
-namespace BOL.Models
+namespace Api.Models
 {
     public class Status
     {

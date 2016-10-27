@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BOL.Models
+namespace Api.Models
 {
     public class TopicFormModel
     {

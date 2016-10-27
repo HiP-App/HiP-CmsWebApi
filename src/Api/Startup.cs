@@ -1,6 +1,5 @@
 ﻿using Api.Data;
 using Api.Utility;
-using BOL.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +15,6 @@ namespace Api
 {
     public class Startup
     {
-        public static readonly string ProfilePictureFolder = @"wwwroot/profilepictures";
 
         public Startup(IHostingEnvironment env)
         {
@@ -62,6 +60,8 @@ namespace Api
                     Description = "A REST api to serve History in Paderborn CMS System"
                 });
             });
+
+            services.AddTransient<EmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -91,20 +91,12 @@ namespace Api
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
             app.UseSwaggerUi();
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
 
-            // Use Static files eg for profile pictures
             app.UseStaticFiles();
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), ProfilePictureFolder)),
-                RequestPath = new PathString("/ProfilePictures")
-            });
         }
 
         public static void Main(string[] args)

@@ -1,11 +1,8 @@
 ﻿using Api.Data;
-using BLL.Managers;
-using BOL.Data;
-using BOL.Models;
+using Api.Managers;
+using Api.Models;
+using Api.Models.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 

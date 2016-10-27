@@ -1,9 +1,4 @@
-﻿using Api.Data;
-using BLL.Managers;
-using BOL.Data;
-using BOL.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Security.Principal;
 
 namespace Api.Utility
