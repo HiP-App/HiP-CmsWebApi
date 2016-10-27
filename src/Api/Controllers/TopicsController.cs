@@ -160,9 +160,8 @@ namespace Api.Controllers
             var attachment = attachmentsManager.GetAttachmentById(topicId, attachmentId);
             if (attachment != null)
             {
-                string fileName = Path.Combine(Constants.AttatchmentFolder, attachment.Path);
-                string contentType = MimeKit.MimeTypes.GetMimeType(fileName);
-                return base.File(fileName, contentType);
+                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.AttatchmentPath, attachment.Path));
+                return base.File(Path.Combine(Constants.AttatchmentFolder, attachment.Path), contentType);
             }
             return BadRequest();
         }

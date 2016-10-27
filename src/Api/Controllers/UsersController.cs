@@ -124,18 +124,22 @@ namespace Api.Controllers
         public IActionResult GetPicture(int userId)
         {
             var user = userManager.GetUserById(userId);
-            string fileName = Path.Combine(Constants.ProfilePictureFolder, user.Picture);
-            string contentType = MimeKit.MimeTypes.GetMimeType(fileName);
-            return base.File(fileName, contentType); 
+            if (user != null)
+            {
+                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.ProfilePicturePath, user.Picture));
+                return base.File(Path.Combine(Constants.ProfilePictureFolder, user.Picture), contentType);
+            }
+            return BadRequest();
         }
+        
 
         #endregion
 
         #region POST picture
 
 
-        // Post api/users/{id}/picture/
-        [HttpPost("{id}/picture/")]
+       // Post api/users/{id}/picture/
+       [HttpPost("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
         public IActionResult PutPicture(int id, IFormFile file)
         {
@@ -151,7 +155,7 @@ namespace Api.Controllers
 
         private IActionResult PutUserPicture(int userId, IFormFile file)
         {
-            var uploads = Path.Combine(Constants.ProfilePictureFolder);
+            var uploads = Path.Combine(Constants.ProfilePicturePath);
             var user =  userManager.GetUserById(userId);
 
             if (file == null)
@@ -213,7 +217,7 @@ namespace Api.Controllers
 
             bool success = userManager.UpdateProfilePicture(user, "");
             // Delete Picture If Exists
-            string fileName = Path.Combine(Constants.ProfilePictureFolder, user.Picture);
+            string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
 
             DeleteFile(fileName);
 

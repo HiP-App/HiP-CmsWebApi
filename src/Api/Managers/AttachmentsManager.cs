@@ -39,7 +39,7 @@ namespace Api.Managers
             if (topic == null)
                 return new AddEntityResult() { Success = false, ErrorMessage = "Unknown Topic" };
 
-            string topicFolder = Path.Combine(Constants.AttatchmentFolder, topicId.ToString());
+            string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
             if (!System.IO.Directory.Exists(topicFolder))
                 System.IO.Directory.CreateDirectory(topicFolder);
 
@@ -79,7 +79,7 @@ namespace Api.Managers
             var attachment = GetAttachmentById(topicId, attachmentId);
             if (attachment != null)
             {
-                string fileName = Path.Combine(Constants.AttatchmentFolder, attachment.Path);
+                string fileName = Path.Combine(Constants.AttatchmentPath, attachment.Path);
                 DeleteFile(fileName);
                 dbContext.Remove(attachment);
                 dbContext.SaveChanges();

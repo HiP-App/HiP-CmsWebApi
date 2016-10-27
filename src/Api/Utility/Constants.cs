@@ -7,14 +7,20 @@ namespace Api.Utility
         // No. of items to show in Paginated Result
         public const int PageSize = 50;
 
-        public static string ProfilePictureFolder
+
+
+        public const string ProfilePictureFolder = "profilepictures";
+
+        public static string ProfilePicturePath
         {
-            get { return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profilepictures"); }
+            get { return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", ProfilePictureFolder); }
         }
 
-        public static string AttatchmentFolder
+        public const string AttatchmentFolder = "attatchments";
+
+        public static string AttatchmentPath
         {
-            get { return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "attatchments"); }
+            get { return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", AttatchmentFolder); }
         }
     }
 }

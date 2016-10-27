@@ -16,7 +16,6 @@ namespace Api
     public class Startup
     {
 
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -96,6 +95,8 @@ namespace Api
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
+
+            app.UseStaticFiles();
         }
 
         public static void Main(string[] args)
