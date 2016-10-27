@@ -126,6 +126,18 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
+        // PUT api/topic/:id/status
+        [HttpPut("{id}/Status")]
+        public IActionResult ChangeStatus(int id, string status)
+        {
+            if (!Status.IsStatusValid(status))
+                ModelState.AddModelError("status", "Invalid Status");
+            else if (topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status))
+                return Ok();
+
+            return BadRequest(ModelState);
+        }
+
 
         // DELETE api/topics/:id
         [HttpDelete("{id}")]
@@ -195,18 +207,5 @@ namespace Api.Controllers
 
         #endregion
 
-        // PUT api/topic/:id/status
-        [HttpPut("{id}/Status")]
-        public IActionResult ChangeStatus(int id, string status)
-        {
-            bool success = topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status);
-
-            if (success)
-            {
-                return Ok();
-            }
-
-            return BadRequest();
-        }
     }
 }

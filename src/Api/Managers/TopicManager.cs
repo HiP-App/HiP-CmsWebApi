@@ -10,7 +10,7 @@ namespace Api.Managers
 {
     public class TopicManager : BaseManager
     {
-        public TopicManager(CmsDbContext dbContext) : base(dbContext) {}
+        public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
         public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
         {
@@ -21,7 +21,7 @@ namespace Api.Managers
                 topics = topics.Where(t =>
                     t.Title.Contains(query) ||
                     t.Description.Contains(query));
-            
+
             if (!string.IsNullOrEmpty(status))
                 topics = topics.Where(t => t.Status.CompareTo(status) == 0);
 
@@ -63,11 +63,11 @@ namespace Api.Managers
         }
 
         public virtual AddEntityResult AddTopic(int userId, TopicFormModel model)
-        {     
+        {
             using (var transaction = dbContext.Database.BeginTransaction())
             {
                 try
-                {       
+                {
                     var topic = new Topic(model);
                     topic.CreatedById = userId;
 
@@ -86,7 +86,7 @@ namespace Api.Managers
                     transaction.Commit();
                     return new AddEntityResult() { Success = true, Value = topic.Id };
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     transaction.Rollback();
                     return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
@@ -95,13 +95,13 @@ namespace Api.Managers
         }
 
         public virtual bool UpdateTopic(int userId, int topicId, TopicFormModel model)
-        {            
+        {
             if (dbContext.Topics.AsNoTracking().FirstOrDefault(t => t.Id == topicId) != null)
             {
                 using (var transaction = dbContext.Database.BeginTransaction())
                 {
                     try
-                    {       
+                    {
                         var topic = new Topic(model);
                         topic.Id = topicId;
                         topic.CreatedById = userId;
@@ -124,7 +124,7 @@ namespace Api.Managers
                         transaction.Commit();
                         return true;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
                         transaction.Rollback();
@@ -137,15 +137,11 @@ namespace Api.Managers
 
         public bool ChangeTopicStatus(int userId, int topicId, string status)
         {
-            if(!Status.IsStatusValid(status))
-            {
-                return false;
-            }
             var topic = dbContext.Topics.FirstOrDefault(t => t.Id == topicId);
             if (topic != null)
             {
                 bool isUserOfTopic = dbContext.TopicUsers.FirstOrDefault(
-                    tu => ( tu.TopicId == topicId && tu.UserId == userId)
+                    tu => (tu.TopicId == topicId && tu.UserId == userId)
                     ) != null;
                 if (isUserOfTopic)
                 {
@@ -153,20 +149,15 @@ namespace Api.Managers
                     dbContext.Update(topic);
                     dbContext.SaveChanges();
                     return true;
-                } else
-                {
-                    return false;
                 }
-            } else
-            {
-                return false;
             }
+            return false;
         }
 
         public virtual bool DeleteTopic(int topicId)
         {
             var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
-            
+
             if (topic != null)
             {
                 dbContext.Remove(topic);
@@ -177,7 +168,7 @@ namespace Api.Managers
             return false;
         }
 
-    
+
         // Private Region
 
         private List<TopicUser> AssociateUsersToTopicByRole(string role, int[] userIds)
