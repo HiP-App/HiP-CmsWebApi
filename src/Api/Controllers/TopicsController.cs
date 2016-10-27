@@ -136,5 +136,19 @@ namespace Api.Controllers
             else
                 return BadRequest();
         }
+
+        // PUT api/topic/:id/status
+        [HttpPut("{id}/Status")]
+        public IActionResult ChangeStatus(int id, string status)
+        {
+            bool success = topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status);
+
+            if (success)
+            {
+                return Ok();
+            }
+
+            return BadRequest();
+        }
     }
 }

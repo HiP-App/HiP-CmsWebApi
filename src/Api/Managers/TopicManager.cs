@@ -147,6 +147,34 @@ namespace BLL.Managers
             return false;
         }
 
+        public bool ChangeTopicStatus(int userId, int topicId, string status)
+        {
+            if(!Status.IsStatusValid(status))
+            {
+                return false;
+            }
+            var topic = dbContext.Topics.FirstOrDefault(t => t.Id == topicId);
+            if (topic != null)
+            {
+                bool isUserOfTopic = dbContext.TopicUsers.FirstOrDefault(
+                    tu => ( tu.TopicId == topicId && tu.UserId == userId)
+                    ) != null;
+                if (isUserOfTopic)
+                {
+                    topic.Status = status;
+                    dbContext.Update(topic);
+                    dbContext.SaveChanges();
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } else
+            {
+                return false;
+            }
+        }
+
         public virtual bool DeleteTopic(int topicId)
         {
             var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
