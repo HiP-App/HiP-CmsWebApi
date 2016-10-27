@@ -49,29 +49,17 @@ namespace Api.Managers
 
         public virtual IEnumerable<User> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return (from u in dbContext.Users
-                          join tu in dbContext.TopicUsers
-                          on u.Id equals tu.UserId
-                          where tu.TopicId == topicId && tu.Role.CompareTo(role) == 0
-                          select u).ToList();
+            return dbContext.TopicUsers.Where(tu => (tu.Role == role && tu.TopicId == topicId)).Select(u => u.User).ToList();
         }
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-            return (from t in dbContext.Topics
-                          join at in dbContext.AssociatedTopics
-                          on t.Id equals at.ChildTopicId
-                          where at.ParentTopicId == topicId
-                          select t).ToList();
+            return dbContext.AssociatedTopics.Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual IEnumerable<Topic> GetParentTopics(int topicId)
         {
-            return (from t in dbContext.Topics
-                          join at in dbContext.AssociatedTopics
-                          on t.Id equals at.ParentTopicId
-                          where at.ChildTopicId == topicId
-                          select t).ToList();
+            return dbContext.AssociatedTopics.Where(at => at.ChildTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual AddEntityResult AddTopic(int userId, TopicFormModel model)

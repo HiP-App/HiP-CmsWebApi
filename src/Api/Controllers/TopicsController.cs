@@ -147,7 +147,7 @@ namespace Api.Controllers
         [HttpGet("{topicId}/Attachments")]
         public IActionResult GetAttachments(int topicId)
         {
-            var attachments = attachmentsManager.GetAttachment(topicId);
+            var attachments = attachmentsManager.GetAttachments(topicId);
             if (attachments != null)
                 return Ok(attachments);
             return NotFound();

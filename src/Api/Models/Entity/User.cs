@@ -22,9 +22,9 @@ namespace Api.Models.Entity
 
         public string ProfilePicture { get; set; }
 
-        public virtual List<TopicAttatchment> Attatchments { get; set; }
+        public List<TopicAttatchment> Attatchments { get; set; }
 
-        public virtual List<TopicUser> TopicUsers { get; set; }
+        public List<TopicUser> TopicUsers { get; set; }
 
         #region Utility Methods
 

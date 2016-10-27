@@ -25,6 +25,8 @@ namespace Api.Migrations
 
                     b.HasIndex("ChildTopicId");
 
+                    b.HasIndex("ParentTopicId");
+
                     b.ToTable("AssociatedTopics");
                 });
 
@@ -92,7 +94,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TopicAttatchment");
+                    b.ToTable("TopicAttatchments");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
@@ -142,6 +144,11 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.Topic", "ChildTopic")
                         .WithMany("AssociatedTopics")
                         .HasForeignKey("ChildTopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Topic", "ParentTopic")
+                        .WithMany("ParentTopics")
+                        .HasForeignKey("ParentTopicId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

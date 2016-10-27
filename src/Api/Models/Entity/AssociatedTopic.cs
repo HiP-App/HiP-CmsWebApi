@@ -8,10 +8,12 @@ namespace Api.Models.Entity
         [Required]
         public int ParentTopicId { get; set; }
 
+        public Topic ParentTopic { get; set; }
+
         [Required]
         public int ChildTopicId { get; set; }
 
-        public virtual Topic ChildTopic { get; set; }
+        public Topic ChildTopic { get; set; }
     }
 
     public class AssociatedTopicMap
@@ -23,6 +25,10 @@ namespace Api.Models.Entity
             entityBuilder.HasOne(a => a.ChildTopic)
                 .WithMany(t => t.AssociatedTopics)
                 .HasForeignKey(a => a.ChildTopicId);
+
+            entityBuilder.HasOne(a => a.ParentTopic)
+             .WithMany(t => t.ParentTopics)
+             .HasForeignKey(a => a.ParentTopicId);
         }
     }
 }

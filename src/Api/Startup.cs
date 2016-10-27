@@ -95,8 +95,6 @@ namespace Api
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
-
-            app.UseStaticFiles();
         }
 
         public static void Main(string[] args)

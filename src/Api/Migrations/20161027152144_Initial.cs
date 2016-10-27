@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
-    public partial class Attachments : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -68,10 +68,16 @@ namespace Api.Migrations
                         principalTable: "Topics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AssociatedTopics_Topics_ParentTopicId",
+                        column: x => x.ParentTopicId,
+                        principalTable: "Topics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TopicAttatchment",
+                name: "TopicAttatchments",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -87,15 +93,15 @@ namespace Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TopicAttatchment", x => x.Id);
+                    table.PrimaryKey("PK_TopicAttatchments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TopicAttatchment_Topics_TopicId",
+                        name: "FK_TopicAttatchments_Topics_TopicId",
                         column: x => x.TopicId,
                         principalTable: "Topics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TopicAttatchment_Users_UserId",
+                        name: "FK_TopicAttatchments_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -133,18 +139,23 @@ namespace Api.Migrations
                 column: "ChildTopicId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssociatedTopics_ParentTopicId",
+                table: "AssociatedTopics",
+                column: "ParentTopicId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Topics_CreatedById",
                 table: "Topics",
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicAttatchment_TopicId",
-                table: "TopicAttatchment",
+                name: "IX_TopicAttatchments_TopicId",
+                table: "TopicAttatchments",
                 column: "TopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicAttatchment_UserId",
-                table: "TopicAttatchment",
+                name: "IX_TopicAttatchments_UserId",
+                table: "TopicAttatchments",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -170,7 +181,7 @@ namespace Api.Migrations
                 name: "AssociatedTopics");
 
             migrationBuilder.DropTable(
-                name: "TopicAttatchment");
+                name: "TopicAttatchments");
 
             migrationBuilder.DropTable(
                 name: "TopicUsers");

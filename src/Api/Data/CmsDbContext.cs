@@ -16,6 +16,8 @@ namespace Api.Data
 
        public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
 
+        public DbSet<TopicAttatchment> TopicAttatchments { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

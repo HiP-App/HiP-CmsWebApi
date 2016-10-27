@@ -8,8 +8,8 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20161025174540_Attachments")]
-    partial class Attachments
+    [Migration("20161027152144_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,6 +25,8 @@ namespace Api.Migrations
                     b.HasKey("ParentTopicId", "ChildTopicId");
 
                     b.HasIndex("ChildTopicId");
+
+                    b.HasIndex("ParentTopicId");
 
                     b.ToTable("AssociatedTopics");
                 });
@@ -93,7 +95,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TopicAttatchment");
+                    b.ToTable("TopicAttatchments");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
@@ -143,6 +145,11 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.Topic", "ChildTopic")
                         .WithMany("AssociatedTopics")
                         .HasForeignKey("ChildTopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Topic", "ParentTopic")
+                        .WithMany("ParentTopics")
+                        .HasForeignKey("ParentTopicId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

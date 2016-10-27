@@ -35,11 +35,11 @@ namespace Api.Models.Entity
 
         public int TopicId { get; set; }
 
-        public virtual Topic Topic { get; set; }
+        public Topic Topic { get; set; }
 
         public int UserId { get; set; }
 
-        public virtual User User { get; set; }
+        public User User { get; set; }
 
         public DateTime UpdatedAt { get; set; }
         public TopicAttatchment() { }

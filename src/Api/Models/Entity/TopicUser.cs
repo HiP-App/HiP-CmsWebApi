@@ -9,12 +9,12 @@ namespace Api.Models.Entity
         [Required]
         public int TopicId { get; set; }
 
-        public virtual Topic Topic { get; set; }
+        public Topic Topic { get; set; }
 
         [Required]
         public int UserId { get; set; }
 
-        public virtual User User { get; set; }
+        public User User { get; set; }
 
         [Required]
         public string Role { get; set; }
