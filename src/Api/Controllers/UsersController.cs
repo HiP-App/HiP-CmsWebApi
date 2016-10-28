@@ -98,13 +98,13 @@ namespace Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (model is AdminUserFormModel && !Role.IsRoleValid(((AdminUserFormModel) model).Role))
+                if (model is AdminUserFormModel && !Role.IsRoleValid(((AdminUserFormModel)model).Role))
                 {
                     ModelState.AddModelError("Role", "Invalid Role");
                 }
                 else
                 {
-                    if  (userManager.UpdateUser(id, model))
+                    if (userManager.UpdateUser(id, model))
                     {
                         _logger.LogInformation(5, "User with ID: " + id + " updated.");
                         return Ok();
@@ -119,27 +119,43 @@ namespace Api.Controllers
 
         #region GET picture
 
+        // GET api/users/{userId}/picture/
         [HttpGet("{userId}/picture/")]
+        public IActionResult GetPictureById(int userId)
+        {
+            return GetPicture(userId);
+        }
 
-        public IActionResult GetPicture(int userId)
+        // GET api/users/current/picture/
+        [HttpGet]
+        [Route("Current/picture/")]
+        public IActionResult GetPictureForCurrentUser()
+        {
+            return GetPicture(User.Identity.GetUserId());
+        }
+
+        private IActionResult GetPicture(int userId)
         {
             var user = userManager.GetUserById(userId);
             if (user != null)
             {
-                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.ProfilePicturePath, user.Picture));
+                string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
+                if (!System.IO.File.Exists(path))
+                    return NotFound();
+
+                string contentType = MimeKit.MimeTypes.GetMimeType(path);
                 return base.File(Path.Combine(Constants.ProfilePictureFolder, user.Picture), contentType);
             }
             return BadRequest();
         }
-        
 
         #endregion
 
         #region POST picture
 
 
-       // Post api/users/{id}/picture/
-       [HttpPost("{id}/picture/")]
+        // Post api/users/{id}/picture/
+        [HttpPost("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
         public IActionResult PutPicture(int id, IFormFile file)
         {
@@ -156,12 +172,12 @@ namespace Api.Controllers
         private IActionResult PutUserPicture(int userId, IFormFile file)
         {
             var uploads = Path.Combine(Constants.ProfilePicturePath);
-            var user =  userManager.GetUserById(userId);
+            var user = userManager.GetUserById(userId);
 
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
             else if (user == null)
-                 ModelState.AddModelError("userId", "Unkonown User");
+                ModelState.AddModelError("userId", "Unkonown User");
             else if (file.Length > 1024 * 1024 * 5) // Limit to 5 MB
                 ModelState.AddModelError("file", "Picture is to large");
             else if (IsImage(file))
@@ -208,7 +224,7 @@ namespace Api.Controllers
         private IActionResult DeletePicture(int userId)
         {
             // Fetch user
-            var user =  userManager.GetUserById(userId);
+            var user = userManager.GetUserById(userId);
             if (user == null)
                 return BadRequest("Could not find User");
             // Has A Picture?
