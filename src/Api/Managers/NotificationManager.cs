@@ -28,8 +28,11 @@ namespace Api.Managers
                         {
                             var notification = (from n in dbContext.Notifications where n.UserId == supervisorId && 
                                                n.TopicId == topicId orderby n.TimeStamp descending select n.ChangedByUserId);
-                            if(!notification.Equals(changedBy))
+                            if(notification.Equals(changedBy) == false)
+                            {
                                 dbContext.Notifications.Add(new Notification() { UserId = supervisorId, ChangedByUserId = changedBy, TopicId = topicId, Message = "You have a new notification" });
+                            }
+                                
                         }                        
                     }
                 }
@@ -41,8 +44,10 @@ namespace Api.Managers
                         {
                             var notification = from n in dbContext.Notifications where n.UserId == studentId && 
                                                n.TopicId == topicId orderby n.TimeStamp descending select n.ChangedByUserId;
-                            if(!notification.Equals(changedBy))
+                            if(notification.Equals(changedBy) == false)
+                            {
                                 dbContext.Notifications.Add(new Notification() { UserId = studentId, ChangedByUserId = changedBy, TopicId = topicId, Message = "You are now related to a new topic " + topicId + " modified by " + changedBy });
+                            }                                
                         }                        
                     }
                 }
@@ -54,8 +59,10 @@ namespace Api.Managers
                         {
                             var notification = from n in dbContext.Notifications where n.UserId == reviewerId && 
                                                n.TopicId == topicId orderby n.TimeStamp descending select n.ChangedByUserId;
-                            if(!notification.Equals(changedBy))
+                            if(notification.Equals(changedBy)==false)
+                            {
                                 dbContext.Notifications.Add(new Notification() { UserId = reviewerId, ChangedByUserId = changedBy, TopicId = topicId, Message = "You are now related to a new topic " + topicId + " modified by " + changedBy });
+                            }                                
                         }                        
                     }
                 }
