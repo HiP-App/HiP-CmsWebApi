@@ -83,6 +83,14 @@ namespace Api.Managers
 
                     dbContext.SaveChanges();
 
+                    NotificationManager notificationManager = new NotificationManager(dbContext);
+                    bool isNotified = notificationManager.UpdateNotification(userId, topic.Id, model);
+
+                    if (isNotified == false)
+                    {
+                        Console.WriteLine("Notification failed");
+                    }
+
                     transaction.Commit();
                     return new AddEntityResult() { Success = true, Value = topic.Id };
                 }
@@ -171,6 +179,10 @@ namespace Api.Managers
             {
                 dbContext.Remove(topic);
                 dbContext.SaveChanges();
+                NotificationManager notificationManager = new NotificationManager(dbContext);
+                bool isDeleted = notificationManager.DeleteNotification(topicId);
+                if (isDeleted == false)
+                    Console.WriteLine("Notifications deleted");
                 return true;
             }
 

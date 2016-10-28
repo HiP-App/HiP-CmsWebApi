@@ -74,6 +74,7 @@ namespace Api.Managers
         public virtual bool MarkAsRead(int notificationId)
         {
             var notification = dbContext.Notifications.Where( n => n.NotificationId== notificationId).Single();
+
             if (notification != null)
             {
                 notification.IsRead = true;
@@ -82,7 +83,23 @@ namespace Api.Managers
                 return true;
             }
             return false;
+        }
 
+        public virtual bool DeleteNotification(int topicId)
+        {
+            var notifications = dbContext.Notifications.Where(n => n.TopicId == topicId).ToList();
+            
+            if (notifications != null)
+            {
+                foreach (Notification notification in notifications)
+                {
+                    dbContext.Remove(notifications);
+                    dbContext.SaveChanges();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
