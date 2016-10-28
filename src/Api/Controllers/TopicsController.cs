@@ -93,7 +93,7 @@ namespace Api.Controllers
 
         // POST api/topics
         [HttpPost]
-        [Authorize(Roles = Role.Supervisor)]
+        //[Authorize(Roles = Role.Supervisor)]
         public IActionResult Post(TopicFormModel model)
         {
             if (ModelState.IsValid)
@@ -115,7 +115,7 @@ namespace Api.Controllers
 
         // PUT api/topics/:id
         [HttpPut("{id}")]
-        [Authorize(Roles = Role.Supervisor)]
+        //[Authorize(Roles = Role.Supervisor)]
         public IActionResult Put(int id, TopicFormModel model)
         {
             if (ModelState.IsValid)
@@ -141,7 +141,7 @@ namespace Api.Controllers
 
         // DELETE api/topics/:id
         [HttpDelete("{id}")]
-        [Authorize(Roles = Role.Supervisor)]
+        //[Authorize(Roles = Role.Supervisor)]
         public IActionResult Delete(int id)
         {
             if (topicManager.DeleteTopic(id))

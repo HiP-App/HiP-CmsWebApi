@@ -24,7 +24,7 @@ namespace Api.Controllers
 
         // POST api/users/invite
         [HttpPost("Invite")]
-        [Authorize(Roles = Role.Supervisor + "," + Role.Administrator)]
+        //[Authorize(Roles = Role.Supervisor + "," + Role.Administrator)]
         public IActionResult Post(InviteFormModel model)
         {
             if (ModelState.IsValid)
@@ -88,7 +88,7 @@ namespace Api.Controllers
 
         // PUT api/users/5
         [HttpPut("{id}")]
-        [Authorize(Roles = Role.Administrator)]
+        //[Authorize(Roles = Role.Administrator)]
         public IActionResult Put(int id, AdminUserFormModel model)
         {
             return PutUser(id, model);
@@ -140,7 +140,7 @@ namespace Api.Controllers
 
        // Post api/users/{id}/picture/
        [HttpPost("{id}/picture/")]
-        [Authorize(Roles = Role.Administrator)]
+        //[Authorize(Roles = Role.Administrator)]
         public IActionResult PutPicture(int id, IFormFile file)
         {
             return PutUserPicture(id, file);
@@ -193,7 +193,7 @@ namespace Api.Controllers
         #region DELETE picture
 
         [HttpDelete("{id}/picture/")]
-        [Authorize(Roles = Role.Administrator)]
+        //[Authorize(Roles = Role.Administrator)]
         public IActionResult Delete(int id)
         {
             return DeletePicture(id);
