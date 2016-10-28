@@ -122,6 +122,15 @@ namespace Api.Managers
                         dbContext.SaveChanges();
 
                         transaction.Commit();
+
+                        NotificationManager notificationManager = new NotificationManager(dbContext);
+                        bool isNotified = notificationManager.UpdateNotification(userId, topicId, model);
+
+                        if (isNotified == false)
+                        {
+                            Console.WriteLine("Notification failed");
+                        }
+
                         return true;
                     }
                     catch (Exception ex)
