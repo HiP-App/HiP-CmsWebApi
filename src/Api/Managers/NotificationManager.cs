@@ -43,11 +43,11 @@ namespace Api.Managers
                         if(studentId != changedBy)
                         {
                             var notification = from n in dbContext.Notifications where n.UserId == studentId && 
-                                               n.TopicId == topicId orderby n.TimeStamp descending select n;                            
+                                               n.TopicId == topicId && n.ChangedByUserId ==changedBy orderby n.TimeStamp descending select n.NotificationId;                            
                             if(notification.Equals(changedBy) == false)
                             {
                                 dbContext.Notifications.Add(new Notification() { UserId = studentId, ChangedByUserId = changedBy, TopicId = topicId, Message = "You have a new notification" });
-                                }                                
+                            }                                
                         }                        
                     }
                 }
