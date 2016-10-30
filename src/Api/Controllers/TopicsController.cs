@@ -34,26 +34,36 @@ namespace Api.Controllers
         [HttpGet]
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
-            int? userId = User.Identity.GetUserId();
-            if (topicPermissions.IsAllowedToAdminister(userId.Value))
-                userId = null;
-
-            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents, userId);
+            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
             int count = topics.Count();
             var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
 
             return Ok(new PagedResult<Topic>(entities, page, count));
         }
 
-
-        // GET api/topics/:id
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        // GET api/topics
+        [HttpGet("OfUser/Current")]
+        public IActionResult GetTopicsForUser(int page = 1)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
-                return Unauthorized();
+            return GetTopicsForUser(User.Identity.GetUserId(), page);
+        }
 
-            var topics = topicManager.GetTopicById(id);
+        // GET api/topics
+        [HttpGet("OfUser/{userId}")]
+        public IActionResult GetTopicsForUser(int userId, int page = 1)
+        {
+            var topics = topicManager.GetTopicsForUser(userId);
+            int count = topics.Count();
+            var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
+
+            return Ok(new PagedResult<Topic>(entities, page, count));
+        }
+
+        // GET api/topics/:topicId
+        [HttpGet("{topicId}")]
+        public IActionResult Get(int topicId)
+        {
+            var topics = topicManager.GetTopicById(topicId);
             if (topics != null)
                 return Ok(topics);
 
@@ -61,57 +71,48 @@ namespace Api.Controllers
         }
 
         // GET api/topics/:id/subtopics
-        [HttpGet("{id}/SubTopics")]
-        public IActionResult GetSubTopics(int id)
+        [HttpGet("{topicId}/SubTopics")]
+        public IActionResult GetSubTopics(int topicId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
-                return Unauthorized();
-
-            return Ok(topicManager.GetSubTopics(id));
+            return Ok(topicManager.GetSubTopics(topicId));
         }
 
 
-        // GET api/topics/:id/parenttopics
-        [HttpGet("{id}/ParentTopics")]
-        public IActionResult GetParentTopics(int id)
+        // GET api/topics/:topicId/parenttopics
+        [HttpGet("{topicId}/ParentTopics")]
+        public IActionResult GetParentTopics(int topicId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
-                return Unauthorized();
-
-            return Ok(topicManager.GetParentTopics(id));
+            return Ok(topicManager.GetParentTopics(topicId));
         }
 
         #endregion
 
         #region Get Users
 
-        // GET api/topics/:id/students
-        [HttpGet("{id}/Students")]
-        public IActionResult GetTopicStudents(int id)
+        // GET api/topics/:topicId/students
+        [HttpGet("{topicId}/Students")]
+        public IActionResult GetTopicStudents(int topicId)
         {
-            return GetTopicUsers(id, Role.Student);
+            return GetTopicUsers(topicId, Role.Student);
         }
 
         // GET api/topics/:id/supervisors
         [HttpGet("{id}/Supervisors")]
-        public IActionResult GetTopicSupervisors(int id)
+        public IActionResult GetTopicSupervisors(int topicId)
         {
-            return GetTopicUsers(id, Role.Supervisor);
+            return GetTopicUsers(topicId, Role.Supervisor);
         }
 
         // GET api/topics/:id/reviewers
-        [HttpGet("{id}/Reviewers")]
-        public IActionResult GetTopicReviewers(int id)
+        [HttpGet("{topicId}/Reviewers")]
+        public IActionResult GetTopicReviewers(int topicId)
         {
-            return GetTopicUsers(id, Role.Reviewer);
+            return GetTopicUsers(topicId, Role.Reviewer);
         }
 
-        private IActionResult GetTopicUsers(int id, string role)
+        private IActionResult GetTopicUsers(int topicId, string role)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
-                return Unauthorized();
-
-            return Ok(topicManager.GetAssociatedUsersByRole(id, role));
+            return Ok(topicManager.GetAssociatedUsersByRole(topicId, role));
         }
 
         #endregion
@@ -123,7 +124,7 @@ namespace Api.Controllers
         [HttpPost]
         public IActionResult Post(TopicFormModel model)
         {
-            if (!topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
                 return Unauthorized();
 
             if (ModelState.IsValid)
@@ -143,32 +144,32 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
-        // PUT api/topics/:id
-        [HttpPut("{id}")]
+        // PUT api/topics/:topicId
+        [HttpPut("{topicId}")]
         [Authorize(Roles = Role.Supervisor)]
-        public IActionResult Put(int id, TopicFormModel model)
+        public IActionResult Put(int topicId, TopicFormModel model)
         {
-            if (!topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
 
             if (ModelState.IsValid)
             { // TODO createUser is Supervisor!
-                if (topicManager.UpdateTopic(User.Identity.GetUserId(), id, model))
+                if (topicManager.UpdateTopic(User.Identity.GetUserId(), topicId, model))
                     return Ok(42);
             }
             return BadRequest(ModelState);
         }
 
-        // PUT api/topic/:id/status
-        [HttpPut("{id}/Status")]
-        public IActionResult ChangeStatus(int id, string status)
+        // PUT api/topic/:topicId/status
+        [HttpPut("{topicId}/Status")]
+        public IActionResult ChangeStatus(int topicId, string status)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
 
             if (!Status.IsStatusValid(status))
                 ModelState.AddModelError("status", "Invalid Status");
-            else if (topicManager.ChangeTopicStatus(User.Identity.GetUserId(), id, status))
+            else if (topicManager.ChangeTopicStatus(User.Identity.GetUserId(), topicId, status))
                 return Ok();
 
             return BadRequest(ModelState);
@@ -176,12 +177,12 @@ namespace Api.Controllers
 
 
         // DELETE api/topics/:id
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{topicId}")]
+        public IActionResult Delete(int topicId)
         {
-            if (!topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
-            if (topicManager.DeleteTopic(id))
+            if (topicManager.DeleteTopic(topicId))
                 return Ok();
 
             return BadRequest();
@@ -207,7 +208,7 @@ namespace Api.Controllers
 
 
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
-        public IActionResult GetPicture(int topicId, int attachmentId)
+        public IActionResult GetAttachmet(int topicId, int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
@@ -256,13 +257,12 @@ namespace Api.Controllers
 
         #endregion
 
-
         #region Permission
 
-        [HttpGet("All/Permission/IsAllowedToAdminister")]
-        public IActionResult IsAllowedToAdminister()
+        [HttpGet("All/Permission/IsAllowedToCreate")]
+        public IActionResult IsAllowedToCreate()
         {
-            if (topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
                 return Ok();
             return Unauthorized();
         }
@@ -274,6 +274,7 @@ namespace Api.Controllers
                 return Ok();
             return Unauthorized();
         }
+
         [HttpGet("{topicId}/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEdit(int topicId)
         {

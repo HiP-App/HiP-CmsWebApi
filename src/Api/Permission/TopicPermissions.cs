@@ -22,10 +22,10 @@ namespace Api.Permission
         public bool IsAllowedToEdit(int userId, int topicId)
         {
             var user = userManager.GetUserById(userId);
-            if (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor))
+            if (user.Role.Equals(Role.Administrator))
                 return true;
-            // Is associated TODO define Role which is allowed to Edit!
-            if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && (tu.Role == Role.Administrator || tu.Role == Role.Supervisor))))
+
+            if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId &&  tu.Role == Role.Supervisor)))
                 return true;
 
             return false;
@@ -43,7 +43,7 @@ namespace Api.Permission
             return false;
         }
 
-        public bool IsAllowedToAdminister(int userId)
+        public bool IsAllowedToCreate(int userId)
         {
             var user = userManager.GetUserById(userId);
             return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
