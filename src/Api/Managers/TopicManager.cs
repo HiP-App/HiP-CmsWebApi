@@ -14,13 +14,9 @@ namespace Api.Managers
 
         public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
         {
-            var topics = from t in dbContext.Topics
-                         select t;
-
+            IQueryable<Topic> topics = from t in dbContext.Topics select t;
             if (!string.IsNullOrEmpty(query))
-                topics = topics.Where(t =>
-                    t.Title.Contains(query) ||
-                    t.Description.Contains(query));
+                topics = topics.Where(t => t.Title.Contains(query) || t.Description.Contains(query));
 
             if (!string.IsNullOrEmpty(status))
                 topics = topics.Where(t => t.Status.CompareTo(status) == 0);
@@ -33,8 +29,16 @@ namespace Api.Managers
                                        join t in topics
                                        on at.ChildTopicId equals t.Id
                                        select t);
-
             return topics;
+        }
+
+        public virtual IQueryable<Topic> GetTopicsForUser(int userId)
+        {
+            return from tu in dbContext.TopicUsers
+                   join t in dbContext.Topics
+                   on tu.TopicId equals t.Id
+                   where tu.UserId == userId
+                   select t;
         }
 
         public virtual int GetTopicsCount()
@@ -72,9 +76,9 @@ namespace Api.Managers
                     topic.CreatedById = userId;
 
                     // Add User associations
-                    topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
-                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
-                    topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
+                    AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
+                    AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
+                    AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
                     // Add Topic Associations
                     topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
@@ -96,40 +100,34 @@ namespace Api.Managers
 
         public virtual bool UpdateTopic(int userId, int topicId, TopicFormModel model)
         {
-            if (dbContext.Topics.AsNoTracking().FirstOrDefault(t => t.Id == topicId) != null)
+            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+            if (topic == null)
+                return false;
+
+            try
             {
-                using (var transaction = dbContext.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        var topic = new Topic(model);
-                        topic.Id = topicId;
-                        topic.CreatedById = userId;
+                // TODO  topic.UpdatedById = userId;
+                topic.Title = model.Title;
+                topic.Status = model.Status;
+                topic.Deadline = (DateTime)model.Deadline;
+                topic.Description = model.Description;
+                topic.Requirements = model.Requirements;
 
-                        dbContext.Topics.Attach(topic);
-                        dbContext.Entry(topic).State = EntityState.Modified;
 
-                        DeassociateAllLinksFromTopic(topicId);
+                // Add User associations
+                AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
+                AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
+                AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
-                        // Add User associations
-                        topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
-                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
-                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
+                // Add Topic associations
+                topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
-                        // Add Topic associations
-                        topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
-
-                        dbContext.SaveChanges();
-
-                        transaction.Commit();
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                        transaction.Rollback();
-                    }
-                }
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
 
             return false;
@@ -140,16 +138,10 @@ namespace Api.Managers
             var topic = dbContext.Topics.FirstOrDefault(t => t.Id == topicId);
             if (topic != null)
             {
-                bool isUserOfTopic = dbContext.TopicUsers.FirstOrDefault(
-                    tu => (tu.TopicId == topicId && tu.UserId == userId)
-                    ) != null;
-                if (isUserOfTopic)
-                {
-                    topic.Status = status;
-                    dbContext.Update(topic);
-                    dbContext.SaveChanges();
-                    return true;
-                }
+                topic.Status = status;
+                dbContext.Update(topic);
+                dbContext.SaveChanges();
+                return true;
             }
             return false;
         }
@@ -157,33 +149,43 @@ namespace Api.Managers
         public virtual bool DeleteTopic(int topicId)
         {
             var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
-
             if (topic != null)
             {
                 dbContext.Remove(topic);
                 dbContext.SaveChanges();
                 return true;
             }
-
             return false;
         }
 
 
         // Private Region
 
-        private List<TopicUser> AssociateUsersToTopicByRole(string role, int[] userIds)
+        private void AssociateUsersToTopicByRole(string role, int[] userIds, Topic topic)
         {
-            var topicUsers = new List<TopicUser>();
+            var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
+
+            var newUsers = new List<TopicUser>();
+            var removedUsers = new List<TopicUser>();
 
             if (userIds != null)
             {
+                // new user?
                 foreach (int userId in userIds)
                 {
-                    topicUsers.Add(new TopicUser() { UserId = userId, Role = role });
+                    if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
+                        newUsers.Add(new TopicUser() { UserId = userId, Role = role });
+                }
+                // removed user?
+                foreach (TopicUser existingUser in existingUsers)
+                {
+                    if (!userIds.Contains(existingUser.UserId))
+                        removedUsers.Add(existingUser);
                 }
             }
 
-            return topicUsers;
+            topic.TopicUsers.AddRange(newUsers);
+            topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
         }
 
         private List<AssociatedTopic> AssociateTopicsToTopic(int topicId, int[] associatedTopicIds)
@@ -197,14 +199,7 @@ namespace Api.Managers
                     associatedTopics.Add(new AssociatedTopic() { ParentTopicId = associatedTopicId });
                 }
             }
-
             return associatedTopics;
-        }
-
-        private void DeassociateAllLinksFromTopic(int topicId)
-        {
-            dbContext.Database.ExecuteSqlCommand($"delete from \"TopicUsers\" where  \"TopicId\" = '{topicId}'");
-            dbContext.Database.ExecuteSqlCommand($"delete from \"AssociatedTopics\" where  \"ChildTopicId\" = '{topicId}'");
         }
     }
 }
