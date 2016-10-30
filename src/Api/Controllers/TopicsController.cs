@@ -262,7 +262,7 @@ namespace Api.Controllers
         [HttpGet("All/Permission/IsAllowedToAdminister")]
         public IActionResult IsAllowedToAdminister()
         {
-            if (!topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Ok();
             return Unauthorized();
         }
@@ -270,14 +270,14 @@ namespace Api.Controllers
         [HttpGet("{topicId}/Permission/IsAssociatedTo")]
         public IActionResult IsAssociatedTo(int topicId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Ok();
             return Unauthorized();
         }
         [HttpGet("{topicId}/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEdit(int topicId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Ok();
             return Unauthorized();
         }
