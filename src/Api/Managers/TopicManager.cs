@@ -114,49 +114,6 @@ namespace Api.Managers
 
             try
             {
-<<<<<<< HEAD
-                using (var transaction = dbContext.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        var topic = new Topic(model);
-                        topic.Id = topicId;
-                        topic.CreatedById = userId;
-
-                        dbContext.Topics.Attach(topic);
-                        dbContext.Entry(topic).State = EntityState.Modified;
-
-                        DeassociateAllLinksFromTopic(topicId);
-
-                        // Add User associations
-                        topic.TopicUsers = AssociateUsersToTopicByRole(Role.Student, model.Students);
-                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors));
-                        topic.TopicUsers.AddRange(AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers));
-
-                        // Add Topic associations
-                        topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
-
-                        dbContext.SaveChanges();
-
-                        transaction.Commit();
-
-                        NotificationManager notificationManager = new NotificationManager(dbContext);
-                        bool isNotified = notificationManager.UpdateNotification(userId, topicId, model);
-
-                        if (isNotified == false)
-                        {
-                            Console.WriteLine("Notification failed");
-                        }
-
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                        transaction.Rollback();
-                    }
-                }
-=======
                 // TODO  topic.UpdatedById = userId;
                 topic.Title = model.Title;
                 topic.Status = model.Status;
@@ -173,15 +130,23 @@ namespace Api.Managers
                 // Add Topic associations
                 topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
-                dbContext.SaveChanges();
+                dbContext.SaveChanges();        
+
+                NotificationManager notificationManager = new NotificationManager(dbContext);
+                bool isNotified = notificationManager.UpdateNotification(userId, topicId, model);
+                if (isNotified == false)
+                {
+                    Console.WriteLine("Notification failed");
+                }
+
                 return true;
             }
+
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
->>>>>>> refs/remotes/origin/develop
+                        Console.WriteLine(ex.ToString());                        
             }
-
+                
             return false;
         }
 
