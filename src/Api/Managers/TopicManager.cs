@@ -12,9 +12,14 @@ namespace Api.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
+        public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents, int? userId)
         {
-            var topics = from t in dbContext.Topics select t;
+            IQueryable<Topic> topics;
+            // Permission
+            if (userId != null)
+                topics = from tu in dbContext.TopicUsers join t in dbContext.Topics on tu.TopicId equals t.Id where tu.UserId == userId select t;
+            else
+                topics = from t in dbContext.Topics select t;
 
             if (!string.IsNullOrEmpty(query))
                 topics = topics.Where(t => t.Title.Contains(query) || t.Description.Contains(query));
@@ -51,7 +56,9 @@ namespace Api.Managers
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-            return dbContext.AssociatedTopics.Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
+            var topics = dbContext.AssociatedTopics.Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic);
+
+            return topics.ToList();
         }
 
         public virtual IEnumerable<Topic> GetParentTopics(int topicId)

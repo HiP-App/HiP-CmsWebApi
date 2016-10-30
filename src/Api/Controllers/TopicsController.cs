@@ -34,7 +34,11 @@ namespace Api.Controllers
         [HttpGet]
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
-            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
+            int? userId = User.Identity.GetUserId();
+            if (topicPermissions.IsAllowedToAdminister(userId.Value))
+                userId = null;
+
+            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents, userId);
             int count = topics.Count();
             var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
 
@@ -60,7 +64,7 @@ namespace Api.Controllers
         [HttpGet("{id}/SubTopics")]
         public IActionResult GetSubTopics(int id)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), id))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
                 return Unauthorized();
 
             return Ok(topicManager.GetSubTopics(id));
@@ -71,7 +75,7 @@ namespace Api.Controllers
         [HttpGet("{id}/ParentTopics")]
         public IActionResult GetParentTopics(int id)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), id))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
                 return Unauthorized();
 
             return Ok(topicManager.GetParentTopics(id));
@@ -94,17 +98,17 @@ namespace Api.Controllers
         {
             return GetTopicUsers(id, Role.Supervisor);
         }
-        
+
         // GET api/topics/:id/reviewers
         [HttpGet("{id}/Reviewers")]
         public IActionResult GetTopicReviewers(int id)
         {
-             return GetTopicUsers(id, Role.Reviewer);
+            return GetTopicUsers(id, Role.Reviewer);
         }
 
         private IActionResult GetTopicUsers(int id, string role)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), id))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
                 return Unauthorized();
 
             return Ok(topicManager.GetAssociatedUsersByRole(id, role));
@@ -144,7 +148,7 @@ namespace Api.Controllers
         [Authorize(Roles = Role.Supervisor)]
         public IActionResult Put(int id, TopicFormModel model)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), id))
+            if (!topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Unauthorized();
 
             if (ModelState.IsValid)
@@ -159,7 +163,7 @@ namespace Api.Controllers
         [HttpPut("{id}/Status")]
         public IActionResult ChangeStatus(int id, string status)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(),id))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), id))
                 return Unauthorized();
 
             if (!Status.IsStatusValid(status))
@@ -221,7 +225,7 @@ namespace Api.Controllers
         [HttpPost("{topicId}/Attachments")]
         public IActionResult PostAttachment(int topicId, AttatchmentFormModel model, IFormFile file)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
 
             if (file == null)
@@ -242,7 +246,7 @@ namespace Api.Controllers
         [HttpDelete("{topicId}/Attachments/{attachmentId}")]
         public IActionResult DeleteAttachment(int topicId, int attachmentId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
 
             if (attachmentsManager.DeleteAttachment(topicId, attachmentId))
@@ -252,5 +256,32 @@ namespace Api.Controllers
 
         #endregion
 
+
+        #region Permission
+
+        [HttpGet("All/Permission/IsAllowedToAdminister")]
+        public IActionResult IsAllowedToAdminister()
+        {
+            if (!topicPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+                return Ok();
+            return Unauthorized();
+        }
+
+        [HttpGet("{topicId}/Permission/IsAssociatedTo")]
+        public IActionResult IsAssociatedTo(int topicId)
+        {
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+                return Ok();
+            return Unauthorized();
+        }
+        [HttpGet("{topicId}/Permission/IsAllowedToEdit")]
+        public IActionResult IsAllowedToEdit(int topicId)
+        {
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+                return Ok();
+            return Unauthorized();
+        }
+
+        #endregion
     }
 }

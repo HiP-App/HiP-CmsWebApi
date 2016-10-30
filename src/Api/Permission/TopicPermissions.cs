@@ -24,7 +24,7 @@ namespace Api.Permission
             var user = userManager.GetUserById(userId);
             if (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor))
                 return true;
-            // Is associated
+            // Is associated TODO define Role which is allowed to Edit!
             if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && (tu.Role == Role.Administrator || tu.Role == Role.Supervisor))))
                 return true;
 
