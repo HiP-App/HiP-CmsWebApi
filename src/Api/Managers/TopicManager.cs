@@ -58,9 +58,7 @@ namespace Api.Managers
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-            var topics = dbContext.AssociatedTopics.Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic);
-
-            return topics.ToList();
+            return dbContext.AssociatedTopics.Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual IEnumerable<Topic> GetParentTopics(int topicId)

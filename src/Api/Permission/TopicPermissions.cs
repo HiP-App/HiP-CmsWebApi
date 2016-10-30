@@ -34,7 +34,7 @@ namespace Api.Permission
         public bool IsAssociatedTo(int userId, int topicId)
         {
             var user = userManager.GetUserById(userId);
-            if (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor))
+            if (user.Role.Equals(Role.Administrator))
                 return true;
             // Is associated
             if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId)))
