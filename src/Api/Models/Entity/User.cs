@@ -26,6 +26,9 @@ namespace Api.Models.Entity
 
         public List<TopicUser> TopicUsers { get; set; }
 
+        [ForeignKey("Notifications")]
+        public virtual List<Notification> Notification { get; set; }
+
         #region Utility Methods
 
         [NotMapped]

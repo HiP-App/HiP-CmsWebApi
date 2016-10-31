@@ -14,9 +14,11 @@ namespace Api.Data
 
         public DbSet<TopicUser> TopicUsers { get; set; }
 
-       public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
+        public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
 
         public DbSet<TopicAttatchment> TopicAttatchments { get; set; }
+
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,6 +30,7 @@ namespace Api.Data
             new TopicMap(modelBuilder.Entity<Topic>());
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
+            new NotificationMap(modelBuilder.Entity<Notification>());
         }
     }
 }
