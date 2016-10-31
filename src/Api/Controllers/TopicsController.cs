@@ -96,14 +96,14 @@ namespace Api.Controllers
             return GetTopicUsers(topicId, Role.Student);
         }
 
-        // GET api/topics/:id/supervisors
-        [HttpGet("{id}/Supervisors")]
+        // GET api/topics/:topicId/supervisors
+        [HttpGet("{topicId}/Supervisors")]
         public IActionResult GetTopicSupervisors(int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
         }
 
-        // GET api/topics/:id/reviewers
+        // GET api/topics/:topicId/reviewers
         [HttpGet("{topicId}/Reviewers")]
         public IActionResult GetTopicReviewers(int topicId)
         {
