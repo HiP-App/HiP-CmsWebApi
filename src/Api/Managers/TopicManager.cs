@@ -52,9 +52,9 @@ namespace Api.Managers
             return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Select(u => u.User).ToList();
         }
 
-         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
+        public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-           return  dbContext.AssociatedTopics.Include(at => at.ChildTopic).Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
+            return dbContext.AssociatedTopics.Include(at => at.ChildTopic).Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual IEnumerable<Topic> GetParentTopics(int topicId)
@@ -134,7 +134,7 @@ namespace Api.Managers
 
         public bool ChangeTopicStatus(int userId, int topicId, string status)
         {
-            var topic = dbContext.Topics.FirstOrDefault(t => t.Id == topicId);
+            var topic = dbContext.Topics.Include(t => t.TopicUsers).FirstOrDefault(t => t.Id == topicId);
             if (topic != null)
             {
                 topic.Status = status;
@@ -149,12 +149,12 @@ namespace Api.Managers
 
         public virtual bool DeleteTopic(int topicId, int userId)
         {
-            var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
+            var topic = dbContext.Topics.Include(t => t.TopicUsers).FirstOrDefault(u => u.Id == topicId);
             if (topic != null)
             {
+                new NotificationProcessor(dbContext, topic, userId).OnDeleteTopic();
                 dbContext.Remove(topic);
                 dbContext.SaveChanges();
-                new NotificationProcessor(dbContext, topic, userId).OnDeleteTopic();
                 return true;
             }
             return false;
