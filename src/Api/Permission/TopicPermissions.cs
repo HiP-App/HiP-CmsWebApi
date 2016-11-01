@@ -25,7 +25,7 @@ namespace Api.Permission
             if (user.Role.Equals(Role.Administrator))
                 return true;
 
-            if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId &&  tu.Role == Role.Supervisor)))
+            if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Supervisor)))
                 return true;
 
             return false;

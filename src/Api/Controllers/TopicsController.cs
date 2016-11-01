@@ -70,7 +70,7 @@ namespace Api.Controllers
             return NotFound();
         }
 
-        // GET api/topics/:id/subtopics
+        // GET api/topics/:topicId/subtopics
         [HttpGet("{topicId}/SubTopics")]
         public IActionResult GetSubTopics(int topicId)
         {
@@ -97,7 +97,7 @@ namespace Api.Controllers
         }
 
         // GET api/topics/:id/supervisors
-        [HttpGet("{id}/Supervisors")]
+        [HttpGet("{topicId}/Supervisors")]
         public IActionResult GetTopicSupervisors(int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
@@ -182,7 +182,7 @@ namespace Api.Controllers
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
-            if (topicManager.DeleteTopic(topicId))
+            if (topicManager.DeleteTopic(topicId, User.Identity.GetUserId()))
                 return Ok();
 
             return BadRequest();
