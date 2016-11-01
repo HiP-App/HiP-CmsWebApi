@@ -34,11 +34,7 @@ namespace Api.Managers
 
         public virtual IQueryable<Topic> GetTopicsForUser(int userId)
         {
-            return from tu in dbContext.TopicUsers
-                   join t in dbContext.Topics
-                   on tu.TopicId equals t.Id
-                   where tu.UserId == userId
-                   select t;
+            return dbContext.TopicUsers.Where(tu => tu.UserId == userId).Include(tu => tu.Topic).Select(tu => tu.Topic);
         }
 
         public virtual int GetTopicsCount()
@@ -53,56 +49,44 @@ namespace Api.Managers
 
         public virtual IEnumerable<User> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return dbContext.TopicUsers.Where(tu => (tu.Role == role && tu.TopicId == topicId)).Select(u => u.User).ToList();
+            return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Select(u => u.User).ToList();
         }
 
-        public virtual IEnumerable<Topic> GetSubTopics(int topicId)
+         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
-            return (from t in dbContext.Topics
-                          join at in dbContext.AssociatedTopics
-                          on t.Id equals at.ChildTopicId
-                          where at.ParentTopicId == topicId
-                          select t).ToList();
+           return  dbContext.AssociatedTopics.Include(at => at.ChildTopic).Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
         public virtual IEnumerable<Topic> GetParentTopics(int topicId)
         {
-            return (from t in dbContext.Topics
-                          join at in dbContext.AssociatedTopics
-                          on t.Id equals at.ParentTopicId
-                          where at.ChildTopicId == topicId
-                          select t).ToList();
+            return dbContext.AssociatedTopics.Include(at => at.ParentTopic).Where(at => at.ChildTopicId == topicId).Select(at => at.ParentTopic).ToList();
         }
 
         public virtual AddEntityResult AddTopic(int userId, TopicFormModel model)
         {
-            using (var transaction = dbContext.Database.BeginTransaction())
+            try
             {
-                try
-                {
-                    var topic = new Topic(model);
-                    topic.CreatedById = userId;
+                var topic = new Topic(model);
+                topic.CreatedById = userId;
 
-                    // Add User associations
-                    AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
-                    AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
-                    AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
+                // Add User associations
+                AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
+                AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
+                AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
-                    // Add Topic Associations
-                    topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+                // Add Topic Associations
+                topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
-                    dbContext.Topics.Add(topic);
+                dbContext.Topics.Add(topic);
 
-                    dbContext.SaveChanges();
+                dbContext.SaveChanges();
+                new NotificationProcessor(dbContext, topic, userId).OnNewTopic();
 
-                    transaction.Commit();
-                    return new AddEntityResult() { Success = true, Value = topic.Id };
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
-                }
+                return new AddEntityResult() { Success = true, Value = topic.Id };
+            }
+            catch (Exception e)
+            {
+                return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
             }
         }
 
@@ -112,31 +96,38 @@ namespace Api.Managers
             if (topic == null)
                 return false;
 
-            try
-            {
-                // TODO  topic.UpdatedById = userId;
-                topic.Title = model.Title;
-                topic.Status = model.Status;
-                topic.Deadline = (DateTime)model.Deadline;
-                topic.Description = model.Description;
-                topic.Requirements = model.Requirements;
+            // Using Transactions to roobback Notifications on error.
+            using (var transaction = dbContext.Database.BeginTransaction())
+                try
+                {
+                    // REM: do before updating to estimate the changes
+                    new NotificationProcessor(dbContext, topic, userId).OnUpdate(model);
+
+                    // TODO  topic.UpdatedById = userId;
+                    topic.Title = model.Title;
+                    topic.Status = model.Status;
+                    topic.Deadline = (DateTime)model.Deadline;
+                    topic.Description = model.Description;
+                    topic.Requirements = model.Requirements;
 
 
-                // Add User associations
-                AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
-                AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
-                AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
+                    // Add User associations
+                    AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
+                    AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
+                    AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
-                // Add Topic associations
-                topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
+                    // Add Topic associations
+                    topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
-                dbContext.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+                    dbContext.SaveChanges();
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine(ex.ToString());
+                }
 
             return false;
         }
@@ -149,18 +140,21 @@ namespace Api.Managers
                 topic.Status = status;
                 dbContext.Update(topic);
                 dbContext.SaveChanges();
+
+                new NotificationProcessor(dbContext, topic, userId).OnStateChanged(status);
                 return true;
             }
             return false;
         }
 
-        public virtual bool DeleteTopic(int topicId)
+        public virtual bool DeleteTopic(int topicId, int userId)
         {
             var topic = dbContext.Topics.FirstOrDefault(u => u.Id == topicId);
             if (topic != null)
             {
                 dbContext.Remove(topic);
                 dbContext.SaveChanges();
+                new NotificationProcessor(dbContext, topic, userId).OnDeleteTopic();
                 return true;
             }
             return false;

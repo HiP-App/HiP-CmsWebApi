@@ -26,6 +26,7 @@ namespace Api.Models.Entity
 
         public string Requirements { get; set; }
 
+        // Created By
         [Required]
         public int CreatedById { get; set; }
 
@@ -62,13 +63,8 @@ namespace Api.Models.Entity
     {
         public TopicMap(EntityTypeBuilder<Topic> entityBuilder)
         {
-            entityBuilder.Property(t => t.CreatedAt)
-                .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-            entityBuilder.Property(t => t.UpdatedAt)
-                .ValueGeneratedOnAddOrUpdate()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entityBuilder.Property(t => t.CreatedAt).ValueGeneratedOnAdd().HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entityBuilder.Property(t => t.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
     }
 }

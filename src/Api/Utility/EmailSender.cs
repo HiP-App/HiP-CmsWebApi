@@ -6,6 +6,7 @@ using MailKit.Net.Smtp;
 using MailKit;
 using MimeKit;
 using Microsoft.AspNetCore.Builder;
+using System.IO;
 
 namespace Api.Utility
 {
@@ -19,7 +20,7 @@ namespace Api.Utility
         public Task InviteAsync(string email)
         {
             var smtp = appConfig.SMTPConfig;
-            var bodyHtml = System.IO.File.ReadAllText(@"Utility\invation-email.html");
+            var bodyHtml = System.IO.File.ReadAllText(Path.Combine("Utility","invation-email.html"));
             bodyHtml = bodyHtml.Replace(@"{email}", email);
 
             var message = new MimeMessage();

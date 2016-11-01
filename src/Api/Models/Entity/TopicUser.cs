@@ -26,15 +26,8 @@ namespace Api.Models.Entity
         {
             entityBuilder.HasKey(tu => new { tu.TopicId, tu.UserId, tu.Role });
 
-            entityBuilder.HasOne(tu => tu.User)
-                .WithMany(u => u.TopicUsers)
-                .HasForeignKey(tu => tu.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entityBuilder.HasOne(tu => tu.Topic)
-                 .WithMany(t => t.TopicUsers)
-                .HasForeignKey(tu => tu.TopicId)
-                .OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasOne(tu => tu.User).WithMany(u => u.TopicUsers).HasForeignKey(t => t.UserId);
+            entityBuilder.HasOne(tu => tu.Topic).WithMany(t => t.TopicUsers).HasForeignKey(t => t.TopicId);
         }
     }
 }

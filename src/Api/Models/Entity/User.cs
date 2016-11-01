@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -25,6 +27,10 @@ namespace Api.Models.Entity
         public List<TopicAttatchment> Attatchments { get; set; }
 
         public List<TopicUser> TopicUsers { get; set; }
+
+        public List<Notification> Notifications { get; set; }
+
+        public List<Notification> ProducedNotifications { get; set; }
 
         #region Utility Methods
 

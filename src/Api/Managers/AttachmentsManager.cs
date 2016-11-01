@@ -27,7 +27,8 @@ namespace Api.Managers
 
         public AddEntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
         {
-            if (dbContext.Topics.First(t => t.Id == topicId) == null)
+            var topic = dbContext.Topics.Single(t => t.Id == topicId);
+            if (topic == null)
                 return new AddEntityResult() { Success = false, ErrorMessage = "Unknown Topic" };
 
             string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
@@ -49,6 +50,9 @@ namespace Api.Managers
 
                 dbContext.TopicAttatchments.Add(attatchment);
                 dbContext.SaveChanges();
+
+                new NotificationProcessor(dbContext, topic, userId).OnAttachmetAdded(model.Name);
+
                 return new AddEntityResult() { Success = true, Value = attatchment.Id };
             }
             catch (Exception e)

@@ -59,6 +59,7 @@ namespace Api
                     Title = "HiPCMS API",
                     Description = "A REST api to serve History in Paderborn CMS System"
                 });
+                options.OperationFilter< SwaggerOperationFilter>();
             });
 
             services.AddTransient<EmailSender>();

@@ -22,13 +22,8 @@ namespace Api.Models.Entity
         {
             entityBuilder.HasKey(t => new { t.ParentTopicId, t.ChildTopicId });
 
-            entityBuilder.HasOne(a => a.ChildTopic)
-                .WithMany(t => t.AssociatedTopics)
-                .HasForeignKey(a => a.ChildTopicId);
-
-            entityBuilder.HasOne(a => a.ParentTopic)
-             .WithMany(t => t.ParentTopics)
-             .HasForeignKey(a => a.ParentTopicId);
+            entityBuilder.HasOne(at => at.ParentTopic).WithMany(t => t.AssociatedTopics).HasForeignKey(at => at.ParentTopicId);
+            entityBuilder.HasOne(at => at.ChildTopic).WithMany(t => t.ParentTopics).HasForeignKey(at => at.ChildTopicId);
         }
     }
 }

@@ -50,19 +50,10 @@ namespace Api.Models.Entity
     {
         public TopicAttatchmentMap(EntityTypeBuilder<TopicAttatchment> entityBuilder)
         {
-            entityBuilder.Property(t => t.UpdatedAt)
-                .ValueGeneratedOnAddOrUpdate()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entityBuilder.Property(t => t.UpdatedAt).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            entityBuilder.HasOne(a => a.User)
-                .WithMany(u => u.Attatchments)
-                .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
-
-            entityBuilder.HasOne(a => a.Topic)
-                .WithMany(t => t.Attatchments)
-                .HasForeignKey(a => a.TopicId)
-                .OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasOne(ta => ta.Topic).WithMany(t => t.Attatchments).HasForeignKey(at => at.TopicId);
+            entityBuilder.HasOne(ta => ta.User).WithMany(u => u.Attatchments).HasForeignKey(at => at.UserId).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
