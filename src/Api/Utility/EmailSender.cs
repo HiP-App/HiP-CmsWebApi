@@ -44,7 +44,10 @@ namespace Api.Utility
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
 
                 // Note: only needed if the SMTP server requires authentication
-                client.Authenticate(smtp.User, smtp.Password);
+                if (!(smtp.Password == null || smtp.Password == ""))
+                {
+                    client.Authenticate(smtp.User, smtp.Password);
+                }
 
                 client.Send(message);
                 client.Disconnect(true);
