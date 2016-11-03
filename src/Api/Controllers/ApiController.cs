@@ -8,6 +8,7 @@ namespace Api.Controllers
     [Produces("application/json")]
     [Route("Api/[controller]")]
     [Authorize]
+    [ProducesResponseType(typeof(void), 401)]
     public class ApiController : Controller
     {
         protected readonly CmsDbContext dbContext;

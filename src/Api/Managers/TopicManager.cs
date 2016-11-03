@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Api.Models.Entity;
+using Api.Models.User;
+using Api.Models.Topic;
+using Api.Utility;
 
 namespace Api.Managers
 {
@@ -32,9 +35,10 @@ namespace Api.Managers
             return topics;
         }
 
-        public virtual IQueryable<Topic> GetTopicsForUser(int userId)
+        public virtual IEnumerable<TopicResult> GetTopicsForUser(int userId, int page)
         {
-            return dbContext.TopicUsers.Where(tu => tu.UserId == userId).Include(tu => tu.Topic).Select(tu => tu.Topic);
+            var topics = dbContext.TopicUsers.Where(tu => tu.UserId == userId).Include(tu => tu.Topic).ThenInclude(t => t.CreatedBy).Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
+            return topics.Select(tu => new TopicResult(tu.Topic));
         }
 
         public virtual int GetTopicsCount()
@@ -47,9 +51,9 @@ namespace Api.Managers
             return dbContext.Topics.Include(t => t.CreatedBy).FirstOrDefault(t => t.Id == topicId);
         }
 
-        public virtual IEnumerable<User> GetAssociatedUsersByRole(int topicId, string role)
+        public virtual IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Select(u => u.User).ToList();
+            return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
         }
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)

@@ -3,6 +3,8 @@ using Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Api.Managers;
+using System.Collections.Generic;
+using Api.Models.Notifications;
 
 namespace Api.Controllers
 {
@@ -17,21 +19,39 @@ namespace Api.Controllers
             userManager = new UserManager(dbContext);
         }
 
-        // GET api/Notifications/
-        [HttpGet]
-        [Route("")]
-        public IActionResult GetNotifications()
+        // GET api/Notifications/All
+        [HttpGet("All")]
+        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
+        [ProducesResponseType(typeof(void), 404)]
+        public IActionResult GetAllNotifications()
         {
-            var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId());
+            return GetNotifications(false);
+        }
+
+        // GET api/Notifications/Unread
+        [HttpGet("Unread")]
+        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
+        [ProducesResponseType(typeof(void), 404)]
+        public IActionResult GetUnreadNotifications()
+        {
+           return GetNotifications(true);
+        }
+
+        private IActionResult GetNotifications(bool onlyUread)
+        {
+            var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUread);
 
             if (notifications != null)
                 return Ok(notifications);
             else
                 return NotFound();
         }
+
+
+
         // GET api/Notifications/Count
-        [HttpGet]
-        [Route("Count")]
+        [HttpGet("Count")]
+        [ProducesResponseType(typeof(int), 200)]
         public IActionResult GetNotificationCount()
         {
             return Ok(notificationManager.GetNotificationCount(User.Identity.GetUserId()));
@@ -39,6 +59,8 @@ namespace Api.Controllers
 
         // POST api/Notifications/:id/markread
         [HttpPost("{notificationId}/markread")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post(int notificationId)
         {
             if (notificationManager.MarkAsRead(notificationId))

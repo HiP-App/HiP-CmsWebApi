@@ -1,9 +1,11 @@
 ﻿using Api.Data;
 using Api.Models;
 using Api.Models.Entity;
+using Api.Models.Topic;
 using Api.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,12 +19,12 @@ namespace Api.Managers
 
         public virtual TopicAttatchment GetAttachmentById(int topicId, int attachmentId)
         {
-            return dbContext.TopicAttatchments.Single(ta => (ta.TopicId == topicId && ta.Id == attachmentId));
+            return dbContext.TopicAttatchments.Include(ta => ta.User).Single(ta => (ta.TopicId == topicId && ta.Id == attachmentId));
         }
 
-        public virtual List<int> GetAttachments(int topicId)
+        public virtual IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Select(ta => ta.Id).ToList();
+            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
         public AddEntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
@@ -51,7 +53,7 @@ namespace Api.Managers
                 dbContext.TopicAttatchments.Add(attatchment);
                 dbContext.SaveChanges();
 
-                new NotificationProcessor(dbContext, topic, userId).OnAttachmetAdded(model.Name);
+                new NotificationProcessor(dbContext, topic, userId).OnAttachmetAdded(model.AttatchmentName);
 
                 return new AddEntityResult() { Success = true, Value = attatchment.Id };
             }
