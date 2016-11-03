@@ -51,6 +51,7 @@ namespace Api.Managers
 
         public virtual IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
         {
+            return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).ToList().Select(u => new UserResult(u.User));
         }
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
