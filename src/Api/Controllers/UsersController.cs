@@ -43,8 +43,9 @@ namespace Api.Controllers
                         failCount++;
                     }
                     //something went wrong when sending email
-                    catch (MailKit.Net.Smtp.SmtpCommandException)
+                    catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
                     {
+                        _logger.LogDebug(SmtpError.ToString());
                         // 503 - Service Unavailable
                         return new StatusCodeResult(503);
                     }

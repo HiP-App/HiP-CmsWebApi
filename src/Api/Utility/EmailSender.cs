@@ -47,6 +47,9 @@ namespace Api.Utility
                 if (!(smtp.Password == null || smtp.Password == ""))
                 {
                     client.Authenticate(smtp.User, smtp.Password);
+                } else
+                {
+                    client.Authenticate(smtp.User, "");
                 }
 
                 client.Send(message);
