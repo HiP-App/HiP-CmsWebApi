@@ -57,11 +57,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult GetTopicsForUser(int userId, int page = 1)
         {
-            var topics = topicManager.GetTopicsForUser(userId);
+            var topics = topicManager.GetTopicsForUser(userId, page);
             int count = topics.Count();
-            var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
 
-            return Ok(new PagedResult<TopicResult>(entities, page, count));
+            return Ok(new PagedResult<TopicResult>(topics, page, count));
         }
 
         // GET api/topics/:topicId

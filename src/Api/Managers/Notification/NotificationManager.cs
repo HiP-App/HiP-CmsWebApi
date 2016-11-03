@@ -1,6 +1,7 @@
 ﻿using Api.Data;
 using Api.Models.Entity;
 using Api.Models.Notifications;
+using Api.Models.User;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,13 @@ namespace Api.Managers
             var query = dbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUreard)
                 query = query.Where(n => !n.IsRead);
-            
+
             var notifications = query.Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
             List<NotificationResult> result = new List<NotificationResult>();
             foreach (Notification not in notifications)
             {
                 var nr = new NotificationResult(not);
-                nr.Updater = not.Updater.FullName;
+                nr.Updater = new UserResult(not.Updater);
 
                 switch (not.Type)
                 {
