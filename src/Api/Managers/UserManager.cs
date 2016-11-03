@@ -59,6 +59,15 @@ namespace Api.Managers
             return false;
         }
 
+        internal void AddUserbyEmail(string email)
+        {
+            User user = new User();
+            user.Email = email;
+            user.Role = Role.Student;
+
+            this.AddUser(user);
+        }
+
         public virtual bool AddUser(User user)
         {
             try
