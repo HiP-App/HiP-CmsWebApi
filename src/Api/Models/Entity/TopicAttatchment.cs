@@ -14,7 +14,7 @@ namespace Api.Models.Entity
     {
         public TopicAttatchment(AttatchmentFormModel model)
         {
-            this.Name = model.Name;
+            this.Name = model.AttatchmentName;
             this.Description = model.Description;
             this.Legal = model.Legal;
         }

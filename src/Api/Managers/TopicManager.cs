@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Api.Models.Entity;
+using Api.Models.User;
+using Api.Models.Topic;
 
 namespace Api.Managers
 {
@@ -32,9 +34,9 @@ namespace Api.Managers
             return topics;
         }
 
-        public virtual IQueryable<Topic> GetTopicsForUser(int userId)
+        public virtual IQueryable<TopicResult> GetTopicsForUser(int userId)
         {
-            return dbContext.TopicUsers.Where(tu => tu.UserId == userId).Include(tu => tu.Topic).Select(tu => tu.Topic);
+            return dbContext.TopicUsers.Where(tu => tu.UserId == userId).Include(tu => tu.Topic).ThenInclude(t => t.CreatedBy).Select(tu => new TopicResult(tu.Topic));
         }
 
         public virtual int GetTopicsCount()
@@ -47,9 +49,8 @@ namespace Api.Managers
             return dbContext.Topics.Include(t => t.CreatedBy).FirstOrDefault(t => t.Id == topicId);
         }
 
-        public virtual IEnumerable<User> GetAssociatedUsersByRole(int topicId, string role)
+        public virtual IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Select(u => u.User).ToList();
         }
 
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)

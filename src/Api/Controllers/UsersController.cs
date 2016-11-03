@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Api.Data;
 using Api.Models;
+using Api.Models.User;
 
 namespace Api.Controllers
 {
@@ -25,6 +26,8 @@ namespace Api.Controllers
         // POST api/users/invite
         [HttpPost("Invite")]
         [Authorize(Roles = Role.Supervisor + "," + Role.Administrator)]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post(InviteFormModel model)
         {
             if (ModelState.IsValid)
@@ -41,37 +44,42 @@ namespace Api.Controllers
         #region GET user
         // GET api/users
         [HttpGet]
+        [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Get(string query, string role, int page = 1)
         {
             var users = userManager.GetAllUsers(query, role, page, Constants.PageSize);
             int count = userManager.GetUsersCount();
 
-            return Ok(new PagedResult<User>(users, page, count));
+            return Ok(new PagedResult<UserResult>(users, page, count));
         }
 
 
         // GET api/users/:id
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(UserResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Get(int id)
         {
             var user = userManager.GetUserById(id);
 
             if (user != null)
-                return Ok(user);
+                return Ok(new UserResult(user));
             else
                 return NotFound();
         }
 
 
         // GET api/users/current
-        [HttpGet]
-        [Route("Current")]
+        [HttpGet("Current")]
+        [ProducesResponseType(typeof(UserResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult CurrentUser()
         {
             var user = userManager.GetUserById(User.Identity.GetUserId());
 
             if (user != null)
-                return Ok(user);
+                return Ok(new UserResult(user));
             else
                 return NotFound();
         }
@@ -81,6 +89,8 @@ namespace Api.Controllers
         // PUT api/users/current
 
         [HttpPut("Current")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Put(UserFormModel model)
         {
             return PutUser(User.Identity.GetUserId(), model);
@@ -89,6 +99,8 @@ namespace Api.Controllers
         // PUT api/users/5
         [HttpPut("{id}")]
         [Authorize(Roles = Role.Administrator)]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Put(int id, AdminUserFormModel model)
         {
             return PutUser(id, model);
@@ -121,14 +133,19 @@ namespace Api.Controllers
 
         // GET api/users/{userId}/picture/
         [HttpGet("{userId}/picture/")]
+        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetPictureById(int userId)
         {
             return GetPicture(userId);
         }
 
         // GET api/users/current/picture/
-        [HttpGet]
-        [Route("Current/picture/")]
+        [HttpGet("Current/picture/")]
+        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetPictureForCurrentUser()
         {
             return GetPicture(User.Identity.GetUserId());
@@ -157,6 +174,8 @@ namespace Api.Controllers
         // Post api/users/{id}/picture/
         [HttpPost("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutPicture(int id, IFormFile file)
         {
             return PutUserPicture(id, file);
@@ -164,6 +183,8 @@ namespace Api.Controllers
 
         // Post api/users/current/picture/
         [HttpPost("Current/picture/")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutPicture(IFormFile file)
         {
             return PutUserPicture(User.Identity.GetUserId(), file);
@@ -210,12 +231,16 @@ namespace Api.Controllers
 
         [HttpDelete("{id}/picture/")]
         [Authorize(Roles = Role.Administrator)]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Delete(int id)
         {
             return DeletePicture(id);
         }
 
         [HttpDelete("Current/picture/")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Delete()
         {
             return DeletePicture(User.Identity.GetUserId());

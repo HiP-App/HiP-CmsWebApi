@@ -11,9 +11,13 @@ namespace Api.Managers
     {
         public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual IEnumerable<NotificationResult> GetNotificationsForTheUser(int userId)
+        public virtual IEnumerable<NotificationResult> GetNotificationsForTheUser(int userId, bool onlyUreard)
         {
-            var notifications = dbContext.Notifications.Where(n => n.UserId == userId).Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
+            var query = dbContext.Notifications.Where(n => n.UserId == userId);
+            if (onlyUreard)
+                query = query.Where(n => !n.IsRead);
+            
+            var notifications = query.Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
             List<NotificationResult> result = new List<NotificationResult>();
             foreach (Notification not in notifications)
             {
