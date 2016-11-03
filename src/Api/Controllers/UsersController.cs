@@ -29,11 +29,34 @@ namespace Api.Controllers
         {
             if (ModelState.IsValid)
             {
+                int failCount = 0;
                 foreach (string email in model.emails)
                 {
-                    emailSender.InviteAsync(email);
+                    try
+                    {
+                        userManager.AddUserbyEmail(email);
+                        emailSender.InviteAsync(email);
+                    }
+                    //user already exists in Database
+                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                    {
+                        failCount++;
+                    }
+                    //something went wrong when sending email
+                    catch (MailKit.Net.Smtp.SmtpCommandException)
+                    {
+                        // 503 - Service Unavailable
+                        return new StatusCodeResult(503);
+                    }
+
                 }
-                return Ok();
+                if (failCount == model.emails.Length)
+                {
+                    // 409 - Conflict
+                    return new StatusCodeResult(409);
+                }
+                // 202 - Accepted (Emails get send async, so we cannot guarantee that emails are send)
+                return new StatusCodeResult(202);
             }
             return BadRequest(ModelState);
         }

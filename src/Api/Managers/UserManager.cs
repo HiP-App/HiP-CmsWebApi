@@ -38,6 +38,7 @@ namespace Api.Managers
             return dbContext.Users.FirstOrDefault(u => u.Id == userId);
         }
 
+
         public virtual User GetUserByEmail(string email)
         {
             return dbContext.Users.FirstOrDefault(u => u.Email == email);
@@ -58,6 +59,15 @@ namespace Api.Managers
                 return true;
             }
             return false;
+        }
+
+        internal void AddUserbyEmail(string email)
+        {
+            User user = new User();
+            user.Email = email;
+            user.Role = Role.Student;
+
+            this.AddUser(user);
         }
 
         public virtual bool AddUser(User user)
