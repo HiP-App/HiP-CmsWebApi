@@ -34,7 +34,7 @@ namespace Api.Controllers
                 {
                     try
                     {
-                        userManager.AddUserbyEmail(email);
+                        //userManager.AddUserbyEmail(email);
                         emailSender.InviteAsync(email);
                     }
                     //user already exists in Database
