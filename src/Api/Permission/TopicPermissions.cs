@@ -24,7 +24,10 @@ namespace Api.Permission
             var user = userManager.GetUserById(userId);
             if (user.Role.Equals(Role.Administrator))
                 return true;
-
+            // Created?
+            if (dbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
+                return true;
+            // Supervisor?
             if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Supervisor)))
                 return true;
 
@@ -35,6 +38,9 @@ namespace Api.Permission
         {
             var user = userManager.GetUserById(userId);
             if (user.Role.Equals(Role.Administrator))
+                return true;
+            // Created?
+            if (dbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
                 return true;
             // Is associated
             if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId)))

@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Api.Models.Entity;
 using Api.Permission;
+using Api.Models.User;
+using System.Collections.Generic;
+using Api.Models.Topic;
 
 namespace Api.Controllers
 {
@@ -43,6 +46,7 @@ namespace Api.Controllers
 
         // GET api/topics
         [HttpGet("OfUser/Current")]
+        [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult GetTopicsForUser(int page = 1)
         {
             return GetTopicsForUser(User.Identity.GetUserId(), page);
@@ -50,13 +54,13 @@ namespace Api.Controllers
 
         // GET api/topics
         [HttpGet("OfUser/{userId}")]
+        [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult GetTopicsForUser(int userId, int page = 1)
         {
-            var topics = topicManager.GetTopicsForUser(userId);
+            var topics = topicManager.GetTopicsForUser(userId, page);
             int count = topics.Count();
-            var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
 
-            return Ok(new PagedResult<Topic>(entities, page, count));
+            return Ok(new PagedResult<TopicResult>(topics, page, count));
         }
 
         // GET api/topics/:topicId
@@ -91,6 +95,7 @@ namespace Api.Controllers
 
         // GET api/topics/:topicId/students
         [HttpGet("{topicId}/Students")]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicStudents(int topicId)
         {
             return GetTopicUsers(topicId, Role.Student);
@@ -98,6 +103,7 @@ namespace Api.Controllers
 
         // GET api/topics/:topicId/supervisors
         [HttpGet("{topicId}/Supervisors")]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicSupervisors(int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
@@ -105,6 +111,7 @@ namespace Api.Controllers
 
         // GET api/topics/:topicId/reviewers
         [HttpGet("{topicId}/Reviewers")]
+        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicReviewers(int topicId)
         {
             return GetTopicUsers(topicId, Role.Reviewer);
@@ -122,6 +129,8 @@ namespace Api.Controllers
 
         // POST api/topics
         [HttpPost]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post(TopicFormModel model)
         {
             if (!topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
@@ -146,7 +155,8 @@ namespace Api.Controllers
 
         // PUT api/topics/:topicId
         [HttpPut("{topicId}")]
-        [Authorize(Roles = Role.Supervisor)]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Put(int topicId, TopicFormModel model)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
@@ -162,6 +172,8 @@ namespace Api.Controllers
 
         // PUT api/topic/:topicId/status
         [HttpPut("{topicId}/Status")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult ChangeStatus(int topicId, string status)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -178,6 +190,8 @@ namespace Api.Controllers
 
         // DELETE api/topics/:id
         [HttpDelete("{topicId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult Delete(int topicId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
@@ -195,6 +209,8 @@ namespace Api.Controllers
 
         // GET api/topics/:id/attachments
         [HttpGet("{topicId}/Attachments")]
+        [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachments(int topicId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -207,7 +223,10 @@ namespace Api.Controllers
         }
 
 
+
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
+        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachmet(int topicId, int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -219,11 +238,13 @@ namespace Api.Controllers
                 string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.AttatchmentPath, attachment.Path));
                 return base.File(Path.Combine(Constants.AttatchmentFolder, attachment.Path), contentType);
             }
-            return BadRequest();
+            return NotFound();
         }
 
         // POST api/topics/:id/attachments
         [HttpPost("{topicId}/Attachments")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult PostAttachment(int topicId, AttatchmentFormModel model, IFormFile file)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -231,7 +252,6 @@ namespace Api.Controllers
 
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
-
 
             if (ModelState.IsValid)
             {
@@ -245,6 +265,8 @@ namespace Api.Controllers
 
         // DELETE api/topics/:id/attachments
         [HttpDelete("{topicId}/Attachments/{attachmentId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteAttachment(int topicId, int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -257,32 +279,5 @@ namespace Api.Controllers
 
         #endregion
 
-        #region Permission
-
-        [HttpGet("All/Permission/IsAllowedToCreate")]
-        public IActionResult IsAllowedToCreate()
-        {
-            if (topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
-                return Ok();
-            return Unauthorized();
-        }
-
-        [HttpGet("{topicId}/Permission/IsAssociatedTo")]
-        public IActionResult IsAssociatedTo(int topicId)
-        {
-            if (topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Ok();
-            return Unauthorized();
-        }
-
-        [HttpGet("{topicId}/Permission/IsAllowedToEdit")]
-        public IActionResult IsAllowedToEdit(int topicId)
-        {
-            if (topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
-                return Ok();
-            return Unauthorized();
-        }
-
-        #endregion
     }
 }
