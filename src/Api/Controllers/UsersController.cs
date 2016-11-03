@@ -34,7 +34,7 @@ namespace Api.Controllers
                 {
                     try
                     {
-                        //userManager.AddUserbyEmail(email);
+                        userManager.AddUserbyEmail(email);
                         emailSender.InviteAsync(email);
                     }
                     //user already exists in Database
@@ -45,7 +45,7 @@ namespace Api.Controllers
                     //something went wrong when sending email
                     catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
                     {
-                        _logger.LogError(SmtpError.ToString());
+                        _logger.LogDebug(SmtpError.ToString());
                         // 503 - Service Unavailable
                         return new StatusCodeResult(503);
                     }
