@@ -60,11 +60,9 @@ namespace Api
                     Title = "HiPCMS API",
                     Description = "A REST api to serve History in Paderborn CMS System"
                 });
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-
                 //Set the comments path for the swagger json and ui.
-                options.IncludeXmlComments(basePath + "\\Api.xml");
-                options.OperationFilter< SwaggerOperationFilter>();
+                options.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
+                options.OperationFilter<SwaggerOperationFilter>();
             });
 
             services.AddTransient<EmailSender>();
