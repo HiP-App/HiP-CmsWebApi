@@ -25,6 +25,11 @@ namespace Api.Controllers
 
         #region Topics
 
+        /// <summary>
+        /// Is the current user allowed to create new Topics.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Topics/All/Permission/IsAllowedToCreate")]
         public IActionResult IsAllowedToCreate()
         {
@@ -33,7 +38,14 @@ namespace Api.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Is the current user allowed to see and edit the content of the topic.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAssociatedTo")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 401)]
         public IActionResult IsAssociatedTo(int topicId)
         {
             if (topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -41,6 +53,11 @@ namespace Api.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Is the current user allowed to edit the topic.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEdit(int topicId)
         {
@@ -51,8 +68,13 @@ namespace Api.Controllers
 
         #endregion
 
-        #region
+        #region User
 
+        /// <summary>
+        /// Is the current user allowed to administer users.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Users/All/Permission/IsAllowedToAdminister")]
         public IActionResult IsAllowedToAdminister()
         {
