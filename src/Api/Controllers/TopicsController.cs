@@ -73,6 +73,9 @@ namespace Api.Controllers
 
             return NotFound();
         }
+        #endregion
+
+        #region AssociatedTopics
 
         // GET api/topics/:topicId/subtopics
         [HttpGet("{topicId}/SubTopics")]
@@ -89,6 +92,62 @@ namespace Api.Controllers
             return Ok(topicManager.GetParentTopics(topicId));
         }
 
+        // PUT api/topics/:topicId/ParentTopics/:parentId
+        [HttpPut("{topicId}/ParentTopics/{parentId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutParentTopics(int topicId, int parentId)
+        {
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+                return Unauthorized();
+
+            if (topicManager.AssociateTopic(parentId, topicId))
+                    return Ok();
+            return BadRequest();
+        }
+
+        // PUT api/topics/:topicId/SubTopics/:parentId
+        [HttpPut("{topicId}/SubTopics/{childId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutSubTopics(int topicId, int childId)
+        {
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+                return Unauthorized();
+
+            if (topicManager.AssociateTopic(topicId, childId))
+                return Ok();
+            return BadRequest();
+        }
+
+        // DELETE api/topics/:id
+        [HttpDelete("{topicId}/ParentTopics/{parentId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteParentTopics(int topicId, int parentId)
+        {
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+                return Unauthorized();
+            if (topicManager.DeleteAssociated(parentId, topicId))
+                return Ok();
+
+            return BadRequest();
+        }
+
+        // DELETE api/topics/:id
+        [HttpDelete("{topicId}/SubTopic/{childId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteSubTopics(int topicId, int childId)
+        {
+            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+                return Unauthorized();
+            if (topicManager.DeleteAssociated(topicId, childId))
+                return Ok();
+
+            return BadRequest();
+        }
+        
         #endregion
 
         #region Get Users
@@ -165,7 +224,7 @@ namespace Api.Controllers
             if (ModelState.IsValid)
             { // TODO createUser is Supervisor!
                 if (topicManager.UpdateTopic(User.Identity.GetUserId(), topicId, model))
-                    return Ok(42);
+                    return Ok();
             }
             return BadRequest(ModelState);
         }

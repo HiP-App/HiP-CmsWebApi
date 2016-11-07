@@ -23,7 +23,5 @@ namespace Api.Models
         public int[] Supervisors { get; set; }
 
         public int[] Reviewers { get; set; }
-
-        public int[] AssociatedTopics { get; set; }        
     }
 }
