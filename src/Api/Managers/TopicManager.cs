@@ -167,7 +167,7 @@ namespace Api.Managers
                 return false;
 
             var relation = new AssociatedTopic() { ChildTopicId = childId, ParentTopicId = parentId };
-            dbContext.Remove(relation);
+            dbContext.Add(relation);
             dbContext.SaveChanges();
             return true;
         }
