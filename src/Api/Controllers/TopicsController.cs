@@ -135,7 +135,7 @@ namespace Api.Controllers
         }
 
         // DELETE api/topics/:id
-        [HttpDelete("{topicId}/SubTopic/{childId}")]
+        [HttpDelete("{topicId}/SubTopics/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteSubTopics(int topicId, int childId)
@@ -205,7 +205,7 @@ namespace Api.Controllers
                 {
                     var result = topicManager.AddTopic(User.Identity.GetUserId(), model);
                     if (result.Success)
-                        return new ObjectResult(result);
+                        return Ok(result);
                 }
             }
 
@@ -316,7 +316,7 @@ namespace Api.Controllers
             {
                 var result = attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model, file);
                 if (result.Success)
-                    return new ObjectResult(result);
+                    return Ok(result);
             }
 
             return BadRequest(ModelState);
