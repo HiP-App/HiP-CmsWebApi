@@ -288,10 +288,8 @@ namespace Api.Controllers
             return NotFound();
         }
 
-
-
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
-        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachmet(int topicId, int attachmentId)
@@ -302,9 +300,8 @@ namespace Api.Controllers
             var attachment = attachmentsManager.GetAttachmentById(topicId, attachmentId);
             if (attachment != null)
             {
-                var ip = HttpContext.Connection.RemoteIpAddress;
-                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.AttatchmentPath, attachment.Path));
-                return base.File(Path.Combine(Constants.AttatchmentFolder, attachment.Path), contentType);
+                var hash = DownloadManager.AddFile(Path.Combine(Constants.AttatchmentFolder, attachment.Path),HttpContext.Connection.RemoteIpAddress);
+                return Ok(hash);
             }
             return NotFound();
         }

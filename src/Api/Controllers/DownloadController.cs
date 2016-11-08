@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Api.Managers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,6 @@ namespace Api.Controllers
 {
     [Produces("application/json")]
     [Route("Download")]
-    [Authorize]
-    [ProducesResponseType(typeof(void), 401)]
     public class DownloadController : Controller
     {
         public DownloadController()
@@ -20,20 +19,15 @@ namespace Api.Controllers
 
         [HttpGet("{downloadHash}")]
         [ProducesResponseType(typeof(VirtualFileResult), 200)]
-        [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Get(string downloadHash)
         {
-            bool isAllowed = true;
-            if (!isAllowed)
-                return ApiController.Forbidden();
-
-            var resource = "...";
+            var userIp = HttpContext.Connection.RemoteIpAddress;
+            var resource = DownloadManager.GetResource(downloadHash, userIp);
             if (resource != null)
             {
-                var ip = HttpContext.Connection.RemoteIpAddress;
-                string contentType = MimeKit.MimeTypes.GetMimeType(resource);
-                return base.File(resource, contentType);
+                string contentType = MimeKit.MimeTypes.GetMimeType(resource.FileName);
+                return base.File(resource.FileName, contentType);
             }
             return NotFound();
         }
