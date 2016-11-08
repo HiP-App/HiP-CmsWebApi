@@ -49,17 +49,13 @@ namespace Api.Controllers
                     catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
                     {
                         _logger.LogDebug(SmtpError.ToString());
-                        // 503 - Service Unavailable
-                        return new StatusCodeResult(503);
+                        return ServiceUnavailable();
                     }
                 }
                 if (failCount == model.emails.Length)
-                {
-                    // 409 - Conflict
-                    return new StatusCodeResult(409);
-                }
-                // 202 - Accepted (Emails get send async, so we cannot guarantee that emails are send)
-                return new StatusCodeResult(202);
+                    return Conflict();
+                
+                return Accepted();
             }
             return BadRequest(ModelState);
         }
@@ -156,8 +152,7 @@ namespace Api.Controllers
 
         // GET api/users/{userId}/picture/
         [HttpGet("{userId}/picture/")]
-        [ProducesResponseType(typeof(VirtualFileResult), 200)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetPictureById(int userId)
         {
@@ -166,8 +161,7 @@ namespace Api.Controllers
 
         // GET api/users/current/picture/
         [HttpGet("Current/picture/")]
-        [ProducesResponseType(typeof(VirtualFileResult), 200)]
-        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetPictureForCurrentUser()
         {
@@ -181,10 +175,9 @@ namespace Api.Controllers
             {
                 string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
-                    return NotFound();
+                    path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
 
-                string contentType = MimeKit.MimeTypes.GetMimeType(path);
-                return base.File(Path.Combine(Constants.ProfilePictureFolder, user.Picture), contentType);
+                return Ok(ToBase64String(path));
             }
             return BadRequest();
         }
