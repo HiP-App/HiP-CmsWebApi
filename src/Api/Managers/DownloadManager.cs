@@ -18,14 +18,15 @@ namespace Api.Managers
             return entry.HashValue;
         }
 
-        public static DownloadResource GetResource(string hashValue, IPAddress userIp)
+        public static DownloadResource GetResource(string hashValue)
         {
             foreach (DownloadResource entry in resources)
             {
                 // expired?
                 if (DateTime.Now > entry.Expires)
                     resources.Remove(entry);
-                else if (entry.HashValue.Equals(hashValue) && entry.UserIp.Equals(userIp))
+
+                if (entry.HashValue.Equals(hashValue))
                     return entry;
             }
             return null;
@@ -53,7 +54,17 @@ namespace Api.Managers
 
             public IPAddress UserIp { get; }
 
+            public bool IsSameUser(IPAddress userIp)
+            {
+                return UserIp.Equals(userIp);
+            }
+
             public DateTime Expires { get; }
+
+            public bool IsExpired()
+            {
+                return DateTime.Now > Expires;
+            }
         }
 
     }

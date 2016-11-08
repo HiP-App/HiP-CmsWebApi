@@ -30,6 +30,7 @@ namespace Api.Controllers
         public static StatusCodeResult Accepted() { return new StatusCodeResult(202); }
         public static StatusCodeResult Forbidden() { return new StatusCodeResult(403); }
         public static StatusCodeResult Conflict() { return new StatusCodeResult(409); }
+        public static StatusCodeResult Gone() { return new StatusCodeResult(410); }
         public static StatusCodeResult ServiceUnavailable() { return new StatusCodeResult(503); }
         public static ObjectResult InternalServerError(Object error) { return new ObjectResult(error) { StatusCode = 500 }; }
 
