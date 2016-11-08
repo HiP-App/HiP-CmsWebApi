@@ -101,9 +101,6 @@ namespace Api
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
             app.UseStaticFiles();
-            var x= Membership.GeneratePassword(2, 10);
-
-
         }
 
         public static void Main(string[] args)
