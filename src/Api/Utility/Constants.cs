@@ -7,7 +7,7 @@ namespace Api.Utility
         // No. of items to show in Paginated Result
         public const int PageSize = 50;
 
-
+        public const string DefaultPircture = "default.jpg";
 
         public const string ProfilePictureFolder = "profilepictures";
 

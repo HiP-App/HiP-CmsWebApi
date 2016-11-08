@@ -11,6 +11,7 @@ using Api.Utility;
 namespace Api.Controllers
 {
     [ProducesResponseType(typeof(void), 200)]
+    [ProducesResponseType(typeof(void), 403)]
     public class PermissionsController : ApiController
     {
 
@@ -29,20 +30,20 @@ namespace Api.Controllers
         /// Is the current user allowed to create new Topics.
         /// </summary>
         /// <response code="200">User is allowed</response>
-        /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpGet("Topics/All/Permission/IsAllowedToCreate")]
         public IActionResult IsAllowedToCreate()
         {
             if (topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
                 return Ok();
-            return Unauthorized();
+            return Forbidden();
         }
 
         /// <summary>
         /// Is the current user allowed to see and edit the content of the topic.
         /// </summary>
         /// <response code="200">User is allowed</response>
-        /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAssociatedTo")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 401)]
@@ -50,20 +51,20 @@ namespace Api.Controllers
         {
             if (topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Ok();
-            return Unauthorized();
+            return Forbidden();
         }
 
         /// <summary>
         /// Is the current user allowed to edit the topic.
         /// </summary>
         /// <response code="200">User is allowed</response>
-        /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEdit(int topicId)
         {
             if (topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Ok();
-            return Unauthorized();
+            return Forbidden();
         }
 
         #endregion
@@ -74,13 +75,13 @@ namespace Api.Controllers
         /// Is the current user allowed to administer users.
         /// </summary>
         /// <response code="200">User is allowed</response>
-        /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpGet("Users/All/Permission/IsAllowedToAdminister")]
         public IActionResult IsAllowedToAdminister()
         {
             if (userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Ok();
-            return Unauthorized();
+            return Forbidden();
         }
 
         #endregion

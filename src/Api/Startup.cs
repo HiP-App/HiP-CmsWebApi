@@ -3,6 +3,7 @@ using Api.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,8 +46,8 @@ namespace Api
             // Add database service for Postgres
             services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
 
-            // Add framework services.
-            services.AddMvc();
+            // Add framework services. (Workaround: https://github.com/aspnet/Mvc/issues/4945)
+            services.AddMvc(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
 
             // Add Swagger service
             services.AddSwaggerGen();
@@ -99,8 +100,10 @@ namespace Api
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
-
             app.UseStaticFiles();
+            var x= Membership.GeneratePassword(2, 10);
+
+
         }
 
         public static void Main(string[] args)

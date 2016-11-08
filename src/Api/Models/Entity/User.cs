@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Api.Utility;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -40,7 +41,7 @@ namespace Api.Models.Entity
             get
             {
                 if (!HasProfilePicture())
-                    return "default.jpg";
+                    return Constants.DefaultPircture;
                 return ProfilePicture;
             }
         }

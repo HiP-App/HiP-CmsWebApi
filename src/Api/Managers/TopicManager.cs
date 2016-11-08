@@ -17,16 +17,17 @@ namespace Api.Managers
 
         public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
         {
-            IQueryable<Topic> topics = from t in dbContext.Topics select t;
+            IQueryable<Topic> topics = dbContext.Topics.Include(t => t.CreatedBy);
             if (!string.IsNullOrEmpty(query))
                 topics = topics.Where(t => t.Title.Contains(query) || t.Description.Contains(query));
 
             if (!string.IsNullOrEmpty(status))
-                topics = topics.Where(t => t.Status.CompareTo(status) == 0);
+                topics = topics.Where(t => t.Status.Equals(status));
 
-            if (deadline != null)
-                topics = topics.Where(t => DateTime.Compare(t.Deadline, (DateTime)deadline) == 0);
+            if (deadline != null && deadline.HasValue)
+                topics = topics.Where(t => DateTime.Compare(t.Deadline, deadline.Value) == 0);
 
+            // TODO only parents without parent.
             if (onlyParents)
                 topics = topics.Except(from at in dbContext.AssociatedTopics
                                        join t in topics
@@ -78,9 +79,6 @@ namespace Api.Managers
                 AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
                 AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
-                // Add Topic Associations
-                topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
-
                 dbContext.Topics.Add(topic);
 
                 dbContext.SaveChanges();
@@ -119,9 +117,6 @@ namespace Api.Managers
                     AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
                     AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
                     AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
-
-                    // Add Topic associations
-                    topic.AssociatedTopics = AssociateTopicsToTopic(topic.Id, model.AssociatedTopics);
 
                     dbContext.SaveChanges();
                     transaction.Commit();
@@ -164,9 +159,37 @@ namespace Api.Managers
             return false;
         }
 
+        public virtual bool AssociateTopic(int parentId, int childId)
+        {
+            // TODO throw errors
+            if (!dbContext.Topics.Any(t => t.Id == childId))
+                return false;
+            if (!dbContext.Topics.Any(t => t.Id == parentId))
+                return false;
+
+            if (dbContext.AssociatedTopics.Any(at => at.ChildTopicId == childId && at.ParentTopicId == parentId))
+                return false; // TODO deticated error
+
+            var relation = new AssociatedTopic() { ChildTopicId = childId, ParentTopicId = parentId };
+
+            dbContext.Add(relation);
+            dbContext.SaveChanges();
+            return true;
+        }
+
+        public virtual bool DeleteAssociated(int parentId, int childId)
+        {
+            var relation = dbContext.AssociatedTopics.Single(ta => (ta.ParentTopicId == parentId && ta.ChildTopicId == childId));
+            if (relation != null)
+            {
+                dbContext.Remove(relation);
+                dbContext.SaveChanges();
+                return true;
+            }
+            return false;
+        }
 
         // Private Region
-
         private void AssociateUsersToTopicByRole(string role, int[] userIds, Topic topic)
         {
             var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
@@ -192,20 +215,6 @@ namespace Api.Managers
 
             topic.TopicUsers.AddRange(newUsers);
             topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
-        }
-
-        private List<AssociatedTopic> AssociateTopicsToTopic(int topicId, int[] associatedTopicIds)
-        {
-            var associatedTopics = new List<AssociatedTopic>();
-
-            if (associatedTopicIds != null)
-            {
-                foreach (int associatedTopicId in associatedTopicIds)
-                {
-                    associatedTopics.Add(new AssociatedTopic() { ParentTopicId = associatedTopicId });
-                }
-            }
-            return associatedTopics;
         }
     }
 }
