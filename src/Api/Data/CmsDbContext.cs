@@ -20,6 +20,8 @@ namespace Api.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
+        public DbSet<AnnotationTag> AnnotationTags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
