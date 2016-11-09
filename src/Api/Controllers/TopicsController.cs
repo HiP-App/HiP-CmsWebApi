@@ -12,6 +12,7 @@ using Api.Permission;
 using Api.Models.User;
 using System.Collections.Generic;
 using Api.Models.Topic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
 {
@@ -162,12 +163,32 @@ namespace Api.Controllers
             return GetTopicUsers(topicId, Role.Student);
         }
 
+        // PUT api/topics/:topicId/students
+        [HttpPut("{topicId}/Students")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PutTopicStudents(int topicId, int[] users)
+        {
+            return PutTopicUsers(topicId, Role.Student, users);
+        }
+
         // GET api/topics/:topicId/supervisors
         [HttpGet("{topicId}/Supervisors")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicSupervisors(int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
+        }
+
+        // PUT api/topics/:topicId/Supervisors
+        [HttpPut("{topicId}/Supervisors")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PutTopicSupervisors(int topicId, int[] users)
+        {
+            return PutTopicUsers(topicId, Role.Supervisor, users);
         }
 
         // GET api/topics/:topicId/reviewers
@@ -178,9 +199,33 @@ namespace Api.Controllers
             return GetTopicUsers(topicId, Role.Reviewer);
         }
 
+        // PUT api/topics/:topicId/Reviewers
+        [HttpPut("{topicId}/Reviewers")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PutTopicReviewers(int topicId, int[] users)
+        {
+            return PutTopicUsers(topicId, Role.Reviewer, users);
+        }
+
         private IActionResult GetTopicUsers(int topicId, string role)
         {
             return Ok(topicManager.GetAssociatedUsersByRole(topicId, role));
+        }
+
+        private IActionResult PutTopicUsers(int topicId, string role, int[] users)
+        {
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+                return Forbidden();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            else if (topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users))
+                return Ok();
+
+            return BadRequest();
         }
 
         #endregion
@@ -269,10 +314,10 @@ namespace Api.Controllers
 
         #endregion
 
-        #region Attachments
+            #region Attachments
 
 
-        // GET api/topics/:id/attachments
+            // GET api/topics/:id/attachments
         [HttpGet("{topicId}/Attachments")]
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
         [ProducesResponseType(typeof(void), 403)]

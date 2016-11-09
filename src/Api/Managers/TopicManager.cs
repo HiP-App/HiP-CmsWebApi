@@ -57,6 +57,45 @@ namespace Api.Managers
             return dbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
         }
 
+        public virtual bool ChangeAssociatedUsersByRole(int updaterId, int topicId, string role, int[] userIds)
+        {
+            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+            if (topic == null)
+                return false;
+
+            var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
+
+            var newUsers = new List<TopicUser>();
+            var removedUsers = new List<TopicUser>();
+
+            if (userIds != null)
+            {
+                // new user?
+                foreach (int userId in userIds)
+                {
+                    if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
+                        newUsers.Add(new TopicUser() { UserId = userId, Role = role });
+                }
+                // removed user?
+                foreach (TopicUser existingUser in existingUsers)
+                {
+                    if (!userIds.Contains(existingUser.UserId))
+                        removedUsers.Add(existingUser);
+                }
+            }
+
+            topic.TopicUsers.AddRange(newUsers);
+            topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
+            // Updated // TODO add user
+            topic.UpdatedAt = DateTime.Now;
+            // Notifications
+            new NotificationProcessor(dbContext, topic, updaterId).OnUsersChanged(newUsers, removedUsers, role);
+
+            dbContext.Update(topic);
+            dbContext.SaveChanges();
+            return true;
+        }
+
         public virtual IEnumerable<Topic> GetSubTopics(int topicId)
         {
             return dbContext.AssociatedTopics.Include(at => at.ChildTopic).Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
@@ -73,11 +112,6 @@ namespace Api.Managers
             {
                 var topic = new Topic(model);
                 topic.CreatedById = userId;
-
-                // Add User associations
-                AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
-                AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
-                AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
                 dbContext.Topics.Add(topic);
 
@@ -111,12 +145,6 @@ namespace Api.Managers
                     topic.Deadline = (DateTime)model.Deadline;
                     topic.Description = model.Description;
                     topic.Requirements = model.Requirements;
-
-
-                    // Add User associations
-                    AssociateUsersToTopicByRole(Role.Student, model.Students, topic);
-                    AssociateUsersToTopicByRole(Role.Supervisor, model.Supervisors, topic);
-                    AssociateUsersToTopicByRole(Role.Reviewer, model.Reviewers, topic);
 
                     dbContext.SaveChanges();
                     transaction.Commit();
@@ -187,34 +215,6 @@ namespace Api.Managers
                 return true;
             }
             return false;
-        }
-
-        // Private Region
-        private void AssociateUsersToTopicByRole(string role, int[] userIds, Topic topic)
-        {
-            var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
-
-            var newUsers = new List<TopicUser>();
-            var removedUsers = new List<TopicUser>();
-
-            if (userIds != null)
-            {
-                // new user?
-                foreach (int userId in userIds)
-                {
-                    if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = userId, Role = role });
-                }
-                // removed user?
-                foreach (TopicUser existingUser in existingUsers)
-                {
-                    if (!userIds.Contains(existingUser.UserId))
-                        removedUsers.Add(existingUser);
-                }
-            }
-
-            topic.TopicUsers.AddRange(newUsers);
-            topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
         }
     }
 }

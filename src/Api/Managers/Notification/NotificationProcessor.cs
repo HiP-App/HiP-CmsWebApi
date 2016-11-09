@@ -56,11 +56,6 @@ namespace Api.Managers
 
         public void OnUpdate(TopicFormModel changes)
         {
-
-            // Roles Changed
-            checkChangedUsers(changes.Students, Role.Student);
-            checkChangedUsers(changes.Supervisors, Role.Supervisor);
-            checkChangedUsers(changes.Reviewers, Role.Reviewer);
             // Deadline Changed
             if (changes.Deadline != topic.Deadline)
                 NotifyAll(NotificationType.TOPIC_DEADLINE_CHANGED, changes.Deadline.ToString());
@@ -72,20 +67,22 @@ namespace Api.Managers
             finnish();
         }
 
-        private void checkChangedUsers(int[] userIds, String role)
+        #endregion
+
+        #region OnUsersChanged
+
+        public void OnUsersChanged(IEnumerable<TopicUser> newUser, IEnumerable<TopicUser> deletedUser, string role)
         {
-            var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
-            foreach (int userId in userIds)
+            foreach (TopicUser user in newUser)
             {
-                if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
-                    createNotification(userId, NotificationType.TOPIC_ASSIGNED_TO, role);
+                createNotification(user.UserId, NotificationType.TOPIC_ASSIGNED_TO, role);
             }
-            // removed user?
-            foreach (TopicUser existingUser in existingUsers)
+            foreach (TopicUser user in deletedUser)
             {
-                if (!userIds.Contains(existingUser.UserId))
-                    createNotification(existingUser.UserId, NotificationType.TOPIC_REMOVED_FROM, role);
+                createNotification(user.UserId, NotificationType.TOPIC_REMOVED_FROM, role);
             }
+
+            finnish();
         }
 
         #endregion
