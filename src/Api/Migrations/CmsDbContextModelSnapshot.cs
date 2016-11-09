@@ -24,6 +24,8 @@ namespace Api.Migrations
 
                     b.Property<string>("Icon");
 
+                    b.Property<bool>("IsDeleted");
+
                     b.Property<string>("Layer")
                         .IsRequired();
 

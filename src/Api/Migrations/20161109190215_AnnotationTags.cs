@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Api.Migrations
 {
-    public partial class AddAnnotationTags : Migration
+    public partial class AnnotationTags : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,6 +16,7 @@ namespace Api.Migrations
                         .Annotation("Npgsql:ValueGeneratedOnAdd", true),
                     Description = table.Column<string>(nullable: true),
                     Icon = table.Column<string>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
                     Layer = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     ParentTagId = table.Column<int>(nullable: true),

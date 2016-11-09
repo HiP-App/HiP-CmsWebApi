@@ -15,6 +15,9 @@ namespace Api.Models.AnnotationTag
             Layer = tag.Layer;
             Style = tag.Style;
             Description = tag.Description;
+            IsDeleted = tag.IsDeleted;
+            UsageCount = tag.UsageCounter;
+
         }
 
         public int TagId { get; private set; }
@@ -23,5 +26,7 @@ namespace Api.Models.AnnotationTag
         public string Layer { get; private set; }
         public string Style { get; private set; }
         public string Description { get; private set; }
+        public bool IsDeleted { get; private set; }
+        public int UsageCount { get; private set; }
     }
 }

@@ -21,17 +21,17 @@ namespace Api.Controllers
         // Get api/annotation/Tags
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAllTags()
+        [ProducesResponseType(typeof(void), 201)]
+        public IActionResult GetAllTags(bool IncludeDeleted = false)
         {
-            var tags = tagManager.getAllTags();
-            if (tags != null)
-                return Ok(tags);
-            return NotFound();
+            var tags = tagManager.getAllTags(IncludeDeleted);
+            return Ok(tags);
         }
 
         // Get api/Annotation/Tags/:id/ChildTags
         [HttpGet("Tags/{id}/ChildTags")]
+        [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
+        [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetChildTagsOf(int id)
         {
             var tags = tagManager.getChildTagsOf(id);
@@ -55,8 +55,8 @@ namespace Api.Controllers
             return BadRequest();
         }
 
-        // Post api/Annotation/Tags/:parentId/AddChildTag/:childId
-        [HttpPost("Tags/{parentId}/AddChildTag/{childId}")]
+        // Post api/Annotation/Tags/:parentId/ChildTags/:childId
+        [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post(int parentId, int childId)
@@ -65,6 +65,26 @@ namespace Api.Controllers
             if (success)
                 return Ok();
             return BadRequest();
+        }
+
+        [HttpDelete("Tags/{Id}")]
+        [ProducesResponseType(typeof(void), 200)]
+        public IActionResult Delete(int Id)
+        {
+            bool success = tagManager.DeleteTag(Id);
+            if (success)
+                return Ok();
+            return Ok(null);
+        }
+
+        [HttpDelete("Tags/{parentId}/ChildTags/{childId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        public IActionResult DeleteChildOf(int parentId, int childId)
+        {
+            bool success = tagManager.RemoveChildTag(parentId, childId);
+            if (success)
+                return Ok();
+            return Ok(null);
         }
 
 

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using Api.Managers;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models.Entity
 {
@@ -19,8 +20,10 @@ namespace Api.Models.Entity
         [Required]
         public string ShortName { get; set; }
 
+
         public AnnotationTag ParentTag { get; set; }
 
+        [InverseProperty("ParentTag")]
         public List<AnnotationTag> ChildTags { get; set; }
 
         public string Style { get; set; }
@@ -30,6 +33,8 @@ namespace Api.Models.Entity
         public string Icon { get; set; }
 
         public int UsageCounter { get; set; }
+
+        public bool IsDeleted { get; set; }
 
         public AnnotationTag() { }
 
@@ -41,6 +46,7 @@ namespace Api.Models.Entity
 
             UsageCounter = 0;
             ChildTags = new List<AnnotationTag>();
+            IsDeleted = false;
         }
 
         #region Utily Methods

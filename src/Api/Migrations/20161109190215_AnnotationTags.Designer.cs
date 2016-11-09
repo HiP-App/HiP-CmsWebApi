@@ -8,8 +8,8 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20161108185328_AddAnnotationTags")]
-    partial class AddAnnotationTags
+    [Migration("20161109190215_AnnotationTags")]
+    partial class AnnotationTags
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,6 +24,8 @@ namespace Api.Migrations
                     b.Property<string>("Description");
 
                     b.Property<string>("Icon");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Layer")
                         .IsRequired();
