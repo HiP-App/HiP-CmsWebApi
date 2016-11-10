@@ -14,14 +14,46 @@ namespace Api.Controllers
     public class PermissionsController : ApiController
     {
 
+        private AnnotationPermissions annotationPermissions;
         private TopicPermissions topicPermissions;
         private UserPermissions userPermissions;
 
         public PermissionsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
+            
             topicPermissions = new TopicPermissions(dbContext);
             userPermissions = new UserPermissions(dbContext);
         }
+
+        #region Annotations
+
+        /// <summary>
+        /// Is the current user allowed to create new Annotation Tags.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="401">User is denied</response>
+        [HttpGet("Annotation/Tags/All/Permission/IsAllowedToCreate")]
+        public IActionResult IsAllowedToCreateTags()
+        {
+            if (annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+                return Ok();
+            return Unauthorized();
+        }
+        
+        /// <summary>
+        /// Is the current user allowed to edit Annotation Tags.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="401">User is denied</response>
+        [HttpGet("Annotation/Tags/All/Permission/IsAllowedToCreate")]
+        public IActionResult IsAllowedToEditTags()
+        {
+            if (annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Ok();
+            return Unauthorized();
+        }
+
+        #endregion
 
         #region Topics
 
