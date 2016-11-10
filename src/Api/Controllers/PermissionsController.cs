@@ -84,6 +84,19 @@ namespace Api.Controllers
             return Forbidden();
         }
 
+        /// <summary>
+        /// Is the current user is allowed to invite users.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="403">User is denied</response>
+        [HttpGet("Users/All/Permission/IsAllowedToInvite")]
+        public IActionResult IsAllowedToInvite()
+        {
+            if (userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+                return Ok();
+            return Forbidden();
+        }
+
         #endregion
     }
 }

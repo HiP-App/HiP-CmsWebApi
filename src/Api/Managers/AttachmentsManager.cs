@@ -4,7 +4,6 @@ using Api.Models.Entity;
 using Api.Models.Topic;
 using Api.Utility;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,11 +26,11 @@ namespace Api.Managers
             return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
-        public AddEntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
+        public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
         {
             var topic = dbContext.Topics.Single(t => t.Id == topicId);
             if (topic == null)
-                return new AddEntityResult() { Success = false, ErrorMessage = "Unknown Topic" };
+                return EntityResult.Error("Unknown Topic");
 
             string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
             if (!System.IO.Directory.Exists(topicFolder))
@@ -55,11 +54,11 @@ namespace Api.Managers
 
                 new NotificationProcessor(dbContext, topic, userId).OnAttachmetAdded(model.AttatchmentName);
 
-                return new AddEntityResult() { Success = true, Value = attatchment.Id };
+                return EntityResult.Successfull(attatchment.Id);
             }
             catch (Exception e)
             {
-                return new AddEntityResult() { Success = false, ErrorMessage = e.Message };
+                return EntityResult.Error(e.Message);
             }
         }
 

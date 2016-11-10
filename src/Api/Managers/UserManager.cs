@@ -34,12 +34,12 @@ namespace Api.Managers
 
         public virtual User GetUserById(int userId)
         {
-            return dbContext.Users.FirstOrDefault(u => u.Id == userId);
+            return dbContext.Users.Single(u => u.Id == userId);
         }
 
         public virtual User GetUserByEmail(string email)
         {
-            return dbContext.Users.FirstOrDefault(u => u.Email == email);
+            return dbContext.Users.Single(u => u.Email == email);
         }
 
         public virtual bool UpdateUser(int userId, UserFormModel model)

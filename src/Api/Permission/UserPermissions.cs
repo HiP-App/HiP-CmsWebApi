@@ -23,5 +23,11 @@ namespace Api.Permission
             var user = userManager.GetUserById(userId);
             return user.Role.Equals(Role.Administrator);
         }
+
+        public bool IsAllowedToInvite(int userId)
+        {
+            var user = userManager.GetUserById(userId);
+            return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+        }
     }
 }
