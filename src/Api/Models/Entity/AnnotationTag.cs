@@ -43,6 +43,8 @@ namespace Api.Models.Entity
             Name = model.Name;
             ShortName = model.ShortName;
             Layer = model.Layer;
+            Description = model.Description;
+            Style = model.Style;
 
             UsageCounter = 0;
             ChildTags = new List<AnnotationTag>();

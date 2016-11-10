@@ -18,6 +18,8 @@ namespace Api.Controllers
             tagManager = new AnnotationTagManager(dbContext);
         }
 
+        #region GET
+
         // Get api/annotation/Tags
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
@@ -28,6 +30,17 @@ namespace Api.Controllers
             return Ok(tags);
         }
 
+        // Get api/Annotation/Tags/:id
+        [HttpGet("Tags/{id}")]
+        [ProducesResponseType(typeof(AnnotationTagResult), 200)]
+        [ProducesResponseType(typeof(void), 201)]
+        public IActionResult GetTag(int id)
+        {
+            var tag = tagManager.getTag(id);
+            return Ok(tag);
+        }
+
+
         // Get api/Annotation/Tags/:id/ChildTags
         [HttpGet("Tags/{id}/ChildTags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
@@ -37,7 +50,11 @@ namespace Api.Controllers
             var tags = tagManager.getChildTagsOf(id);
             return Ok(tags);
         }
-        
+
+        #endregion
+
+        #region POST
+
         // Post api/Annotation/Tags
         [HttpPost("Tags")]
         [ProducesResponseType(typeof(IActionResult), 200)]
@@ -67,6 +84,27 @@ namespace Api.Controllers
             return BadRequest();
         }
 
+        #endregion
+
+        #region PUT
+
+        // Put api/Annotation/Tags/:Id
+        [HttpPut("Tags/{Id}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 404)]
+        public IActionResult PutTag(int Id, AnnotationTagFormModel model)
+        {
+            var success = tagManager.EditTag(model, Id);
+            if (success)
+                return Ok();
+            return NotFound();
+        }
+
+        #endregion
+
+        #region DELETE
+
+        // Delete api/Annotation/Tags/:Id
         [HttpDelete("Tags/{Id}")]
         [ProducesResponseType(typeof(void), 200)]
         public IActionResult Delete(int Id)
@@ -87,6 +125,6 @@ namespace Api.Controllers
             return Ok(null);
         }
 
-
+        #endregion
     }
 }
