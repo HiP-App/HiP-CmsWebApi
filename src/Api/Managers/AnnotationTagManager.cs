@@ -58,11 +58,11 @@ namespace Api.Managers
 
             var parent = dbContext.AnnotationTags
                 .Include(t => t.ChildTags)
-                .FirstOrDefault(t => t.Id == parentId);
+                .First(t => t.Id == parentId);
             var child = dbContext.AnnotationTags
                 .Include(t => t.ParentTag)
                     .ThenInclude(pt => pt.ChildTags)
-                .FirstOrDefault(t => t.Id == childId);
+                .First(t => t.Id == childId);
 
             if(parent != null && child != null)
             {
@@ -86,7 +86,7 @@ namespace Api.Managers
 
         public virtual List<AnnotationTagResult> getChildTagsOf(int id)
         {
-            var parent = dbContext.AnnotationTags.Include(t => t.ChildTags).FirstOrDefault(t => t.Id == id); 
+            var parent = dbContext.AnnotationTags.Include(t => t.ChildTags).First(t => t.Id == id); 
             if (parent != null)
             {
                 List<AnnotationTagResult> result = new List<AnnotationTagResult>();
@@ -102,7 +102,7 @@ namespace Api.Managers
         {
             var tag = dbContext.AnnotationTags
                 .Include(t => t.ChildTags)
-                .FirstOrDefault(t => t.Id == id);
+                .First(t => t.Id == id);
 
 
             if (tag != null)
@@ -134,9 +134,9 @@ namespace Api.Managers
 
             var parent = dbContext.AnnotationTags
                 .Include(t => t.ChildTags)
-                .FirstOrDefault(t => t.Id == parentId);
+                .First(t => t.Id == parentId);
 
-            var child = parent.ChildTags.FirstOrDefault(t => t.Id == childId);
+            var child = parent.ChildTags.First(t => t.Id == childId);
             
             if (child != null)
             {
