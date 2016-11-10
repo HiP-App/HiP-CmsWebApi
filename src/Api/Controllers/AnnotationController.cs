@@ -23,9 +23,16 @@ namespace Api.Controllers
         #region GET
 
         // Get api/annotation/Tags
+
+        /// <summary>
+        /// All Annotation Tags save in the system
+        /// </summary>
+        /// <param name="IncludeDeleted">Include already deleted, but still used Tags?</param>
+        /// <response code="200">A List of AnnotationTagResults</response>
+        /// <response code="204">There are no Tags in the system</response>
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
-        [ProducesResponseType(typeof(void), 201)]
+        [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetAllTags(bool IncludeDeleted = false)
         {
             var tags = tagManager.getAllTags(IncludeDeleted);
@@ -33,9 +40,16 @@ namespace Api.Controllers
         }
 
         // Get api/Annotation/Tags/:id
+
+        /// <summary>
+        /// A specific Tag save in the system
+        /// </summary>
+        /// <param name="id">The id of the Tag</param>
+        /// <response code="200">A AnnotationTagResult</response>
+        /// <response code="204">There is no Tag {id} in the system</response>
         [HttpGet("Tags/{id}")]
         [ProducesResponseType(typeof(AnnotationTagResult), 200)]
-        [ProducesResponseType(typeof(void), 201)]
+        [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetTag(int id)
         {
             var tag = tagManager.getTag(id);
@@ -44,6 +58,13 @@ namespace Api.Controllers
 
 
         // Get api/Annotation/Tags/:id/ChildTags
+
+        /// <summary>
+        /// All ChildTags from {id}
+        /// </summary>
+        /// <param name="id">The id of the parent tag</param>
+        /// <response code="200">A List of AnnotationTagResults</response>
+        /// <response code="204">The parent Tag {id} has no Children</response>
         [HttpGet("Tags/{id}/ChildTags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
@@ -58,6 +79,15 @@ namespace Api.Controllers
         #region POST
 
         // Post api/Annotation/Tags
+
+        /// <summary>
+        /// Add a new Tag.
+        /// </summary>
+        /// <param name="tag">The tag to be added</param>
+        /// <response code="200">Tag created</response>
+        /// <response code="500">Server Error</response>
+        /// <response code="403">User not allowed to created Tags</response>
+        /// <response code="400">Request was missformed</response>
         [HttpPost("Tags")]
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(void), 500)]
@@ -79,6 +109,15 @@ namespace Api.Controllers
         }
 
         // Post api/Annotation/Tags/:parentId/ChildTags/:childId
+
+        /// <summary>
+        /// Add Tag {childId} as Child to Tag {parentId} 
+        /// </summary>
+        /// <param name="parentId">Tag to add Child to</param>
+        /// <param name="childId">Tag to be added as Child</param>
+        /// <response code="200">child added</response>
+        /// <response code="403">User not allowed to edit Tags</response>
+        /// <response code="400">Request was missformed</response>
         [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -99,6 +138,15 @@ namespace Api.Controllers
         #region PUT
 
         // Put api/Annotation/Tags/:Id
+
+        /// <summary>
+        /// Edit Tag {Id} 
+        /// </summary>
+        /// <param name="Id">Tag to be edited</param>
+        /// <param name="model">Date to be changed</param>
+        /// <response code="200">Tag edited successful</response>
+        /// <response code="403">User not allowed to edit Tags</response>
+        /// <response code="404">No such Tag</response>
         [HttpPut("Tags/{Id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -119,6 +167,13 @@ namespace Api.Controllers
         #region DELETE
 
         // Delete api/Annotation/Tags/:Id
+
+        /// <summary>
+        /// Delete Tag {Id} 
+        /// </summary>
+        /// <param name="Id">Tag to be delete</param>
+        /// <response code="200">Tag ddeleted successful</response>
+        /// <response code="403">User not allowed to delete Tags</response>
         [HttpDelete("Tags/{Id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -133,6 +188,13 @@ namespace Api.Controllers
             return Ok(null);
         }
 
+        /// <summary>
+        /// remove Child {childId} from Tag {parentId} 
+        /// </summary>
+        /// <param name="parentId">Parent Tag to remove child from</param>
+        /// <param name="childId">Child to be removed</param>
+        /// <response code="200">Child removed successful</response>
+        /// <response code="403">User not allowed to edit Tags</response>
         [HttpDelete("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]

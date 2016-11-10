@@ -20,7 +20,7 @@ namespace Api.Controllers
 
         public PermissionsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
-            
+            annotationPermissions = new AnnotationPermissions(dbContext);
             topicPermissions = new TopicPermissions(dbContext);
             userPermissions = new UserPermissions(dbContext);
         }
@@ -45,7 +45,7 @@ namespace Api.Controllers
         /// </summary>
         /// <response code="200">User is allowed</response>
         /// <response code="401">User is denied</response>
-        [HttpGet("Annotation/Tags/All/Permission/IsAllowedToCreate")]
+        [HttpGet("Annotation/Tags/All/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEditTags()
         {
             if (annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
