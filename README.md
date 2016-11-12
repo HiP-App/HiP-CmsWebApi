@@ -43,6 +43,16 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
   * Execute `dotnet run`
   * `{{BaseUrl}}/swagger/ui` will give information about the service endpoints.
 
+### VS Code Setup
+
+For getting the project to run with Visual Studio Code, you will have to execute a few more steps:
+
+ * go to the Debug view and click the run button - you will be asked if a launch configuration should be created (click yes)
+ * in the created `tasks.json`, add the following line: `"options": { "cwd": "${workspaceRoot}/src/Api" },`
+ * in the created `launch.json`:
+   * replace every occurence of `${workspaceRoot}` with `${workspaceRoot}/src/Api`
+   * add `"env": { "ASPNETCORE_ENVIRONMENT": "Development" }` to your run configurations
+
 ## How to develop
 
  * You can [fork](https://help.github.com/articles/fork-a-repo/) or [clone](https://help.github.com/articles/cloning-a-repository/) our repo.
@@ -61,7 +71,7 @@ Please write an email to [hip-app@campus.upb.de](mailto:hip-app@campus.upb.de).
 
 ## Documentation
 
-Documentation is currently collected in our [internal Confluence](http://atlassian-hip.cs.upb.de:8090/dashboard.action). If something is missing in 
+Documentation is currently collected in our [internal Confluence](http://atlassian-hip.cs.upb.de:8090/confluence/). If something is missing in 
 this README, just [send an email](mailto:hip-app@campus.upb.de).
 
 
