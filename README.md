@@ -21,7 +21,7 @@ for a list of code contributions.
 
 ## Technolgies and Requirements:
 HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the requirements needed to build and develop this project,
- * [.NET Core](https://www.microsoft.com/net/core#windows) for windows or Linux.
+ * [.NET Core](https://www.microsoft.com/net/core#windows) for Windows, Linux or macOS.
  * [PostgreSQL](http://www.postgresql.org/download/)
  
 ## IDE Options
@@ -37,8 +37,9 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
  * To run through terminal,
   * Navigate to `src/Api`
   * Set Environment Variable 
-		* Windows `set ASPNETCORE_ENVIRONMENT=Development`
-		* Linux	`export ASPNETCORE_ENVIRONMENT=Development`
+		* Windows: `set ASPNETCORE_ENVIRONMENT=Development`
+		* Linux/macOS: `export ASPNETCORE_ENVIRONMENT=Development`
+  * Before your first run, execute `dotnet restore`
   * Execute `dotnet run`
   * `{{BaseUrl}}/swagger/ui` will give information about the service endpoints.
 
