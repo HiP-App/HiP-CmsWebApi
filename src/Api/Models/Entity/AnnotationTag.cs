@@ -21,6 +21,7 @@ namespace Api.Models.Entity
         [Required]
         public string ShortName { get; set; }
 
+        public int? ParentTagId { get; set; }
 
         public AnnotationTag ParentTag { get; set; }
 
