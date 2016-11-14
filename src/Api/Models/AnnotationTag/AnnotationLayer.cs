@@ -13,7 +13,7 @@ namespace Api.Models.AnnotationTag
 
         public bool isValidLayer(string layer)
         {
-            return layer.Equals(Place) || layer.Equals(Time) || layer.Equals(Perspective);
+            return Place.Equals(layer) || Time.Equals(layer) || Perspective.Equals(layer);
         }
     }
 }

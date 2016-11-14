@@ -1,5 +1,6 @@
 ﻿using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
+using static Api.Models.Entity.AnnotationTag;
 
 namespace Api.Data
 {
@@ -31,6 +32,7 @@ namespace Api.Data
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new NotificationMap(modelBuilder.Entity<Notification>());
+            new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
         }
     }
 }

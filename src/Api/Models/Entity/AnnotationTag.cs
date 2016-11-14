@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using Api.Managers;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Api.Models.Entity
 {
@@ -23,7 +24,6 @@ namespace Api.Models.Entity
 
         public AnnotationTag ParentTag { get; set; }
 
-        [InverseProperty("ParentTag")]
         public List<AnnotationTag> ChildTags { get; set; }
 
         public string Style { get; set; }
@@ -47,15 +47,14 @@ namespace Api.Models.Entity
             Style = model.Style;
 
             UsageCounter = 0;
-            ChildTags = new List<AnnotationTag>();
             IsDeleted = false;
         }
 
         #region Utily Methods
-           
+
         public string getAbsoluteName()
         {
-            if(ParentTag == null)
+            if (ParentTag == null)
             {
                 return Layer + "_" + ShortName;
             }
@@ -64,5 +63,13 @@ namespace Api.Models.Entity
 
         #endregion
 
+        public class AnnotationTagMap
+        {
+            public AnnotationTagMap(EntityTypeBuilder<AnnotationTag> entityBuilder)
+            {
+                entityBuilder.HasOne(at => at.ParentTag).WithMany(pt => pt.ChildTags)
+                    .HasForeignKey(at => at.ParentTagId).OnDelete(DeleteBehavior.SetNull);
+            }
+        }
     }
 }

@@ -3,11 +3,8 @@ using Api.Models;
 using Api.Models.AnnotationTag;
 using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Managers
 {
@@ -19,55 +16,22 @@ namespace Api.Managers
 
         public virtual IEnumerable<AnnotationTagResult> getAllTags(bool IncludeDeleted)
         {
-            List<AnnotationTag> tags;
-
             if (IncludeDeleted)
-            {
-                tags = dbContext.AnnotationTags
-                    .AsNoTracking().ToList<AnnotationTag>();
-            }
+                return dbContext.AnnotationTags.ToList().Select(at => new AnnotationTagResult(at));
             else
-            {
-                tags = dbContext.AnnotationTags.AsNoTracking()
-                    .Where(t => !t.IsDeleted).ToList();
-            }
-
-
-            List<AnnotationTagResult> result = new List<AnnotationTagResult>();
-
-            foreach(AnnotationTag tag in tags)
-            {
-                result.Add(new AnnotationTagResult(tag));
-            }
-
-            return result;
+                return dbContext.AnnotationTags.Where(t => !t.IsDeleted).ToList().Select(at => new AnnotationTagResult(at));
         }
 
         internal AnnotationTagResult getTag(int Id)
         {
-            if (TagExists(Id))
-            {
-                var tag = dbContext.AnnotationTags.AsNoTracking().First(t => t.Id == Id);
-                var result = new AnnotationTagResult(tag);
-                return result;
-            }
+            if (dbContext.AnnotationTags.Any(t => t.Id == Id))
+                return new AnnotationTagResult(dbContext.AnnotationTags.Single(t => t.Id == Id));
             return null;
         }
 
-        public virtual List<AnnotationTagResult> getChildTagsOf(int Id)
+        public virtual IEnumerable<AnnotationTagResult> getChildTagsOf(int Id)
         {
-            if (TagExists(Id))
-            { 
-                var parent = dbContext.AnnotationTags.AsNoTracking()
-                    .Include(t => t.ChildTags).First(t => t.Id == Id);
-                List<AnnotationTagResult> result = new List<AnnotationTagResult>();
-                foreach (AnnotationTag child in parent.ChildTags)
-                {
-                    result.Add(new AnnotationTagResult(child));
-                }
-                return result;
-            }
-            return null;
+            return dbContext.AnnotationTags.Where(at => at.ParentTagId == Id).ToList().Select(at => new AnnotationTagResult(at));
         }
 
         #endregion
@@ -89,28 +53,12 @@ namespace Api.Managers
             if (parentId == childId)
                 return false;
 
-            var parent = dbContext.AnnotationTags
-                .Include(t => t.ChildTags)
-                .First(t => t.Id == parentId);
-            var child = dbContext.AnnotationTags
-                .Include(t => t.ParentTag)
-                    .ThenInclude(pt => pt.ChildTags)
-                .First(t => t.Id == childId);
+            var child = dbContext.AnnotationTags.First(t => t.Id == childId);
 
-            if(parent != null && child != null)
+            if (child != null && dbContext.AnnotationTags.Any(t => t.Id == parentId))
             {
-
-                parent.ChildTags.Add(child);
-
-                //remove child from old parent
-                child.ParentTag.ChildTags.Remove(child);
-                
-                //set the new parent
-                child.ParentTag = parent;
-
-                dbContext.Update(parent);
+                child.ParentTagId = parentId;
                 dbContext.Update(child);
-
                 dbContext.SaveChanges();
                 return true;
             }
@@ -123,9 +71,9 @@ namespace Api.Managers
 
         public virtual bool EditTag(AnnotationTagFormModel model, int Id)
         {
-            if (TagExists(Id))
+            var tag = dbContext.AnnotationTags.First(t => t.Id == Id);
+            if (tag != null)
             {
-                var tag = dbContext.AnnotationTags.First(t => t.Id == Id);
                 if (model.Description != null)
                 {
                     tag.Description = model.Description;
@@ -158,65 +106,40 @@ namespace Api.Managers
 
         internal bool DeleteTag(int id)
         {
-            if (TagExists(id))
+            var tag = dbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
+            if (tag != null)
             {
-                var tag = dbContext.AnnotationTags
-                    .Include(t => t.ChildTags)
-                    .First(t => t.Id == id);
-
                 if (tag.UsageCounter == 0)
                 {
-                    foreach (AnnotationTag child in tag.ChildTags)
-                    {
-                        child.ParentTag = null;
-                    }
                     dbContext.AnnotationTags.Remove(tag);
-                    dbContext.SaveChanges();
                 }
                 else
                 {
                     tag.IsDeleted = true;
-                    dbContext.SaveChanges();
+                    dbContext.AnnotationTags.Update(tag);
                 }
+                dbContext.SaveChanges();
                 return true;
             }
             return false;
-            
-                
         }
 
         internal bool RemoveChildTag(int parentId, int childId)
         {
-            bool success = false;
-
-            if (TagExists(parentId))
+            var child = dbContext.AnnotationTags.First(t => t.Id == childId);
+            if (child != null)
             {
-                var parent = dbContext.AnnotationTags
-                    .Include(t => t.ChildTags)
-                    .First(t => t.Id == parentId);
-
-                if (parent.ChildTags.Any(t => t.Id == childId))
+                if (child.ParentTagId == parentId)
                 {
-                    var child = parent.ChildTags.First(t => t.Id == childId);
-
-                    //reset parent
-                    child.ParentTag = null;
-                    //remove child
-                    success = parent.ChildTags.Remove(child);
-                    if (success)
-                    {
-                        dbContext.SaveChanges();
-                    }
+                    child.ParentTagId = null;
+                    dbContext.SaveChanges();
+                    return true;
                 }
             }
-            return success;
+            return false;
         }
 
         #endregion
-        private bool TagExists(int Id)
-        {
-            return dbContext.AnnotationTags.AsNoTracking().Any(t => t.Id == Id);
-        }
     }
 
 }

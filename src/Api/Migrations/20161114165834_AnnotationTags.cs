@@ -32,7 +32,7 @@ namespace Api.Migrations
                         column: x => x.ParentTagId,
                         principalTable: "AnnotationTags",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(

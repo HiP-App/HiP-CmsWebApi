@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20161109190215_AnnotationTags")]
+    [Migration("20161114165834_AnnotationTags")]
     partial class AnnotationTags
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -211,7 +211,8 @@ namespace Api.Migrations
                 {
                     b.HasOne("Api.Models.Entity.AnnotationTag", "ParentTag")
                         .WithMany("ChildTags")
-                        .HasForeignKey("ParentTagId");
+                        .HasForeignKey("ParentTagId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>

@@ -31,7 +31,7 @@ namespace Api.Controllers
         /// <response code="200">A List of AnnotationTagResults</response>
         /// <response code="204">There are no Tags in the system</response>
         [HttpGet("Tags")]
-        [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetAllTags(bool IncludeDeleted = false)
         {
@@ -174,9 +174,11 @@ namespace Api.Controllers
         /// <param name="Id">Tag to be delete</param>
         /// <response code="200">Tag ddeleted successful</response>
         /// <response code="403">User not allowed to delete Tags</response>
+        /// <response code="404">No such Tag</response>
         [HttpDelete("Tags/{Id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Delete(int Id)
         {
             if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
@@ -185,7 +187,7 @@ namespace Api.Controllers
             bool success = tagManager.DeleteTag(Id);
             if (success)
                 return Ok();
-            return Ok(null);
+            return NotFound();
         }
 
         /// <summary>
@@ -195,9 +197,11 @@ namespace Api.Controllers
         /// <param name="childId">Child to be removed</param>
         /// <response code="200">Child removed successful</response>
         /// <response code="403">User not allowed to edit Tags</response>
+        /// <response code="404">No such Tag</response>
         [HttpDelete("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteChildOf(int parentId, int childId)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
@@ -206,7 +210,7 @@ namespace Api.Controllers
             bool success = tagManager.RemoveChildTag(parentId, childId);
             if (success)
                 return Ok();
-            return Ok(null);
+            return NotFound();
         }
 
         #endregion

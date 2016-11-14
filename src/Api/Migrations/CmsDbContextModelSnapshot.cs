@@ -210,7 +210,8 @@ namespace Api.Migrations
                 {
                     b.HasOne("Api.Models.Entity.AnnotationTag", "ParentTag")
                         .WithMany("ChildTags")
-                        .HasForeignKey("ParentTagId");
+                        .HasForeignKey("ParentTagId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
