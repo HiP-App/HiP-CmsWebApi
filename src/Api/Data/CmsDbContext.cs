@@ -1,5 +1,6 @@
 ﻿using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
+using static Api.Models.Entity.AnnotationTag;
 
 namespace Api.Data
 {
@@ -20,6 +21,8 @@ namespace Api.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
+        public DbSet<AnnotationTag> AnnotationTags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
@@ -29,6 +32,7 @@ namespace Api.Data
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new NotificationMap(modelBuilder.Entity<Notification>());
+            new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
         }
     }
 }
