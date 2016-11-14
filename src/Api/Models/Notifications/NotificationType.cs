@@ -17,5 +17,6 @@ namespace Api.Models.Notifications
         TOPIC_ATTACHMENT_ADDED,
 
         UNKNOWN
+            // TOTO assosiation
     }
 }

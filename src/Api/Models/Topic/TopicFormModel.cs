@@ -17,5 +17,6 @@ namespace Api.Models
         public string Description { get; set; }
 
         public string Requirements { get; set; }   
+
     }
 }
