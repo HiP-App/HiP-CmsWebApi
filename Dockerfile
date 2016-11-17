@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.0.0-preview2.1-sdk
+FROM microsoft/dotnet:latest
 
 RUN mkdir -p /dotnetapp
 
