@@ -42,7 +42,7 @@ namespace Api.Managers
                 using (var md5 = MD5.Create())
                 {
                     var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(fileName + DateTime.Now));
-                    this.HashValue = Convert.ToBase64String(hash);
+                    this.HashValue = string.Concat(hash.Select(x => x.ToString("X2")));
                 }
                 this.Expires = DateTime.Now.AddMinutes(30);
             }
