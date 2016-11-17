@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 namespace Api.Managers
 {
@@ -43,7 +42,7 @@ namespace Api.Managers
                 using (var md5 = MD5.Create())
                 {
                     var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(fileName + DateTime.Now));
-                    this.HashValue = System.Text.Encoding.UTF8.GetString(hash);
+                    this.HashValue = Convert.ToBase64String(hash);
                 }
                 this.Expires = DateTime.Now.AddMinutes(30);
             }
