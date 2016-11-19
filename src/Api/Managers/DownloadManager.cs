@@ -14,6 +14,7 @@ namespace Api.Managers
         public static string AddFile(string fileName, IPAddress userIp)
         {
             var entry = new DownloadResource(fileName, userIp);
+            resources.Add(entry);
             return entry.HashValue;
         }
 

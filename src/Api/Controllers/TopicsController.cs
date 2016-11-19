@@ -39,8 +39,7 @@ namespace Api.Controllers
         {
             var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
             int count = topics.Count();
-            var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList().Select(t => new TopicResult(t));
-
+            var entities = topics.ToList().Select(t => new TopicResult(t));
             return Ok(new PagedResult<TopicResult>(entities, page, count));
         }
 
@@ -237,7 +236,7 @@ namespace Api.Controllers
 
         // POST api/topics
         [HttpPost]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Post(TopicFormModel model)
@@ -334,6 +333,7 @@ namespace Api.Controllers
             return NotFound();
         }
 
+        // topicId not needed, but looks better at the api
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -343,10 +343,11 @@ namespace Api.Controllers
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            var attachment = attachmentsManager.GetAttachmentById(topicId, attachmentId);
+            var attachment = attachmentsManager.GetAttachmentById(attachmentId);
             if (attachment != null)
             {
-                var hash = DownloadManager.AddFile(Path.Combine(Constants.AttatchmentFolder, attachment.Path), HttpContext.Connection.RemoteIpAddress);
+                string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
+                var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
                 return Ok(hash);
             }
             return NotFound();

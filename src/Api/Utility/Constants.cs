@@ -13,14 +13,20 @@ namespace Api.Utility
 
         public static string ProfilePicturePath
         {
-            get { return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", ProfilePictureFolder); }
+            get { return AbsolutePath(ProfilePictureFolder); }
         }
 
         public const string AttatchmentFolder = "attatchments";
 
         public static string AttatchmentPath
         {
-            get { return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", AttatchmentFolder); }
+            get { return AbsolutePath(AttatchmentFolder); }
+        }
+
+
+        public static string AbsolutePath(string item)
+        {
+            return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", item);
         }
     }
 }

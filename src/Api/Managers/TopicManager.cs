@@ -27,19 +27,24 @@ namespace Api.Managers
             if (deadline != null && deadline.HasValue)
                 topics = topics.Where(t => DateTime.Compare(t.Deadline, deadline.Value) == 0);
 
-            // TODO only parents without parent.
+            // only parents without parent.
             if (onlyParents)
-                topics = topics.Except(from at in dbContext.AssociatedTopics
-                                       join t in topics
-                                       on at.ChildTopicId equals t.Id
-                                       select t);
+            {
+                var topicsWithParent = dbContext.AssociatedTopics.ToList().Select(at => at.ChildTopicId);
+                topics.Where(t => !topicsWithParent.Contains(t.Id));
+            }
+
             return topics;
         }
 
         public virtual IEnumerable<TopicResult> GetTopicsForUser(int userId, int page)
         {
-            var topics = dbContext.TopicUsers.Where(tu => tu.UserId == userId).Include(tu => tu.Topic).ThenInclude(t => t.CreatedBy).Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
-            return topics.Select(tu => new TopicResult(tu.Topic));
+            var relatedTopicIds = dbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
+
+           var topics = dbContext.Topics.Include(t => t.CreatedBy)
+                .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id))
+                .Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
+            return topics.Select(t => new TopicResult(t));
         }
 
         public virtual int GetTopicsCount()
