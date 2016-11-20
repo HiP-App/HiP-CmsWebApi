@@ -34,7 +34,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetUnreadNotifications()
         {
-           return GetNotifications(true);
+            return GetNotifications(true);
         }
 
         private IActionResult GetNotifications(bool onlyUread)
@@ -67,6 +67,37 @@ namespace Api.Controllers
                 return Ok();
             else
                 return NotFound();
+        }
+
+        // PUT api/notifications/subscribe/:notificationType
+        [HttpPut("subscribe/{notificationType}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutSubscribe(string notificationType)
+        {
+            return setSubscription(notificationType, true);
+        }
+
+        // PUT api/notifications/unsubscribe/:notificationType
+        [HttpPut("unsubscribe/{notificationType}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutUnsubscribe(string notificationType)
+        {
+            return setSubscription(notificationType, false);
+        }
+
+        private IActionResult setSubscription(string notificationType, bool subscribe)
+        {
+            NotificationType type;
+            if (NotificationType.TryParse(notificationType, out type))
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }
