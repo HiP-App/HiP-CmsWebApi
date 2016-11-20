@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,7 +45,7 @@ namespace Api.Controllers
                     return ApiController.Forbidden();
 
                 string contentType = MimeKit.MimeTypes.GetMimeType(resource.FileName);
-                return base.File(resource.FileName, contentType);
+                return base.File(resource.FileName, contentType, Path.GetFileName(resource.FileName));
             }
             return NotFound();
         }
