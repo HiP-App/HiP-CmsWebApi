@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.IO;
+using Api.Models.Entity;
 
 namespace Api.Utility
 {
@@ -65,6 +66,22 @@ namespace Api.Utility
                 "History in Paderborn App Einladung",
                 "invation-email.html",
                 new Dictionary<string, string> { { "email", email } }
+            );
+        }
+
+        public Task NotifyAsync(string email, Notification notification)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("topic", notification.Topic.Title);
+            parameters.Add("updater", notification.Updater.FullName);
+            parameters.Add("date", notification.TimeStamp.ToString());
+            parameters.Add("data", notification.Data);
+
+            return SendMail(
+                email,
+                "History in Paderborn App Notification",
+                "notification-email.html",
+                parameters
             );
         }
     }
