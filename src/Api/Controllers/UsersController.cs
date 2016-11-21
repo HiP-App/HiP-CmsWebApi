@@ -1,14 +1,13 @@
 ﻿using Api.Utility;
-using Api.Models.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Api.Managers;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Api.Data;
 using Api.Models;
 using Api.Models.User;
+using Api.Permission;
 
 namespace Api.Controllers
 {
@@ -16,20 +15,29 @@ namespace Api.Controllers
     {
         private UserManager userManager;
         private EmailSender emailSender;
+        private UserPermissions userPermissions;
 
         public UsersController(CmsDbContext dbContext, EmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
+            userPermissions = new UserPermissions(dbContext);
             this.emailSender = emailSender;
         }
 
+        #region invite
+
         // POST api/users/invite
         [HttpPost("Invite")]
-        [Authorize(Roles = Role.Supervisor + "," + Role.Administrator)]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 202)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 409)]
+        [ProducesResponseType(typeof(void), 503)]
         public IActionResult Post(InviteFormModel model)
         {
+            if (!userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+                return Forbidden();
+
             if (ModelState.IsValid)
             {
                 int failCount = 0;
@@ -49,26 +57,23 @@ namespace Api.Controllers
                     catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
                     {
                         _logger.LogDebug(SmtpError.ToString());
-                        // 503 - Service Unavailable
-                        return new StatusCodeResult(503);
+                        return ServiceUnavailable();
                     }
                 }
                 if (failCount == model.emails.Length)
-                {
-                    // 409 - Conflict
-                    return new StatusCodeResult(409);
-                }
-                // 202 - Accepted (Emails get send async, so we cannot guarantee that emails are send)
-                return new StatusCodeResult(202);
+                    return Conflict();
+                
+                return Accepted();
             }
             return BadRequest(ModelState);
         }
+
+        #endregion
 
         #region GET user
         // GET api/users
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
-        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Get(string query, string role, int page = 1)
         {
             var users = userManager.GetAllUsers(query, role, page, Constants.PageSize);
@@ -114,6 +119,7 @@ namespace Api.Controllers
         [HttpPut("Current")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put(UserFormModel model)
         {
             return PutUser(User.Identity.GetUserId(), model);
@@ -121,11 +127,15 @@ namespace Api.Controllers
 
         // PUT api/users/5
         [HttpPut("{id}")]
-        [Authorize(Roles = Role.Administrator)]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put(int id, AdminUserFormModel model)
         {
+            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+                return Forbidden();
+
             return PutUser(id, model);
         }
 
@@ -144,6 +154,7 @@ namespace Api.Controllers
                         _logger.LogInformation(5, "User with ID: " + id + " updated.");
                         return Ok();
                     }
+                    return NotFound();
                 }
             }
 
@@ -156,9 +167,8 @@ namespace Api.Controllers
 
         // GET api/users/{userId}/picture/
         [HttpGet("{userId}/picture/")]
-        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetPictureById(int userId)
         {
             return GetPicture(userId);
@@ -166,9 +176,8 @@ namespace Api.Controllers
 
         // GET api/users/current/picture/
         [HttpGet("Current/picture/")]
-        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetPictureForCurrentUser()
         {
             return GetPicture(User.Identity.GetUserId());
@@ -181,12 +190,11 @@ namespace Api.Controllers
             {
                 string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
-                    return NotFound();
+                    path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
 
-                string contentType = MimeKit.MimeTypes.GetMimeType(path);
-                return base.File(Path.Combine(Constants.ProfilePictureFolder, user.Picture), contentType);
+                return Ok(ToBase64String(path));
             }
-            return BadRequest();
+            return NotFound();
         }
 
         #endregion
@@ -196,11 +204,13 @@ namespace Api.Controllers
 
         // Post api/users/{id}/picture/
         [HttpPost("{id}/picture/")]
-        [Authorize(Roles = Role.Administrator)]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
         public IActionResult PutPicture(int id, IFormFile file)
         {
+            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+                return Forbidden();
             return PutUserPicture(id, file);
         }
 
@@ -253,11 +263,13 @@ namespace Api.Controllers
         #region DELETE picture
 
         [HttpDelete("{id}/picture/")]
-        [Authorize(Roles = Role.Administrator)]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete(int id)
         {
+            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+                return Forbidden();
             return DeletePicture(id);
         }
 

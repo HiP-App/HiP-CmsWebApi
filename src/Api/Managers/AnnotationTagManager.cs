@@ -38,14 +38,14 @@ namespace Api.Managers
 
         #region Adding
 
-        public virtual AddEntityResult AddTag(AnnotationTagFormModel tagModel)
+        public virtual EntityResult AddTag(AnnotationTagFormModel tagModel)
         {
             AnnotationTag tag = new AnnotationTag(tagModel);
 
             dbContext.AnnotationTags.Add(tag);
             dbContext.SaveChanges();
 
-            return new AddEntityResult() { Success = true, Value = tag.Id };
+            return EntityResult.Successfull(tag.Id);
         }
 
         public virtual bool AddChildTag(int parentId, int childId)

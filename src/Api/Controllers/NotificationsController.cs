@@ -60,13 +60,13 @@ namespace Api.Controllers
         // POST api/Notifications/:id/markread
         [HttpPost("{notificationId}/markread")]
         [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult Post(int notificationId)
         {
             if (notificationManager.MarkAsRead(notificationId))
                 return Ok();
             else
-                return BadRequest();
+                return NotFound();
         }
     }
 }

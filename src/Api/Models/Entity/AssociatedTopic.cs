@@ -6,12 +6,12 @@ namespace Api.Models.Entity
     public class AssociatedTopic
     {
         [Required]
-        public int ParentTopicId { get; set; }
+        public int? ParentTopicId { get; set; }
 
         public Topic ParentTopic { get; set; }
 
         [Required]
-        public int ChildTopicId { get; set; }
+        public int? ChildTopicId { get; set; }
 
         public Topic ChildTopic { get; set; }
     }

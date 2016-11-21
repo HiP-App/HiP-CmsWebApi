@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Models.AnnotationTag;
 using Api.Permission;
 using Api.Utility;
+using Api.Models;
 
 namespace Api.Controllers
 {
@@ -85,12 +86,10 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="tag">The tag to be added</param>
         /// <response code="200">Tag created</response>
-        /// <response code="500">Server Error</response>
         /// <response code="403">User not allowed to created Tags</response>
         /// <response code="400">Request was missformed</response>
         [HttpPost("Tags")]
-        [ProducesResponseType(typeof(IActionResult), 200)]
-        [ProducesResponseType(typeof(void), 500)]
+        [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post(AnnotationTagFormModel tag)
@@ -103,7 +102,7 @@ namespace Api.Controllers
                 var result = tagManager.AddTag(tag);
                 if (result.Success)
                     return Ok(result);
-                return new StatusCodeResult(500);
+                return BadRequest(result);
             }
             return BadRequest();
         }

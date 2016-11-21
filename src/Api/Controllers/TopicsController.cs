@@ -3,17 +3,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 using Api.Managers;
 using Api.Models;
 using Api.Data;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Api.Models.Entity;
 using Api.Permission;
 using Api.Models.User;
 using System.Collections.Generic;
 using Api.Models.Topic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
 {
@@ -35,13 +34,13 @@ namespace Api.Controllers
 
         // GET api/topics
         [HttpGet]
+        [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
             var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
             int count = topics.Count();
-            var entities = topics.Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
-
-            return Ok(new PagedResult<Topic>(entities, page, count));
+            var entities = topics.ToList().Select(t => new TopicResult(t));
+            return Ok(new PagedResult<TopicResult>(entities, page, count));
         }
 
         // GET api/topics
@@ -96,34 +95,38 @@ namespace Api.Controllers
         [HttpPut("{topicId}/ParentTopics/{parentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(EntityResult), 403)]
         public IActionResult PutParentTopics(int topicId, int parentId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
-            if (topicManager.AssociateTopic(parentId, topicId))
-                    return Ok();
-            return BadRequest();
+            var result = topicManager.AssociateTopic(parentId, topicId);
+            if (result.Success)
+                return Ok();
+            return BadRequest(result);
         }
 
         // PUT api/topics/:topicId/SubTopics/:parentId
         [HttpPut("{topicId}/SubTopics/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(EntityResult), 403)]
         public IActionResult PutSubTopics(int topicId, int childId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
-            if (topicManager.AssociateTopic(topicId, childId))
+            var result = topicManager.AssociateTopic(topicId, childId);
+            if (result.Success)
                 return Ok();
-            return BadRequest();
+            return BadRequest(result);
         }
 
         // DELETE api/topics/:id
         [HttpDelete("{topicId}/ParentTopics/{parentId}")]
         [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteParentTopics(int topicId, int parentId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
@@ -131,23 +134,24 @@ namespace Api.Controllers
             if (topicManager.DeleteAssociated(parentId, topicId))
                 return Ok();
 
-            return BadRequest();
+            return NotFound();
         }
 
         // DELETE api/topics/:id
         [HttpDelete("{topicId}/SubTopics/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteSubTopics(int topicId, int childId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
             if (topicManager.DeleteAssociated(topicId, childId))
                 return Ok();
 
-            return BadRequest();
+            return NotFound();
         }
-        
+
         #endregion
 
         #region Get Users
@@ -183,24 +187,69 @@ namespace Api.Controllers
 
         #endregion
 
-        #region Edit Topics
+        #region PUT users
 
+        // PUT api/topics/:topicId/students
+        [HttpPut("{topicId}/Students")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PutTopicStudents(int topicId, int[] users)
+        {
+            return PutTopicUsers(topicId, Role.Student, users);
+        }
+
+        // PUT api/topics/:topicId/Supervisors
+        [HttpPut("{topicId}/Supervisors")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PutTopicSupervisors(int topicId, int[] users)
+        {
+            return PutTopicUsers(topicId, Role.Supervisor, users);
+        }
+
+        // PUT api/topics/:topicId/Reviewers
+        [HttpPut("{topicId}/Reviewers")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PutTopicReviewers(int topicId, int[] users)
+        {
+            return PutTopicUsers(topicId, Role.Reviewer, users);
+        }
+
+        private IActionResult PutTopicUsers(int topicId, string role, int[] users)
+        {
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+                return Forbidden();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            else if (topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users))
+                return Ok();
+            return BadRequest();
+        }
+
+        #endregion
+
+        #region Edit Topics
 
         // POST api/topics
         [HttpPost]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
         public IActionResult Post(TopicFormModel model)
         {
             if (!topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
-                return Unauthorized();
+                return Forbidden();
 
             if (ModelState.IsValid)
             {
                 if (!Status.IsStatusValid(model.Status))
                 {
                     ModelState.AddModelError("Status", "Invalid Topic Status");
-                } // TODO createUser is Supervisor!
+                }
                 else
                 {
                     var result = topicManager.AddTopic(User.Identity.GetUserId(), model);
@@ -216,10 +265,11 @@ namespace Api.Controllers
         [HttpPut("{topicId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
         public IActionResult Put(int topicId, TopicFormModel model)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
             if (ModelState.IsValid)
             { // TODO createUser is Supervisor!
@@ -232,48 +282,50 @@ namespace Api.Controllers
         // PUT api/topic/:topicId/status
         [HttpPut("{topicId}/Status")]
         [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult ChangeStatus(int topicId, string status)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
             if (!Status.IsStatusValid(status))
                 ModelState.AddModelError("status", "Invalid Status");
             else if (topicManager.ChangeTopicStatus(User.Identity.GetUserId(), topicId, status))
                 return Ok();
 
-            return BadRequest(ModelState);
+            return NotFound();
         }
 
 
         // DELETE api/topics/:id
         [HttpDelete("{topicId}")]
         [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete(int topicId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
             if (topicManager.DeleteTopic(topicId, User.Identity.GetUserId()))
                 return Ok();
 
-            return BadRequest();
+            return NotFound();
         }
 
         #endregion
 
         #region Attachments
 
-
         // GET api/topics/:id/attachments
         [HttpGet("{topicId}/Attachments")]
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
+        [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachments(int topicId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
             var attachments = attachmentsManager.GetAttachments(topicId);
             if (attachments != null)
@@ -281,33 +333,36 @@ namespace Api.Controllers
             return NotFound();
         }
 
-
-
+        // topicId not needed, but looks better at the api
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
-        [ProducesResponseType(typeof(VirtualFileResult), 200)]
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachmet(int topicId, int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
-            var attachment = attachmentsManager.GetAttachmentById(topicId, attachmentId);
+            var attachment = attachmentsManager.GetAttachmentById(attachmentId);
             if (attachment != null)
             {
-                string contentType = MimeKit.MimeTypes.GetMimeType(Path.Combine(Constants.AttatchmentPath, attachment.Path));
-                return base.File(Path.Combine(Constants.AttatchmentFolder, attachment.Path), contentType);
+                string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
+                var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
+                return Ok(hash);
             }
             return NotFound();
         }
 
         // POST api/topics/:id/attachments
         [HttpPost("{topicId}/Attachments")]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PostAttachment(int topicId, AttatchmentFormModel model, IFormFile file)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
@@ -317,6 +372,7 @@ namespace Api.Controllers
                 var result = attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model, file);
                 if (result.Success)
                     return Ok(result);
+                return InternalServerError(result);
             }
 
             return BadRequest(ModelState);
@@ -326,14 +382,15 @@ namespace Api.Controllers
         [HttpDelete("{topicId}/Attachments/{attachmentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteAttachment(int topicId, int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Unauthorized();
+                return Forbidden();
 
             if (attachmentsManager.DeleteAttachment(topicId, attachmentId))
                 return Ok();
-            return BadRequest();
+            return NotFound();
         }
 
         #endregion
