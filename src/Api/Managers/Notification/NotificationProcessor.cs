@@ -4,6 +4,7 @@ using Api.Data;
 using Api.Models.Entity;
 using Api.Models;
 using Api.Models.Notifications;
+using Api.Utility;
 using System.Linq;
 
 namespace Api.Managers
@@ -14,12 +15,18 @@ namespace Api.Managers
         private List<int> notifiedUsers = new List<int>();
         private Topic topic;
         private int currentUser;
+        private EmailSender emailSender;
 
-        public NotificationProcessor(CmsDbContext dbContext, Topic currentTopic, int currentUser) : base(dbContext)
+        public NotificationProcessor(
+            CmsDbContext dbContext,
+            Topic currentTopic,
+            int currentUser
+        ) : base(dbContext)
         {
             this.topic = currentTopic;
             this.currentUser = currentUser;
-            // Don not notify yourself
+            this.emailSender = emailSender; // TODO How to pass parameter?
+            // Do not notify yourself
             notifiedUsers.Add(currentUser);
         }
 
@@ -49,7 +56,7 @@ namespace Api.Managers
 
         private void NotifyAll(NotificationType type, string data = null)
         {
-            topic.TopicUsers.ForEach(tu => createNotification(tu.UserId, type, data));
+            topic.TopicUsers.ForEach(tu => createNotification(tu, type, data));
         }
 
         #region OnUpdate
@@ -75,11 +82,11 @@ namespace Api.Managers
         {
             foreach (TopicUser user in newUser)
             {
-                createNotification(user.UserId, NotificationType.TOPIC_ASSIGNED_TO, role);
+                createNotification(user, NotificationType.TOPIC_ASSIGNED_TO, role);
             }
             foreach (TopicUser user in deletedUser)
             {
-                createNotification(user.UserId, NotificationType.TOPIC_REMOVED_FROM, role);
+                createNotification(user, NotificationType.TOPIC_REMOVED_FROM, role);
             }
 
             finnish();
@@ -91,6 +98,13 @@ namespace Api.Managers
 
         private void createNotification(int userId, NotificationType type, string data = null)
         {
+            TopicUser user = dbContext.TopicUsers.Where(u => u.UserId == userId).First();
+            createNotification(user, type, data);
+        }
+
+        private void createNotification(TopicUser topicUser, NotificationType type, string data = null)
+        {
+            int userId = topicUser.UserId;
             if (notifiedUsers.Contains(userId))
                 return;
 
@@ -102,6 +116,7 @@ namespace Api.Managers
 
             notifiedUsers.Add(userId);
             dbContext.Notifications.Add(not);
+            this.emailSender.NotifyAsync(topicUser.User.Email, not);
         }
 
         private void finnish()
