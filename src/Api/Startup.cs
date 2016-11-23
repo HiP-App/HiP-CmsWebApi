@@ -29,7 +29,13 @@ namespace Api
 
         public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+
+        /// <summary>
+        /// Configures the built-in container's services, i.e. the services added to the IServiceCollection
+        /// parameter are available via dependency injection afterwards.
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             // Read configurations from json
