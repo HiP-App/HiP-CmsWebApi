@@ -119,10 +119,11 @@ namespace Api.Managers
             this.emailSender.NotifyAsync(topicUser.User.Email, not);
         }
 
+        #endregion
+
         private void finnish()
         {
             dbContext.SaveChanges();
         }
-        #endregion
     }
 }
