@@ -365,6 +365,14 @@ namespace Api.Controllers
         #region Edit Topics
 
         // POST api/topics
+
+        /// <summary>
+        /// Add new topic
+        /// </summary>
+        /// <param name="model">Contains information about topic</param>                
+        /// <response code="200">A new Topic is added</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="403">User not allowed to add topic</response>        
         [HttpPost]
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -392,6 +400,15 @@ namespace Api.Controllers
         }
 
         // PUT api/topics/:topicId
+
+        /// <summary>
+        /// Edit a topic {topicId}
+        /// </summary>
+        /// <param name="model">Contains information about the topic</param>                
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <response code="200">The Topic {topicId} is added</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="403">User not allowed to edit topic</response>        
         [HttpPut("{topicId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -410,6 +427,15 @@ namespace Api.Controllers
         }
 
         // PUT api/topic/:topicId/status
+
+        /// <summary>
+        /// Change status of a topic {topicId}
+        /// </summary>
+        /// <param name="status">Status of the topic {topicId}</param>                
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <response code="200">The Topic {topicId} status id changed</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to change topic status</response>        
         [HttpPut("{topicId}/Status")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -429,6 +455,14 @@ namespace Api.Controllers
 
 
         // DELETE api/topics/:id
+
+        /// <summary>
+        /// Delete a topic {topicId}
+        /// </summary>
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <response code="200">The Topic {topicId} is deleted</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to delete topic</response>        
         [HttpDelete("{topicId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -448,6 +482,14 @@ namespace Api.Controllers
         #region Attachments
 
         // GET api/topics/:id/attachments
+
+        /// <summary>
+        /// All attachments of the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <response code="200">A list of attachments of the Topic {topicId}</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to get topic attachments</response>        
         [HttpGet("{topicId}/Attachments")]
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -464,6 +506,15 @@ namespace Api.Controllers
         }
 
         // topicId not needed, but looks better at the api
+
+        /// <summary>
+        /// Specific attachment {attachmentId} of the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="attachmentId">the Id of the Topic attachment</param>                
+        /// <response code="200">An attachment {attachmentId} of the topic {topicId}</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to get topic attachment</response>        
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -484,6 +535,17 @@ namespace Api.Controllers
         }
 
         // POST api/topics/:id/attachments
+
+        /// <summary>
+        /// Add an attachment to the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="model">contains details about Topic attachment</param>                
+        /// <param name="file">The file to be attached with the topic</param>                
+        /// <response code="200">Added attachment {attachmentId} successfully</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to add topic attachment</response>        
+        /// <response code="500">Internal server error</response>        
         [HttpPost("{topicId}/Attachments")]
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -509,6 +571,15 @@ namespace Api.Controllers
         }
 
         // DELETE api/topics/:id/attachments
+
+        /// <summary>
+        /// Delete an attachment {attachmentId} in the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="attachmentId">The Id of the attachment</param>                
+        /// <response code="200">Attachment {attachmentId} deleted successfully</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to delete topic attachment</response>                
         [HttpDelete("{topicId}/Attachments/{attachmentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
