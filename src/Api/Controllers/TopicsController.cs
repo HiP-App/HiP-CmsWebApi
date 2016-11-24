@@ -37,10 +37,8 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
-            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
-            int count = topics.Count();
-            var entities = topics.ToList().Select(t => new TopicResult(t));
-            return Ok(new PagedResult<TopicResult>(entities, page, count));
+            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents, page);
+            return Ok(topics);
         }
 
         // GET api/topics
@@ -57,20 +55,21 @@ namespace Api.Controllers
         public IActionResult GetTopicsForUser(int userId, int page = 1)
         {
             var topics = topicManager.GetTopicsForUser(userId, page);
-            int count = topics.Count();
-
-            return Ok(new PagedResult<TopicResult>(topics, page, count));
+            return Ok(topics);
         }
 
         // GET api/topics/:topicId
         [HttpGet("{topicId}")]
         public IActionResult Get(int topicId)
         {
-            var topics = topicManager.GetTopicById(topicId);
-            if (topics != null)
-                return Ok(topics);
-
-            return NotFound();
+            try
+            {
+                return Ok(topicManager.GetTopicById(topicId));
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
         #endregion
 
@@ -343,14 +342,17 @@ namespace Api.Controllers
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            var attachment = attachmentsManager.GetAttachmentById(attachmentId);
-            if (attachment != null)
+            try
             {
+                var attachment = attachmentsManager.GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
                 return Ok(hash);
             }
-            return NotFound();
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
 
         // POST api/topics/:id/attachments

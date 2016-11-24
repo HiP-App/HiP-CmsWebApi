@@ -16,6 +16,7 @@ namespace Api.Managers
     {
         public AttachmentsManager(CmsDbContext dbContext) : base(dbContext) { }
 
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual TopicAttatchment GetAttachmentById(int attachmentId)
         {
             return dbContext.TopicAttatchments.Single(ta => (ta.Id == attachmentId));
@@ -28,9 +29,15 @@ namespace Api.Managers
 
         public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
         {
-            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
-            if (topic == null)
+            Topic topic;
+            try
+            {
+                topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+            }
+            catch (InvalidOperationException)
+            {
                 return EntityResult.Error("Unknown Topic");
+            }
 
             string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
             if (!System.IO.Directory.Exists(topicFolder))
@@ -65,16 +72,19 @@ namespace Api.Managers
 
         public bool DeleteAttachment(int topicId, int attachmentId)
         {
-            var attachment = GetAttachmentById(attachmentId);
-            if (attachment != null)
+            try
             {
+                var attachment = GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
                 DeleteFile(fileName);
                 dbContext.Remove(attachment);
                 dbContext.SaveChanges();
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
     }
 }
