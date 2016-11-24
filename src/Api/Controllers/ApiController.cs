@@ -7,6 +7,10 @@ using System.Text;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Base class for AnnotationController
+    /// </summary>    
+    /// <response code="401">User is denied</response>
     [Produces("application/json")]
     [Route("Api/[controller]")]
     [Authorize]

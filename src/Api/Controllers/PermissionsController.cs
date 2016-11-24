@@ -10,6 +10,11 @@ using Api.Utility;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Decides the permission for the user
+    /// </summary>
+    /// <response code="200">User is allowed</response>
+    /// <response code="403">User is denied</response>
     [ProducesResponseType(typeof(void), 200)]
     [ProducesResponseType(typeof(void), 403)]
     public class PermissionsController : ApiController
