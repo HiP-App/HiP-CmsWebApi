@@ -24,7 +24,7 @@ namespace Api.Controllers
 
         protected static String ToBase64String(string source)
         {
-            return Convert.ToBase64String(Encoding.Unicode.GetBytes(source));
+            return Convert.ToBase64String(System.IO.File.ReadAllBytes(source));
         }
 
         public static StatusCodeResult Forbidden() { return new StatusCodeResult(403); }
