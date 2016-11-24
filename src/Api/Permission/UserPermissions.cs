@@ -20,14 +20,28 @@ namespace Api.Permission
 
         public bool IsAllowedToAdminister(int userId)
         {
-            var user = userManager.GetUserById(userId);
-            return user.Role.Equals(Role.Administrator);
+            try
+            {
+                var user = userManager.GetUserById(userId);
+                return user.Role.Equals(Role.Administrator);
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         public bool IsAllowedToInvite(int userId)
         {
-            var user = userManager.GetUserById(userId);
-            return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+            try
+            {
+                var user = userManager.GetUserById(userId);
+                return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
     }
 }

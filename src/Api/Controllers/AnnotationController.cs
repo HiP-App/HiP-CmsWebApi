@@ -7,6 +7,7 @@ using Api.Models.AnnotationTag;
 using Api.Permission;
 using Api.Utility;
 using Api.Models;
+using System;
 
 namespace Api.Controllers
 {
@@ -47,14 +48,21 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="id">The id of the Tag</param>
         /// <response code="200">A AnnotationTagResult</response>
-        /// <response code="204">There is no Tag {id} in the system</response>
+        /// <response code="404">There is no Tag {id} in the system</response>
         [HttpGet("Tags/{id}")]
         [ProducesResponseType(typeof(AnnotationTagResult), 200)]
-        [ProducesResponseType(typeof(void), 204)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetTag(int id)
         {
-            var tag = tagManager.getTag(id);
-            return Ok(tag);
+            try
+            {
+                var tag = tagManager.getTag(id);
+                return Ok(tag);
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
 
 
