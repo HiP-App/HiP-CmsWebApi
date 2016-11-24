@@ -186,7 +186,7 @@ namespace Api.Controllers
         {
             try
             {
-                var user = userManager.GetUserById(id);
+                var user = userManager.GetUserById(userId);
                 string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);

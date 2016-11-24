@@ -23,7 +23,7 @@ namespace Api.Data
             // Seed Db with Admin Account if its not already created.
             try
             {
-                userManager.GetUserByEmail(appConfig.AdminEmail)
+                userManager.GetUserByEmail(appConfig.AdminEmail);
             }
             catch (InvalidOperationException)
             {

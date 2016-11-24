@@ -33,10 +33,8 @@ namespace Api.Permission
                 if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Supervisor)))
                     return true;
             }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
+            catch (InvalidOperationException) { }
+            return false;
         }
 
         public bool IsAssociatedTo(int userId, int topicId)
@@ -53,10 +51,8 @@ namespace Api.Permission
                 if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId)))
                     return true;
             }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
+            catch (InvalidOperationException) { }
+            return false;
         }
 
         public bool IsAllowedToCreate(int userId)

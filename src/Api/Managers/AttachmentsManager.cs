@@ -86,7 +86,5 @@ namespace Api.Managers
                 return false;
             }
         }
-
     }
-}
 }
