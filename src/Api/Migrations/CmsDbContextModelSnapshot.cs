@@ -13,7 +13,8 @@ namespace Api.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.1");
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
+                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
 
             modelBuilder.Entity("Api.Models.Entity.AnnotationTag", b =>
                 {
@@ -57,8 +58,6 @@ namespace Api.Migrations
                     b.HasKey("ParentTopicId", "ChildTopicId");
 
                     b.HasIndex("ChildTopicId");
-
-                    b.HasIndex("ParentTopicId");
 
                     b.ToTable("AssociatedTopics");
                 });
@@ -173,8 +172,6 @@ namespace Api.Migrations
                     b.Property<string>("Role");
 
                     b.HasKey("TopicId", "UserId", "Role");
-
-                    b.HasIndex("TopicId");
 
                     b.HasIndex("UserId");
 

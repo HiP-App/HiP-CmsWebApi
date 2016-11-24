@@ -3,6 +3,7 @@ using Api.Models;
 using Api.Models.AnnotationTag;
 using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,11 +23,10 @@ namespace Api.Managers
                 return dbContext.AnnotationTags.Where(t => !t.IsDeleted).ToList().Select(at => new AnnotationTagResult(at));
         }
 
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         internal AnnotationTagResult getTag(int Id)
         {
-            if (dbContext.AnnotationTags.Any(t => t.Id == Id))
-                return new AnnotationTagResult(dbContext.AnnotationTags.Single(t => t.Id == Id));
-            return null;
+            return new AnnotationTagResult(dbContext.AnnotationTags.Single(t => t.Id == Id));
         }
 
         public virtual IEnumerable<AnnotationTagResult> getChildTagsOf(int Id)
@@ -52,16 +52,18 @@ namespace Api.Managers
         {
             if (parentId == childId)
                 return false;
-
-            var child = dbContext.AnnotationTags.First(t => t.Id == childId);
-
-            if (child != null && dbContext.AnnotationTags.Any(t => t.Id == parentId))
+            try
             {
-                child.ParentTagId = parentId;
-                dbContext.Update(child);
-                dbContext.SaveChanges();
-                return true;
+                var child = dbContext.AnnotationTags.Single(t => t.Id == childId);
+                if (dbContext.AnnotationTags.Any(t => t.Id == parentId))
+                {
+                    child.ParentTagId = parentId;
+                    dbContext.Update(child);
+                    dbContext.SaveChanges();
+                    return true;
+                }
             }
+            catch (InvalidOperationException) { return false; }
             return false;
         }
 
@@ -106,9 +108,9 @@ namespace Api.Managers
 
         internal bool DeleteTag(int id)
         {
-            var tag = dbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
-            if (tag != null)
+            try
             {
+                var tag = dbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
                 if (tag.UsageCounter == 0)
                 {
                     dbContext.AnnotationTags.Remove(tag);
@@ -121,7 +123,10 @@ namespace Api.Managers
                 dbContext.SaveChanges();
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         internal bool RemoveChildTag(int parentId, int childId)

@@ -41,9 +41,9 @@ namespace Api.Managers
         {
             var relatedTopicIds = dbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
-           var topics = dbContext.Topics.Include(t => t.CreatedBy)
-                .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id))
-                .Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
+            var topics = dbContext.Topics.Include(t => t.CreatedBy)
+                 .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id))
+                 .Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
             return topics.Select(t => new TopicResult(t));
         }
 
@@ -52,6 +52,7 @@ namespace Api.Managers
             return dbContext.Topics.Count();
         }
 
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual Topic GetTopicById(int topicId)
         {
             return dbContext.Topics.Include(t => t.CreatedBy).Single(t => t.Id == topicId);
@@ -64,9 +65,16 @@ namespace Api.Managers
 
         public virtual bool ChangeAssociatedUsersByRole(int updaterId, int topicId, string role, int[] userIds)
         {
-            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
-            if (topic == null)
+
+            Topic topic;
+            try
+            {
+                topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+            }
+            catch (InvalidOperationException)
+            {
                 return false;
+            }
 
             var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
 
@@ -131,14 +139,11 @@ namespace Api.Managers
 
         public virtual bool UpdateTopic(int userId, int topicId, TopicFormModel model)
         {
-            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
-            if (topic == null)
-                return false;
-
             // Using Transactions to roobback Notifications on error.
             using (var transaction = dbContext.Database.BeginTransaction())
                 try
                 {
+                    var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
                     // REM: do before updating to estimate the changes
                     new NotificationProcessor(dbContext, topic, userId).OnUpdate(model);
 
@@ -153,41 +158,50 @@ namespace Api.Managers
                     transaction.Commit();
                     return true;
                 }
+                catch (InvalidOperationException)
+                {
+                    //Not found
+                    return false;
+                }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
                     Console.WriteLine(ex.ToString());
+                    return false;
                 }
-
-            return false;
         }
 
         public bool ChangeTopicStatus(int userId, int topicId, string status)
         {
-            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
-            if (topic != null)
+            try
             {
+                var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
                 topic.Status = status;
                 dbContext.Update(topic);
                 dbContext.SaveChanges();
-
                 new NotificationProcessor(dbContext, topic, userId).OnStateChanged(status);
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         public virtual bool DeleteTopic(int topicId, int userId)
         {
-            var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(u => u.Id == topicId);
-            if (topic != null)
+            try
             {
+                var topic = dbContext.Topics.Include(t => t.TopicUsers).Single(u => u.Id == topicId);
                 new NotificationProcessor(dbContext, topic, userId).OnDeleteTopic();
                 dbContext.Remove(topic);
                 dbContext.SaveChanges();
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         public virtual EntityResult AssociateTopic(int parentId, int childId)
@@ -210,14 +224,17 @@ namespace Api.Managers
 
         public virtual bool DeleteAssociated(int parentId, int childId)
         {
-            var relation = dbContext.AssociatedTopics.Single(ta => (ta.ParentTopicId == parentId && ta.ChildTopicId == childId));
-            if (relation != null)
+            try
             {
+                var relation = dbContext.AssociatedTopics.Single(ta => (ta.ParentTopicId == parentId && ta.ChildTopicId == childId));
                 dbContext.Remove(relation);
                 dbContext.SaveChanges();
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
     }
 }

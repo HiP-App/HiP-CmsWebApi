@@ -21,15 +21,29 @@ namespace Api.Permission
 
         public bool IsAllowedToEditTags(int userId)
         {
-            var user = userManager.GetUserById(userId);
-            // Admin or Supervisor?
-            return (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor));
+            try
+            {
+                // Admin or Supervisor?
+                var user = userManager.GetUserById(userId);
+                return (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor));
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
-        
+
         public bool IsAllowedToCreateTags(int userId)
         {
-            var user = userManager.GetUserById(userId);
-            return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+            try
+            {
+                var user = userManager.GetUserById(userId);
+                return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
     }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Api.Models.Entity;
+using System;
 
 namespace Api.Data
 {
@@ -20,11 +21,13 @@ namespace Api.Data
             dbContext.Database.Migrate();
 
             // Seed Db with Admin Account if its not already created.
-            var admin = userManager.GetUserByEmail(appConfig.AdminEmail);
-
-            if (admin == null)
+            try
             {
-                admin = new User() { Email = appConfig.AdminEmail, Role = Role.Administrator };
+                userManager.GetUserByEmail(appConfig.AdminEmail)
+            }
+            catch (InvalidOperationException)
+            {
+                var admin = new User() { Email = appConfig.AdminEmail, Role = Role.Administrator };
                 userManager.AddUser(admin);
             }
         }

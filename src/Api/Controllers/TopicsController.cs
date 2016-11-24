@@ -66,11 +66,14 @@ namespace Api.Controllers
         [HttpGet("{topicId}")]
         public IActionResult Get(int topicId)
         {
-            var topics = topicManager.GetTopicById(topicId);
-            if (topics != null)
-                return Ok(topics);
-
-            return NotFound();
+            try
+            {
+                return Ok(topicManager.GetTopicById(topicId));
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
         #endregion
 
@@ -343,14 +346,17 @@ namespace Api.Controllers
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            var attachment = attachmentsManager.GetAttachmentById(attachmentId);
-            if (attachment != null)
+            try
             {
+                var attachment = attachmentsManager.GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
                 return Ok(hash);
             }
-            return NotFound();
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
 
         // POST api/topics/:id/attachments

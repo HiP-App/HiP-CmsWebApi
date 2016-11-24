@@ -1,19 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Api.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Initital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AnnotationTags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Description = table.Column<string>(nullable: true),
+                    Icon = table.Column<string>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Layer = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    ParentTagId = table.Column<int>(nullable: true),
+                    ShortName = table.Column<string>(nullable: false),
+                    Style = table.Column<string>(nullable: true),
+                    UsageCounter = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AnnotationTags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AnnotationTags_AnnotationTags_ParentTagId",
+                        column: x => x.ParentTagId,
+                        principalTable: "AnnotationTags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Email = table.Column<string>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
@@ -30,9 +58,8 @@ namespace Api.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
-                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedAt = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     CreatedById = table.Column<int>(nullable: false),
                     Deadline = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
@@ -77,11 +104,48 @@ namespace Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Data = table.Column<string>(nullable: true),
+                    IsRead = table.Column<bool>(nullable: false, defaultValueSql: "false"),
+                    TimeStamp = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    TopicId = table.Column<int>(nullable: false),
+                    TypeName = table.Column<string>(nullable: true),
+                    UpdaterId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Topics_TopicId",
+                        column: x => x.TopicId,
+                        principalTable: "Topics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UpdaterId",
+                        column: x => x.UpdaterId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TopicAttatchments",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGeneratedOnAdd", true),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Description = table.Column<string>(nullable: true),
                     Legal = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
@@ -130,8 +194,13 @@ namespace Api.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AnnotationTags_ParentTagId",
+                table: "AnnotationTags",
+                column: "ParentTagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AssociatedTopics_ChildTopicId",
@@ -139,9 +208,19 @@ namespace Api.Migrations
                 column: "ChildTopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AssociatedTopics_ParentTopicId",
-                table: "AssociatedTopics",
-                column: "ParentTopicId");
+                name: "IX_Notifications_TopicId",
+                table: "Notifications",
+                column: "TopicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UpdaterId",
+                table: "Notifications",
+                column: "UpdaterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Topics_CreatedById",
@@ -159,11 +238,6 @@ namespace Api.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TopicUsers_TopicId",
-                table: "TopicUsers",
-                column: "TopicId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TopicUsers_UserId",
                 table: "TopicUsers",
                 column: "UserId");
@@ -178,7 +252,13 @@ namespace Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AnnotationTags");
+
+            migrationBuilder.DropTable(
                 name: "AssociatedTopics");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "TopicAttatchments");
