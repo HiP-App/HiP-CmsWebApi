@@ -3,6 +3,7 @@ using Api.Models.Entity;
 using Api.Models.Notifications;
 using Api.Models.User;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -50,15 +51,18 @@ namespace Api.Managers
 
         public virtual bool MarkAsRead(int notificationId)
         {
-            var notification = dbContext.Notifications.Where(n => n.NotificationId == notificationId).Single();
-            if (notification != null)
+            try
             {
+                var notification = dbContext.Notifications.Where(n => n.NotificationId == notificationId).Single();
                 notification.IsRead = true;
                 dbContext.Update(notification);
                 dbContext.SaveChanges();
                 return true;
             }
-            return false;
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
         }
 
         internal int GetNotificationCount(int userId)

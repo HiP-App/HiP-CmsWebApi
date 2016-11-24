@@ -3,6 +3,7 @@ using Api.Managers;
 using Api.Models;
 using Api.Models.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -28,14 +29,17 @@ namespace Api.Utility
             var identity = context.Ticket.Principal.Identity as ClaimsIdentity;
 
             // Just a Hack to avoid concurrency
-            lock (this) {
-                user = userManager.GetUserByEmail(identity.Name);
-            }
-
-            if (user == null)
+            lock (this)
             {
-                user = new User { Email = identity.Name, Role = Role.Student };
-                userManager.AddUser(user);
+                try
+                {
+                    user = userManager.GetUserByEmail(identity.Name);
+                }
+                catch (InvalidOperationException)
+                {
+                    user = new User { Email = identity.Name, Role = Role.Student };
+                    userManager.AddUser(user);
+                }
             }
 
             // Adding Claims for the current request user.
