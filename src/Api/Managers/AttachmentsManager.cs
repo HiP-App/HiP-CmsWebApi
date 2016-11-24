@@ -32,7 +32,7 @@ namespace Api.Managers
             if (topic == null)
                 return EntityResult.Error("Unknown Topic");
 
-            string topicFolder = Path.Combine(Constants.AttatchmentFolder, topicId.ToString());
+            string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
             if (!System.IO.Directory.Exists(topicFolder))
                 System.IO.Directory.CreateDirectory(topicFolder);
 
