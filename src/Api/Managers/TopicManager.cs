@@ -15,36 +15,43 @@ namespace Api.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual IQueryable<Topic> GetAllTopics(string query, string status, DateTime? deadline, bool onlyParents)
+        public virtual PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page)
         {
-            IQueryable<Topic> topics = dbContext.Topics.Include(t => t.CreatedBy);
-            if (!string.IsNullOrEmpty(query))
-                topics = topics.Where(t => t.Title.Contains(query) || t.Description.Contains(query));
+            IQueryable<Topic> query = dbContext.Topics.Include(t => t.CreatedBy);
+            if (!string.IsNullOrEmpty(queryString))
+                query = query.Where(t => t.Title.Contains(queryString) || t.Description.Contains(queryString));
 
             if (!string.IsNullOrEmpty(status))
-                topics = topics.Where(t => t.Status.Equals(status));
+                query = query.Where(t => t.Status.Equals(status));
 
             if (deadline != null && deadline.HasValue)
-                topics = topics.Where(t => DateTime.Compare(t.Deadline, deadline.Value) == 0);
+                query = query.Where(t => DateTime.Compare(t.Deadline, deadline.Value) == 0);
 
             // only parents without parent.
             if (onlyParents)
             {
-                var topicsWithParent = dbContext.AssociatedTopics.ToList().Select(at => at.ChildTopicId);
-                topics.Where(t => !topicsWithParent.Contains(t.Id));
+                var topicsWithParent = dbContext.AssociatedTopics.Select(at => at.ChildTopicId).ToList();
+                query = query.Where(t => !topicsWithParent.Contains(t.Id));
             }
 
-            return topics;
+            int count = query.Count();
+            var topics = query.Skip((page - 1) * Constants.PageSize).ToList().Select(t => new TopicResult(t));
+
+            return new PagedResult<TopicResult>(topics, page, count);
         }
 
-        public virtual IEnumerable<TopicResult> GetTopicsForUser(int userId, int page)
+        public virtual PagedResult<TopicResult> GetTopicsForUser(int userId, int page)
         {
             var relatedTopicIds = dbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
-            var topics = dbContext.Topics.Include(t => t.CreatedBy)
+            var query = dbContext.Topics.Include(t => t.CreatedBy)
                  .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id))
                  .Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
-            return topics.Select(t => new TopicResult(t));
+
+            int count = query.Count();
+            var topics = query.Skip((page - 1) * Constants.PageSize).Select(t => new TopicResult(t));
+
+            return new PagedResult<TopicResult>(topics, page, count);
         }
 
         public virtual int GetTopicsCount()

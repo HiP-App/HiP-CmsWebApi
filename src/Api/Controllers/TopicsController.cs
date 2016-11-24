@@ -37,10 +37,8 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
         {
-            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents);
-            int count = topics.Count();
-            var entities = topics.ToList().Select(t => new TopicResult(t));
-            return Ok(new PagedResult<TopicResult>(entities, page, count));
+            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents, page);
+            return Ok(topics);
         }
 
         // GET api/topics
@@ -57,9 +55,7 @@ namespace Api.Controllers
         public IActionResult GetTopicsForUser(int userId, int page = 1)
         {
             var topics = topicManager.GetTopicsForUser(userId, page);
-            int count = topics.Count();
-
-            return Ok(new PagedResult<TopicResult>(topics, page, count));
+            return Ok(topics);
         }
 
         // GET api/topics/:topicId
