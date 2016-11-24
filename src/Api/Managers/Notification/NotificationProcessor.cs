@@ -25,7 +25,7 @@ namespace Api.Managers
         {
             this.topic = currentTopic;
             this.currentUser = currentUser;
-            this.emailSender = emailSender; // TODO How to pass parameter?
+            this.emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(EmailSender)); // TODO: This is probably not such a good idea...
             // Do not notify yourself
             notifiedUsers.Add(currentUser);
         }

@@ -9,12 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.Swagger.Model;
+using System;
 using System.IO;
 
 namespace Api
 {
     public class Startup
     {
+        internal static IServiceProvider ServiceProvider { get; set; }
 
         public Startup(IHostingEnvironment env)
         {
@@ -78,7 +80,6 @@ namespace Api
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
             app.UseCors(builder =>
                 // This will allow any request from any server. Tweak to fit your needs!
                 builder.AllowAnyHeader()
@@ -105,6 +106,8 @@ namespace Api
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
             app.UseStaticFiles();
+
+            ServiceProvider = app.ApplicationServices;
         }
 
         public static void Main(string[] args)
