@@ -20,16 +20,21 @@ namespace Api.Managers
 
         public static DownloadResource GetResource(string hashValue)
         {
+            DownloadResource result = null;
+            List<DownloadResource> outdatedResources = new List<DownloadResource>();
+
             foreach (DownloadResource entry in resources)
             {
                 // expired?
                 if (DateTime.Now > entry.Expires)
-                    resources.Remove(entry);
-
-                if (entry.HashValue.Equals(hashValue))
-                    return entry;
+                    outdatedResources.Add(entry);
+                else  if (entry.HashValue.Equals(hashValue))
+                    result = entry;
             }
-            return null;
+            if (outdatedResources.Count() != 0)
+                resources.RemoveAll(r => outdatedResources.Contains(r));
+            
+            return result;
         }
 
 
