@@ -8,7 +8,7 @@ using System.Text;
 namespace Api.Controllers
 {
     /// <summary>
-    /// Base class for AnnotationController
+    /// A base controller for handling requests and routes to other controllers
     /// </summary>    
     /// <response code="401">User is denied</response>
     [Produces("application/json")]
