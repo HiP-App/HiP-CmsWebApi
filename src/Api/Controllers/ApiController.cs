@@ -8,7 +8,7 @@ using System.Text;
 namespace Api.Controllers
 {
     /// <summary>
-    /// A base controller for handling requests and routes to other controllers
+    /// A base controller for handling user requests
     /// </summary>    
     /// <response code="401">User is denied</response>
     [Produces("application/json")]
