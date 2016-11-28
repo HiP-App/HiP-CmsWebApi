@@ -32,11 +32,13 @@ namespace Api.Managers
             return dbContext.Users.Count();
         }
 
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserById(int userId)
         {
             return dbContext.Users.Single(u => u.Id == userId);
         }
 
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserByEmail(string email)
         {
             return dbContext.Users.Single(u => u.Email == email);
@@ -44,6 +46,7 @@ namespace Api.Managers
 
         public virtual bool UpdateUser(int userId, UserFormModel model)
         {
+
             var user = GetUserById(userId);
             if (user != null)
             {

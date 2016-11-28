@@ -8,6 +8,7 @@ using Api.Data;
 using Api.Models;
 using Api.Models.User;
 using Api.Permission;
+using System;
 
 namespace Api.Controllers
 {
@@ -62,7 +63,7 @@ namespace Api.Controllers
                 }
                 if (failCount == model.emails.Length)
                     return Conflict();
-                
+
                 return Accepted();
             }
             return BadRequest(ModelState);
@@ -89,12 +90,15 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Get(int id)
         {
-            var user = userManager.GetUserById(id);
-
-            if (user != null)
+            try
+            {
+                var user = userManager.GetUserById(id);
                 return Ok(new UserResult(user));
-            else
+            }
+            catch (InvalidOperationException)
+            {
                 return NotFound();
+            }
         }
 
 
@@ -104,12 +108,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult CurrentUser()
         {
-            var user = userManager.GetUserById(User.Identity.GetUserId());
-
-            if (user != null)
-                return Ok(new UserResult(user));
-            else
-                return NotFound();
+            return Get(User.Identity.GetUserId());
         }
         #endregion
 
@@ -185,16 +184,19 @@ namespace Api.Controllers
 
         private IActionResult GetPicture(int userId)
         {
-            var user = userManager.GetUserById(userId);
-            if (user != null)
+            try
             {
+                var user = userManager.GetUserById(userId);
                 string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
 
                 return Ok(ToBase64String(path));
             }
-            return NotFound();
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
         }
 
         #endregion
@@ -226,30 +228,33 @@ namespace Api.Controllers
         private IActionResult PutUserPicture(int userId, IFormFile file)
         {
             var uploads = Path.Combine(Constants.ProfilePicturePath);
-            var user = userManager.GetUserById(userId);
-
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
-            else if (user == null)
-                ModelState.AddModelError("userId", "Unkonown User");
             else if (file.Length > 1024 * 1024 * 5) // Limit to 5 MB
                 ModelState.AddModelError("file", "Picture is to large");
-            else if (IsImage(file))
-            {
-                string fileName = user.Id + Path.GetExtension(file.FileName);
-                DeleteFile(Path.Combine(uploads, fileName));
-
-                using (FileStream outputStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
-                {
-                    file.CopyTo(outputStream);
-                }
-
-                userManager.UpdateProfilePicture(user, fileName);
-                return Ok();
-            }
-            else
+            else if (!IsImage(file))
                 ModelState.AddModelError("file", "Invalid Image");
+            else
+            {
+                try
+                {
+                    var user = userManager.GetUserById(userId);
+                    string fileName = user.Id + Path.GetExtension(file.FileName);
+                    DeleteFile(Path.Combine(uploads, fileName));
 
+                    using (FileStream outputStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
+                    {
+                        file.CopyTo(outputStream);
+                    }
+
+                    userManager.UpdateProfilePicture(user, fileName);
+                    return Ok();
+                }
+                catch (InvalidOperationException)
+                {
+                    ModelState.AddModelError("userId", "Unkonown User");
+                }
+            }
             return BadRequest(ModelState);
         }
 
@@ -284,23 +289,28 @@ namespace Api.Controllers
         private IActionResult DeletePicture(int userId)
         {
             // Fetch user
-            var user = userManager.GetUserById(userId);
-            if (user == null)
+            try
+            {
+                var user = userManager.GetUserById(userId);
+                // Has A Picture?
+                if (!user.HasProfilePicture())
+                    return BadRequest("No picture set");
+
+                bool success = userManager.UpdateProfilePicture(user, "");
+                // Delete Picture If Exists
+                string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
+
+                DeleteFile(fileName);
+
+                if (success)
+                    return Ok();
+                else
+                    return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
                 return BadRequest("Could not find User");
-            // Has A Picture?
-            if (!user.HasProfilePicture())
-                return BadRequest("No picture set");
-
-            bool success = userManager.UpdateProfilePicture(user, "");
-            // Delete Picture If Exists
-            string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
-
-            DeleteFile(fileName);
-
-            if (success)
-                return Ok();
-            else
-                return BadRequest();
+            }
         }
 
         private void DeleteFile(string path)
