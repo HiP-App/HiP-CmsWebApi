@@ -42,7 +42,8 @@ namespace Api.Controllers
         /// <param name="deadline">Topics with deadline </param>
         /// <param name="onlyParents">Indicates to get only parent topics</param>
         /// <param name="page">Represents the page</param>
-        /// <response code="200">Returns PagedResults of TopicResults</response>        
+        /// <response code="200">Returns PagedResults of TopicResults</response>
+        /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult Get(string query, string status, DateTime? deadline, bool onlyParents = false, int page = 1)
@@ -58,6 +59,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="page">Represents the page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("OfUser/Current")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult GetTopicsForUser(int page = 1)
@@ -73,6 +75,7 @@ namespace Api.Controllers
         /// <param name="userId">Represents the user Id of the user</param>
         /// <param name="page">Represents the page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("OfUser/{userId}")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult GetTopicsForUser(int userId, int page = 1)
@@ -88,6 +91,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="topicId">Represents the user Id of the user</param>        
         /// <response code="200">Returns the topic {topicId}</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}")]
         public IActionResult Get(int topicId)
         {
@@ -104,13 +108,14 @@ namespace Api.Controllers
 
         #region AssociatedTopics
 
-            #region GET
+        #region GET
         // GET api/topics/:topicId/subtopics
 
         /// <summary>
         /// Retrieves the subtopics of the topic {topicId}
         /// </summary>
         /// <param name="topicId">The Id of the topic</param>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/SubTopics")]
         public IActionResult GetSubTopics(int topicId)
         {
@@ -124,6 +129,7 @@ namespace Api.Controllers
         /// Retrieves the parent topics of the topic {topicId}
         /// </summary>
         /// <param name="topicId">The Id of the topic</param>
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/ParentTopics")]
         public IActionResult GetParentTopics(int topicId)
         {
@@ -132,7 +138,7 @@ namespace Api.Controllers
 
         #endregion
 
-            #region PUT
+        #region PUT
 
         // PUT api/topics/:topicId/ParentTopics/:parentId
 
@@ -144,6 +150,7 @@ namespace Api.Controllers
         /// <response code="200">Topics {topicId} and {parentId} associated successfully</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to associate topics</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}/ParentTopics/{parentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -169,6 +176,7 @@ namespace Api.Controllers
         /// <response code="200">Topics {topicId} and {childId} associated successfully</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to associate topics</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}/SubTopics/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -186,7 +194,7 @@ namespace Api.Controllers
 
         #endregion
 
-            #region DELETE
+        #region DELETE
 
         // DELETE api/topics/:id/ParentTopics/:parentId
 
@@ -197,6 +205,7 @@ namespace Api.Controllers
         /// <param name="parentId">The Id of the parent topic</param>
         /// <response code="200">Deleted Associated parent {parentId} and child {topicId}</response>        
         /// <response code="404">Not found</response>                      
+        /// <response code="401">User is denied</response>
         [HttpDelete("{topicId}/ParentTopics/{parentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -219,7 +228,8 @@ namespace Api.Controllers
         /// <param name="childId">The Id of the child topic</param>
         /// <response code="200">Deleted Associated parent {topicId} and child {childId}</response>        
         /// <response code="400">Request incorrect</response>        
-        /// <response code="404">Not found</response>                      
+        /// <response code="404">Not found</response>     
+        /// <response code="401">User is denied</response>
         [HttpDelete("{topicId}/SubTopics/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -247,6 +257,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="topicId">The Id of the topic</param>        
         /// <response code="200">A list of students assocaited with the topic {topicId}</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Students")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicStudents(int topicId)
@@ -261,6 +272,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="topicId">The Id of the topic</param>        
         /// <response code="200">A list of supervisors assocaited with the topic {topicId}</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Supervisors")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicSupervisors(int topicId)
@@ -275,6 +287,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="topicId">The Id of the topic</param>        
         /// <response code="200">A list of reviewers assocaited with the topic {topicId}</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Reviewers")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
         public IActionResult GetTopicReviewers(int topicId)
@@ -301,6 +314,7 @@ namespace Api.Controllers
         /// <response code="200">Edited assigned students for the topic {topicId}</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to edit topic</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}/Students")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -320,6 +334,7 @@ namespace Api.Controllers
         /// <response code="200">Edited supervisors for the topic {topicId}</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to edit topic</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}/Supervisors")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -339,6 +354,7 @@ namespace Api.Controllers
         /// <response code="200">Edited reviewers for the topic {topicId}</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to edit topic</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}/Reviewers")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -372,6 +388,7 @@ namespace Api.Controllers
         /// <response code="200">A new Topic is added</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to add topic</response>        
+        /// <response code="401">User is denied</response>
         [HttpPost]
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -408,6 +425,7 @@ namespace Api.Controllers
         /// <response code="200">The Topic {topicId} is added</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to edit topic</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -435,6 +453,7 @@ namespace Api.Controllers
         /// <response code="200">The Topic {topicId} status id changed</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to change topic status</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("{topicId}/Status")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -462,6 +481,7 @@ namespace Api.Controllers
         /// <response code="200">The Topic {topicId} is deleted</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to delete topic</response>        
+        /// <response code="401">User is denied</response>
         [HttpDelete("{topicId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -489,6 +509,7 @@ namespace Api.Controllers
         /// <response code="200">A list of attachments of the Topic {topicId}</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to get topic attachments</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Attachments")]
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -514,6 +535,7 @@ namespace Api.Controllers
         /// <response code="200">An attachment {attachmentId} of the topic {topicId}</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to get topic attachment</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -548,6 +570,7 @@ namespace Api.Controllers
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to add topic attachment</response>        
         /// <response code="500">Internal server error</response>        
+        /// <response code="401">User is denied</response>
         [HttpPost("{topicId}/Attachments")]
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -582,6 +605,7 @@ namespace Api.Controllers
         /// <response code="200">Attachment {attachmentId} deleted successfully</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to delete topic attachment</response>                
+        /// <response code="401">User is denied</response>
         [HttpDelete("{topicId}/Attachments/{attachmentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]

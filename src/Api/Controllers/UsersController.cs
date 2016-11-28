@@ -38,6 +38,7 @@ namespace Api.Controllers
         /// <response code="403">User not allowed to invite new users</response>        
         /// <response code="409">Resource already exists</response>        
         /// <response code="503">Service unavailable</response>        
+        /// <response code="401">User is denied</response>
         [HttpPost("Invite")]
         [ProducesResponseType(typeof(void), 202)]
         [ProducesResponseType(typeof(void), 400)]
@@ -92,6 +93,7 @@ namespace Api.Controllers
         /// <param name="role">Represents role of the user</param>        
         /// <param name="page">Represents the page</param>
         /// <response code="200">Returns PagedResults of UserResults</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
         public IActionResult Get(string query, string role, int page = 1)
@@ -110,7 +112,8 @@ namespace Api.Controllers
         /// </summary>   
         /// <param name="id">The Id of the user</param>        
         /// <response code="200">Returns the user</response>        
-        /// <response code="404">User not found</response>        
+        /// <response code="404">User not found</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -134,7 +137,8 @@ namespace Api.Controllers
         /// Get the current user
         /// </summary>           
         /// <response code="200">Returns the current user</response>        
-        /// <response code="404">User not found</response>        
+        /// <response code="404">User not found</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Current")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -154,6 +158,7 @@ namespace Api.Controllers
         /// <response code="200">User edited successfully</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="404">User not found</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("Current")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -173,7 +178,8 @@ namespace Api.Controllers
         /// <response code="200">User edited successfully</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to edit</response>        
-        /// <response code="404">User not found</response>        
+        /// <response code="404">User not found</response>
+        /// <response code="401">User is denied</response>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -221,6 +227,7 @@ namespace Api.Controllers
         /// <param name="userId">Represents the Id of the user</param>
         /// <response code="200">Returns profile picture of the user {userId}</response>        
         /// <response code="404">Resource not found</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{userId}/picture/")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -236,6 +243,7 @@ namespace Api.Controllers
         /// </summary>           
         /// <response code="200">Returns profile picture of the current user</response>        
         /// <response code="404">Resource not found</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("Current/picture/")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -276,6 +284,7 @@ namespace Api.Controllers
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to add picture</response>                
+        /// <response code="401">User is denied</response>
         [HttpPost("{id}/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -295,6 +304,7 @@ namespace Api.Controllers
         /// <param name="file">The file to be uploaded</param>                         
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>                
+        /// <response code="401">User is denied</response>
         [HttpPost("Current/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -354,6 +364,7 @@ namespace Api.Controllers
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to delete picture</response>                
+        /// <response code="401">User is denied</response>
         [HttpDelete("{id}/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -372,6 +383,7 @@ namespace Api.Controllers
         /// </summary>        
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>                
+        /// <response code="401">User is denied</response>
         [HttpDelete("Current/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
