@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
+using Api.Models.Notifications;
 
 namespace Api.Migrations
 {
@@ -94,6 +95,26 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("SubscriberId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<int?>("UserId");
+
+                    b.HasKey("SubscriptionId");
+
+                    b.HasIndex("SubscriberId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Subscription");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Topic", b =>
@@ -203,6 +224,24 @@ namespace Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Api.Models.User.UserResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
+                    b.Property<string>("Role");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserResult");
+                });
+
             modelBuilder.Entity("Api.Models.Entity.AnnotationTag", b =>
                 {
                     b.HasOne("Api.Models.Entity.AnnotationTag", "ParentTag")
@@ -240,6 +279,18 @@ namespace Api.Migrations
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
+                {
+                    b.HasOne("Api.Models.User.UserResult", "Subscriber")
+                        .WithMany()
+                        .HasForeignKey("SubscriberId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.User")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Topic", b =>
