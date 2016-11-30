@@ -69,5 +69,61 @@ namespace Api.Managers
         {
             return dbContext.Notifications.Where(n => n.UserId == userId && !n.IsRead).Count();
         }
+
+        public bool SetSubscription(int userId, NotificationType type, bool subscribe)
+        {
+            User user = dbContext.Users.Single(u => u.Id == userId);
+            Subscription sub = new Subscription
+            {
+                Subscriber = user,
+                Type = type
+            };
+            return subscribe ? AddSubscription(user, sub) : RemoveSubscription(user, sub);
+        }
+
+        private bool AddSubscription(User user, Subscription sub)
+        {
+            try
+            {
+                IQueryable<Subscription> subs = findSubscriptionsLike(sub);
+                if (subs.Count() > 0)
+                {
+                    dbContext.Subscriptions.Update(subs.First());
+                } else
+                {
+                    dbContext.Subscriptions.Add(sub);
+                }
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        private bool RemoveSubscription(User user, Subscription sub)
+        {
+            try
+            {
+                foreach (var subscription in findSubscriptionsLike(sub))
+                {
+                    dbContext.Subscriptions.Remove(subscription);
+                }
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        private IQueryable<Subscription> findSubscriptionsLike(Subscription sub)
+        {
+            return dbContext.Subscriptions.Where(
+                candidate => sub.Subscriber == candidate.Subscriber && sub.TypeName == candidate.TypeName
+            );
+        }
     }
 }

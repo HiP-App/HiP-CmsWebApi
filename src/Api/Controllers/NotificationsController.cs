@@ -92,7 +92,13 @@ namespace Api.Controllers
             NotificationType type;
             if (NotificationType.TryParse(notificationType, out type))
             {
-                return Ok();
+                if (notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
+                {
+                    return Ok();
+                } else
+                {
+                    return BadRequest();
+                }
             }
             else
             {
