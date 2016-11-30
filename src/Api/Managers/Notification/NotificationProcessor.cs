@@ -105,9 +105,15 @@ namespace Api.Managers
         private void createNotification(TopicUser topicUser, NotificationType type, string data = null)
         {
             int userId = topicUser.UserId;
-            if (notifiedUsers.Contains(userId))
-                return;
+            if (!notifiedUsers.Contains(userId))
+            {
+                Notification not = createAppNotification(type, data, userId);
+                createMailNotification(topicUser, type, userId, not);
+            }
+        }
 
+        private Notification createAppNotification(NotificationType type, string data, int userId)
+        {
             Notification not = new Notification() { UpdaterId = currentUser, Type = type, UserId = userId };
             if (topic != null)
                 not.TopicId = topic.Id;
@@ -116,7 +122,37 @@ namespace Api.Managers
 
             notifiedUsers.Add(userId);
             dbContext.Notifications.Add(not);
-            this.emailSender.NotifyAsync(topicUser.User.Email, not);
+            return not;
+        }
+
+        private void createMailNotification(TopicUser topicUser, NotificationType type, int userId, Notification not)
+        {
+            string email = fetchUserEmail(topicUser);
+            bool subscribed = isSubsccribed(type, userId);
+            if (email != null && subscribed)
+                this.emailSender.NotifyAsync(topicUser.User.Email, not);
+        }
+
+        private string fetchUserEmail(TopicUser topicUser)
+        {
+            try
+            {
+                User user = dbContext.Users.Where(
+                        candidate => candidate.Id == topicUser.UserId
+                    ).First();
+                return user.Email;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
+        private bool isSubsccribed(NotificationType type, int userId)
+        {
+            return dbContext.Subscriptions.Where(
+                            subscription => subscription.Subscriber.Id == userId && subscription.Type == type
+                        ).Count() > 0;
         }
 
         #endregion
