@@ -19,7 +19,16 @@ namespace Api.Controllers
             userManager = new UserManager(dbContext);
         }
 
-        // GET api/Notifications/All
+        #region GET
+
+        // GET api/Notifications
+
+        /// <summary>
+        /// Get all notifications for the user
+        /// </summary>
+        /// <response code="200">A List of All NotificationResults for the current user</response>
+        /// <response code="404">There are no Notifications for the current user</response>                
+        /// <response code="401">User is denied</response>
         [HttpGet("All")]
         [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -29,6 +38,13 @@ namespace Api.Controllers
         }
 
         // GET api/Notifications/Unread
+
+        /// <summary>
+        /// Get unread notifications for the user
+        /// </summary>
+        /// <response code="200">A List of Unread NotificationResults for the current user</response>
+        /// <response code="404">There are no Unread Notifications for the current user</response>                
+        /// <response code="401">User is denied</response>
         [HttpGet("Unread")]
         [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -47,9 +63,13 @@ namespace Api.Controllers
                 return NotFound();
         }
 
-
-
         // GET api/Notifications/Count
+
+        /// <summary>
+        /// Get notification count for the user
+        /// </summary>
+        /// <response code="200">Returns a Notification count for the current user</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("Count")]
         [ProducesResponseType(typeof(int), 200)]
         public IActionResult GetNotificationCount()
@@ -57,7 +77,19 @@ namespace Api.Controllers
             return Ok(notificationManager.GetNotificationCount(User.Identity.GetUserId()));
         }
 
+        #endregion
+
+        #region POST
+
         // POST api/Notifications/:id/markread
+
+        /// <summary>
+        /// Makes the notification {notificationId} as read
+        /// </summary>
+        /// <param name="notificationId">The id of the Notification</param>
+        /// <response code="200">Notification {notificationId} is marked as read</response>
+        /// <response code="404">Notification {notificationId} is not found</response>                
+        /// <response code="401">User is denied</response>
         [HttpPost("{notificationId}/markread")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -68,5 +100,7 @@ namespace Api.Controllers
             else
                 return NotFound();
         }
+
+        #endregion
     }
 }

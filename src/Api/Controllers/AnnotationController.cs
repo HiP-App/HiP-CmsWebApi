@@ -32,6 +32,7 @@ namespace Api.Controllers
         /// <param name="IncludeDeleted">Include already deleted, but still used Tags?</param>
         /// <response code="200">A List of AnnotationTagResults</response>
         /// <response code="204">There are no Tags in the system</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
@@ -49,6 +50,7 @@ namespace Api.Controllers
         /// <param name="id">The id of the Tag</param>
         /// <response code="200">A AnnotationTagResult</response>
         /// <response code="404">There is no Tag {id} in the system</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}")]
         [ProducesResponseType(typeof(AnnotationTagResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -74,6 +76,7 @@ namespace Api.Controllers
         /// <param name="id">The id of the parent tag</param>
         /// <response code="200">A List of AnnotationTagResults</response>
         /// <response code="204">The parent Tag {id} has no Children</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}/ChildTags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
@@ -96,6 +99,7 @@ namespace Api.Controllers
         /// <response code="200">Tag created</response>
         /// <response code="403">User not allowed to created Tags</response>
         /// <response code="400">Request was missformed</response>
+        /// <response code="401">User is denied</response>
         [HttpPost("Tags")]
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -125,6 +129,7 @@ namespace Api.Controllers
         /// <response code="200">child added</response>
         /// <response code="403">User not allowed to edit Tags</response>
         /// <response code="400">Request was missformed</response>
+        /// <response code="401">User is denied</response>
         [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -154,6 +159,7 @@ namespace Api.Controllers
         /// <response code="200">Tag edited successful</response>
         /// <response code="403">User not allowed to edit Tags</response>
         /// <response code="404">No such Tag</response>
+        /// <response code="401">User is denied</response>
         [HttpPut("Tags/{Id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -182,6 +188,7 @@ namespace Api.Controllers
         /// <response code="200">Tag ddeleted successful</response>
         /// <response code="403">User not allowed to delete Tags</response>
         /// <response code="404">No such Tag</response>
+        /// <response code="401">User is denied</response>
         [HttpDelete("Tags/{Id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -205,6 +212,7 @@ namespace Api.Controllers
         /// <response code="200">Child removed successful</response>
         /// <response code="403">User not allowed to edit Tags</response>
         /// <response code="404">No such Tag</response>
+        /// <response code="401">User is denied</response>
         [HttpDelete("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]

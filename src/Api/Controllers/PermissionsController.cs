@@ -10,6 +10,11 @@ using Api.Utility;
 
 namespace Api.Controllers
 {
+    /// <summary>
+    /// Decides the permission for the user
+    /// </summary>
+    /// <response code="200">User is allowed</response>
+    /// <response code="403">User is denied</response>
     [ProducesResponseType(typeof(void), 200)]
     [ProducesResponseType(typeof(void), 403)]
     public class PermissionsController : ApiController
@@ -33,6 +38,7 @@ namespace Api.Controllers
         /// </summary>
         /// <response code="200">User is allowed</response>
         /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpGet("Annotation/Tags/All/Permission/IsAllowedToCreate")]
         public IActionResult IsAllowedToCreateTags()
         {
@@ -40,12 +46,13 @@ namespace Api.Controllers
                 return Ok();
             return Unauthorized();
         }
-        
+
         /// <summary>
         /// Is the current user allowed to edit Annotation Tags.
         /// </summary>
         /// <response code="200">User is allowed</response>
         /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpGet("Annotation/Tags/All/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEditTags()
         {
