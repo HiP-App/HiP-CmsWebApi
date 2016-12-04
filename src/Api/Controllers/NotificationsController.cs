@@ -69,7 +69,14 @@ namespace Api.Controllers
                 return NotFound();
         }
 
-        // PUT api/notifications/subscribe/:notificationType
+        /// <summary>
+        /// Subscribes the current user to notifications of the given type.
+        /// </summary>
+        /// <param name="notificationType"></param>
+        /// <returns>nothing</returns>
+        /// <response code="200">OK</response>
+        /// <response code="403">User is not allowed to subscribe</response>
+        /// <response code="404">Resource Not Found</response>
         [HttpPut("subscribe/{notificationType}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -78,7 +85,14 @@ namespace Api.Controllers
             return setSubscription(notificationType, true);
         }
 
-        // PUT api/notifications/unsubscribe/:notificationType
+        /// <summary>
+        /// Unsubscribes the current user from notifications of the given type.
+        /// </summary>
+        /// <param name="notificationType"></param>
+        /// <returns>nothing</returns>
+        /// <response code="200">OK</response>
+        /// <response code="403">User is not allowed to subscribe</response>
+        /// <response code="404">Resource Not Found</response>
         [HttpPut("unsubscribe/{notificationType}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
