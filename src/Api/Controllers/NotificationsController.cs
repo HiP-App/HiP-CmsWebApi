@@ -78,8 +78,6 @@ namespace Api.Controllers
         /// <response code="403">User is not allowed to subscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("subscribe/{notificationType}")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutSubscribe(string notificationType)
         {
             return setSubscription(notificationType, true);
@@ -91,11 +89,9 @@ namespace Api.Controllers
         /// <param name="notificationType"></param>
         /// <returns>nothing</returns>
         /// <response code="200">OK</response>
-        /// <response code="403">User is not allowed to subscribe</response>
+        /// <response code="403">User is not allowed to unsubscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("unsubscribe/{notificationType}")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutUnsubscribe(string notificationType)
         {
             return setSubscription(notificationType, false);
