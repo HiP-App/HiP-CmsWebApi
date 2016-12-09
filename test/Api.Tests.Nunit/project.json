@@ -6,7 +6,6 @@
     "Microsoft.DotNet.InternalAbstractions": "1.0.0",
     "NSubstitute": "2.0.0-rc",
     "MyTested.AspNetCore.Mvc.Universe": "1.1.0",
-    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
     "Microsoft.AspNetCore.Identity": "1.0.0"
   },
 

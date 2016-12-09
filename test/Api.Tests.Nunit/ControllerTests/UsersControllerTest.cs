@@ -1,5 +1,6 @@
 ﻿using Api.Controllers;
 using Api.Models;
+using Api.Models.Entity;
 using MyTested.AspNetCore.Mvc;
 using NUnit.Framework;
 
@@ -48,7 +49,14 @@ namespace Api.Tests.Nunit.ControllerTests
         {
             MyMvc
                 .Controller<UsersController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1")) // add claim with custom name and value of 1                                
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1")) // add claim with custom name and value of 1                                                
+                .WithDbContext(dbContext =>
+                    dbContext.WithSet<User>(o => o.Add(new User
+                    {
+                        Id = 1,
+                        Email = "admin@hipapp.de",
+                        Role = "Administrator"
+                    })))
                 .Calling(c => c.Put(4, new AdminUserFormModel
                 {
                     FirstName = "First Name",
