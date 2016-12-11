@@ -75,7 +75,7 @@ namespace Api.Utility
             parameters.Add("topic", notification.Topic.Title);
             parameters.Add("updater", notification.Updater.FullName);
             parameters.Add("date", notification.TimeStamp.ToString());
-            parameters.Add("data", notification.Data);
+            parameters.Add("action", notification.TypeName);
 
             return SendMail(
                 email,
