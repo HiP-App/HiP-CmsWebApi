@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MyTested.AspNetCore.Mvc;
-using Api.Tests.Nunit.Mocks;
 using Api.Permission;
 
 namespace Api.Tests.Nunit
