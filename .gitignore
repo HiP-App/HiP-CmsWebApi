@@ -239,6 +239,3 @@ _Pvt_Extensions
 web.config
 
 appsettings.Development.json
-
-src/Api/Migrations/*.cs
-!src/Api/Migrations/CmsDbContextModelSnapshot.cs
