@@ -18,7 +18,7 @@ namespace Api.Permission
             this.userManager = new UserManager(dbContext);
         }
 
-        public virtual bool IsAllowedToAdminister(int userId)
+        public bool IsAllowedToAdminister(int userId)
         {
             try
             {
