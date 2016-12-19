@@ -28,6 +28,17 @@ namespace Api.Controllers
         #region invite
 
         // POST api/users/invite
+
+        /// <summary>
+        /// Add new users and send invitation to the added users for registration
+        /// </summary>        
+        /// <param name="model">Contains a list of emails</param>                         
+        /// <response code="202">Request is accepted</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="403">User not allowed to invite new users</response>        
+        /// <response code="409">Resource already exists</response>        
+        /// <response code="503">Service unavailable</response>        
+        /// <response code="401">User is denied</response>
         [HttpPost("Invite")]
         [ProducesResponseType(typeof(void), 202)]
         [ProducesResponseType(typeof(void), 400)]
@@ -72,7 +83,17 @@ namespace Api.Controllers
         #endregion
 
         #region GET user
+
         // GET api/users
+
+        /// <summary>
+        /// All users matching query and role
+        /// </summary>   
+        /// <param name="query">Users containing query in email, first and last name</param>
+        /// <param name="role">Represents role of the user</param>        
+        /// <param name="page">Represents the page</param>
+        /// <response code="200">Returns PagedResults of UserResults</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
         public IActionResult Get(string query, string role, int page = 1)
@@ -85,6 +106,14 @@ namespace Api.Controllers
 
 
         // GET api/users/:id
+
+        /// <summary>
+        /// Get the user {id}
+        /// </summary>   
+        /// <param name="id">The Id of the user</param>        
+        /// <response code="200">Returns the user</response>        
+        /// <response code="404">User not found</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -103,6 +132,13 @@ namespace Api.Controllers
 
 
         // GET api/users/current
+
+        /// <summary>
+        /// Get the current user
+        /// </summary>           
+        /// <response code="200">Returns the current user</response>        
+        /// <response code="404">User not found</response>
+        /// <response code="401">User is denied</response>
         [HttpGet("Current")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -115,6 +151,14 @@ namespace Api.Controllers
         #region PUT user
         // PUT api/users/current
 
+        /// <summary>
+        /// Edit the current user
+        /// </summary>   
+        /// <param name="model">Contains details of the user to be edited</param>        
+        /// <response code="200">User edited successfully</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="404">User not found</response>        
+        /// <response code="401">User is denied</response>
         [HttpPut("Current")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -124,7 +168,18 @@ namespace Api.Controllers
             return PutUser(User.Identity.GetUserId(), model);
         }
 
-        // PUT api/users/5
+        // PUT api/users/:id
+
+        /// <summary>
+        /// Edit the user {id}
+        /// </summary>   
+        /// <param name="id">The Id of the user to be edited</param>        
+        /// <param name="model">Contains details of the user to be edited</param>        
+        /// <response code="200">User edited successfully</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="403">User not allowed to edit</response>        
+        /// <response code="404">User not found</response>
+        /// <response code="401">User is denied</response>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -165,6 +220,14 @@ namespace Api.Controllers
         #region GET picture
 
         // GET api/users/{userId}/picture/
+
+        /// <summary>
+        /// Get the profile picture of the user {userId}
+        /// </summary>   
+        /// <param name="userId">Represents the Id of the user</param>
+        /// <response code="200">Returns profile picture of the user {userId}</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("{userId}/picture/")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -174,6 +237,13 @@ namespace Api.Controllers
         }
 
         // GET api/users/current/picture/
+
+        /// <summary>
+        /// Get the profile picture of the current user
+        /// </summary>           
+        /// <response code="200">Returns profile picture of the current user</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="401">User is denied</response>
         [HttpGet("Current/picture/")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(void), 404)]
@@ -205,6 +275,16 @@ namespace Api.Controllers
 
 
         // Post api/users/{id}/picture/
+
+        /// <summary>
+        /// Add picture for the user {id}
+        /// </summary>        
+        /// <param name="id">The Id of the user</param>                         
+        /// <param name="file">The file to be uploaded</param>                         
+        /// <response code="200">Request is accepted</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="403">User not allowed to add picture</response>                
+        /// <response code="401">User is denied</response>
         [HttpPost("{id}/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -217,6 +297,14 @@ namespace Api.Controllers
         }
 
         // Post api/users/current/picture/
+
+        /// <summary>
+        /// Add picture for the current user
+        /// </summary>                
+        /// <param name="file">The file to be uploaded</param>                         
+        /// <response code="200">Request is accepted</response>        
+        /// <response code="400">Request incorrect</response>                
+        /// <response code="401">User is denied</response>
         [HttpPost("Current/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -267,6 +355,16 @@ namespace Api.Controllers
 
         #region DELETE picture
 
+        // Delete api/users/:id/picture/
+
+        /// <summary>
+        /// Delete picture for the user {id}
+        /// </summary>        
+        /// <param name="id">The Id of the user</param>                                 
+        /// <response code="200">Request is accepted</response>        
+        /// <response code="400">Request incorrect</response>        
+        /// <response code="403">User not allowed to delete picture</response>                
+        /// <response code="401">User is denied</response>
         [HttpDelete("{id}/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
@@ -278,6 +376,14 @@ namespace Api.Controllers
             return DeletePicture(id);
         }
 
+        // Delete api/users/current/picture/
+
+        /// <summary>
+        /// Delete picture for the current user
+        /// </summary>        
+        /// <response code="200">Request is accepted</response>        
+        /// <response code="400">Request incorrect</response>                
+        /// <response code="401">User is denied</response>
         [HttpDelete("Current/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
