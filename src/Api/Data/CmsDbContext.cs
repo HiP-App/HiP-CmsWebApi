@@ -35,6 +35,7 @@ namespace Api.Data
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new NotificationMap(modelBuilder.Entity<Notification>());
             new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
+            new SubscriptionMap(modelBuilder.Entity<Subscription>());
         }
     }
 }

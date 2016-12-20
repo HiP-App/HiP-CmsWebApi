@@ -81,6 +81,14 @@ namespace Api.Managers
             return subscribe ? AddSubscription(user, sub) : RemoveSubscription(user, sub);
         }
 
+        public IEnumerable<Subscription> GetSubscriptions(int userId)
+        {
+            var query = dbContext.Subscriptions.Where(
+                subscription => subscription.SubscriberId == userId
+            ).ToList();
+            return query;
+        }
+
         private bool AddSubscription(User user, Subscription sub)
         {
             try

@@ -14,6 +14,9 @@ namespace Api.Models.Entity
         public int SubscriptionId { get; set; }
 
         [Required]
+        public int SubscriberId { get; set; }
+
+        [Required]
         public User Subscriber { get; set; }
         
         [NotMapped]
@@ -33,13 +36,13 @@ namespace Api.Models.Entity
         }
 
         public string TypeName { get; set; }
+    }
 
-        public class SubscriptionMap
+    public class SubscriptionMap
+    {
+        public SubscriptionMap(EntityTypeBuilder<Subscription> entityBuilder)
         {
-            public SubscriptionMap(EntityTypeBuilder<Subscription> entityBuilder)
-            {
-                entityBuilder.HasOne(sub => sub.Subscriber).WithMany(user => user.Subscriptions).HasForeignKey(u => u.Subscriber).OnDelete(DeleteBehavior.Restrict);
-            }
+            entityBuilder.HasOne(sub => sub.Subscriber).WithMany(user => user.Subscriptions).HasForeignKey(u => u.SubscriberId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
