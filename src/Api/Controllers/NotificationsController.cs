@@ -53,9 +53,9 @@ namespace Api.Controllers
             return GetNotifications(true);
         }
 
-        private IActionResult GetNotifications(bool onlyUread)
+        private IActionResult GetNotifications(bool onlyUnread)
         {
-            var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUread);
+            var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUnread);
 
             if (notifications != null)
                 return Ok(notifications);
