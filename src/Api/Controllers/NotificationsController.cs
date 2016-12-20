@@ -77,7 +77,7 @@ namespace Api.Controllers
             return Ok(notificationManager.GetNotificationCount(User.Identity.GetUserId()));
         }
 
-        // GET api/Subscriptions
+        // GET api/Notifications/Subscriptions
 
         /// <summary>
         /// Get all subscriptions for the current user
@@ -85,7 +85,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of subscriptions for the current user</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("Subscriptions")]
-        [ProducesResponseType(typeof(int), 200)]
+        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
         public IActionResult GetSubscriptions()
         {
             return Ok(notificationManager.GetSubscriptions(User.Identity.GetUserId()));
