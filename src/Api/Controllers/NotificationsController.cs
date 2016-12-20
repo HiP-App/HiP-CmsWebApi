@@ -77,6 +77,20 @@ namespace Api.Controllers
             return Ok(notificationManager.GetNotificationCount(User.Identity.GetUserId()));
         }
 
+        // GET api/Subscriptions
+
+        /// <summary>
+        /// Get all subscriptions for the current user
+        /// </summary>
+        /// <response code="200">Returns a list of subscriptions for the current user</response>        
+        /// <response code="401">User is denied</response>
+        [HttpGet("Subscriptions")]
+        [ProducesResponseType(typeof(int), 200)]
+        public IActionResult GetSubscriptions()
+        {
+            return Ok(notificationManager.GetSubscriptions(User.Identity.GetUserId()));
+        }
+
         #endregion
 
         #region POST
@@ -100,9 +114,9 @@ namespace Api.Controllers
             else
                 return NotFound();
         }
-        
+
         #endregion
-        
+
         #region PUT
 
         /// <summary>
@@ -141,7 +155,8 @@ namespace Api.Controllers
                 if (notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
                 {
                     return Ok();
-                } else
+                }
+                else
                 {
                     return BadRequest();
                 }
