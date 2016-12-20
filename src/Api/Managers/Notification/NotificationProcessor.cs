@@ -130,7 +130,7 @@ namespace Api.Managers
             string email = fetchUserEmail(topicUser);
             bool subscribed = isSubsccribed(type, userId);
             if (email != null && subscribed)
-                this.emailSender.NotifyAsync(topicUser.User.Email, not);
+                this.emailSender.NotifyAsync(email, not);
         }
 
         private string fetchUserEmail(TopicUser topicUser)
