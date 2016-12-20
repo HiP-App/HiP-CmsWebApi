@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20161219133316_subscribe-notifications")]
+    [Migration("20161219171047_subscribe-notifications")]
     partial class subscribenotifications
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
