@@ -6,19 +6,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Api.Models.Entity;
 using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Api.Data
 {
     public static class DbTask
     {
-        public static void RunMigrationsAndSeedDb(this IApplicationBuilder app)
+        public static void RunMigrationsAndSeedDb(this IApplicationBuilder app, IHostingEnvironment env)
         {
             var dbContext = app.ApplicationServices.GetRequiredService<CmsDbContext>();
             var appConfig = app.ApplicationServices.GetRequiredService<AppConfig>();
             var userManager = new UserManager(dbContext);
 
-            // Run Migrations to apply any pending migrations. (if any)
-            dbContext.Database.Migrate();
+            //Basically we need this because the framework is using an in-memory database and hence it does not needs the below call. 
+            //Therefore we need a check checking if the environment is Testing or not.
+            //The default environment on which the tests are executed is 'Testing'.
+            //So only for this Testing environment, the migrations won't apply and it will be applied for other environments
+            if (!(env.EnvironmentName=="Testing"))
+            {
+                // Run Migrations to apply any pending migrations. (if any)
+                dbContext.Database.Migrate();
+            }
 
             // Seed Db with Admin Account if its not already created.
             try
