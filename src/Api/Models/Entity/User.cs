@@ -35,6 +35,8 @@ namespace Api.Models.Entity
 
         public List<Document> Documents { get; set; }
 
+        public List<Subscription> Subscriptions { get; set; }
+
         #region Utility Methods
 
         [NotMapped]

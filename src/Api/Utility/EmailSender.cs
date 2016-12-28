@@ -1,36 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
-using MailKit;
 using MimeKit;
-using Microsoft.AspNetCore.Builder;
 using System.IO;
+using Api.Models.Entity;
 
 namespace Api.Utility
 {
     public class EmailSender
     {
         private AppConfig appConfig;
+
         public EmailSender(AppConfig appConfig)
         {
             this.appConfig = appConfig;
         }
-        public Task InviteAsync(string email)
+
+        private Task SendMail(string recipient, string subject, string templateFile, Dictionary<string, string> parameters) 
         {
             var smtp = appConfig.SMTPConfig;
-            var bodyHtml = System.IO.File.ReadAllText(Path.Combine("Utility","invation-email.html"));
-            bodyHtml = bodyHtml.Replace(@"{email}", email);
+            var bodyHtml = System.IO.File.ReadAllText(Path.Combine("Utility", templateFile));
+            foreach(KeyValuePair<string, string> entry in parameters)
+            {
+                bodyHtml = bodyHtml.Replace(@"{" + entry.Key + "}", entry.Value);
+            }
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("History in Paderborn", smtp.From));
-            message.To.Add(new MailboxAddress("", email));
-            message.Subject = "History in Paderborn App Einladung";
+            message.To.Add(new MailboxAddress("", recipient));
+            message.Subject = subject;
             message.Body = new TextPart("html")
             {
                 Text = bodyHtml
-        };
+            };
 
             using (var client = new SmtpClient())
             {
@@ -55,6 +57,32 @@ namespace Api.Utility
 
             // Plug in your email service here to send an email.
             return Task.FromResult(0);
+        }
+
+        public Task InviteAsync(string email)
+        {
+            return SendMail(
+                email,
+                "History in Paderborn App Einladung",
+                "invation-email.html",
+                new Dictionary<string, string> { { "email", email } }
+            );
+        }
+
+        public Task NotifyAsync(string email, Notification notification)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("topic", notification.Topic.Title);
+            parameters.Add("updater", notification.Updater.FullName);
+            parameters.Add("date", notification.TimeStamp.ToString());
+            parameters.Add("action", notification.TypeName);
+
+            return SendMail(
+                email,
+                "History in Paderborn App Notification",
+                "notification-email.html",
+                parameters
+            );
         }
     }
 }
