@@ -33,6 +33,8 @@ namespace Api.Models.Entity
 
         public List<Notification> ProducedNotifications { get; set; }
 
+        public List<Document> Documents { get; set; }
+
         #region Utility Methods
 
         [NotMapped]

@@ -44,6 +44,8 @@ namespace Api.Models.Entity
 
         public List<TopicAttatchment> Attatchments { get; set; }
 
+        public List<Document> Documents { get; set; }
+
         public Topic(TopicFormModel model)
         {
             Title = model.Title;
