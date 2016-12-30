@@ -4,6 +4,7 @@ using Api.Data;
 using Api.Models.Entity;
 using Api.Models;
 using Api.Models.Notifications;
+using Api.Utility;
 using System.Linq;
 
 namespace Api.Managers
@@ -14,12 +15,18 @@ namespace Api.Managers
         private List<int> notifiedUsers = new List<int>();
         private Topic topic;
         private int currentUser;
+        private EmailSender emailSender;
 
-        public NotificationProcessor(CmsDbContext dbContext, Topic currentTopic, int currentUser) : base(dbContext)
+        public NotificationProcessor(
+            CmsDbContext dbContext,
+            Topic currentTopic,
+            int currentUser
+        ) : base(dbContext)
         {
             this.topic = currentTopic;
             this.currentUser = currentUser;
-            // Don not notify yourself
+            this.emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(EmailSender)); // TODO: This is probably not such a good idea...
+            // Do not notify yourself
             notifiedUsers.Add(currentUser);
         }
 
@@ -49,7 +56,7 @@ namespace Api.Managers
 
         private void NotifyAll(NotificationType type, string data = null)
         {
-            topic.TopicUsers.ForEach(tu => createNotification(tu.UserId, type, data));
+            topic.TopicUsers.ForEach(tu => createNotification(tu, type, data));
         }
 
         #region OnUpdate
@@ -75,11 +82,11 @@ namespace Api.Managers
         {
             foreach (TopicUser user in newUser)
             {
-                createNotification(user.UserId, NotificationType.TOPIC_ASSIGNED_TO, role);
+                createNotification(user, NotificationType.TOPIC_ASSIGNED_TO, role);
             }
             foreach (TopicUser user in deletedUser)
             {
-                createNotification(user.UserId, NotificationType.TOPIC_REMOVED_FROM, role);
+                createNotification(user, NotificationType.TOPIC_REMOVED_FROM, role);
             }
 
             finnish();
@@ -91,9 +98,22 @@ namespace Api.Managers
 
         private void createNotification(int userId, NotificationType type, string data = null)
         {
-            if (notifiedUsers.Contains(userId))
-                return;
+            TopicUser user = dbContext.TopicUsers.Where(u => u.UserId == userId).First();
+            createNotification(user, type, data);
+        }
 
+        private void createNotification(TopicUser topicUser, NotificationType type, string data = null)
+        {
+            int userId = topicUser.UserId;
+            if (!notifiedUsers.Contains(userId))
+            {
+                Notification not = createAppNotification(type, data, userId);
+                createMailNotification(topicUser, type, userId, not);
+            }
+        }
+
+        private Notification createAppNotification(NotificationType type, string data, int userId)
+        {
             Notification not = new Notification() { UpdaterId = currentUser, Type = type, UserId = userId };
             if (topic != null)
                 not.TopicId = topic.Id;
@@ -102,12 +122,44 @@ namespace Api.Managers
 
             notifiedUsers.Add(userId);
             dbContext.Notifications.Add(not);
+            return not;
         }
+
+        private void createMailNotification(TopicUser topicUser, NotificationType type, int userId, Notification not)
+        {
+            string email = fetchUserEmail(topicUser);
+            bool subscribed = isSubsccribed(type, userId);
+            if (email != null && subscribed)
+                this.emailSender.NotifyAsync(email, not);
+        }
+
+        private string fetchUserEmail(TopicUser topicUser)
+        {
+            try
+            {
+                User user = dbContext.Users.Where(
+                        candidate => candidate.Id == topicUser.UserId
+                    ).First();
+                return user.Email;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
+        private bool isSubsccribed(NotificationType type, int userId)
+        {
+            return dbContext.Subscriptions.Where(
+                            subscription => subscription.Subscriber.Id == userId && subscription.Type == type
+                        ).Count() > 0;
+        }
+
+        #endregion
 
         private void finnish()
         {
             dbContext.SaveChanges();
         }
-        #endregion
     }
 }
