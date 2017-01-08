@@ -27,19 +27,19 @@ namespace Api.Controllers
         // Get api/annotation/Tags
 
         /// <summary>
-        /// All Annotation Tags save in the system
+        /// All Annotation Tags saved in the system
         /// </summary>
         /// <param name="IncludeDeleted">Include already deleted, but still used Tags?</param>
+        /// <param name="IncludeOnlyRoot">Include only root tags?</param>
         /// <response code="200">A List of AnnotationTagResults</response>
         /// <response code="204">There are no Tags in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
-        public IActionResult GetAllTags(bool IncludeDeleted = false)
+        public IActionResult GetAllTags(bool IncludeDeleted = false, bool IncludeOnlyRoot = false)
         {
-            var tags = tagManager.getAllTags(IncludeDeleted);
-            return Ok(tags);
+            return Ok(tagManager.getAllTags(IncludeDeleted, IncludeOnlyRoot));
         }
 
         // Get api/Annotation/Tags/:id
@@ -128,7 +128,7 @@ namespace Api.Controllers
         /// <param name="childId">Tag to be added as Child</param>
         /// <response code="200">child added</response>
         /// <response code="403">User not allowed to edit Tags</response>
-        /// <response code="400">Request was missformed</response>
+        /// <response code="400">Request was missformed or cycle dependency was detected</response>
         /// <response code="401">User is denied</response>
         [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
