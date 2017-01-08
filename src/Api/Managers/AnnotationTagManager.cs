@@ -15,12 +15,14 @@ namespace Api.Managers
 
         #region GET
 
-        public virtual IEnumerable<AnnotationTagResult> getAllTags(bool IncludeDeleted)
+        public virtual IEnumerable<AnnotationTagResult> getAllTags(bool IncludeDeleted, bool IncludeOnlyRoot)
         {
-            if (IncludeDeleted)
-                return dbContext.AnnotationTags.ToList().Select(at => new AnnotationTagResult(at));
-            else
-                return dbContext.AnnotationTags.Where(t => !t.IsDeleted).ToList().Select(at => new AnnotationTagResult(at));
+            return dbContext
+                .AnnotationTags
+                .Where(t => !IncludeOnlyRoot || t.ParentTag == null)
+                .Where(t => IncludeDeleted || !t.IsDeleted)
+                .ToList()
+                .Select(at => new AnnotationTagResult(at));
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
@@ -40,6 +42,7 @@ namespace Api.Managers
 
         public virtual EntityResult AddTag(AnnotationTagFormModel tagModel)
         {
+            // TODO: Catch circular dependency here & abort if necessary
             AnnotationTag tag = new AnnotationTag(tagModel);
 
             dbContext.AnnotationTags.Add(tag);
