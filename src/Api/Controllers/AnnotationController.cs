@@ -128,7 +128,7 @@ namespace Api.Controllers
         /// <param name="childId">Tag to be added as Child</param>
         /// <response code="200">child added</response>
         /// <response code="403">User not allowed to edit Tags</response>
-        /// <response code="400">Request was missformed</response>
+        /// <response code="400">Request was missformed or cycle dependency was detected</response>
         /// <response code="401">User is denied</response>
         [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
