@@ -42,7 +42,6 @@ namespace Api.Managers
 
         public virtual EntityResult AddTag(AnnotationTagFormModel tagModel)
         {
-            // TODO: Catch circular dependency here & abort if necessary
             AnnotationTag tag = new AnnotationTag(tagModel);
 
             dbContext.AnnotationTags.Add(tag);
@@ -58,7 +57,10 @@ namespace Api.Managers
             try
             {
                 var child = dbContext.AnnotationTags.Single(t => t.Id == childId);
-                if (dbContext.AnnotationTags.Any(t => t.Id == parentId))
+                if (HasDuplicateParent(child, dbContext.AnnotationTags.Single(t => t.Id == parentId)))
+                {
+                    return false;
+                } else if (dbContext.AnnotationTags.Any(t => t.Id == parentId))
                 {
                     child.ParentTagId = parentId;
                     dbContext.Update(child);
@@ -68,6 +70,19 @@ namespace Api.Managers
             }
             catch (InvalidOperationException) { return false; }
             return false;
+        }
+
+        private bool HasDuplicateParent(AnnotationTag original, AnnotationTag check)
+        {
+            bool duplicate = original.Id == check.Id;
+            if (duplicate)
+            {
+                return true;
+            }
+            else
+            {
+                return check.ParentTagId != null && HasDuplicateParent(original, dbContext.AnnotationTags.Single(t => t.Id == check.ParentTagId));
+            }
         }
 
         #endregion
