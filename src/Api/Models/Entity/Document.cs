@@ -11,14 +11,11 @@ namespace Api.Models.Entity
 {
     public class Document
     {
-        // TODO KEY = TopicId
-        [Key]
-        public int Id { get; set; }
-
+        // KEY = TopicId
         [Required]
         public int TopicId { get; set; }
 
-        public Topic Topic { get; set; }
+        public virtual Topic Topic { get; set; }
 
         public DateTime TimeStamp { get; set; }
 
@@ -35,7 +32,7 @@ namespace Api.Models.Entity
             {
                 entityBuilder.Property(d => d.TimeStamp).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entityBuilder.HasOne(d => d.Updater).WithMany(u => u.Documents).HasForeignKey(n => n.UpdaterId).OnDelete(DeleteBehavior.SetNull);
-                entityBuilder.HasOne(d => d.Topic).WithMany(t => t.Documents).HasForeignKey(n => n.TopicId).OnDelete(DeleteBehavior.SetNull);
+                entityBuilder.HasOne(d => d.Topic).WithOne(t => t.Document).OnDelete(DeleteBehavior.SetNull);
 
             }
         }
