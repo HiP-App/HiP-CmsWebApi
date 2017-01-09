@@ -50,12 +50,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetUnreadNotifications()
         {
-           return GetNotifications(true);
+            return GetNotifications(true);
         }
 
-        private IActionResult GetNotifications(bool onlyUread)
+        private IActionResult GetNotifications(bool onlyUnread)
         {
-            var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUread);
+            var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUnread);
 
             if (notifications != null)
                 return Ok(notifications);
@@ -75,6 +75,20 @@ namespace Api.Controllers
         public IActionResult GetNotificationCount()
         {
             return Ok(notificationManager.GetNotificationCount(User.Identity.GetUserId()));
+        }
+
+        // GET api/Notifications/Subscriptions
+
+        /// <summary>
+        /// Get all subscriptions for the current user
+        /// </summary>
+        /// <response code="200">Returns a list of subscriptions for the current user</response>        
+        /// <response code="401">User is denied</response>
+        [HttpGet("Subscriptions")]
+        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
+        public IActionResult GetSubscriptions()
+        {
+            return Ok(notificationManager.GetSubscriptions(User.Identity.GetUserId()));
         }
 
         #endregion
@@ -99,6 +113,58 @@ namespace Api.Controllers
                 return Ok();
             else
                 return NotFound();
+        }
+
+        #endregion
+
+        #region PUT
+
+        /// <summary>
+        /// Subscribes the current user to notifications of the given type.
+        /// </summary>
+        /// <param name="notificationType"></param>
+        /// <returns>nothing</returns>
+        /// <response code="200">OK</response>
+        /// <response code="403">User is not allowed to subscribe</response>
+        /// <response code="404">Resource Not Found</response>
+        [HttpPut("subscribe/{notificationType}")]
+        public IActionResult PutSubscribe(string notificationType)
+        {
+            return setSubscription(notificationType, true);
+        }
+
+        /// <summary>
+        /// Unsubscribes the current user from notifications of the given type.
+        /// </summary>
+        /// <param name="notificationType"></param>
+        /// <returns>nothing</returns>
+        /// <response code="200">OK</response>
+        /// <response code="403">User is not allowed to unsubscribe</response>
+        /// <response code="404">Resource Not Found</response>
+        [HttpPut("unsubscribe/{notificationType}")]
+        public IActionResult PutUnsubscribe(string notificationType)
+        {
+            return setSubscription(notificationType, false);
+        }
+
+        private IActionResult setSubscription(string notificationType, bool subscribe)
+        {
+            NotificationType type;
+            if (NotificationType.TryParse(notificationType, out type))
+            {
+                if (notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         #endregion
