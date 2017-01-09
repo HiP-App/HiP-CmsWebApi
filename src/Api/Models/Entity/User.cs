@@ -59,6 +59,8 @@ namespace Api.Models.Entity
         {
             get
             {
+                if (FirstName == null && LastName == null)
+                    return null;
                 return FirstName + ' ' + LastName;
             }
         }

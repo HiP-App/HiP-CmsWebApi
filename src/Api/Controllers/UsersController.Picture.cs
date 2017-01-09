@@ -197,10 +197,10 @@ namespace Api.Controllers
             {
                 var user = userManager.GetUserById(userId);
                 // Has A Picture?
-                if (!user.HasProfilePicture())
+                if (!user.HasProfilePicture() || Constants.DefaultPircture.Equals(user.Picture))
                     return BadRequest("No picture set");
 
-                bool success = userManager.UpdateProfilePicture(user, "");
+                bool success = userManager.UpdateProfilePicture(user, null);
                 // Delete Picture If Exists
                 string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
 
