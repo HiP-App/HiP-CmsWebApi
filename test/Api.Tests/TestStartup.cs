@@ -1,4 +1,5 @@
 ﻿using Api.Data;
+using Api.Tests.Utility;
 using Api.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,8 +16,7 @@ namespace Api.Tests
         public TestStartup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)                
+                .SetBasePath(env.ContentRootPath)           
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
@@ -27,23 +27,16 @@ namespace Api.Tests
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Read configurations from json
-            var appConfig = new AppConfig(Configuration);
-
-            // Register AppConfig in Services 
-            services.AddSingleton(appConfig);
-
             // Add database service for Postgres
             services.AddDbContext<CmsDbContext>(opts => opts.UseInMemoryDatabase());
 
             // Add framework services
             services.AddMvc();
-
-            services.AddTransient<EmailSender>();
+            services.AddTransient<IEmailSender, TestEmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             app.UseMvc();
         }
@@ -52,7 +45,6 @@ namespace Api.Tests
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
                 .Build();
 
             var host = new WebHostBuilder()
