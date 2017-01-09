@@ -67,6 +67,8 @@ namespace Api.Managers
             User user = new User();
             user.Email = email;
             user.Role = Role.Student;
+            user.FirstName = "";
+            user.LastName = "";
 
             this.AddUser(user);
         }
