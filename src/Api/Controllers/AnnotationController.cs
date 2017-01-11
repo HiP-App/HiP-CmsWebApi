@@ -169,7 +169,7 @@ namespace Api.Controllers
             {
                 bool success = tagManager.AddTagRelation(firstId, secondId, name);
                 if (success) return Ok();
-                else return BadRequest("Tag relation could not be added, maybe one of the specified tags does not exist");
+                else return BadRequest("Tag relation already exists");
             }
             catch (InvalidOperationException ex)
             {
