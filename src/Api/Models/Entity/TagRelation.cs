@@ -29,6 +29,15 @@ namespace Api.Models.Entity
 
         public String Name { get; set; }
 
+        public TagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "")
+        {
+            this.FirstTag = firstTag;
+            this.FirstTagId = firstTag.Id;
+            this.SecondTag = secondTag;
+            this.SecondTagId = secondTag.Id;
+            this.Name = name;
+        }
+
         public TagRelation() { }
     }
 

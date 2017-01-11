@@ -13,6 +13,11 @@ namespace Api.Managers
     {
         public AnnotationTagManager(CmsDbContext dbContext) : base(dbContext) { }
 
+        private bool TagRelationExists(AnnotationTag tag1, AnnotationTag tag2)
+        {
+            return dbContext.TagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+        }
+
         #region GET
 
         public virtual IEnumerable<AnnotationTagResult> getAllTags(bool IncludeDeleted, bool IncludeOnlyRoot)
@@ -85,9 +90,22 @@ namespace Api.Managers
             }
         }
 
-        internal bool AddTagRelation(int firstId, int secondId)
+        internal bool AddTagRelation(int firstId, int secondId, string name)
         {
-            return false;
+            AnnotationTag tag1 = dbContext.AnnotationTags.Single(tag => tag.Id == firstId);
+            AnnotationTag tag2 = dbContext.AnnotationTags.Single(tag => tag.Id == secondId);
+            if (TagRelationExists(tag1, tag2))
+            {
+                return false;
+            } else if (tag1 != null && tag2 != null)
+            {
+                TagRelation forwardRelation = new TagRelation(tag1, tag2, name);
+                dbContext.TagRelations.Add(forwardRelation);
+                TagRelation backwardRelation = new TagRelation(tag2, tag1, name);
+                dbContext.TagRelations.Add(backwardRelation);
+                dbContext.SaveChanges();
+                return true;
+            }
         }
 
         #endregion

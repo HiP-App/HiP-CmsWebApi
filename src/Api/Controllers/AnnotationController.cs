@@ -152,6 +152,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="firstId">ID of the first tag of the relation</param>
         /// <param name="secondId">ID of the second tag of the relation</param>
+        /// <param name="name" optional="true">Relation name</param>
         /// <response code="200">relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
         /// <response code="400">Request was missformed</response>
@@ -159,12 +160,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation(int firstId, int secondId)
+        public IActionResult PostTagRelation(int firstId, int secondId, string name)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            bool success = tagManager.AddTagRelation(firstId, secondId);
+            bool success = tagManager.AddTagRelation(firstId, secondId, name);
             if (success) return Ok();
 
             return BadRequest();
