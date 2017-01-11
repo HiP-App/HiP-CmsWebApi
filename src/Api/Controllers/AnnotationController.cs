@@ -165,10 +165,16 @@ namespace Api.Controllers
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            bool success = tagManager.AddTagRelation(firstId, secondId, name);
-            if (success) return Ok();
-
-            return BadRequest();
+            try
+            {
+                bool success = tagManager.AddTagRelation(firstId, secondId, name);
+                if (success) return Ok();
+                else return BadRequest("Tag relation could not be added, maybe one of the specified tags does not exist");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest();
+            }
         }
 
         #endregion
@@ -271,10 +277,15 @@ namespace Api.Controllers
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            bool success = tagManager.RemoveTagRelation(firstId, secondId);
-            if (success) return Ok();
-
-            return BadRequest();
+            try
+            {
+                bool success = tagManager.RemoveTagRelation(firstId, secondId);
+                if (success) return Ok();
+                else return BadRequest("Tag relation not found");
+            } catch (InvalidOperationException ex)
+            {
+                return BadRequest();
+            }
         }
 
         #endregion
