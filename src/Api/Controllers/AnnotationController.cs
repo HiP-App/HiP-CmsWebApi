@@ -155,7 +155,6 @@ namespace Api.Controllers
         /// <response code="200">relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
         /// <response code="400">Request was missformed</response>
-        /// <response code="403">User is denied</response>
         [HttpPost("Tags/{firstId}/Relation/{secondId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -213,7 +212,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Delete(int Id)
+        public IActionResult DeleteTag(int Id)
         {
             if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -247,6 +246,24 @@ namespace Api.Controllers
                 return Ok();
             return NotFound();
         }
+
+        /// <summary>
+        /// Remove relation between {childId} and {parentId}
+        /// </summary>
+        /// <param name="firstId">ID of the first tag of the relation</param>
+        /// <param name="childId">ID of the second tag of the relation</param>
+        /// <response code="200">relation removed</response>
+        /// <response code="403">User not allowed to remove a relation</response>
+        /// <response code="400">Request was missformed</response>
+        [HttpDelete("Tags/{firstId}/Relation/{secondId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteTagRelation(int parentId, int childId)
+        {
+            return BadRequest();
+        }
+
 
         #endregion
     }
