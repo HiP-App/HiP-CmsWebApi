@@ -85,6 +85,11 @@ namespace Api.Managers
             }
         }
 
+        internal bool AddTagRelation(int firstId, int secondId)
+        {
+            return false;
+        }
+
         #endregion
 
         #region edit
@@ -159,6 +164,11 @@ namespace Api.Managers
                     return true;
                 }
             }
+            return false;
+        }
+
+        internal bool RemoveTagRelation(int firstId, int secondId)
+        {
             return false;
         }
 

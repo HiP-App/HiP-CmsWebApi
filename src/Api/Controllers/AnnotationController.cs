@@ -148,10 +148,10 @@ namespace Api.Controllers
         // Post api/Annotation/Tags/:firstId/Relation/:secondId
 
         /// <summary>
-        /// Add Relation between {childId} and {parentId}
+        /// Add Relation between {firstId} and {secondId}
         /// </summary>
         /// <param name="firstId">ID of the first tag of the relation</param>
-        /// <param name="childId">ID of the second tag of the relation</param>
+        /// <param name="secondId">ID of the second tag of the relation</param>
         /// <response code="200">relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
         /// <response code="400">Request was missformed</response>
@@ -159,8 +159,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation(int parentId, int childId)
+        public IActionResult PostTagRelation(int firstId, int secondId)
         {
+            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            bool success = tagManager.AddTagRelation(firstId, secondId);
+            if (success) return Ok();
+
             return BadRequest();
         }
 
@@ -248,10 +254,10 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// Remove relation between {childId} and {parentId}
+        /// Remove relation between {firstId} and {secondId}
         /// </summary>
         /// <param name="firstId">ID of the first tag of the relation</param>
-        /// <param name="childId">ID of the second tag of the relation</param>
+        /// <param name="secondId">ID of the second tag of the relation</param>
         /// <response code="200">relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
         /// <response code="400">Request was missformed</response>
@@ -259,8 +265,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagRelation(int parentId, int childId)
+        public IActionResult DeleteTagRelation(int firstId, int secondId)
         {
+            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            bool success = tagManager.RemoveTagRelation(firstId, secondId);
+            if (success) return Ok();
+
             return BadRequest();
         }
 
