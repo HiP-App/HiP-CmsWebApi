@@ -15,7 +15,9 @@ namespace Api.Managers
 
         private bool TagRelationExists(AnnotationTag tag1, AnnotationTag tag2)
         {
-            return dbContext.TagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+            return tag1 != null &&
+                tag2 != null &&
+                dbContext.TagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
         }
 
         #region GET
@@ -105,6 +107,9 @@ namespace Api.Managers
                 dbContext.TagRelations.Add(backwardRelation);
                 dbContext.SaveChanges();
                 return true;
+            } else
+            {
+                return false;
             }
         }
 
@@ -187,7 +192,25 @@ namespace Api.Managers
 
         internal bool RemoveTagRelation(int firstId, int secondId)
         {
-            return false;
+            AnnotationTag tag1 = dbContext.AnnotationTags.Single(tag => tag.Id == firstId);
+            AnnotationTag tag2 = dbContext.AnnotationTags.Single(tag => tag.Id == secondId);
+            if (TagRelationExists(tag1, tag2))
+            {
+                RemoveRelationFor(tag1, tag2);
+                RemoveRelationFor(tag2, tag1);
+                dbContext.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void RemoveRelationFor(AnnotationTag tag1, AnnotationTag tag2)
+        {
+            TagRelation forwardRelation = dbContext.TagRelations.Single(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+            dbContext.TagRelations.Remove(forwardRelation);
         }
 
         #endregion

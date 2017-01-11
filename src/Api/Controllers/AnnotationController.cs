@@ -155,7 +155,7 @@ namespace Api.Controllers
         /// <param name="name" optional="true">Relation name</param>
         /// <response code="200">relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
-        /// <response code="400">Request was missformed</response>
+        /// <response code="400">Request was misformed</response>
         [HttpPost("Tags/{firstId}/Relation/{secondId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
@@ -261,7 +261,7 @@ namespace Api.Controllers
         /// <param name="secondId">ID of the second tag of the relation</param>
         /// <response code="200">relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
-        /// <response code="400">Request was missformed</response>
+        /// <response code="400">Request was misformed</response>
         [HttpDelete("Tags/{firstId}/Relation/{secondId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
