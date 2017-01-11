@@ -25,6 +25,8 @@ namespace Api.Data
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
+        public DbSet<TagRelation> TagRelations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
@@ -36,6 +38,7 @@ namespace Api.Data
             new NotificationMap(modelBuilder.Entity<Notification>());
             new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
+            new TagRelationMap(modelBuilder.Entity<TagRelation>());
         }
     }
 }
