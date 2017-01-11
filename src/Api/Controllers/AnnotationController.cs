@@ -129,12 +129,12 @@ namespace Api.Controllers
         /// <response code="200">child added</response>
         /// <response code="403">User not allowed to edit Tags</response>
         /// <response code="400">Request was missformed or cycle dependency was detected</response>
-        /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post(int parentId, int childId)
+        public IActionResult PostChildTag(int parentId, int childId)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -142,6 +142,26 @@ namespace Api.Controllers
             bool success = tagManager.AddChildTag(parentId, childId);
             if (success)
                 return Ok();
+            return BadRequest();
+        }
+
+        // Post api/Annotation/Tags/:firstId/Relation/:secondId
+
+        /// <summary>
+        /// Add Relation between {childId} and {parentId}
+        /// </summary>
+        /// <param name="firstId">ID of the first tag of the relation</param>
+        /// <param name="childId">ID of the second tag of the relation</param>
+        /// <response code="200">relation added</response>
+        /// <response code="403">User not allowed to add a relation</response>
+        /// <response code="400">Request was missformed</response>
+        /// <response code="403">User is denied</response>
+        [HttpPost("Tags/{firstId}/Relation/{secondId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PostTagRelation(int parentId, int childId)
+        {
             return BadRequest();
         }
 
