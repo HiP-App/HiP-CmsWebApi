@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Api.Models.Entity;
 using System;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Api.Data
 {
