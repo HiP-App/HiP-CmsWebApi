@@ -239,3 +239,5 @@ _Pvt_Extensions
 web.config
 
 appsettings.Development.json
+test/Api.Tests/appsettings.json
+test/Api.Tests/testconfig.json
