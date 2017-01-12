@@ -7,7 +7,7 @@ using Api.Models.Entity;
 
 namespace Api.Utility
 {
-    public class EmailSender
+    public class EmailSender : IEmailSender
     {
         private AppConfig appConfig;
 

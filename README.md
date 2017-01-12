@@ -62,7 +62,10 @@ For getting the project to run with Visual Studio Code, you will have to execute
 
 
 ## How to test
-Navigate to `test/Api.Tests` folder and run `dotnet test`.
+
+ * Create a new file `testconfig.json` at `test/Api.Tests`. (See `test/Api.Tests/testconfig.json.example`).
+ * Update the new `testconfig.json` file with an valid MyTested Licence.
+ * Navigate to `test/Api.Tests` folder and run `dotnet test`.
 
 
 ## How to submit Defects and Feature Proposals
