@@ -15,10 +15,10 @@ namespace Api.Controllers
     public class UsersController : ApiController
     {
         private UserManager userManager;
-        private EmailSender emailSender;
+        private IEmailSender emailSender;
         private UserPermissions userPermissions;
 
-        public UsersController(CmsDbContext dbContext, EmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, IEmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
             userPermissions = new UserPermissions(dbContext);
