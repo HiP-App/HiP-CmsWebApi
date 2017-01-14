@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Api.Models.Entity
 {
     /// <summary>
-    /// Represents a *directed* relation between two tags.
+    /// Represents a *directed* relation between two tag instances (i.e. AnnotationTagInstance).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
     public class TagRelation
@@ -17,16 +17,16 @@ namespace Api.Models.Entity
         [Required]
         public int FirstTagId { get; set; }
 
-        public AnnotationTag FirstTag { get; set; }
+        public AnnotationTagInstance FirstTag { get; set; }
 
         [Required]
         public int SecondTagId { get; set; }
 
-        public AnnotationTag SecondTag { get; set; }
+        public AnnotationTagInstance SecondTag { get; set; }
 
         public String Name { get; set; }
 
-        public TagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "")
+        public TagRelation(AnnotationTagInstance firstTag, AnnotationTagInstance secondTag, string name = "")
         {
             this.FirstTag = firstTag;
             this.FirstTagId = firstTag.Id;
@@ -44,7 +44,7 @@ namespace Api.Models.Entity
         {
             entityBuilder.HasKey(r => new { r.FirstTagId, r.SecondTagId });
             entityBuilder.HasOne(r => r.FirstTag).WithMany(t => t.Relations).HasForeignKey(r => r.FirstTagId).OnDelete(DeleteBehavior.Cascade);
-            entityBuilder.HasOne(r => r.SecondTag).WithMany(t => t.IncomingRelations).HasForeignKey(r => r.SecondTagId).OnDelete(DeleteBehavior.SetNull);
+            entityBuilder.HasOne(r => r.SecondTag).WithMany(t => t.IncomingRelations).HasForeignKey(r => r.SecondTagId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

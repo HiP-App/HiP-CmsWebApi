@@ -145,22 +145,40 @@ namespace Api.Controllers
             return BadRequest();
         }
 
-        // Post api/Annotation/Tags/:firstId/Relation/:secondId
+        // Post api/Annotation/Tags/:tagModelId/Instance
 
         /// <summary>
-        /// Add Relation between {firstId} and {secondId}
+        /// Create a new instance of the specified tag model
         /// </summary>
-        /// <param name="firstId">ID of the first tag of the relation</param>
-        /// <param name="secondId">ID of the second tag of the relation</param>
+        /// <param name="tagModelId">ID tag model that should be instanciated</param>
+        /// <response code="200">Instance created - returns the ID of the new tag instance</response>
+        /// <response code="403">User not allowed to create an instance</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPost("Tags/{tagModelId}/Instance")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PostTagInstance(int tagModelId)
+        {
+            return BadRequest("not implemented yet");
+        }
+
+        // Post api/Annotation/Tags/Instance/:firstId/Relation/:secondId
+
+        /// <summary>
+        /// Add Relation between the tag instance represented by {firstId} and {secondId}.
+        /// </summary>
+        /// <param name="firstId">ID of the first tag instance of the relation</param>
+        /// <param name="secondId">ID of the second tag instance of the relation</param>
         /// <param name="name" optional="true">Relation name</param>
         /// <response code="200">relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
         /// <response code="400">Request was misformed</response>
-        [HttpPost("Tags/{firstId}/Relation/{secondId}")]
+        [HttpPost("Tags/Instance/{firstId}/Relation/{secondId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation(int firstId, int secondId, string name)
+        public IActionResult PostTagRelation(int firstId, int secondId, string name = "")
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -260,11 +278,29 @@ namespace Api.Controllers
             return NotFound();
         }
 
+        // DELETE api/Annotation/Tags/Instance/:tagInstanceId
+
         /// <summary>
-        /// Remove relation between {firstId} and {secondId}
+        /// Remove the specified tag instance
         /// </summary>
-        /// <param name="firstId">ID of the first tag of the relation</param>
-        /// <param name="secondId">ID of the second tag of the relation</param>
+        /// <param name="tagInstanceId">ID of the tag instance that should be deleted</param>
+        /// <response code="200">Instance deleted</response>
+        /// <response code="403">User not allowed to delete an instance</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpDelete("Tags/Instance/{tagModelId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteTagInstance(int tagInstanceId)
+        {
+            return BadRequest("not implemented yet");
+        }
+
+        /// <summary>
+        /// Remove relation between the tag instances represented by {firstId} and {secondId}
+        /// </summary>
+        /// <param name="firstId">ID of the first tag instance of the relation</param>
+        /// <param name="secondId">ID of the second tag instance of the relation</param>
         /// <response code="200">relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
         /// <response code="400">Request was misformed</response>

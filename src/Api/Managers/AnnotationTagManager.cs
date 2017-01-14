@@ -13,7 +13,7 @@ namespace Api.Managers
     {
         public AnnotationTagManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        private bool TagRelationExists(AnnotationTag tag1, AnnotationTag tag2)
+        private bool TagRelationExists(AnnotationTagInstance tag1, AnnotationTagInstance tag2)
         {
             return tag1 != null &&
                 tag2 != null &&
@@ -94,8 +94,8 @@ namespace Api.Managers
 
         internal bool AddTagRelation(int firstId, int secondId, string name)
         {
-            AnnotationTag tag1 = dbContext.AnnotationTags.Single(tag => tag.Id == firstId);
-            AnnotationTag tag2 = dbContext.AnnotationTags.Single(tag => tag.Id == secondId);
+            AnnotationTagInstance tag1 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == firstId);
+            AnnotationTagInstance tag2 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == secondId);
             if (TagRelationExists(tag1, tag2))
             {
                 return false;
@@ -192,8 +192,8 @@ namespace Api.Managers
 
         internal bool RemoveTagRelation(int firstId, int secondId)
         {
-            AnnotationTag tag1 = dbContext.AnnotationTags.Single(tag => tag.Id == firstId);
-            AnnotationTag tag2 = dbContext.AnnotationTags.Single(tag => tag.Id == secondId);
+            AnnotationTagInstance tag1 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == firstId);
+            AnnotationTagInstance tag2 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == secondId);
             if (TagRelationExists(tag1, tag2))
             {
                 RemoveRelationFor(tag1, tag2);
@@ -207,10 +207,10 @@ namespace Api.Managers
             }
         }
 
-        private void RemoveRelationFor(AnnotationTag tag1, AnnotationTag tag2)
+        private void RemoveRelationFor(AnnotationTagInstance tag1, AnnotationTagInstance tag2)
         {
-            TagRelation forwardRelation = dbContext.TagRelations.Single(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
-            dbContext.TagRelations.Remove(forwardRelation);
+            TagRelation relation = dbContext.TagRelations.Single(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+            dbContext.TagRelations.Remove(relation);
         }
 
         #endregion

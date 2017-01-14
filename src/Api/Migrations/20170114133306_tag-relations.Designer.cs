@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170111160517_tagrelations")]
+    [Migration("20170114133306_tag-relations")]
     partial class tagrelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,20 @@ namespace Api.Migrations
                     b.HasIndex("ParentTagId");
 
                     b.ToTable("AnnotationTags");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.AnnotationTagInstance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("TagModelId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TagModelId");
+
+                    b.ToTable("AnnotationTagInstances");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
@@ -115,18 +129,13 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.TagRelation", b =>
                 {
-                    b.Property<int>("Relationid")
-                        .ValueGeneratedOnAdd();
-
                     b.Property<int>("FirstTagId");
-
-                    b.Property<string>("Name");
 
                     b.Property<int>("SecondTagId");
 
-                    b.HasKey("Relationid");
+                    b.Property<string>("Name");
 
-                    b.HasIndex("FirstTagId");
+                    b.HasKey("FirstTagId", "SecondTagId");
 
                     b.HasIndex("SecondTagId");
 
@@ -248,6 +257,14 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
+            modelBuilder.Entity("Api.Models.Entity.AnnotationTagInstance", b =>
+                {
+                    b.HasOne("Api.Models.Entity.AnnotationTag", "TagModel")
+                        .WithMany("TagInstances")
+                        .HasForeignKey("TagModelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
                 {
                     b.HasOne("Api.Models.Entity.Topic", "ChildTopic")
@@ -289,15 +306,15 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.TagRelation", b =>
                 {
-                    b.HasOne("Api.Models.Entity.AnnotationTag", "FirstTag")
+                    b.HasOne("Api.Models.Entity.AnnotationTagInstance", "FirstTag")
                         .WithMany("Relations")
                         .HasForeignKey("FirstTagId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.AnnotationTag", "SecondTag")
+                    b.HasOne("Api.Models.Entity.AnnotationTagInstance", "SecondTag")
                         .WithMany("IncomingRelations")
                         .HasForeignKey("SecondTagId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Topic", b =>
