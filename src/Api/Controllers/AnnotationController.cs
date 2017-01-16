@@ -129,12 +129,12 @@ namespace Api.Controllers
         /// <response code="200">child added</response>
         /// <response code="403">User not allowed to edit Tags</response>
         /// <response code="400">Request was missformed or cycle dependency was detected</response>
-        /// <response code="401">User is denied</response>
+        /// <response code="403">User is denied</response>
         [HttpPost("Tags/{parentId}/ChildTags/{childId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post(int parentId, int childId)
+        public IActionResult PostChildTag(int parentId, int childId)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -143,6 +143,38 @@ namespace Api.Controllers
             if (success)
                 return Ok();
             return BadRequest();
+        }
+
+        // Post api/Annotation/Tags/Instance/:firstId/Relation/:secondId
+
+        /// <summary>
+        /// Add Relation between the tag instance represented by {firstId} and {secondId}.
+        /// </summary>
+        /// <param name="firstId">ID of the first tag instance of the relation</param>
+        /// <param name="secondId">ID of the second tag instance of the relation</param>
+        /// <param name="name" optional="true">Relation name</param>
+        /// <response code="200">relation added</response>
+        /// <response code="403">User not allowed to add a relation</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPost("Tags/Instance/{firstId}/Relation/{secondId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PostTagRelation(int firstId, int secondId, string name = "")
+        {
+            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            try
+            {
+                bool success = tagManager.AddTagRelation(firstId, secondId, name);
+                if (success) return Ok();
+                else return BadRequest("Tag relation already exists");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest();
+            }
         }
 
         #endregion
@@ -193,7 +225,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Delete(int Id)
+        public IActionResult DeleteTag(int Id)
         {
             if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -226,6 +258,34 @@ namespace Api.Controllers
             if (success)
                 return Ok();
             return NotFound();
+        }
+
+        /// <summary>
+        /// Remove relation between the tag instances represented by {firstId} and {secondId}
+        /// </summary>
+        /// <param name="firstId">ID of the first tag instance of the relation</param>
+        /// <param name="secondId">ID of the second tag instance of the relation</param>
+        /// <response code="200">relation removed</response>
+        /// <response code="403">User not allowed to remove a relation</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpDelete("Tags/{firstId}/Relation/{secondId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteTagRelation(int firstId, int secondId)
+        {
+            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            try
+            {
+                bool success = tagManager.RemoveTagRelation(firstId, secondId);
+                if (success) return Ok();
+                else return BadRequest("Tag relation not found");
+            } catch (InvalidOperationException ex)
+            {
+                return BadRequest();
+            }
         }
 
         #endregion

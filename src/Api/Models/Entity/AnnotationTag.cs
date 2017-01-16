@@ -37,6 +37,8 @@ namespace Api.Models.Entity
 
         public bool IsDeleted { get; set; }
 
+        public List<AnnotationTagInstance> TagInstances { get; set; }
+
         public AnnotationTag() { }
 
         public AnnotationTag(AnnotationTagFormModel model)
