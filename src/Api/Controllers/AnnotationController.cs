@@ -145,32 +145,6 @@ namespace Api.Controllers
             return BadRequest();
         }
 
-        // Post api/Annotation/Tags/:tagModelId/Instance
-
-        /// <summary>
-        /// Create a new instance of the specified tag model
-        /// </summary>
-        /// <param name="tagModelId">ID tag model that should be instanciated</param>
-        /// <response code="200">Instance created - returns the ID of the new tag instance</response>
-        /// <response code="403">User not allowed to create an instance</response>
-        /// <response code="400">Request was misformed</response>
-        [HttpPost("Tags/{tagModelId}/Instance")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagInstance(int tagModelId)
-        {
-            try
-            {
-                tagManager.AddTagInstance(tagModelId);
-                return Ok();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest();
-            }
-        }
-
         // Post api/Annotation/Tags/Instance/:firstId/Relation/:secondId
 
         /// <summary>
@@ -284,32 +258,6 @@ namespace Api.Controllers
             if (success)
                 return Ok();
             return NotFound();
-        }
-
-        // DELETE api/Annotation/Tags/Instance/:tagInstanceId
-
-        /// <summary>
-        /// Remove the specified tag instance
-        /// </summary>
-        /// <param name="tagInstanceId">ID of the tag instance that should be deleted</param>
-        /// <response code="200">Instance deleted</response>
-        /// <response code="403">User not allowed to delete an instance</response>
-        /// <response code="400">Request was misformed</response>
-        [HttpDelete("Tags/Instance/{tagModelId}")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagInstance(int tagInstanceId)
-        {
-            try
-            {
-                tagManager.RemoveTagInstance(tagInstanceId);
-                return Ok();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest();
-            }
         }
 
         /// <summary>
