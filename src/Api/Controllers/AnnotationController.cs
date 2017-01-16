@@ -160,7 +160,15 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PostTagInstance(int tagModelId)
         {
-            return BadRequest("not implemented yet");
+            try
+            {
+                tagManager.AddTagInstance(tagModelId);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest();
+            }
         }
 
         // Post api/Annotation/Tags/Instance/:firstId/Relation/:secondId
@@ -293,7 +301,15 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteTagInstance(int tagInstanceId)
         {
-            return BadRequest("not implemented yet");
+            try
+            {
+                tagManager.RemoveTagInstance(tagInstanceId);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>

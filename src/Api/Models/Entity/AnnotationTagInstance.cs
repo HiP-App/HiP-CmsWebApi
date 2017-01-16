@@ -21,6 +21,12 @@ namespace Api.Models.Entity
 
         public List<TagRelation> IncomingRelations { get; set; }
 
+        public AnnotationTagInstance(AnnotationTag model)
+        {
+            this.TagModel = model;
+            this.TagModelId = model.Id;
+        }
+
         public class AnnotationTagInstanceMap
         {
             public AnnotationTagInstanceMap(EntityTypeBuilder<AnnotationTagInstance> entityBuilder)

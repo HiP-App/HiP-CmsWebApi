@@ -113,6 +113,15 @@ namespace Api.Managers
             }
         }
 
+        internal bool AddTagInstance(int tagModelId)
+        {
+            AnnotationTag model = dbContext.AnnotationTags.Single(m => m.Id == tagModelId);
+            AnnotationTagInstance instance = new AnnotationTagInstance(model);
+            dbContext.AnnotationTagInstances.Add(instance);
+            dbContext.SaveChanges();
+            return true;
+        }
+
         #endregion
 
         #region edit
@@ -211,6 +220,14 @@ namespace Api.Managers
         {
             TagRelation relation = dbContext.TagRelations.Single(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
             dbContext.TagRelations.Remove(relation);
+        }
+
+        internal bool RemoveTagInstance(int tagInstanceid)
+        {
+            AnnotationTagInstance instance = dbContext.AnnotationTagInstances.Single(i => i.Id == tagInstanceid);
+            dbContext.AnnotationTagInstances.Remove(instance);
+            dbContext.SaveChanges();
+            return true;
         }
 
         #endregion
