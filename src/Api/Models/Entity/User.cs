@@ -1,6 +1,7 @@
 ﻿using Api.Utility;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -52,7 +53,7 @@ namespace Api.Models.Entity
 
         public bool HasProfilePicture()
         {
-            return !(ProfilePicture == null || ProfilePicture.Length == 0);
+            return !String.IsNullOrEmpty(ProfilePicture);
         }
 
         public string FullName

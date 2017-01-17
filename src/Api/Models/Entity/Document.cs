@@ -26,8 +26,9 @@ namespace Api.Models.Entity
 
         public Document() { }
 
-        public Document(int userId, string htmlContent)
+        public Document(int topicId, int userId, string htmlContent)
         {
+            this.TopicId = topicId;
             this.UpdaterId = userId;
             this.Content = htmlContent;
         }

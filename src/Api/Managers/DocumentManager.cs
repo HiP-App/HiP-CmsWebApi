@@ -45,7 +45,7 @@ namespace Api.Managers
             }
             try
             {
-                Document document = new Document(userId, htmlContent);
+                Document document = new Document(topicId, userId, htmlContent);
 
                 dbContext.Add(document);
                 dbContext.SaveChanges();

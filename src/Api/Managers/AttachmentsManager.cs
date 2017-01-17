@@ -24,7 +24,7 @@ namespace Api.Managers
 
         public virtual IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).ToList().Select(at => new TopicAttachmentResult(at));
+            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
         public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)

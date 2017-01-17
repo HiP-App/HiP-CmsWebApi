@@ -14,7 +14,8 @@ namespace Api.Models.Topic
             this.Id = att.Id;
             this.Name = att.Name;
             this.Description = att.Description;
-            this.Legal = new LegalResult(att.Legal);
+            if (att.Legal != null)
+                this.Legal = new LegalResult(att.Legal);
             this.Type = att.Type;
             if (att.User != null)
                 this.User = new UserResult(att.User);

@@ -1,18 +1,9 @@
 using System;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
-using System.Linq;
 using Api.Managers;
-using Api.Models;
 using Api.Data;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Api.Permission;
-using Api.Models.User;
-using System.Collections.Generic;
 using Api.Models.Topic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
 {
@@ -26,10 +17,10 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// All attachments of the topic {topicId}
+        /// The Document of the topic {topicId}
         /// </summary>        
         /// <param name="topicId">the Id of the Topic {topicId}</param>                
-        /// <response code="200">A list of attachments of the Topic {topicId}</response>        
+        /// <response code="200">The document of the Topic {topicId}</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to get topic attachments</response>        
         /// <response code="401">User is denied</response>
@@ -52,9 +43,19 @@ namespace Api.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Add htmlContent to the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="htmlContent">contains the content as HTML</param>                               
+        /// <response code="200">Added content successfully</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to add topic content</response>             
+        /// <response code="401">User is denied</response>
         [HttpPost("{topicId}/Document")]
-
+        [ProducesResponseType(typeof(IActionResult), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
         public IActionResult PostDocument(int topicId, String htmlContent)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
@@ -70,27 +71,11 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
-
-        [HttpPut("{topicId}/Document")]
-
-        public IActionResult PutDocument(int topicId, String htmlContent)
-        {
-            if (ModelState.IsValid && !String.IsNullOrEmpty(htmlContent))
-            {
-                var result = documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent);
-                if (result.Success)
-                    return Ok(result);
-            }
-
-            return BadRequest(ModelState);
-        }
-
-
         /// <summary>
-        /// Delete the Legal {attachmentId} in the attachment {topicId}
+        /// Delete the Document of {topicId}
         /// </summary>        
         /// <param name="topicId">the Id of the Topic {topicId}</param>                         
-        /// <response code="200">Attachment {attachmentId} deleted successfully</response>           
+        /// <response code="200">Document for {topicId} deleted successfully</response>           
         /// <response code="403">User not allowed to delete topic attachment</response>                
         /// <response code="401">User is denied</response>
         [HttpDelete("{topicId}/Document")]
