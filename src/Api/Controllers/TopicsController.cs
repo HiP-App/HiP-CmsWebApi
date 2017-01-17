@@ -27,6 +27,7 @@ namespace Api.Controllers
             topicManager = new TopicManager(dbContext);
             topicPermissions = new TopicPermissions(dbContext);
             TopicsAttachmentsController(dbContext);
+            TopicsDocumentController(dbContext);
         }
 
         #region GET topics

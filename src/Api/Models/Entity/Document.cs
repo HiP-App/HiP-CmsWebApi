@@ -2,10 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Models.Entity
 {
@@ -24,18 +21,29 @@ namespace Api.Models.Entity
 
         public User Updater { get; set; }
 
+        [MaxLength(65536)]
         public String Content { get; set; }
 
-        public class DocumentMap
-        {
-            public DocumentMap(EntityTypeBuilder<Document> entityBuilder)
-            {
-                entityBuilder.Property(d => d.TimeStamp).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
-                entityBuilder.HasOne(d => d.Updater).WithMany(u => u.Documents).HasForeignKey(n => n.UpdaterId).OnDelete(DeleteBehavior.SetNull);
-                entityBuilder.HasOne(d => d.Topic).WithOne(t => t.Document).OnDelete(DeleteBehavior.SetNull);
+        public Document() { }
 
-            }
+        public Document(int userId, string htmlContent)
+        {
+            this.UpdaterId = userId;
+            this.Content = htmlContent;
         }
 
+        // TODO tagRelations
+    }
+    public class DocumentMap
+    {
+        public DocumentMap(EntityTypeBuilder<Document> entityBuilder)
+        {
+            entityBuilder.HasKey(d => new { d.TopicId });
+
+            entityBuilder.Property(d => d.TimeStamp).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entityBuilder.HasOne(d => d.Updater).WithMany(u => u.Documents).HasForeignKey(n => n.UpdaterId).OnDelete(DeleteBehavior.SetNull);
+            entityBuilder.HasOne(d => d.Topic).WithOne(t => t.Document).OnDelete(DeleteBehavior.Cascade);
+
+        }
     }
 }

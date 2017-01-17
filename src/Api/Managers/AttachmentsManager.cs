@@ -86,5 +86,56 @@ namespace Api.Managers
                 return false;
             }
         }
+        #region Legal
+
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
+        public virtual Legal GetLegalById(int attachmentId)
+        {
+            return dbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
+        }
+
+        internal EntityResult CreateLegal(int topicId, int attachmentId, int userId, LegalFormModel legalModel)
+        {
+            TopicAttatchment attachment;
+            try
+            {
+                attachment = dbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
+            }
+            catch (InvalidOperationException)
+            {
+                return EntityResult.Error("Unknown Attachment");
+            }
+            // TODO already exitst´s
+            try
+            {
+                Legal legal = new Legal(attachmentId, legalModel);
+
+                dbContext.Add(legal);
+                dbContext.SaveChanges();
+
+                return EntityResult.Successfull();
+            }
+            catch (Exception e)
+            {
+                return EntityResult.Error(e.Message);
+            }
+        }
+
+        public bool DeleteLegal(int topicId, int attachmentId)
+        {
+            try
+            {
+                var legal = GetLegalById(attachmentId);
+                dbContext.Remove(legal);
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

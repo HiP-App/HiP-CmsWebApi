@@ -16,7 +16,6 @@ namespace Api.Models.Entity
         {
             this.Name = model.AttatchmentName;
             this.Description = model.Description;
-            this.Legal = model.Legal;
         }
 
         [Key]
@@ -29,7 +28,7 @@ namespace Api.Models.Entity
 
         public String Description { get; set; }
 
-        public String Legal { get; set; }
+        public Legal Legal { get; set; }
 
         public String Type { get; set; }
 
@@ -42,6 +41,7 @@ namespace Api.Models.Entity
         public User User { get; set; }
 
         public DateTime UpdatedAt { get; set; }
+
         public TopicAttatchment() { }
 
     }

@@ -14,7 +14,7 @@ namespace Api.Models.Topic
             this.Id = att.Id;
             this.Name = att.Name;
             this.Description = att.Description;
-            this.Legal = att.Legal;
+            this.Legal = new LegalResult(att.Legal);
             this.Type = att.Type;
             if (att.User != null)
                 this.User = new UserResult(att.User);
@@ -28,7 +28,7 @@ namespace Api.Models.Topic
 
         public String Description { get; set; }
 
-        public String Legal { get; set; }
+        public LegalResult Legal { get; set; }
 
         public String Type { get; set; }
 

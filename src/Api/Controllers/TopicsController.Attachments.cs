@@ -149,5 +149,62 @@ namespace Api.Controllers
 
         #endregion
 
+        #region Legal
+
+        /// <summary>
+        /// Add an attachment to the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="attachmentId">The Id of the attachment</param>                  
+        /// <param name="legalModel">The Legal</param>                
+        /// <response code="200">Added Legal successfully</response>        
+        /// <response code="403">User not allowed to add topic attachment</response>             
+        /// <response code="401">User is denied</response>
+        /// <response code="500">Internal server error</response>    
+        [HttpPost("{topicId}/Attachments/{attachmentId}/Legal")]
+        [ProducesResponseType(typeof(EntityResult), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(EntityResult), 500)]
+        public IActionResult PostLegal(int topicId, int attachmentId, LegalFormModel legalModel)
+        {
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+                return Forbidden();
+
+            if (ModelState.IsValid)
+            {
+                var result = attachmentsManager.CreateLegal(topicId, attachmentId, User.Identity.GetUserId(), legalModel);
+                if (result.Success)
+                    return Ok(result);
+                return InternalServerError(result);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        /// <summary>
+        /// Delete the Legal {attachmentId} in the attachment {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="attachmentId">The Id of the attachment</param>                
+        /// <response code="200">Attachment {attachmentId} deleted successfully</response>           
+        /// <response code="403">User not allowed to delete topic attachment</response>                
+        /// <response code="401">User is denied</response>
+        [HttpDelete("{topicId}/Attachments/{attachmentId}/Legal")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
+        public IActionResult DeleteLegal(int topicId, int attachmentId)
+        {
+            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+                return Forbidden();
+
+            if (attachmentsManager.DeleteLegal(topicId, attachmentId))
+                return Ok();
+            return NotFound();
+        }
+
+        #endregion
+
     }
 }
