@@ -13,10 +13,7 @@ namespace Api.Managers
     {
         private EmailSender emailSender;
 
-        public UserManager(CmsDbContext dbContext) : base(dbContext)
-        {
-            this.emailSender = (EmailSender)Startup.ServiceProvider.GetService(typeof(EmailSender)); ;
-        }
+        public UserManager(CmsDbContext dbContext) : base(dbContext) { }
 
         public virtual IEnumerable<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
         {
@@ -121,6 +118,15 @@ namespace Api.Managers
             return false;
         }
 
+        private void LoadEmailSender()
+        {
+            // dirty hack to get the injected IEmailSender service
+            if (this.emailSender == null)
+            {
+                this.emailSender = (EmailSender)Startup.ServiceProvider.GetService(typeof(EmailSender));
+            }
+        }
+
         /// <summary>
         /// Invite the users identified by the given email addresses.
         /// This also creates users in the database.
@@ -131,6 +137,7 @@ namespace Api.Managers
         /// <returns>Tuple containing (1) the failed invitations and (2) existing users lists.</returns>
         public Tuple<List<String>, List<String>> InviteUsers(string[] emails)
         {
+            LoadEmailSender();
             List<String> failedInvitations = new List<string>();
             List<String> existingUsers = new List<string>();
             foreach (string email in emails)
