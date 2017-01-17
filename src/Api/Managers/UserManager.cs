@@ -5,12 +5,18 @@ using Api.Models;
 using System;
 using Api.Models.Entity;
 using Api.Models.User;
+using Api.Utility;
 
 namespace Api.Managers
 {
     public class UserManager : BaseManager
     {
-        public UserManager(CmsDbContext dbContext) : base(dbContext) { }
+        private EmailSender emailSender;
+
+        public UserManager(CmsDbContext dbContext) : base(dbContext)
+        {
+            this.emailSender = (EmailSender)Startup.ServiceProvider.GetService(typeof(EmailSender)); ;
+        }
 
         public virtual IEnumerable<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
         {
@@ -71,6 +77,16 @@ namespace Api.Managers
             this.AddUser(user);
         }
 
+        /// <summary>
+        /// Checks whether the given email is already used for any user in the database.
+        /// </summary>
+        /// <param name="email">The email to search for</param>
+        /// <returns>true if the email is already used</returns>
+        private bool isExistingEmail(string email)
+        {
+            return dbContext.Users.Any(u => u.Email == email);
+        }
+
         public virtual bool AddUser(User user)
         {
             try
@@ -103,6 +119,47 @@ namespace Api.Managers
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Invite the users identified by the given email addresses.
+        /// This also creates users in the database.
+        /// Existing users and failed invitation attempts are added to
+        /// separate lists and returned in a tuple.
+        /// </summary>
+        /// <param name="emails">A string array of email addresses</param>
+        /// <returns>Tuple containing (1) the failed invitations and (2) existing users lists.</returns>
+        public Tuple<List<String>, List<String>> InviteUsers(string[] emails)
+        {
+            List<String> failedInvitations = new List<string>();
+            List<String> existingUsers = new List<string>();
+            foreach (string email in emails)
+            {
+                try
+                {
+                    if (isExistingEmail(email))
+                    {
+                        existingUsers.Add(email);
+                    } else
+                    {
+                        AddUserbyEmail(email);
+                        emailSender.InviteAsync(email);
+                    }
+                }
+
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                {
+                    //user already exists in Database
+                    existingUsers.Add(email);
+                }
+                catch (MailKit.Net.Smtp.SmtpCommandException)
+                {
+                    //something went wrong when sending email
+                    failedInvitations.Add(email);
+                }
+            }
+   
+            return Tuple.Create(failedInvitations, existingUsers);
         }
 
     }

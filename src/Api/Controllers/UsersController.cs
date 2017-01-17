@@ -9,20 +9,19 @@ using Api.Models;
 using Api.Models.User;
 using Api.Permission;
 using System;
+using System.Collections.Generic;
 
 namespace Api.Controllers
 {
     public class UsersController : ApiController
     {
         private UserManager userManager;
-        private IEmailSender emailSender;
         private UserPermissions userPermissions;
 
-        public UsersController(CmsDbContext dbContext, IEmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, ILoggerFactory _logger) : base(dbContext, _logger)
         {
             userManager = new UserManager(dbContext);
             userPermissions = new UserPermissions(dbContext);
-            this.emailSender = emailSender;
         }
 
         #region invite
@@ -45,39 +44,26 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 409)]
         [ProducesResponseType(typeof(void), 503)]
-        public IActionResult Post(InviteFormModel model)
+        public IActionResult InviteUsers(InviteFormModel model)
         {
             if (!userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
                 return Forbidden();
 
             if (ModelState.IsValid)
             {
-                int failCount = 0;
-                foreach (string email in model.emails)
-                {
-                    try
-                    {
-                        userManager.AddUserbyEmail(email);
-                        emailSender.InviteAsync(email);
-                    }
-                    //user already exists in Database
-                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
-                    {
-                        failCount++;
-                    }
-                    //something went wrong when sending email
-                    catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
-                    {
-                        _logger.LogDebug(SmtpError.ToString());
-                        return ServiceUnavailable();
-                    }
-                }
-                if (failCount == model.emails.Length)
-                    return Conflict();
+                Tuple<List<String>, List<String>> result = userManager.InviteUsers(model.emails);
+                List<String> failedInvitations = result.Item1;
+                List<String> existingUsers = result.Item2;
+                if (failedInvitations.Count == model.emails.Length)
+                    return BadRequest(result);
+                if (existingUsers.Count == model.emails.Length)
+                    return StatusCode(409, result);
 
-                return Accepted();
+                return Accepted(result);
+            } else
+            {
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
         }
 
         #endregion
