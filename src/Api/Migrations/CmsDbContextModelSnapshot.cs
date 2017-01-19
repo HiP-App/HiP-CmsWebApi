@@ -96,6 +96,8 @@ namespace Api.Migrations
 
                     b.Property<string>("PublishedDate");
 
+                    b.Property<string>("Source");
+
                     b.Property<DateTime>("TimeStamp")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");

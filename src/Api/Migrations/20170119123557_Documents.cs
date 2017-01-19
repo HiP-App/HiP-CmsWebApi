@@ -48,6 +48,7 @@ namespace Api.Migrations
                     Name = table.Column<string>(nullable: true),
                     PublicationType = table.Column<string>(nullable: true),
                     PublishedDate = table.Column<string>(nullable: true),
+                    Source = table.Column<string>(nullable: true),
                     TimeStamp = table.Column<DateTime>(nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>

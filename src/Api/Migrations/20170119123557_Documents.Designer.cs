@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170117102210_Documents")]
+    [Migration("20170119123557_Documents")]
     partial class Documents
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,6 +96,8 @@ namespace Api.Migrations
                     b.Property<string>("PublicationType");
 
                     b.Property<string>("PublishedDate");
+
+                    b.Property<string>("Source");
 
                     b.Property<DateTime>("TimeStamp")
                         .ValueGeneratedOnAddOrUpdate()

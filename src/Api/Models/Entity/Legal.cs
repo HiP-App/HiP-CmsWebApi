@@ -28,7 +28,9 @@ namespace Api.Models.Entity
         public string Name { get; set; }
 
         public string Description { get; set; }
-        
+
+        public string Source { get; set; }
+
         public Legal()
         {
 
@@ -43,6 +45,7 @@ namespace Api.Models.Entity
             this.Name = legalModel.Name;
             this.Description = legalModel.Description;
             this.PublishedDate = legalModel.PublishedDate;
+            this.Source = legalModel.Source;
         }
 
     }

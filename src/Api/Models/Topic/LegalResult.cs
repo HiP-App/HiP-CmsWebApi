@@ -16,6 +16,7 @@ namespace Api.Models.Topic
             this.Author = legal.Author;
             this.Name = legal.Name;
             this.Description = legal.Description;
+            this.Source = legal.Source;
         }
 
         public DateTime TimeStamp { get; set; }
@@ -29,5 +30,7 @@ namespace Api.Models.Topic
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public string Source { get; set; }
     }
 }
