@@ -44,14 +44,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 409)]
         [ProducesResponseType(typeof(void), 503)]
-        public IActionResult InviteUsers(InviteFormModel model)
+        public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
             if (!userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
                 return Forbidden();
 
             if (ModelState.IsValid)
             {
-                Tuple<List<String>, List<String>> result = userManager.InviteUsers(model.emails);
+                Tuple<List<String>, List<String>> result = userManager.InviteUsers(model.emails, emailSender);
                 List<String> failedInvitations = result.Item1;
                 List<String> existingUsers = result.Item2;
                 if (failedInvitations.Count == model.emails.Length)
