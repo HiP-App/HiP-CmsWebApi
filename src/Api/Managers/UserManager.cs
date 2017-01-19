@@ -116,6 +116,12 @@ namespace Api.Managers
             return false;
         }
 
+        public struct InvitationResult
+        {
+            public List<String> failedInvitations;
+            public List<String> existingUsers;
+        }
+
         /// <summary>
         /// Invite the users identified by the given email addresses.
         /// This also creates users in the database.
@@ -124,7 +130,7 @@ namespace Api.Managers
         /// </summary>
         /// <param name="emails">A string array of email addresses</param>
         /// <returns>Tuple containing (1) the failed invitations and (2) existing users lists.</returns>
-        public Tuple<List<String>, List<String>> InviteUsers(string[] emails, IEmailSender emailSender)
+        public InvitationResult InviteUsers(string[] emails, IEmailSender emailSender)
         {
             List<String> failedInvitations = new List<string>();
             List<String> existingUsers = new List<string>();
@@ -153,8 +159,7 @@ namespace Api.Managers
                     failedInvitations.Add(email);
                 }
             }
-   
-            return Tuple.Create(failedInvitations, existingUsers);
+            return new InvitationResult() { failedInvitations = failedInvitations, existingUsers = existingUsers };
         }
 
     }

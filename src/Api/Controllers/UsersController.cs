@@ -39,10 +39,11 @@ namespace Api.Controllers
         /// <response code="503">Service unavailable</response>        
         /// <response code="401">User is denied</response>
         [HttpPost("Invite")]
-        [ProducesResponseType(typeof(void), 202)]
+        [ProducesResponseType(typeof(UserManager.InvitationResult), 202)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 401)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 409)]
+        [ProducesResponseType(typeof(UserManager.InvitationResult), 409)]
         [ProducesResponseType(typeof(void), 503)]
         public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
@@ -51,12 +52,10 @@ namespace Api.Controllers
 
             if (ModelState.IsValid)
             {
-                Tuple<List<String>, List<String>> result = userManager.InviteUsers(model.emails, emailSender);
-                List<String> failedInvitations = result.Item1;
-                List<String> existingUsers = result.Item2;
-                if (failedInvitations.Count == model.emails.Length)
+                UserManager.InvitationResult result = userManager.InviteUsers(model.emails, emailSender);
+                if (result.failedInvitations.Count == model.emails.Length)
                     return BadRequest(result);
-                if (existingUsers.Count == model.emails.Length)
+                if (result.existingUsers.Count == model.emails.Length)
                     return StatusCode(409, result);
 
                 return Accepted(result);
