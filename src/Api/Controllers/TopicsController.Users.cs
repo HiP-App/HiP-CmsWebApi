@@ -31,7 +31,7 @@ namespace Api.Controllers
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Students")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
-        public IActionResult GetTopicStudents(int topicId)
+        public IActionResult GetTopicStudents([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Student);
         }
@@ -46,7 +46,7 @@ namespace Api.Controllers
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Supervisors")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
-        public IActionResult GetTopicSupervisors(int topicId)
+        public IActionResult GetTopicSupervisors([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
         }
@@ -61,7 +61,7 @@ namespace Api.Controllers
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Reviewers")]
         [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
-        public IActionResult GetTopicReviewers(int topicId)
+        public IActionResult GetTopicReviewers([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Reviewer);
         }
@@ -90,7 +90,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicStudents(int topicId, int[] users)
+        public IActionResult PutTopicStudents([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
             return PutTopicUsers(topicId, Role.Student, users);
         }
@@ -110,7 +110,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicSupervisors(int topicId, int[] users)
+        public IActionResult PutTopicSupervisors([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
             return PutTopicUsers(topicId, Role.Supervisor, users);
         }
@@ -130,18 +130,18 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicReviewers(int topicId, int[] users)
+        public IActionResult PutTopicReviewers([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
             return PutTopicUsers(topicId, Role.Reviewer, users);
         }
 
-        private IActionResult PutTopicUsers(int topicId, string role, int[] users)
+        private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users))
+            else if (topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users.Users))
                 return Ok();
             return BadRequest();
         }

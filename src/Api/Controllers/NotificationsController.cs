@@ -53,7 +53,7 @@ namespace Api.Controllers
             return GetNotifications(true);
         }
 
-        private IActionResult GetNotifications(bool onlyUnread)
+        private IActionResult GetNotifications([FromQuery]bool onlyUnread)
         {
             var notifications = notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUnread);
 
@@ -107,7 +107,7 @@ namespace Api.Controllers
         [HttpPost("{notificationId}/markread")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Post(int notificationId)
+        public IActionResult Post([FromRoute]int notificationId)
         {
             if (notificationManager.MarkAsRead(notificationId))
                 return Ok();
@@ -128,7 +128,7 @@ namespace Api.Controllers
         /// <response code="403">User is not allowed to subscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("subscribe/{notificationType}")]
-        public IActionResult PutSubscribe(string notificationType)
+        public IActionResult PutSubscribe([FromRoute]string notificationType)
         {
             return setSubscription(notificationType, true);
         }
@@ -142,7 +142,7 @@ namespace Api.Controllers
         /// <response code="403">User is not allowed to unsubscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("unsubscribe/{notificationType}")]
-        public IActionResult PutUnsubscribe(string notificationType)
+        public IActionResult PutUnsubscribe([FromRoute]string notificationType)
         {
             return setSubscription(notificationType, false);
         }

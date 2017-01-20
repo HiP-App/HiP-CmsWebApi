@@ -28,7 +28,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(DocumentResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetDocument(int topicId)
+        public IActionResult GetDocument([FromRoute]int topicId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -56,14 +56,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(IActionResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PostDocument(int topicId, String htmlContent)
+        public IActionResult PostDocument([FromRoute]int topicId, [FromBody]HtmlContentModel htmlContent)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            if (ModelState.IsValid && !String.IsNullOrEmpty(htmlContent))
+            if (ModelState.IsValid)
             {
-                var result = documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent);
+                var result = documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent.HtmlContent);
                 if (result.Success)
                     return Ok(result);
             }
@@ -82,7 +82,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteDocument(int topicId)
+        public IActionResult DeleteDocument([FromRoute]int topicId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();

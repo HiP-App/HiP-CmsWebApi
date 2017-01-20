@@ -13,6 +13,7 @@ using Api.Models.User;
 using System.Collections.Generic;
 using Api.Models.Topic;
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Shared;
 
 namespace Api.Controllers
 {
@@ -41,7 +42,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAttachments(int topicId)
+        public IActionResult GetAttachments([FromRoute]int topicId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -64,10 +65,10 @@ namespace Api.Controllers
         /// <response code="403">User not allowed to get topic attachment</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Attachments/{attachmentId}")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(StringWrapper), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAttachmet(int topicId, int attachmentId)
+        public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -77,7 +78,7 @@ namespace Api.Controllers
                 var attachment = attachmentsManager.GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
-                return Ok(hash);
+                return Ok(new StringWrapper() { Value = hash });
             }
             catch (InvalidOperationException)
             {
@@ -103,7 +104,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostAttachment(int topicId, AttatchmentFormModel model, IFormFile file)
+        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttatchmentFormModel model, [FromForm]IFormFile file)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -137,7 +138,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteAttachment(int topicId, int attachmentId)
+        public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -166,7 +167,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostLegal(int topicId, int attachmentId, LegalFormModel legalModel)
+        public IActionResult PostLegal([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]LegalFormModel legalModel)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -194,7 +195,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteLegal(int topicId, int attachmentId)
+        public IActionResult DeleteLegal([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
             if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();

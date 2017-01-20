@@ -86,7 +86,7 @@ namespace Api.Controllers
         [HttpGet("Topics/{topicId}/Permission/IsAssociatedTo")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 401)]
-        public IActionResult IsAssociatedTo(int topicId)
+        public IActionResult IsAssociatedTo([FromRoute]int topicId)
         {
             if (topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Ok();
@@ -99,7 +99,7 @@ namespace Api.Controllers
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAllowedToEdit")]
-        public IActionResult IsAllowedToEdit(int topicId)
+        public IActionResult IsAllowedToEdit([FromRoute]int topicId)
         {
             if (topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Ok();

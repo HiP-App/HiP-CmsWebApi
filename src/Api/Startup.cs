@@ -18,6 +18,8 @@ namespace Api
     {
         internal static IServiceProvider ServiceProvider { get; set; }
 
+        private IConfigurationRoot Configuration { get; }
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -28,8 +30,6 @@ namespace Api
 
             Configuration = builder.Build();
         }
-
-        public IConfigurationRoot Configuration { get; }
 
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace Api
             // Add database service for Postgres
             services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
 
-            // Add framework services. (Workaround: https://github.com/aspnet/Mvc/issues/4945)
-            services.AddMvc(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
+            // Add framework services.
+            services.AddMvc();
 
             // Add Swagger service
             services.AddSwaggerGen();

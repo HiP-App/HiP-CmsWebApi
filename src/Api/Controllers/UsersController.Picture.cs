@@ -27,9 +27,9 @@ namespace Api.Controllers
         /// <response code="404">Resource not found</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{userId}/picture/")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(Base64Image), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureById(int userId)
+        public IActionResult GetPictureById([FromRoute]int userId)
         {
             return GetPicture(userId);
         }
@@ -43,14 +43,14 @@ namespace Api.Controllers
         /// <response code="404">Resource not found</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("Current/picture/")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(Base64Image), 200)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetPictureForCurrentUser()
         {
             return GetPicture(User.Identity.GetUserId());
         }
 
-        private IActionResult GetPicture(int userId)
+        private IActionResult GetPicture([FromRoute]int userId)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace Api.Controllers
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
 
-                return Ok(ToBase64String(path));
+                return Ok(new Base64Image(ToBase64String(path)));
             }
             catch (InvalidOperationException)
             {
@@ -87,7 +87,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutPicture(int id, IFormFile file)
+        public IActionResult PutPicture([FromRoute]int id,[FromForm] IFormFile file)
         {
             if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
@@ -106,7 +106,7 @@ namespace Api.Controllers
         [HttpPost("Current/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutPicture(IFormFile file)
+        public IActionResult PutPicture([FromForm]IFormFile file)
         {
             return PutUserPicture(User.Identity.GetUserId(), file);
         }
@@ -167,7 +167,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Delete(int id)
+        public IActionResult Delete([FromRoute]int id)
         {
             if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
@@ -190,7 +190,7 @@ namespace Api.Controllers
             return DeletePicture(User.Identity.GetUserId());
         }
 
-        private IActionResult DeletePicture(int userId)
+        private IActionResult DeletePicture([FromRoute]int userId)
         {
             // Fetch user
             try

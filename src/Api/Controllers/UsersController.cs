@@ -45,7 +45,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 409)]
         [ProducesResponseType(typeof(void), 503)]
-        public IActionResult Post(InviteFormModel model)
+        public IActionResult Post([FromBody]InviteFormModel model)
         {
             if (!userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
                 return Forbidden();
@@ -96,7 +96,7 @@ namespace Api.Controllers
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
-        public IActionResult Get(string query, string role, int page = 1)
+        public IActionResult Get([FromQuery]string query, [FromQuery]string role, [FromQuery] int page = 1)
         {
             var users = userManager.GetAllUsers(query, role, page, Constants.PageSize);
             int count = userManager.GetUsersCount();
@@ -117,7 +117,7 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Get(int id)
+        public IActionResult Get([FromRoute]int id)
         {
             try
             {
@@ -163,7 +163,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put(UserFormModel model)
+        public IActionResult Put([FromBody]UserFormModel model)
         {
             return PutUser(User.Identity.GetUserId(), model);
         }
@@ -185,7 +185,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put(int id, AdminUserFormModel model)
+        public IActionResult Put([FromRoute]int id, [FromBody]AdminUserFormModel model)
         {
             if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
@@ -193,7 +193,7 @@ namespace Api.Controllers
             return PutUser(id, model);
         }
 
-        private IActionResult PutUser(int id, UserFormModel model)
+        private IActionResult PutUser([FromRoute]int id, [FromBody]UserFormModel model)
         {
             if (ModelState.IsValid)
             {

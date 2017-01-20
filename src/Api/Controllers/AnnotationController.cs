@@ -37,7 +37,7 @@ namespace Api.Controllers
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
-        public IActionResult GetAllTags(bool IncludeDeleted = false, bool IncludeOnlyRoot = false)
+        public IActionResult GetAllTags([FromQuery]bool IncludeDeleted = false, [FromQuery]bool IncludeOnlyRoot = false)
         {
             return Ok(tagManager.getAllTags(IncludeDeleted, IncludeOnlyRoot));
         }
@@ -54,7 +54,7 @@ namespace Api.Controllers
         [HttpGet("Tags/{id}")]
         [ProducesResponseType(typeof(AnnotationTagResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetTag(int id)
+        public IActionResult GetTag([FromRoute]int id)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Api.Controllers
         [HttpGet("Tags/{id}/ChildTags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
-        public IActionResult GetChildTagsOf(int id)
+        public IActionResult GetChildTagsOf([FromRoute]int id)
         {
             var tags = tagManager.getChildTagsOf(id);
             return Ok(tags);
@@ -104,7 +104,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post(AnnotationTagFormModel tag)
+        public IActionResult Post([FromBody]AnnotationTagFormModel tag)
         {
             if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -134,7 +134,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post(int parentId, int childId)
+        public IActionResult Post([FromRoute]int parentId, [FromRoute]int childId)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -164,7 +164,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTag(int Id, AnnotationTagFormModel model)
+        public IActionResult PutTag([FromRoute]int Id, [FromBody]AnnotationTagFormModel model)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -193,7 +193,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Delete(int Id)
+        public IActionResult Delete([FromRoute]int Id)
         {
             if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -217,7 +217,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteChildOf(int parentId, int childId)
+        public IActionResult DeleteChildOf([FromRoute]int parentId, [FromRoute]int childId)
         {
             if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();

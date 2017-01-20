@@ -28,7 +28,7 @@ namespace Api.Controllers
         /// <param name="topicId">The Id of the topic</param>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/SubTopics")]
-        public IActionResult GetSubTopics(int topicId)
+        public IActionResult GetSubTopics([FromRoute]int topicId)
         {
             return Ok(topicManager.GetSubTopics(topicId));
         }
@@ -42,7 +42,7 @@ namespace Api.Controllers
         /// <param name="topicId">The Id of the topic</param>
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/ParentTopics")]
-        public IActionResult GetParentTopics(int topicId)
+        public IActionResult GetParentTopics([FromRoute]int topicId)
         {
             return Ok(topicManager.GetParentTopics(topicId));
         }
@@ -66,7 +66,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(EntityResult), 403)]
-        public IActionResult PutParentTopics(int topicId, int parentId)
+        public IActionResult PutParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -92,7 +92,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(EntityResult), 403)]
-        public IActionResult PutSubTopics(int topicId, int childId)
+        public IActionResult PutSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -120,7 +120,7 @@ namespace Api.Controllers
         [HttpDelete("{topicId}/ParentTopics/{parentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteParentTopics(int topicId, int parentId)
+        public IActionResult DeleteParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
@@ -145,7 +145,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteSubTopics(int topicId, int childId)
+        public IActionResult DeleteSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
             if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
