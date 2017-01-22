@@ -1,11 +1,7 @@
 ﻿using Api.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
@@ -13,10 +9,6 @@ namespace Api.Controllers
     [Route("Download")]
     public class DownloadController : Controller
     {
-        public DownloadController()
-        {
-
-        }
         /// <summary>
         /// Provides the file associated with the hashValue
         /// </summary>
@@ -36,18 +28,17 @@ namespace Api.Controllers
         {
             var userIp = HttpContext.Connection.RemoteIpAddress;
             var resource = DownloadManager.GetResource(downloadHash);
-            if (resource != null)
-            {
-                if (resource.IsExpired())
-                    return ApiController.Gone();
 
-                if (!resource.IsSameUser(userIp))
-                    return ApiController.Forbidden();
+            if (resource == null) return NotFound();
 
-                string contentType = MimeKit.MimeTypes.GetMimeType(resource.FileName);
-                return base.File(resource.FileName, contentType, Path.GetFileName(resource.FileName));
-            }
-            return NotFound();
+            if (resource.IsExpired())
+                return ApiController.Gone();
+
+            if (!resource.IsSameUser(userIp))
+                return ApiController.Forbidden();
+
+            var contentType = MimeKit.MimeTypes.GetMimeType(resource.FileName);
+            return File(resource.FileName, contentType, Path.GetFileName(resource.FileName));
         }
     }
 }

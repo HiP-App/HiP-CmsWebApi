@@ -1,13 +1,8 @@
 ﻿using Api.Utility;
 using Microsoft.AspNetCore.Mvc;
-using Api.Managers;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Api.Data;
-using Api.Models;
 using Api.Models.User;
-using Api.Permission;
 using System;
 
 namespace Api.Controllers
@@ -54,7 +49,7 @@ namespace Api.Controllers
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
@@ -89,7 +84,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult PutPicture([FromRoute]int id,[FromForm] IFormFile file)
         {
-            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
             return PutUserPicture(id, file);
         }
@@ -124,7 +119,7 @@ namespace Api.Controllers
             {
                 try
                 {
-                    var user = userManager.GetUserById(userId);
+                    var user = _userManager.GetUserById(userId);
                     string fileName = user.Id + Path.GetExtension(file.FileName);
                     DeleteFile(Path.Combine(uploads, fileName));
 
@@ -133,7 +128,7 @@ namespace Api.Controllers
                         file.CopyTo(outputStream);
                     }
 
-                    userManager.UpdateProfilePicture(user, fileName);
+                    _userManager.UpdateProfilePicture(user, fileName);
                     return Ok();
                 }
                 catch (InvalidOperationException)
@@ -169,7 +164,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete([FromRoute]int id)
         {
-            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
             return DeletePicture(id);
         }
@@ -195,12 +190,12 @@ namespace Api.Controllers
             // Fetch user
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 // Has A Picture?
                 if (!user.HasProfilePicture() || Constants.DefaultPircture.Equals(user.Picture))
                     return BadRequest("No picture set");
 
-                bool success = userManager.UpdateProfilePicture(user, null);
+                bool success = _userManager.UpdateProfilePicture(user, null);
                 // Delete Picture If Exists
                 string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
 

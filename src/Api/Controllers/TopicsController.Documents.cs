@@ -2,18 +2,17 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
 using Api.Managers;
-using Api.Data;
 using Api.Models.Topic;
 
 namespace Api.Controllers
 {
     public partial class TopicsController
     {
-        private DocumentManager documentManager;
+        private DocumentManager _documentManager;
 
-        protected void TopicsDocumentController(CmsDbContext dbContext)
+        private void TopicsDocumentController()
         {
-            documentManager = new DocumentManager(dbContext);
+            _documentManager = new DocumentManager(dbContext);
         }
 
         /// <summary>
@@ -30,12 +29,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetDocument([FromRoute]int topicId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
             try
             {
-                return Ok(new DocumentResult(documentManager.GetDocumentById(topicId)));
+                return Ok(new DocumentResult(_documentManager.GetDocumentById(topicId)));
             }
             catch (InvalidOperationException)
             {
@@ -58,12 +57,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult PostDocument([FromRoute]int topicId, [FromBody]HtmlContentModel htmlContent)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
             if (ModelState.IsValid)
             {
-                var result = documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent.HtmlContent);
+                var result = _documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent.HtmlContent);
                 if (result.Success)
                     return Ok(result);
             }
@@ -84,10 +83,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteDocument([FromRoute]int topicId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            if (documentManager.DeleteDocument(topicId))
+            if (_documentManager.DeleteDocument(topicId))
                 return Ok();
             return NotFound();
         }

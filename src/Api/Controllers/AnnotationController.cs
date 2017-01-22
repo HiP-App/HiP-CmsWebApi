@@ -13,8 +13,8 @@ namespace Api.Controllers
 {
     public class AnnotationController : ApiController
     {
-        private AnnotationTagManager tagManager;
-        private AnnotationPermissions annotationPermissions;
+        private readonly AnnotationTagManager tagManager;
+        private readonly AnnotationPermissions annotationPermissions;
 
         public AnnotationController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {

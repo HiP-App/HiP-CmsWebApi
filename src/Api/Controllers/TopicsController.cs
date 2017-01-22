@@ -2,32 +2,26 @@ using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
-using System.Linq;
 using Api.Managers;
 using Api.Models;
 using Api.Data;
-using Microsoft.AspNetCore.Http;
-using System.IO;
 using Api.Permission;
-using Api.Models.User;
-using System.Collections.Generic;
 using Api.Models.Topic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
 {
     public partial class TopicsController : ApiController
     {
-        private TopicManager topicManager;
+        private readonly TopicManager _topicManager;
 
-        private TopicPermissions topicPermissions;
+        private readonly TopicPermissions _topicPermissions;
 
         public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
-            topicManager = new TopicManager(dbContext);
-            topicPermissions = new TopicPermissions(dbContext);
-            TopicsAttachmentsController(dbContext);
-            TopicsDocumentController(dbContext);
+            _topicManager = new TopicManager(dbContext);
+            _topicPermissions = new TopicPermissions(dbContext);
+            TopicsAttachmentsController();
+            TopicsDocumentController();
         }
 
         #region GET topics
@@ -48,7 +42,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult Get([FromQuery]string query, [FromQuery] string status, [FromQuery]DateTime? deadline, [FromQuery]bool onlyParents = false, [FromQuery]int page = 1)
         {
-            var topics = topicManager.GetAllTopics(query, status, deadline, onlyParents, page);
+            var topics = _topicManager.GetAllTopics(query, status, deadline, onlyParents, page);
             return Ok(topics);
         }
 
@@ -80,7 +74,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
         public IActionResult GetTopicsForUser([FromRoute]int userId, [FromQuery]int page = 1)
         {
-            var topics = topicManager.GetTopicsForUser(userId, page);
+            var topics = _topicManager.GetTopicsForUser(userId, page);
             return Ok(topics);
         }
 
@@ -97,7 +91,7 @@ namespace Api.Controllers
         {
             try
             {
-                return Ok(topicManager.GetTopicById(topicId));
+                return Ok(_topicManager.GetTopicById(topicId));
             }
             catch (InvalidOperationException)
             {
@@ -124,7 +118,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Post([FromBody]TopicFormModel model)
         {
-            if (!topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
+            if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
                 return Forbidden();
 
             if (ModelState.IsValid)
@@ -135,7 +129,7 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    var result = topicManager.AddTopic(User.Identity.GetUserId(), model);
+                    var result = _topicManager.AddTopic(User.Identity.GetUserId(), model);
                     if (result.Success)
                         return Ok(result);
                 }
@@ -161,14 +155,15 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Put([FromRoute]int topicId, [FromBody] TopicFormModel model)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            if (ModelState.IsValid)
-            { // TODO createUser is Supervisor!
-                if (topicManager.UpdateTopic(User.Identity.GetUserId(), topicId, model))
-                    return Ok();
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState); 
+            
+            // TODO createUser is Supervisor!
+            if (_topicManager.UpdateTopic(User.Identity.GetUserId(), topicId, model))
+                return Ok();
             return BadRequest(ModelState);
         }
 
@@ -189,12 +184,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult ChangeStatus([FromRoute]int topicId, [FromBody]TopicStatus topicStatus)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
             if (!topicStatus.IsStatusValid())
                 ModelState.AddModelError("status", "Invalid Status");
-            else if (topicManager.ChangeTopicStatus(User.Identity.GetUserId(), topicId, topicStatus.Status))
+            else if (_topicManager.ChangeTopicStatus(User.Identity.GetUserId(), topicId, topicStatus.Status))
                 return Ok();
 
             return NotFound();
@@ -217,9 +212,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete([FromRoute]int topicId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
-            if (topicManager.DeleteTopic(topicId, User.Identity.GetUserId()))
+            if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserId()))
                 return Ok();
 
             return NotFound();

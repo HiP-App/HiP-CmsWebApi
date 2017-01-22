@@ -1,18 +1,6 @@
-using System;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
-using System.Linq;
-using Api.Managers;
 using Api.Models;
-using Api.Data;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Api.Permission;
-using Api.Models.User;
-using System.Collections.Generic;
-using Api.Models.Topic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
 {
@@ -30,7 +18,7 @@ namespace Api.Controllers
         [HttpGet("{topicId}/SubTopics")]
         public IActionResult GetSubTopics([FromRoute]int topicId)
         {
-            return Ok(topicManager.GetSubTopics(topicId));
+            return Ok(_topicManager.GetSubTopics(topicId));
         }
 
 
@@ -44,7 +32,7 @@ namespace Api.Controllers
         [HttpGet("{topicId}/ParentTopics")]
         public IActionResult GetParentTopics([FromRoute]int topicId)
         {
-            return Ok(topicManager.GetParentTopics(topicId));
+            return Ok(_topicManager.GetParentTopics(topicId));
         }
 
         #endregion
@@ -68,10 +56,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 403)]
         public IActionResult PutParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            var result = topicManager.AssociateTopic(parentId, topicId);
+            var result = _topicManager.AssociateTopic(parentId, topicId);
             if (result.Success)
                 return Ok();
             return BadRequest(result);
@@ -94,10 +82,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 403)]
         public IActionResult PutSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            var result = topicManager.AssociateTopic(topicId, childId);
+            var result = _topicManager.AssociateTopic(topicId, childId);
             if (result.Success)
                 return Ok();
             return BadRequest(result);
@@ -122,9 +110,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Unauthorized();
-            if (topicManager.DeleteAssociated(parentId, topicId))
+            if (_topicManager.DeleteAssociated(parentId, topicId))
                 return Ok();
 
             return NotFound();
@@ -147,9 +135,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
-            if (!topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
                 return Forbidden();
-            if (topicManager.DeleteAssociated(topicId, childId))
+            if (_topicManager.DeleteAssociated(topicId, childId))
                 return Ok();
 
             return NotFound();

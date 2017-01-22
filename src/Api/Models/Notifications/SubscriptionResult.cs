@@ -1,5 +1,4 @@
-﻿using System;
-using Api.Models.Entity;
+﻿using Api.Models.Entity;
 using Api.Models.Notifications;
 
 public class SubscriptionResult

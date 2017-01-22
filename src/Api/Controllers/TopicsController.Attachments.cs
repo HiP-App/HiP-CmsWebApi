@@ -1,29 +1,23 @@
 using System;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
-using System.Linq;
 using Api.Managers;
 using Api.Models;
-using Api.Data;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Api.Permission;
-using Api.Models.User;
 using System.Collections.Generic;
 using Api.Models.Topic;
-using System.ComponentModel.DataAnnotations;
 using Api.Models.Shared;
 
 namespace Api.Controllers
 {
     public partial class TopicsController
     {
-        private AttachmentsManager attachmentsManager;
+        private AttachmentsManager _attachmentsManager;
 
-        private void TopicsAttachmentsController(CmsDbContext dbContext)
+        private void TopicsAttachmentsController()
         {
-            attachmentsManager = new AttachmentsManager(dbContext);
+            _attachmentsManager = new AttachmentsManager(dbContext);
         }
 
         #region Attachments
@@ -44,10 +38,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachments([FromRoute]int topicId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            var attachments = attachmentsManager.GetAttachments(topicId);
+            var attachments = _attachmentsManager.GetAttachments(topicId);
             if (attachments != null)
                 return Ok(attachments);
             return NotFound();
@@ -70,12 +64,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
             try
             {
-                var attachment = attachmentsManager.GetAttachmentById(attachmentId);
+                var attachment = _attachmentsManager.GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
                 return Ok(new StringWrapper() { Value = hash });
@@ -106,7 +100,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttatchmentFormModel model, [FromForm]IFormFile file)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
             if (file == null)
@@ -114,7 +108,7 @@ namespace Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model, file);
+                var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model, file);
                 if (result.Success)
                     return Ok(result);
                 return InternalServerError(result);
@@ -140,10 +134,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            if (attachmentsManager.DeleteAttachment(topicId, attachmentId))
+            if (_attachmentsManager.DeleteAttachment(topicId, attachmentId))
                 return Ok();
             return NotFound();
         }
@@ -169,12 +163,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PostLegal([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]LegalFormModel legalModel)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
             if (ModelState.IsValid)
             {
-                var result = attachmentsManager.CreateLegal(topicId, attachmentId, User.Identity.GetUserId(), legalModel);
+                var result = _attachmentsManager.CreateLegal(topicId, attachmentId, User.Identity.GetUserId(), legalModel);
                 if (result.Success)
                     return Ok(result);
                 return InternalServerError(result);
@@ -197,10 +191,10 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteLegal([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            if (attachmentsManager.DeleteLegal(topicId, attachmentId))
+            if (_attachmentsManager.DeleteLegal(topicId, attachmentId))
                 return Ok();
             return NotFound();
         }

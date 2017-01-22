@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Api.Models.AnnotationTag
+﻿namespace Api.Models.AnnotationTag
 {
     public class AnnotationLayer
     {

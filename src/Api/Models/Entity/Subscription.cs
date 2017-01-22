@@ -1,4 +1,3 @@
-using Api.Models.User;
 using System.ComponentModel.DataAnnotations;
 using Api.Models.Notifications;
 using System.ComponentModel.DataAnnotations.Schema;

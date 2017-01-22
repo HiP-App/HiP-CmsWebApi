@@ -1,9 +1,6 @@
 ﻿using Api.Models.Entity;
 using Api.Models.User;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Models.Topic
 {

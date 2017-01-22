@@ -1,18 +1,8 @@
-using System;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
-using System.Linq;
-using Api.Managers;
 using Api.Models;
-using Api.Data;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Api.Permission;
 using Api.Models.User;
 using System.Collections.Generic;
-using Api.Models.Topic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers
 {
@@ -68,7 +58,7 @@ namespace Api.Controllers
 
         private IActionResult GetTopicUsers(int topicId, string role)
         {
-            return Ok(topicManager.GetAssociatedUsersByRole(topicId, role));
+            return Ok(_topicManager.GetAssociatedUsersByRole(topicId, role));
         }
 
         #endregion
@@ -137,11 +127,11 @@ namespace Api.Controllers
 
         private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
         {
-            if (!topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users.Users))
+            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users.Users))
                 return Ok();
             return BadRequest();
         }

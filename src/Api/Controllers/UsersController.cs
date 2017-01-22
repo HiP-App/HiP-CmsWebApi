@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Api.Managers;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using System.IO;
 using Api.Data;
 using Api.Models;
 using Api.Models.User;
@@ -14,15 +12,15 @@ namespace Api.Controllers
 {
     public partial class UsersController : ApiController
     {
-        private UserManager userManager;
-        private IEmailSender emailSender;
-        private UserPermissions userPermissions;
+        private readonly UserManager _userManager;
+        private readonly IEmailSender _emailSender;
+        private readonly UserPermissions _userPermissions;
 
-        public UsersController(CmsDbContext dbContext, IEmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, IEmailSender emailSender, ILoggerFactory logger) : base(dbContext, logger)
         {
-            userManager = new UserManager(dbContext);
-            userPermissions = new UserPermissions(dbContext);
-            this.emailSender = emailSender;
+            _userManager = new UserManager(dbContext);
+            _userPermissions = new UserPermissions(dbContext);
+            _emailSender = emailSender;
         }
 
         #region invite
@@ -47,37 +45,36 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 503)]
         public IActionResult Post([FromBody]InviteFormModel model)
         {
-            if (!userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
                 return Forbidden();
 
-            if (ModelState.IsValid)
-            {
-                int failCount = 0;
-                foreach (string email in model.emails)
-                {
-                    try
-                    {
-                        userManager.AddUserbyEmail(email);
-                        emailSender.InviteAsync(email);
-                    }
-                    //user already exists in Database
-                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
-                    {
-                        failCount++;
-                    }
-                    //something went wrong when sending email
-                    catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
-                    {
-                        _logger.LogDebug(SmtpError.ToString());
-                        return ServiceUnavailable();
-                    }
-                }
-                if (failCount == model.emails.Length)
-                    return Conflict();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                return Accepted();
+            var failCount = 0;
+            foreach (var email in model.emails)
+            {
+                try
+                {
+                    _userManager.AddUserbyEmail(email);
+                    _emailSender.InviteAsync(email);
+                }
+                //user already exists in Database
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                {
+                    failCount++;
+                }
+                //something went wrong when sending email
+                catch (MailKit.Net.Smtp.SmtpCommandException smtpError)
+                {
+                    Logger.LogDebug(smtpError.ToString());
+                    return ServiceUnavailable();
+                }
             }
-            return BadRequest(ModelState);
+            if (failCount == model.emails.Length)
+                return Conflict();
+
+            return Accepted();
         }
 
         #endregion
@@ -98,8 +95,8 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
         public IActionResult Get([FromQuery]string query, [FromQuery]string role, [FromQuery] int page = 1)
         {
-            var users = userManager.GetAllUsers(query, role, page, Constants.PageSize);
-            int count = userManager.GetUsersCount();
+            var users = _userManager.GetAllUsers(query, role, page, Constants.PageSize);
+            int count = _userManager.GetUsersCount();
 
             return Ok(new PagedResult<UserResult>(users, page, count));
         }
@@ -121,7 +118,7 @@ namespace Api.Controllers
         {
             try
             {
-                var user = userManager.GetUserById(id);
+                var user = _userManager.GetUserById(id);
                 return Ok(new UserResult(user));
             }
             catch (InvalidOperationException)
@@ -187,7 +184,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put([FromRoute]int id, [FromBody]AdminUserFormModel model)
         {
-            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
 
             return PutUser(id, model);
@@ -203,9 +200,9 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    if (userManager.UpdateUser(id, model))
+                    if (_userManager.UpdateUser(id, model))
                     {
-                        _logger.LogInformation(5, "User with ID: " + id + " updated.");
+                        Logger.LogInformation(5, "User with ID: " + id + " updated.");
                         return Ok();
                     }
                     return NotFound();
