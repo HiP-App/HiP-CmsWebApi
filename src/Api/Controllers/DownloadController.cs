@@ -24,7 +24,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         [ProducesResponseType(typeof(void), 410)]
-        public IActionResult Get([FromQuery]string downloadHash)
+        public IActionResult Get([FromRoute]string downloadHash)
         {
             var userIp = HttpContext.Connection.RemoteIpAddress;
             var resource = DownloadManager.GetResource(downloadHash);
