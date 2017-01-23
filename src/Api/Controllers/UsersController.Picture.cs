@@ -50,7 +50,7 @@ namespace Api.Controllers
             try
             {
                 var user = _userManager.GetUserById(userId);
-                string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
+                var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
 
@@ -82,7 +82,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutPicture([FromRoute]int id,[FromForm] IFormFile file)
+        public IActionResult PutPicture([FromRoute]int id, [FromForm] IFormFile file)
         {
             if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
@@ -192,19 +192,18 @@ namespace Api.Controllers
             {
                 var user = _userManager.GetUserById(userId);
                 // Has A Picture?
-                if (!user.HasProfilePicture() || Constants.DefaultPircture.Equals(user.Picture))
+                if (string.IsNullOrEmpty(user.ProfilePicture) || Constants.DefaultPircture.Equals(user.ProfilePicture))
                     return BadRequest("No picture set");
 
-                bool success = _userManager.UpdateProfilePicture(user, null);
+                var success = _userManager.UpdateProfilePicture(user, null);
                 // Delete Picture If Exists
-                string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
+                var fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
 
                 DeleteFile(fileName);
 
                 if (success)
                     return Ok();
-                else
-                    return BadRequest();
+                return BadRequest();
             }
             catch (InvalidOperationException)
             {

@@ -51,7 +51,7 @@ namespace Api.Models.Entity
 
         public bool HasProfilePicture()
         {
-            return !String.IsNullOrEmpty(ProfilePicture);
+            return !string.IsNullOrEmpty(ProfilePicture);
         }
 
         public string FullName
