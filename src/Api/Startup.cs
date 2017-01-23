@@ -45,6 +45,7 @@ namespace Api
 
             // Register AppConfig in Services 
             services.AddSingleton(appConfig);
+            services.AddTransient<IEmailSender, EmailSender>();
 
             // Adding Cross Orign Requests 
             services.AddCors();
@@ -71,8 +72,6 @@ namespace Api
                 options.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
                 options.OperationFilter<SwaggerOperationFilter>();
             });
-
-            services.AddTransient<IEmailSender,EmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
