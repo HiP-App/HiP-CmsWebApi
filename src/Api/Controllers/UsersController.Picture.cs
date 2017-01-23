@@ -195,13 +195,12 @@ namespace Api.Controllers
                 if (string.IsNullOrEmpty(user.ProfilePicture) || Constants.DefaultPircture.Equals(user.ProfilePicture))
                     return BadRequest("No picture set");
 
-                var success = _userManager.UpdateProfilePicture(user, null);
                 // Delete Picture If Exists
                 var fileName = Path.Combine(Constants.ProfilePicturePath, user.ProfilePicture);
 
                 DeleteFile(fileName);
-
-                if (success)
+ 
+                if (_userManager.UpdateProfilePicture(user, null))
                     return Ok();
                 return BadRequest();
             }
