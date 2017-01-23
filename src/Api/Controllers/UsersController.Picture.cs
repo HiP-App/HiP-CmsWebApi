@@ -64,7 +64,7 @@ namespace Api.Controllers
 
         #endregion
 
-        #region POST picture
+        #region PUT picture
 
 
         // Post api/users/{id}/picture/
@@ -78,7 +78,7 @@ namespace Api.Controllers
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to add picture</response>                
         /// <response code="401">User is denied</response>
-        [HttpPost("{id}/picture/")]
+        [HttpPut("{id}/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
@@ -98,7 +98,7 @@ namespace Api.Controllers
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>                
         /// <response code="401">User is denied</response>
-        [HttpPost("Current/picture/")]
+        [HttpPut("Current/picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutPicture([FromForm]IFormFile file)
@@ -139,7 +139,7 @@ namespace Api.Controllers
             return BadRequest(ModelState);
         }
 
-        private bool IsImage(IFormFile file)
+        private static bool IsImage(IFormFile file)
         {
             return ((file != null) && System.Text.RegularExpressions.Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
         }

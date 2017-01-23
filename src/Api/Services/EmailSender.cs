@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.IO;
+using System.Linq;
 using Api.Models.Entity;
+using Api.Utility;
 
-namespace Api.Utility
+namespace Api.Services
 {
     public class EmailSender : IEmailSender
     {
@@ -19,11 +22,8 @@ namespace Api.Utility
         private Task SendMail(string recipient, string subject, string templateFile, Dictionary<string, string> parameters) 
         {
             var smtp = appConfig.SMTPConfig;
-            var bodyHtml = System.IO.File.ReadAllText(Path.Combine("Utility", templateFile));
-            foreach(KeyValuePair<string, string> entry in parameters)
-            {
-                bodyHtml = bodyHtml.Replace(@"{" + entry.Key + "}", entry.Value);
-            }
+            var bodyHtml = File.ReadAllText(Path.Combine("Utility", templateFile));
+            bodyHtml = parameters.Aggregate(bodyHtml, (current, entry) => current.Replace(@"{" + entry.Key + "}", entry.Value));
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress("History in Paderborn", smtp.From));
@@ -46,7 +46,7 @@ namespace Api.Utility
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
 
                 // Note: only needed if the SMTP server requires authentication
-                if (!(smtp.Password == null || smtp.Password == ""))
+                if (!string.IsNullOrEmpty(smtp.Password))
                 {
                     client.Authenticate(smtp.User, smtp.Password);
                 }
@@ -71,11 +71,13 @@ namespace Api.Utility
 
         public Task NotifyAsync(string email, Notification notification)
         {
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("topic", notification.Topic.Title);
-            parameters.Add("updater", notification.Updater.FullName);
-            parameters.Add("date", notification.TimeStamp.ToString());
-            parameters.Add("action", notification.TypeName);
+            var parameters = new Dictionary<string, string>
+            {
+                {"topic", notification.Topic.Title},
+                {"updater", notification.Updater.FullName},
+                {"date", notification.TimeStamp.ToString(CultureInfo.InvariantCulture)},
+                {"action", notification.TypeName}
+            };
 
             return SendMail(
                 email,

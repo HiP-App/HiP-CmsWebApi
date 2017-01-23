@@ -7,6 +7,7 @@ using Api.Models;
 using Api.Models.User;
 using Api.Permission;
 using System;
+using Api.Services;
 
 namespace Api.Controllers
 {

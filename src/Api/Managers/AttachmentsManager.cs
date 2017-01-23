@@ -46,7 +46,7 @@ namespace Api.Managers
                     TopicId = topicId,
                     Type = "TODO"
                 };
-                
+
                 dbContext.TopicAttatchments.Add(attatchment);
                 dbContext.SaveChanges();
 
@@ -62,7 +62,7 @@ namespace Api.Managers
             TopicAttatchment attachment;
             try
             {
-                attachment = dbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t=> t.TopicUsers).Single(t => t.Id == attachmentId);
+                attachment = dbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t => t.TopicUsers).Single(t => t.Id == attachmentId);
             }
             catch (InvalidOperationException)
             {
@@ -70,11 +70,11 @@ namespace Api.Managers
             }
 
             var topicFolder = Path.Combine(Constants.AttatchmentPath, attachment.TopicId.ToString());
-            if (!System.IO.Directory.Exists(topicFolder))
-                System.IO.Directory.CreateDirectory(topicFolder);
+            if (!Directory.Exists(topicFolder))
+                Directory.CreateDirectory(topicFolder);
 
-            string fileName = (Path.Combine(topicFolder, file.FileName));
-            using (FileStream outputStream = new FileStream(fileName, FileMode.Create))
+            var fileName = (Path.Combine(topicFolder, file.FileName));
+            using (var outputStream = new FileStream(fileName, FileMode.Create))
             {
                 file.CopyTo(outputStream);
             }
@@ -102,8 +102,11 @@ namespace Api.Managers
             try
             {
                 var attachment = GetAttachmentById(attachmentId);
-                string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
-                DeleteFile(fileName);
+                if (!string.IsNullOrEmpty(attachment.Path))
+                {
+                    var fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
+                    DeleteFile(fileName);
+                }
                 dbContext.Remove(attachment);
                 dbContext.SaveChanges();
                 return true;
@@ -116,17 +119,16 @@ namespace Api.Managers
         #region Legal
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual Legal GetLegalById(int attachmentId)
+        private Legal GetLegalById(int attachmentId)
         {
             return dbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
         }
 
         internal EntityResult CreateLegal(int topicId, int attachmentId, int userId, LegalFormModel legalModel)
         {
-            TopicAttatchment attachment;
             try
             {
-                attachment = dbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
+                dbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
             }
             catch (InvalidOperationException)
             {

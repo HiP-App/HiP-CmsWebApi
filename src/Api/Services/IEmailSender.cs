@@ -1,7 +1,7 @@
 ﻿using Api.Models.Entity;
 using System.Threading.Tasks;
 
-namespace Api.Utility
+namespace Api.Services
 {
     public interface IEmailSender
     {

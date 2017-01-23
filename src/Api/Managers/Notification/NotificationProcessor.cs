@@ -4,8 +4,8 @@ using Api.Data;
 using Api.Models.Entity;
 using Api.Models;
 using Api.Models.Notifications;
-using Api.Utility;
 using System.Linq;
+using Api.Services;
 
 namespace Api.Managers
 {

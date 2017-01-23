@@ -80,17 +80,11 @@ namespace Api.Controllers
             }
         }
 
-
-
-
-
-
         /// <summary>
         /// Create an attachment to the topic {topicId}
         /// </summary>        
         /// <param name="topicId">the Id of the Topic {topicId}</param>                
-        /// <param name="model">contains details about Topic attachment</param>                
-        /// <param name="file">The file to be attached with the topic</param>                
+        /// <param name="model">contains details about Topic attachment</param>                              
         /// <response code="200">Added attachment {attachmentId} successfully</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to add topic attachment</response>        

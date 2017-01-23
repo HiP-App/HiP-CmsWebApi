@@ -10,6 +10,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.Swagger.Model;
 using System;
 using System.IO;
+using Api.Services;
 
 namespace Api
 {
