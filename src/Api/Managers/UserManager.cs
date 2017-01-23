@@ -64,9 +64,11 @@ namespace Api.Managers
 
         internal void AddUserbyEmail(string email)
         {
-            User user = new User();
-            user.Email = email;
-            user.Role = Role.Student;
+            var user = new User
+            {
+                Email = email,
+                Role = Role.Student
+            };
 
             this.AddUser(user);
         }

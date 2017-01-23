@@ -80,10 +80,13 @@ namespace Api.Controllers
             }
         }
 
-        // POST api/topics/:id/attachments
+
+
+
+
 
         /// <summary>
-        /// Add an attachment to the topic {topicId}
+        /// Create an attachment to the topic {topicId}
         /// </summary>        
         /// <param name="topicId">the Id of the Topic {topicId}</param>                
         /// <param name="model">contains details about Topic attachment</param>                
@@ -98,7 +101,41 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttatchmentFormModel model, [FromForm]IFormFile file)
+        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttatchmentFormModel model)
+        {
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+                return Forbidden();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model);
+
+            if (result.Success)
+                return Ok(result);
+            return InternalServerError(result);
+        }
+
+
+        // POST api/topics/:id/attachments
+
+        /// <summary>
+        /// Add an file to the attachment to the topic {topicId}
+        /// </summary>        
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
+        /// <param name="attachmentId">Id of the attachment</param>                
+        /// <param name="file">The file to be attached with the topic</param>                
+        /// <response code="200">Added attachment {attachmentId} successfully</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="403">User not allowed to add topic attachment</response>        
+        /// <response code="500">Internal server error</response>        
+        /// <response code="401">User is denied</response>
+        [HttpPut("{topicId}/Attachments/{attachmentId}")]
+        [ProducesResponseType(typeof(EntityResult), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(EntityResult), 500)]
+        public IActionResult PutAttachment([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
@@ -106,15 +143,14 @@ namespace Api.Controllers
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
 
-            if (ModelState.IsValid)
-            {
-                var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model, file);
-                if (result.Success)
-                    return Ok(result);
-                return InternalServerError(result);
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return BadRequest(ModelState);
+            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserId(), file);
+
+            if (result.Success)
+                return Ok(result);
+            return InternalServerError(result);
         }
 
         // DELETE api/topics/:id/attachments

@@ -27,19 +27,49 @@ namespace Api.Managers
             return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
-        public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
+        public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model)
         {
-            Topic topic;
             try
             {
-                topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+                dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
                 return EntityResult.Error("Unknown Topic");
             }
 
-            string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
+            try
+            {
+                var attatchment = new TopicAttatchment(model)
+                {
+                    UserId = userId,
+                    TopicId = topicId,
+                    Type = "TODO"
+                };
+                
+                dbContext.TopicAttatchments.Add(attatchment);
+                dbContext.SaveChanges();
+
+                return EntityResult.Successfull(attatchment.Id);
+            }
+            catch (Exception e)
+            {
+                return EntityResult.Error(e.Message);
+            }
+        }
+        public EntityResult PutAttachment(int attachmentId, int userId, IFormFile file)
+        {
+            TopicAttatchment attachment;
+            try
+            {
+                attachment = dbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t=> t.TopicUsers).Single(t => t.Id == attachmentId);
+            }
+            catch (InvalidOperationException)
+            {
+                return EntityResult.Error("Unknown Attachment");
+            }
+
+            var topicFolder = Path.Combine(Constants.AttatchmentPath, attachment.TopicId.ToString());
             if (!System.IO.Directory.Exists(topicFolder))
                 System.IO.Directory.CreateDirectory(topicFolder);
 
@@ -50,18 +80,15 @@ namespace Api.Managers
             }
             try
             {
-                var attatchment = new TopicAttatchment(model);
-                attatchment.UserId = userId;
-                attatchment.TopicId = topicId;
-                attatchment.Path = file.FileName;
-                attatchment.Type = "TODO";
+                attachment.Path = file.FileName;
+                attachment.Type = "TODO";
 
-                dbContext.TopicAttatchments.Add(attatchment);
+                dbContext.Update(attachment);
                 dbContext.SaveChanges();
 
-                new NotificationProcessor(dbContext, topic, userId).OnAttachmetAdded(model.AttatchmentName);
+                new NotificationProcessor(dbContext, attachment.Topic, userId).OnAttachmetAdded(attachment.Name);
 
-                return EntityResult.Successfull(attatchment.Id);
+                return EntityResult.Successfull(attachment.Id);
             }
             catch (Exception e)
             {
