@@ -197,7 +197,7 @@ namespace Api.Controllers
 
                 var success = _userManager.UpdateProfilePicture(user, null);
                 // Delete Picture If Exists
-                var fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
+                var fileName = Path.Combine(Constants.ProfilePicturePath, user.ProfilePicture);
 
                 DeleteFile(fileName);
 
@@ -211,7 +211,7 @@ namespace Api.Controllers
             }
         }
 
-        private void DeleteFile(string path)
+        private static void DeleteFile(string path)
         {
             if (System.IO.File.Exists(path))
                 System.IO.File.Delete(path);
