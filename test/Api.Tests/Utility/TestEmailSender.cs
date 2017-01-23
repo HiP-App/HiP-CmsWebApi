@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using MailKit.Net.Smtp;
-using MimeKit;
-using System.IO;
+﻿using System.Threading.Tasks;
 using Api.Models.Entity;
-using Api.Utility;
 using System;
+using Api.Services;
 
 namespace Api.Tests.Utility
 {
