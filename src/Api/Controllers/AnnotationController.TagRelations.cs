@@ -6,7 +6,21 @@ namespace Api.Controllers
 {
     public partial class AnnotationController
     {
-        // Post api/Annotation/Tags/Instance/:firstId/Relation/:secondId
+
+        /// <summary>
+        /// Get all existing tag relations. Provide a maxDepth parameter for limiting the maximum depth of the returned tags in the tag tree.
+        /// </summary>
+        /// <param name="maxDepth" optional="true">The maximum depth of the returned tags. Set to 0 to get only the root tags' relations. Defaults to infinity.</param>
+        /// <response code="200">Returns a list of tag relations</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPost("Tags/Relations/{maxDepth}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult GetRelations([FromRoute] int maxDepth = int.MaxValue)
+        {
+            return BadRequest();
+        }
 
         /// <summary>
         /// Add Relation between the tag instance represented by {firstId} and {secondId}.
@@ -14,7 +28,7 @@ namespace Api.Controllers
         /// <param name="firstId">ID of the first tag instance of the relation</param>
         /// <param name="secondId">ID of the second tag instance of the relation</param>
         /// <param name="name" optional="true">Relation name</param>
-        /// <response code="200">relation added</response>
+        /// <response code="200">Relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
         /// <response code="400">Request was misformed</response>
         [HttpPost("Tags/Instance/{firstId}/Relation/{secondId}")]
@@ -43,7 +57,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="firstId">ID of the first tag instance of the relation</param>
         /// <param name="secondId">ID of the second tag instance of the relation</param>
-        /// <response code="200">relation removed</response>
+        /// <response code="200">Relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
         /// <response code="400">Request was misformed</response>
         [HttpDelete("Tags/{firstId}/Relation/{secondId}")]
