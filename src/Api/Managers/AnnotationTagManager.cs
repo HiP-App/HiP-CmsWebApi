@@ -17,7 +17,7 @@ namespace Api.Managers
         {
             return tag1 != null &&
                 tag2 != null &&
-                dbContext.TagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+                DbContext.TagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
         }
 
         #region GET
@@ -94,18 +94,18 @@ namespace Api.Managers
 
         internal bool AddTagRelation(int firstId, int secondId, string name)
         {
-            AnnotationTagInstance tag1 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == firstId);
-            AnnotationTagInstance tag2 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == secondId);
+            AnnotationTagInstance tag1 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == firstId);
+            AnnotationTagInstance tag2 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == secondId);
             if (TagRelationExists(tag1, tag2))
             {
                 return false;
             } else if (tag1 != null && tag2 != null)
             {
-                TagRelation forwardRelation = new TagRelation(tag1, tag2, name);
-                dbContext.TagRelations.Add(forwardRelation);
-                TagRelation backwardRelation = new TagRelation(tag2, tag1, name);
-                dbContext.TagRelations.Add(backwardRelation);
-                dbContext.SaveChanges();
+                var forwardRelation = new TagRelation(tag1, tag2, name);
+                DbContext.TagRelations.Add(forwardRelation);
+                var backwardRelation = new TagRelation(tag2, tag1, name);
+                DbContext.TagRelations.Add(backwardRelation);
+                DbContext.SaveChanges();
                 return true;
             } else
             {
@@ -115,10 +115,10 @@ namespace Api.Managers
 
         internal bool AddTagInstance(int tagModelId)
         {
-            AnnotationTag model = dbContext.AnnotationTags.Single(m => m.Id == tagModelId);
+            AnnotationTag model = DbContext.AnnotationTags.Single(m => m.Id == tagModelId);
             AnnotationTagInstance instance = new AnnotationTagInstance(model);
-            dbContext.AnnotationTagInstances.Add(instance);
-            dbContext.SaveChanges();
+            DbContext.AnnotationTagInstances.Add(instance);
+            DbContext.SaveChanges();
             return true;
         }
 
@@ -196,13 +196,13 @@ namespace Api.Managers
 
         internal bool RemoveTagRelation(int firstId, int secondId)
         {
-            AnnotationTagInstance tag1 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == firstId);
-            AnnotationTagInstance tag2 = dbContext.AnnotationTagInstances.Single(tag => tag.Id == secondId);
+            var tag1 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == firstId);
+            var tag2 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == secondId);
             if (TagRelationExists(tag1, tag2))
             {
                 RemoveRelationFor(tag1, tag2);
                 RemoveRelationFor(tag2, tag1);
-                dbContext.SaveChanges();
+                DbContext.SaveChanges();
                 return true;
             }
             else
@@ -213,15 +213,15 @@ namespace Api.Managers
 
         private void RemoveRelationFor(AnnotationTagInstance tag1, AnnotationTagInstance tag2)
         {
-            TagRelation relation = dbContext.TagRelations.Single(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
-            dbContext.TagRelations.Remove(relation);
+            var relation = DbContext.TagRelations.Single(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+            DbContext.TagRelations.Remove(relation);
         }
 
         internal bool RemoveTagInstance(int tagInstanceid)
         {
-            AnnotationTagInstance instance = dbContext.AnnotationTagInstances.Single(i => i.Id == tagInstanceid);
-            dbContext.AnnotationTagInstances.Remove(instance);
-            dbContext.SaveChanges();
+            var instance = DbContext.AnnotationTagInstances.Single(i => i.Id == tagInstanceid);
+            DbContext.AnnotationTagInstances.Remove(instance);
+            DbContext.SaveChanges();
             return true;
         }
 
