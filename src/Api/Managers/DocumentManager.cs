@@ -20,10 +20,9 @@ namespace Api.Managers
 
         internal EntityResult UpdateDocument(int topicId, int userId, String htmlContent)
         {
-            Topic topic;
             try
             {
-                topic = dbContext.Topics.Include(t => t.Document).Single(t => t.Id == topicId);
+                dbContext.Topics.Include(t => t.Document).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {

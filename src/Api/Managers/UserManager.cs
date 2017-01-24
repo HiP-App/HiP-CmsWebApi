@@ -70,7 +70,7 @@ namespace Api.Managers
                 Role = Role.Student
             };
 
-            this.AddUser(user);
+            AddUser(user);
         }
 
         public virtual bool AddUser(User user)
@@ -88,21 +88,19 @@ namespace Api.Managers
             }
         }
         // Use dataobject
-        public virtual bool UpdateProfilePicture(User user, String fileName)
+        public virtual bool UpdateProfilePicture(User user, string fileName)
         {
-            if (user != null)
+            if (user == null)
+                return false;
+            try
             {
-                try
-                {
-                    user.ProfilePicture = fileName;
-                    dbContext.SaveChanges();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    Console.Error.Write(e);
-                    return false;
-                }
+                user.ProfilePicture = fileName;
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.Error.Write(e);
             }
             return false;
         }

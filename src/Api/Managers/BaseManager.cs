@@ -6,13 +6,13 @@ namespace Api.Managers
     {
         protected readonly CmsDbContext dbContext;
 
-        public BaseManager(CmsDbContext dbContext)
+        protected BaseManager(CmsDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
 
-        protected void DeleteFile(string path)
+        protected static void DeleteFile(string path)
         {
             if (System.IO.File.Exists(path))
                 System.IO.File.Delete(path);
