@@ -15,11 +15,25 @@ namespace Api.Controllers
         /// <param name="maxDepth" optional="true">The maximum depth of the returned tags. Set to 0 to get only the root tags' relations. Defaults to infinity.</param>
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
-        [HttpPost("Tags/Relations/{maxDepth}")]
+        [HttpGet("Tags/Relations/{maxDepth}")]
         [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelations([FromRoute] int maxDepth = int.MaxValue)
+        {
+            // TODO: Do we need pagination here?
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Get all existing tag relations for the tag represented by the given id.
+        /// </summary>
+        /// <param name="id">The Id of the tag that you want the relations for</param>
+        /// <response code="200">Returns a list of tag relations</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpGet("Tags/{id}/Relations")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult GetRelationsForId([FromRoute] int id)
         {
             return BadRequest();
         }

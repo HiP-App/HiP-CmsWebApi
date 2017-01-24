@@ -53,7 +53,7 @@ namespace Api.Tests.ControllerTests
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .WithDbContext(dbContext => dbContext.WithSet<TagRelation>(o => o.Add(_relation12)))
+                .WithDbContext(dbContext => dbContext.WithSet<TagRelation>(db => db.Add(_relation12)))
                 .Calling(c => c.GetRelations(0))
                 .ShouldReturn()
                 .Ok()
@@ -77,6 +77,91 @@ namespace Api.Tests.ControllerTests
 
         #endregion
 
+        #region GetRelationsForId
+
+        /// <summary>
+        /// Should return code 200 and an empty list of tag relations if called for an existing tag that has no relations
+        /// </summary>
+        [Test]
+        public void GetRelationsForIdWithNoExistingRelationsTest()
+        {
+            // ReSharper disable once CollectionNeverUpdated.Local
+            var expected = new List<TagRelation>();
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                )
+                .Calling(c => c.GetRelationsForId(_tag1.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<TagRelation>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return code 200 and a list of all tag relations if called properly for an existing tag with relations
+        /// </summary>
+        [Test]
+        public void GetRelationsForIdWithOneExistingRelationTest()
+        {
+            var expected = new List<TagRelation>() { _relation12 };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                )
+                .Calling(c => c.GetRelationsForId(_tag1.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<TagRelation>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Relations are uni-directional i.e. tag2 (the tag with the INCOMING relation, but no outgoing relations) should have no relations
+        /// </summary>
+        [Test]
+        public void GetRelationsForIdUniDirectionalTest()
+        {
+            // ReSharper disable once CollectionNeverUpdated.Local
+            var expected = new List<TagRelation>();
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                )
+                .Calling(c => c.GetRelationsForId(_tag2.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<TagRelation>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return 400 for negative maxDepth values
+        /// </summary>
+        [Test]
+        public void GetRelationsForIdTest400()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .Calling(c => c.GetRelationsForId(1))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        #endregion
+
         #region PostTagRelation
 
         /// <summary>
@@ -89,8 +174,8 @@ namespace Api.Tests.ControllerTests
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(o => o.Add(_admin))
-                    .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
                 .Calling(c => c.PostTagRelation(_tag1.Id, _tag2.Id, "myrelation"))
                 .ShouldReturn()
@@ -106,7 +191,7 @@ namespace Api.Tests.ControllerTests
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.Add(_admin)))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_admin)))
                 // --> tags 1 and 2 were NOT added to the database
                 .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
                 .ShouldReturn()
@@ -122,7 +207,7 @@ namespace Api.Tests.ControllerTests
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.Add(_student)))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
                 .ShouldReturn()
                 .Forbid();
@@ -143,9 +228,9 @@ namespace Api.Tests.ControllerTests
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(o => o.Add(_admin))
-                    .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
-                    .WithSet<TagRelation>(o => o.Add(_relation12))
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
                 )
                 .Calling(c => c.DeleteTagRelation(_relation12.FirstTagId, _relation12.SecondTagId))
                 .ShouldReturn()
@@ -162,8 +247,8 @@ namespace Api.Tests.ControllerTests
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(o => o.Add(_admin))
-                    .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
                 // --> no TagRelation objects were added to the database
                 .Calling(c => c.DeleteTagRelation(1, 2))
@@ -180,7 +265,7 @@ namespace Api.Tests.ControllerTests
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.Add(_student)))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.DeleteTagRelation(1, 2))
                 .ShouldReturn()
                 .Forbid();
