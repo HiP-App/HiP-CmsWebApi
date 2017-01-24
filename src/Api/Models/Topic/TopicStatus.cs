@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models
@@ -19,10 +20,10 @@ namespace Api.Models
 
         public static bool IsStatusValid(string status)
         {
-            return status.CompareTo(Todo) == 0 ||
-                status.CompareTo(InProgress) == 0 ||
-                status.CompareTo(InReview) == 0 ||
-                status.CompareTo(Done) == 0;
+            return string.Compare(status, Todo, StringComparison.Ordinal) == 0 ||
+                string.Compare(status, InProgress, StringComparison.Ordinal) == 0 ||
+                string.Compare(status, InReview, StringComparison.Ordinal) == 0 ||
+                string.Compare(status, Done, StringComparison.Ordinal) == 0;
         }
     }
 }

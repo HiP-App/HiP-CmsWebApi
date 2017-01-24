@@ -1,10 +1,7 @@
-﻿using Api.Models.Notifications;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models.Entity
 {
@@ -28,11 +25,11 @@ namespace Api.Models.Entity
 
         public TagRelation(AnnotationTagInstance firstTag, AnnotationTagInstance secondTag, string name = "")
         {
-            this.FirstTag = firstTag;
-            this.FirstTagId = firstTag.Id;
-            this.SecondTag = secondTag;
-            this.SecondTagId = secondTag.Id;
-            this.Name = name;
+            FirstTag = firstTag;
+            FirstTagId = firstTag.Id;
+            SecondTag = secondTag;
+            SecondTagId = secondTag.Id;
+            Name = name;
         }
 
         public TagRelation() { }

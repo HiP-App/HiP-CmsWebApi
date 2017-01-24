@@ -1,8 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
-using Api.Managers;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Api.Models.Entity
@@ -23,8 +21,8 @@ namespace Api.Models.Entity
 
         public AnnotationTagInstance(AnnotationTag model)
         {
-            this.TagModel = model;
-            this.TagModelId = model.Id;
+            TagModel = model;
+            TagModelId = model.Id;
         }
 
         public class AnnotationTagInstanceMap
