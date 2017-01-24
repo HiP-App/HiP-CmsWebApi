@@ -92,7 +92,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(o => o.Add(_admin))
                     .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
                 )
-                .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .Calling(c => c.PostTagRelation(_tag1.Id, _tag2.Id, "myrelation"))
                 .ShouldReturn()
                 .Ok();
         }
@@ -133,6 +133,58 @@ namespace Api.Tests.ControllerTests
         #region DeleteTagRelation
 
 
+        /// <summary>
+        /// Should return code 200 if called for an existing TagRelation
+        /// </summary>
+        [Test]
+        public void DeleteTagRelationTest()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(o => o.Add(_admin))
+                    .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
+                    .WithSet<TagRelation>(o => o.Add(_relation12))
+                )
+                .Calling(c => c.DeleteTagRelation(_relation12.FirstTagId, _relation12.SecondTagId))
+                .ShouldReturn()
+                .Ok();
+        }
+
+        /// <summary>
+        /// Should return 400 for relations that do not exist
+        /// </summary>
+        [Test]
+        public void DeleteTagRelationTest400()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(o => o.Add(_admin))
+                    .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
+                )
+                // --> no TagRelation objects were added to the database
+                .Calling(c => c.DeleteTagRelation(1, 2))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        /// <summary>
+        /// Should return 403 for users with the student role
+        /// </summary>
+        [Test]
+        public void DeleteTagRelationTest403()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.Add(_student)))
+                .Calling(c => c.DeleteTagRelation(1, 2))
+                .ShouldReturn()
+                .Forbid();
+        }
 
         #endregion
     }
