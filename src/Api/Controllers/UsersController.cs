@@ -6,27 +6,23 @@ using Api.Data;
 using Api.Models;
 using Api.Models.User;
 using Api.Permission;
-using System;
 using Api.Services;
+using System;
 
 namespace Api.Controllers
 {
     public partial class UsersController : ApiController
     {
         private readonly UserManager _userManager;
-        private readonly IEmailSender _emailSender;
         private readonly UserPermissions _userPermissions;
 
-        public UsersController(CmsDbContext dbContext, IEmailSender emailSender, ILoggerFactory logger) : base(dbContext, logger)
+        public UsersController(CmsDbContext dbContext, ILoggerFactory logger) : base(dbContext, logger)
         {
             _userManager = new UserManager(dbContext);
             _userPermissions = new UserPermissions(dbContext);
-            _emailSender = emailSender;
         }
 
         #region invite
-
-        // POST api/users/invite
 
         /// <summary>
         /// Add new users and send invitation to the added users for registration
@@ -39,12 +35,13 @@ namespace Api.Controllers
         /// <response code="503">Service unavailable</response>        
         /// <response code="401">User is denied</response>
         [HttpPost("Invite")]
-        [ProducesResponseType(typeof(void), 202)]
+        [ProducesResponseType(typeof(UserManager.InvitationResult), 202)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 401)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 409)]
+        [ProducesResponseType(typeof(UserManager.InvitationResult), 409)]
         [ProducesResponseType(typeof(void), 503)]
-        public IActionResult Post([FromBody]InviteFormModel model)
+        public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
             if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
                 return Forbidden();
@@ -52,30 +49,14 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var failCount = 0;
-            foreach (var email in model.emails)
-            {
-                try
-                {
-                    _userManager.AddUserbyEmail(email);
-                    _emailSender.InviteAsync(email);
-                }
-                //user already exists in Database
-                catch (Microsoft.EntityFrameworkCore.DbUpdateException)
-                {
-                    failCount++;
-                }
-                //something went wrong when sending email
-                catch (MailKit.Net.Smtp.SmtpCommandException smtpError)
-                {
-                    Logger.LogDebug(smtpError.ToString());
-                    return ServiceUnavailable();
-                }
-            }
-            if (failCount == model.emails.Length)
-                return Conflict();
+            var result = _userManager.InviteUsers(model.emails, emailSender);
+            if (result.FailedInvitations.Count == model.emails.Length)
+                return BadRequest(result);
 
-            return Accepted();
+            if (result.ExistingUsers.Count == model.emails.Length)
+                return StatusCode(409, result);
+
+            return Accepted(result);
         }
 
         #endregion
@@ -201,12 +182,11 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    if (_userManager.UpdateUser(id, model))
-                    {
-                        Logger.LogInformation(5, "User with ID: " + id + " updated.");
-                        return Ok();
-                    }
-                    return NotFound();
+                    if (!_userManager.UpdateUser(id, model))
+                        return NotFound();
+
+                    Logger.LogInformation(5, "User with ID: " + id + " updated.");
+                    return Ok();
                 }
             }
 

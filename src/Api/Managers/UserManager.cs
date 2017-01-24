@@ -5,6 +5,7 @@ using Api.Models;
 using System;
 using Api.Models.Entity;
 using Api.Models.User;
+using Api.Services;
 
 namespace Api.Managers
 {
@@ -17,7 +18,7 @@ namespace Api.Managers
             var qry = dbContext.Users.Select(u => u);
 
             if (!string.IsNullOrEmpty(query))
-                qry = qry.Where(u =>  u.Email.Contains(query) ||  u.FirstName.Contains(query) || u.LastName.Contains(query));
+                qry = qry.Where(u => u.Email.Contains(query) || u.FirstName.Contains(query) || u.LastName.Contains(query));
 
             if (!string.IsNullOrEmpty(role))
                 qry = qry.Where(u => u.Role == role);
@@ -62,7 +63,7 @@ namespace Api.Managers
             return false;
         }
 
-        internal void AddUserbyEmail(string email)
+        private void AddUserbyEmail(string email)
         {
             var user = new User
             {
@@ -73,13 +74,12 @@ namespace Api.Managers
             AddUser(user);
         }
 
-        public virtual bool AddUser(User user)
+        public bool AddUser(User user)
         {
             try
             {
                 dbContext.Add(user);
                 dbContext.SaveChanges();
-
                 return true;
             }
             catch (Exception)
@@ -87,23 +87,83 @@ namespace Api.Managers
                 return false;
             }
         }
+
         // Use dataobject
-        public virtual bool UpdateProfilePicture(User user, string fileName)
+        public virtual bool UpdateProfilePicture(User user, String fileName)
         {
-            if (user == null)
-                return false;
-            try
+            if (user != null)
             {
-                user.ProfilePicture = fileName;
-                dbContext.SaveChanges();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.Error.Write(e);
+                try
+                {
+                    user.ProfilePicture = fileName;
+                    dbContext.SaveChanges();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.Error.Write(e);
+                    return false;
+                }
             }
             return false;
         }
 
+        /// <summary>
+        /// Checks whether the given email is already used for any user in the database.
+        /// </summary>
+        /// <param name="email">The email to search for</param>
+        /// <returns>true if the email is already used</returns>
+        private bool IsExistingEmail(string email)
+        {
+            return dbContext.Users.Any(u => u.Email == email);
+        }
+
+        public struct InvitationResult
+        {
+            public List<string> FailedInvitations;
+            public List<string> ExistingUsers;
+        }
+
+        /// <summary>
+        /// Invite the users identified by the given email addresses.
+        /// This also creates users in the database.
+        /// Existing users and failed invitation attempts are added to
+        /// separate lists and returned in a tuple.
+        /// </summary>
+        /// <param name="emails">A string array of email addresses</param>
+        /// <param name="emailSender">Email Service</param>
+        /// <returns>Tuple containing (1) the failed invitations and (2) existing users lists.</returns>
+        public InvitationResult InviteUsers(IEnumerable<string> emails, IEmailSender emailSender)
+        {
+            List<String> failedInvitations = new List<string>();
+            List<String> existingUsers = new List<string>();
+            foreach (var email in emails)
+            {
+                try
+                {
+                    if (IsExistingEmail(email))
+                    {
+                        existingUsers.Add(email);
+                    }
+                    else
+                    {
+                        AddUserbyEmail(email);
+                        emailSender.InviteAsync(email);
+                    }
+                }
+
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                {
+                    //user already exists in Database
+                    existingUsers.Add(email);
+                }
+                catch (MailKit.Net.Smtp.SmtpCommandException)
+                {
+                    //something went wrong when sending email
+                    failedInvitations.Add(email);
+                }
+            }
+            return new InvitationResult() { FailedInvitations = failedInvitations, ExistingUsers = existingUsers };
+        }
     }
 }
