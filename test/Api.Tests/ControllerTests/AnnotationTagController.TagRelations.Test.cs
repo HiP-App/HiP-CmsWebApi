@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Controllers;
+using Api.Managers;
 using Api.Models;
 using Api.Models.Entity;
 using MyTested.AspNetCore.Mvc;
@@ -13,6 +14,32 @@ namespace Api.Tests.ControllerTests
     [TestFixture]
     public class AnnotationTagRelationsControllerTest
     {
+        private User _admin;
+        private User _student;
+        private AnnotationTag _tag1;
+        private TagRelation _relation12;
+        private AnnotationTag _tag2;
+
+        [SetUp]
+        public void BeforeTest()
+        {
+            // create some User, Tag and TagRelation objects for mocking the database
+            _admin = new User
+            {
+                Id = 1,
+                Email = "admin@hipapp.de",
+                Role = "Administrator"
+            };
+            _student = new User
+            {
+                Id = 2,
+                Email = "student@hipapp.de",
+                Role = "Student"
+            };
+            _tag1 = new AnnotationTag() { Id = 1 };
+            _tag2 = new AnnotationTag() { Id = 2 };
+            _relation12 = new TagRelation(); // TODO: Pass tag1 and tag2 as parameters as soon as the TagRelation object is fixed
+        }
 
         #region GetRelations
 
@@ -22,11 +49,11 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void GetRelationsTest()
         {
-            var relation = new TagRelation(); // TODO: Create a meaningful relation here and pass it into the mocked database
-            var expected = new List<TagRelation>() { relation };
+            var expected = new List<TagRelation>() { _relation12 };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext.WithSet<TagRelation>(o => o.Add(_relation12)))
                 .Calling(c => c.GetRelations(0))
                 .ShouldReturn()
                 .Ok()
@@ -47,6 +74,65 @@ namespace Api.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+
+        #endregion
+
+        #region PostTagRelation
+
+        /// <summary>
+        /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
+        /// </summary>
+        [Test]
+        public void PostTagRelationTest()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(o => o.Add(_admin))
+                    .WithSet<AnnotationTag>(o => o.AddRange(_tag1, _tag2))
+                )
+                .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .ShouldReturn()
+                .Ok();
+        }
+
+        /// <summary>
+        /// Should return 400 for tags that do not exist
+        /// </summary>
+        [Test]
+        public void PostTagRelationTest400()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.Add(_admin)))
+                // --> tags 1 and 2 were NOT added to the database
+                .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        /// <summary>
+        /// Should return 403 for users with the student role
+        /// </summary>
+        [Test]
+        public void PostTagRelationTest403()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.Add(_student)))
+                .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .ShouldReturn()
+                .Forbid();
+        }
+
+        #endregion
+
+        #region DeleteTagRelation
+
+
 
         #endregion
     }
