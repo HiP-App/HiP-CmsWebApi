@@ -6,7 +6,7 @@
         public const string Time = "Zeit";
         public const string Perspective = "Perspective";
 
-        public bool isValidLayer(string layer)
+        public bool IsValidLayer(string layer)
         {
             return Place.Equals(layer) || Time.Equals(layer) || Perspective.Equals(layer);
         }

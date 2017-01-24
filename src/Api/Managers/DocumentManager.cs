@@ -13,16 +13,16 @@ namespace Api.Managers
 
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual Document GetDocumentById(int topicId)
+        public Document GetDocumentById(int topicId)
         {
-            return dbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
+            return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
         }
 
         internal EntityResult UpdateDocument(int topicId, int userId, String htmlContent)
         {
             try
             {
-                dbContext.Topics.Include(t => t.Document).Single(t => t.Id == topicId);
+                DbContext.Topics.Include(t => t.Document).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
@@ -34,7 +34,7 @@ namespace Api.Managers
             {
                 var document = GetDocumentById(topicId);
                 // Yes -> delete Old at first
-                dbContext.Remove(document);
+                DbContext.Remove(document);
             }
             catch (InvalidOperationException)
             {
@@ -44,8 +44,8 @@ namespace Api.Managers
             {
                 Document document = new Document(topicId, userId, htmlContent);
 
-                dbContext.Add(document);
-                dbContext.SaveChanges();
+                DbContext.Add(document);
+                DbContext.SaveChanges();
 
                 return EntityResult.Successfull();
             }
@@ -61,8 +61,8 @@ namespace Api.Managers
             try
             {
                 var document = GetDocumentById(topicId);
-                dbContext.Remove(document);
-                dbContext.SaveChanges();
+                DbContext.Remove(document);
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)

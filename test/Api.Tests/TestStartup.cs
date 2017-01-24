@@ -51,7 +51,6 @@ namespace Api.Tests
                 .UseKestrel()
                 .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
                 .UseStartup<TestStartup>()
                 .Build();
 

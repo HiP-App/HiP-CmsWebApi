@@ -27,7 +27,8 @@ namespace Api.Controllers
         /// <summary>
         /// Add new users and send invitation to the added users for registration
         /// </summary>        
-        /// <param name="model">Contains a list of emails</param>                         
+        /// <param name="model">Contains a list of emails</param>
+        /// <param name="emailSender">EmailSender Service</param>
         /// <response code="202">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to invite new users</response>        

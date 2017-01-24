@@ -8,12 +8,12 @@ namespace Api.Permission
 {
     public class TopicPermissions : BaseManager
     {
-        private UserManager userManager;
+        private readonly UserManager _userManager;
 
 
         public TopicPermissions(CmsDbContext dbContext) : base(dbContext)
         {
-            this.userManager = new UserManager(dbContext);
+            _userManager = new UserManager(dbContext);
         }
 
 
@@ -21,14 +21,14 @@ namespace Api.Permission
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
-                if (dbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
+                if (DbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
                     return true;
                 // Supervisor?
-                if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Supervisor)))
+                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Supervisor)))
                     return true;
             }
             catch (InvalidOperationException) { }
@@ -39,14 +39,14 @@ namespace Api.Permission
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
-                if (dbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
+                if (DbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
                     return true;
                 // Is associated
-                if (dbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId)))
+                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId)))
                     return true;
             }
             catch (InvalidOperationException) { }
@@ -57,7 +57,7 @@ namespace Api.Permission
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)

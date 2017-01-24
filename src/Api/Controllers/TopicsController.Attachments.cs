@@ -17,7 +17,7 @@ namespace Api.Controllers
 
         private void TopicsAttachmentsController()
         {
-            _attachmentsManager = new AttachmentsManager(dbContext);
+            _attachmentsManager = new AttachmentsManager(DbContext);
         }
 
         #region Attachments

@@ -15,7 +15,7 @@ namespace Api.Managers
 
         public virtual IEnumerable<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
         {
-            var qry = dbContext.Users.Select(u => u);
+            var qry = DbContext.Users.Select(u => u);
 
             if (!string.IsNullOrEmpty(query))
                 qry = qry.Where(u => u.Email.Contains(query) || u.FirstName.Contains(query) || u.LastName.Contains(query));
@@ -30,19 +30,19 @@ namespace Api.Managers
 
         public virtual int GetUsersCount()
         {
-            return dbContext.Users.Count();
+            return DbContext.Users.Count();
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserById(int userId)
         {
-            return dbContext.Users.Single(u => u.Id == userId);
+            return DbContext.Users.Single(u => u.Id == userId);
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserByEmail(string email)
         {
-            return dbContext.Users.Single(u => u.Email == email);
+            return DbContext.Users.Single(u => u.Email == email);
         }
 
         public virtual bool UpdateUser(int userId, UserFormModel model)
@@ -57,7 +57,7 @@ namespace Api.Managers
                 if (model is AdminUserFormModel)
                     user.Role = ((AdminUserFormModel)model).Role;
 
-                dbContext.SaveChanges();
+                DbContext.SaveChanges();
                 return true;
             }
             return false;
@@ -78,8 +78,8 @@ namespace Api.Managers
         {
             try
             {
-                dbContext.Add(user);
-                dbContext.SaveChanges();
+                DbContext.Add(user);
+                DbContext.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -96,7 +96,7 @@ namespace Api.Managers
                 try
                 {
                     user.ProfilePicture = fileName;
-                    dbContext.SaveChanges();
+                    DbContext.SaveChanges();
                     return true;
                 }
                 catch (Exception e)
@@ -115,7 +115,7 @@ namespace Api.Managers
         /// <returns>true if the email is already used</returns>
         private bool IsExistingEmail(string email)
         {
-            return dbContext.Users.Any(u => u.Email == email);
+            return DbContext.Users.Any(u => u.Email == email);
         }
 
         public struct InvitationResult

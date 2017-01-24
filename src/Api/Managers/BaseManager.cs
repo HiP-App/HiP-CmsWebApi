@@ -4,11 +4,11 @@ namespace Api.Managers
 {
     public class BaseManager
     {
-        protected readonly CmsDbContext dbContext;
+        protected readonly CmsDbContext DbContext;
 
         protected BaseManager(CmsDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            DbContext = dbContext;
         }
 
 

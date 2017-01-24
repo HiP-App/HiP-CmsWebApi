@@ -17,21 +17,21 @@ namespace Api.Managers
         public AttachmentsManager(CmsDbContext dbContext) : base(dbContext) { }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual TopicAttatchment GetAttachmentById(int attachmentId)
+        public TopicAttatchment GetAttachmentById(int attachmentId)
         {
-            return dbContext.TopicAttatchments.Single(ta => (ta.Id == attachmentId));
+            return DbContext.TopicAttatchments.Single(ta => (ta.Id == attachmentId));
         }
 
-        public virtual IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
+        public IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
+            return DbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
         public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model)
         {
             try
             {
-                dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+                DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
@@ -47,8 +47,8 @@ namespace Api.Managers
                     Type = "TODO"
                 };
 
-                dbContext.TopicAttatchments.Add(attatchment);
-                dbContext.SaveChanges();
+                DbContext.TopicAttatchments.Add(attatchment);
+                DbContext.SaveChanges();
 
                 return EntityResult.Successfull(attatchment.Id);
             }
@@ -62,7 +62,7 @@ namespace Api.Managers
             TopicAttatchment attachment;
             try
             {
-                attachment = dbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t => t.TopicUsers).Single(t => t.Id == attachmentId);
+                attachment = DbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t => t.TopicUsers).Single(t => t.Id == attachmentId);
             }
             catch (InvalidOperationException)
             {
@@ -83,10 +83,10 @@ namespace Api.Managers
                 attachment.Path = file.FileName;
                 attachment.Type = "TODO";
 
-                dbContext.Update(attachment);
-                dbContext.SaveChanges();
+                DbContext.Update(attachment);
+                DbContext.SaveChanges();
 
-                new NotificationProcessor(dbContext, attachment.Topic, userId).OnAttachmetAdded(attachment.Name);
+                new NotificationProcessor(DbContext, attachment.Topic, userId).OnAttachmetAdded(attachment.Name);
 
                 return EntityResult.Successfull(attachment.Id);
             }
@@ -107,8 +107,8 @@ namespace Api.Managers
                     var fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
                     DeleteFile(fileName);
                 }
-                dbContext.Remove(attachment);
-                dbContext.SaveChanges();
+                DbContext.Remove(attachment);
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)
@@ -121,14 +121,14 @@ namespace Api.Managers
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         private Legal GetLegalById(int attachmentId)
         {
-            return dbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
+            return DbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
         }
 
         internal EntityResult CreateLegal(int topicId, int attachmentId, int userId, LegalFormModel legalModel)
         {
             try
             {
-                dbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
+                DbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
             }
             catch (InvalidOperationException)
             {
@@ -139,8 +139,8 @@ namespace Api.Managers
             {
                 Legal legal = new Legal(attachmentId, legalModel);
 
-                dbContext.Add(legal);
-                dbContext.SaveChanges();
+                DbContext.Add(legal);
+                DbContext.SaveChanges();
 
                 return EntityResult.Successfull();
             }
@@ -155,8 +155,8 @@ namespace Api.Managers
             try
             {
                 var legal = GetLegalById(attachmentId);
-                dbContext.Remove(legal);
-                dbContext.SaveChanges();
+                DbContext.Remove(legal);
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)

@@ -6,16 +6,17 @@ using Api.Models;
 using Api.Models.Notifications;
 using System.Linq;
 using Api.Services;
+// ReSharper disable InconsistentNaming
 
 namespace Api.Managers
 {
     public class NotificationProcessor : BaseManager
     {
 
-        private List<int> notifiedUsers = new List<int>();
-        private Topic topic;
-        private int currentUser;
-        private EmailSender emailSender;
+        private readonly List<int> notifiedUsers = new List<int>();
+        private readonly Topic topic;
+        private readonly int currentUser;
+        private readonly EmailSender emailSender;
 
         public NotificationProcessor(
             CmsDbContext dbContext,
@@ -23,9 +24,9 @@ namespace Api.Managers
             int currentUser
         ) : base(dbContext)
         {
-            this.topic = currentTopic;
+            topic = currentTopic;
             this.currentUser = currentUser;
-            this.emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(EmailSender)); // TODO: This is probably not such a good idea...
+            emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(EmailSender)); // TODO: This is probably not such a good idea...
             // Do not notify yourself
             notifiedUsers.Add(currentUser);
         }
@@ -96,18 +97,12 @@ namespace Api.Managers
 
         #region createNotification
 
-        private void createNotification(int userId, NotificationType type, string data = null)
-        {
-            TopicUser user = dbContext.TopicUsers.Where(u => u.UserId == userId).First();
-            createNotification(user, type, data);
-        }
-
         private void createNotification(TopicUser topicUser, NotificationType type, string data = null)
         {
-            int userId = topicUser.UserId;
+            var userId = topicUser.UserId;
             if (!notifiedUsers.Contains(userId))
             {
-                Notification not = createAppNotification(type, data, userId);
+                var not = createAppNotification(type, data, userId);
                 createMailNotification(topicUser, type, userId, not);
             }
         }
@@ -121,25 +116,23 @@ namespace Api.Managers
                 not.Data = data;
 
             notifiedUsers.Add(userId);
-            dbContext.Notifications.Add(not);
+            DbContext.Notifications.Add(not);
             return not;
         }
 
         private void createMailNotification(TopicUser topicUser, NotificationType type, int userId, Notification not)
         {
-            string email = fetchUserEmail(topicUser);
-            bool subscribed = isSubsccribed(type, userId);
+            var email = fetchUserEmail(topicUser);
+            var subscribed = isSubsccribed(type, userId);
             if (email != null && subscribed)
-                this.emailSender.NotifyAsync(email, not);
+                emailSender.NotifyAsync(email, not);
         }
 
         private string fetchUserEmail(TopicUser topicUser)
         {
             try
             {
-                User user = dbContext.Users.Where(
-                        candidate => candidate.Id == topicUser.UserId
-                    ).First();
+                var user = DbContext.Users.First(candidate => candidate.Id == topicUser.UserId);
                 return user.Email;
             }
             catch (InvalidOperationException)
@@ -150,16 +143,14 @@ namespace Api.Managers
 
         private bool isSubsccribed(NotificationType type, int userId)
         {
-            return dbContext.Subscriptions.Where(
-                            subscription => subscription.Subscriber.Id == userId && subscription.Type == type
-                        ).Count() > 0;
+            return DbContext.Subscriptions.Any(subscription => subscription.Subscriber.Id == userId && subscription.Type == type);
         }
 
         #endregion
 
         private void finnish()
         {
-            dbContext.SaveChanges();
+            DbContext.SaveChanges();
         }
     }
 }

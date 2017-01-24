@@ -12,7 +12,7 @@ namespace Api.Controllers
 
         private void TopicsDocumentController()
         {
-            _documentManager = new DocumentManager(dbContext);
+            _documentManager = new DocumentManager(DbContext);
         }
 
         /// <summary>

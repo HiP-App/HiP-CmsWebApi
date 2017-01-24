@@ -16,16 +16,16 @@ namespace Api.Controllers
     [ProducesResponseType(typeof(void), 401)]
     public class ApiController : Controller
     {
-        protected readonly CmsDbContext dbContext;
+        protected readonly CmsDbContext DbContext;
         protected readonly ILogger Logger;
 
         public ApiController(CmsDbContext dbContext, ILoggerFactory loggerFactory)
         {
-            this.dbContext = dbContext;
+            DbContext = dbContext;
             Logger = loggerFactory.CreateLogger<ApiController>();
         }
 
-        protected static String ToBase64String(string source)
+        protected static string ToBase64String(string source)
         {
             return Convert.ToBase64String(System.IO.File.ReadAllBytes(source));
         }
