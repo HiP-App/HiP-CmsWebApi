@@ -25,6 +25,10 @@ namespace Api.Models.Entity
             TagModelId = model.Id;
         }
 
+        public AnnotationTagInstance()
+        {
+        }
+
         public class AnnotationTagInstanceMap
         {
             public AnnotationTagInstanceMap(EntityTypeBuilder<AnnotationTagInstance> entityBuilder)
