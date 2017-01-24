@@ -160,18 +160,18 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation(int firstId, int secondId, string name = "")
+        public IActionResult PostTagRelation([FromRoute] int firstId, [FromRoute] int secondId, [FromQuery] string name = "")
         {
-            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
             try
             {
-                bool success = tagManager.AddTagRelation(firstId, secondId, name);
+                bool success = _tagManager.AddTagRelation(firstId, secondId, name);
                 if (success) return Ok();
                 else return BadRequest("Tag relation already exists");
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 return BadRequest();
             }
@@ -272,17 +272,17 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagRelation(int firstId, int secondId)
+        public IActionResult DeleteTagRelation([FromRoute] int firstId, [FromRoute] int secondId)
         {
-            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
             try
             {
-                bool success = tagManager.RemoveTagRelation(firstId, secondId);
+                bool success = _tagManager.RemoveTagRelation(firstId, secondId);
                 if (success) return Ok();
                 else return BadRequest("Tag relation not found");
-            } catch (InvalidOperationException ex)
+            } catch (InvalidOperationException)
             {
                 return BadRequest();
             }
