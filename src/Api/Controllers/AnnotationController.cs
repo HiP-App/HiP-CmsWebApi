@@ -11,7 +11,7 @@ using System;
 
 namespace Api.Controllers
 {
-    public class AnnotationController : ApiController
+    public partial class AnnotationController : ApiController
     {
         private readonly AnnotationTagManager _tagManager;
         private readonly AnnotationPermissions _annotationPermissions;
@@ -145,38 +145,6 @@ namespace Api.Controllers
             return BadRequest();
         }
 
-        // Post api/Annotation/Tags/Instance/:firstId/Relation/:secondId
-
-        /// <summary>
-        /// Add Relation between the tag instance represented by {firstId} and {secondId}.
-        /// </summary>
-        /// <param name="firstId">ID of the first tag instance of the relation</param>
-        /// <param name="secondId">ID of the second tag instance of the relation</param>
-        /// <param name="name" optional="true">Relation name</param>
-        /// <response code="200">relation added</response>
-        /// <response code="403">User not allowed to add a relation</response>
-        /// <response code="400">Request was misformed</response>
-        [HttpPost("Tags/Instance/{firstId}/Relation/{secondId}")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation([FromRoute] int firstId, [FromRoute] int secondId, [FromQuery] string name = "")
-        {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
-                return Forbid();
-
-            try
-            {
-                bool success = _tagManager.AddTagRelation(firstId, secondId, name);
-                if (success) return Ok();
-                else return BadRequest("Tag relation already exists");
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest();
-            }
-        }
-
         #endregion
 
         #region PUT
@@ -258,34 +226,6 @@ namespace Api.Controllers
             if (success)
                 return Ok();
             return NotFound();
-        }
-
-        /// <summary>
-        /// Remove relation between the tag instances represented by {firstId} and {secondId}
-        /// </summary>
-        /// <param name="firstId">ID of the first tag instance of the relation</param>
-        /// <param name="secondId">ID of the second tag instance of the relation</param>
-        /// <response code="200">relation removed</response>
-        /// <response code="403">User not allowed to remove a relation</response>
-        /// <response code="400">Request was misformed</response>
-        [HttpDelete("Tags/{firstId}/Relation/{secondId}")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagRelation([FromRoute] int firstId, [FromRoute] int secondId)
-        {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
-                return Forbid();
-
-            try
-            {
-                bool success = _tagManager.RemoveTagRelation(firstId, secondId);
-                if (success) return Ok();
-                else return BadRequest("Tag relation not found");
-            } catch (InvalidOperationException)
-            {
-                return BadRequest();
-            }
         }
 
         #endregion
