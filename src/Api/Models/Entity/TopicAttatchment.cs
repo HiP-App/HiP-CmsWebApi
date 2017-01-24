@@ -10,8 +10,8 @@ namespace Api.Models.Entity
     {
         public TopicAttatchment(AttatchmentFormModel model)
         {
-            this.Name = model.AttatchmentName;
-            this.Description = model.Description;
+            Name = model.AttatchmentName;
+            Description = model.Description;
         }
 
         [Key]

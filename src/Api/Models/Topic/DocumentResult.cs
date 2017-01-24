@@ -9,10 +9,10 @@ namespace Api.Models.Topic
 
         public DocumentResult(Document document)
         {
-            this.Content = document.Content;
-            this.TimeStamp = document.TimeStamp;
+            Content = document.Content;
+            TimeStamp = document.TimeStamp;
             if (document.Updater != null)
-                this.Updater = new UserResult(document.Updater);
+                Updater = new UserResult(document.Updater);
         }
 
         public DateTime TimeStamp { get; set; }

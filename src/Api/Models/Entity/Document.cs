@@ -28,9 +28,9 @@ namespace Api.Models.Entity
 
         public Document(int topicId, int userId, string htmlContent)
         {
-            this.TopicId = topicId;
-            this.UpdaterId = userId;
-            this.Content = htmlContent;
+            TopicId = topicId;
+            UpdaterId = userId;
+            Content = htmlContent;
         }
 
         // TODO tagRelations

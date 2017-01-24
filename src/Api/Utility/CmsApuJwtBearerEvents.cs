@@ -11,11 +11,11 @@ namespace Api.Utility
 {
     public class CmsApuJwtBearerEvents : JwtBearerEvents
     {
-        protected readonly UserManager userManager;
+        private readonly UserManager _userManager;
 
         public CmsApuJwtBearerEvents(CmsDbContext dbContext)
         {
-            this.userManager = new UserManager(dbContext);
+            _userManager = new UserManager(dbContext);
         }
 
         public override Task AuthenticationFailed(AuthenticationFailedContext context)
@@ -27,18 +27,20 @@ namespace Api.Utility
         {
             User user;
             var identity = context.Ticket.Principal.Identity as ClaimsIdentity;
+            if (identity == null)
+                return Task.FromException<ArgumentNullException>(new ArgumentNullException());
 
             // Just a Hack to avoid concurrency
             lock (this)
             {
                 try
                 {
-                    user = userManager.GetUserByEmail(identity.Name);
+                    user = _userManager.GetUserByEmail(identity.Name);
                 }
                 catch (InvalidOperationException)
                 {
                     user = new User { Email = identity.Name, Role = Role.Student };
-                    userManager.AddUser(user);
+                    _userManager.AddUser(user);
                 }
             }
 

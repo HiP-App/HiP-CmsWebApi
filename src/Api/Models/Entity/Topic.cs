@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
+// ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity
 {
@@ -48,7 +49,8 @@ namespace Api.Models.Entity
         {
             Title = model.Title;
             Status = model.Status;
-            Deadline = (DateTime)model.Deadline;
+            if (model.Deadline != null)
+                Deadline = (DateTime)model.Deadline;
             Description = model.Description;
             Requirements = model.Requirements;
 

@@ -15,7 +15,7 @@ namespace Api.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page)
+        public PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page)
         {
             IQueryable<Topic> query = DbContext.Topics.Include(t => t.CreatedBy);
             if (!string.IsNullOrEmpty(queryString))
@@ -24,7 +24,7 @@ namespace Api.Managers
             if (!string.IsNullOrEmpty(status))
                 query = query.Where(t => t.Status.Equals(status));
 
-            if (deadline != null && deadline.HasValue)
+            if (deadline != null)
                 query = query.Where(t => DateTime.Compare(t.Deadline, deadline.Value) == 0);
 
             // only parents without parent.
@@ -40,7 +40,7 @@ namespace Api.Managers
             return new PagedResult<TopicResult>(topics, page, count);
         }
 
-        public virtual PagedResult<TopicResult> GetTopicsForUser(int userId, int page)
+        public PagedResult<TopicResult> GetTopicsForUser(int userId, int page)
         {
             var relatedTopicIds = DbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
@@ -54,23 +54,18 @@ namespace Api.Managers
             return new PagedResult<TopicResult>(topics, page, count);
         }
 
-        public virtual int GetTopicsCount()
-        {
-            return DbContext.Topics.Count();
-        }
-
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual Topic GetTopicById(int topicId)
+        public Topic GetTopicById(int topicId)
         {
             return DbContext.Topics.Include(t => t.CreatedBy).Single(t => t.Id == topicId);
         }
 
-        public virtual IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
+        public IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
         {
             return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
         }
 
-        public virtual bool ChangeAssociatedUsersByRole(int updaterId, int topicId, string role, int[] userIds)
+        public bool ChangeAssociatedUsersByRole(int updaterId, int topicId, string role, int[] userIds)
         {
 
             Topic topic;
@@ -91,17 +86,13 @@ namespace Api.Managers
             if (userIds != null)
             {
                 // new user?
-                foreach (int userId in userIds)
+                foreach (var userId in userIds)
                 {
                     if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
                         newUsers.Add(new TopicUser() { UserId = userId, Role = role });
                 }
                 // removed user?
-                foreach (TopicUser existingUser in existingUsers)
-                {
-                    if (!userIds.Contains(existingUser.UserId))
-                        removedUsers.Add(existingUser);
-                }
+                removedUsers.AddRange(existingUsers.Where(existingUser => !userIds.Contains(existingUser.UserId)));
             }
 
             topic.TopicUsers.AddRange(newUsers);
@@ -116,22 +107,21 @@ namespace Api.Managers
             return true;
         }
 
-        public virtual IEnumerable<Topic> GetSubTopics(int topicId)
+        public IEnumerable<Topic> GetSubTopics(int topicId)
         {
             return DbContext.AssociatedTopics.Include(at => at.ChildTopic).Where(at => at.ParentTopicId == topicId).Select(at => at.ChildTopic).ToList();
         }
 
-        public virtual IEnumerable<Topic> GetParentTopics(int topicId)
+        public IEnumerable<Topic> GetParentTopics(int topicId)
         {
             return DbContext.AssociatedTopics.Include(at => at.ParentTopic).Where(at => at.ChildTopicId == topicId).Select(at => at.ParentTopic).ToList();
         }
 
-        public virtual EntityResult AddTopic(int userId, TopicFormModel model)
+        public EntityResult AddTopic(int userId, TopicFormModel model)
         {
             try
             {
-                var topic = new Topic(model);
-                topic.CreatedById = userId;
+                var topic = new Topic(model) {CreatedById = userId};
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
                 new NotificationProcessor(DbContext, topic, userId).OnNewTopic();
@@ -144,7 +134,7 @@ namespace Api.Managers
             }
         }
 
-        public virtual bool UpdateTopic(int userId, int topicId, TopicFormModel model)
+        public bool UpdateTopic(int userId, int topicId, TopicFormModel model)
         {
             // Using Transactions to roobback Notifications on error.
             using (var transaction = DbContext.Database.BeginTransaction())
@@ -157,7 +147,8 @@ namespace Api.Managers
                     // TODO  topic.UpdatedById = userId;
                     topic.Title = model.Title;
                     topic.Status = model.Status;
-                    topic.Deadline = (DateTime)model.Deadline;
+                    if (model.Deadline != null)
+                        topic.Deadline = (DateTime)model.Deadline;
                     topic.Description = model.Description;
                     topic.Requirements = model.Requirements;
 

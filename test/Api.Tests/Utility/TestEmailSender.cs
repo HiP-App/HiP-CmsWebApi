@@ -7,11 +7,6 @@ namespace Api.Tests.Utility
 {
     public class TestEmailSender : IEmailSender
     {
-
-        public TestEmailSender()
-        {
-        } 
-
         public Task InviteAsync(string email)
         {
             Console.WriteLine("InviteAsync " + email);

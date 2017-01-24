@@ -8,15 +8,15 @@ namespace Api.Models.Topic
     {
         public TopicAttachmentResult(TopicAttatchment att)
         {
-            this.Id = att.Id;
-            this.Name = att.Name;
-            this.Description = att.Description;
+            Id = att.Id;
+            Name = att.Name;
+            Description = att.Description;
             if (att.Legal != null)
-                this.Legal = new LegalResult(att.Legal);
-            this.Type = att.Type;
+                Legal = new LegalResult(att.Legal);
+            Type = att.Type;
             if (att.User != null)
-                this.User = new UserResult(att.User);
-            this.CreatedAt = att.UpdatedAt;
+                User = new UserResult(att.User);
+            CreatedAt = att.UpdatedAt;
         }
 
 

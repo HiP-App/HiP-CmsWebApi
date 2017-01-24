@@ -2,13 +2,13 @@
 {
     public class UserResult
     {
-        public UserResult(Api.Models.Entity.User user)
+        public UserResult(Entity.User user)
         {
-            this.Id = user.Id;
-            this.Email = user.Email;
-            this.FirstName = user.FirstName;
-            this.LastName = user.LastName;
-            this.Role = user.Role;
+            Id = user.Id;
+            Email = user.Email;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            Role = user.Role;
         }
 
         public int Id { get; set; }

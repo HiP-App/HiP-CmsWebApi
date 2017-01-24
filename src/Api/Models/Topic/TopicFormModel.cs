@@ -12,7 +12,7 @@ namespace Api.Models
         public string Status { get; set; }
 
         public DateTime? Deadline { get; set; }
-
+        [Required]
         public string Description { get; set; }
 
         public string Requirements { get; set; }   

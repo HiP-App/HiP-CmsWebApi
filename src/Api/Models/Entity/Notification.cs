@@ -53,8 +53,6 @@ namespace Api.Models.Entity
         public Topic Topic { get; set; }
 
         public bool IsRead { get; set; }
-
-        public Notification() { }
     }
 
     public class NotificationMap

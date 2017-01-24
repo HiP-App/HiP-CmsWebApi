@@ -1,8 +1,8 @@
 ﻿using Api.Utility;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+// ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity
 {
@@ -66,17 +66,17 @@ namespace Api.Models.Entity
 
         public bool IsAdministrator()
         {
-            return Role == Api.Models.Role.Administrator;
+            return Role == Models.Role.Administrator;
         }
 
         public bool IsSupervisor()
         {
-            return Role == Api.Models.Role.Supervisor;
+            return Role == Models.Role.Supervisor;
         }
 
         public bool IsStudent()
         {
-            return Role == Api.Models.Role.Student;
+            return Role == Models.Role.Student;
         }
 
         #endregion

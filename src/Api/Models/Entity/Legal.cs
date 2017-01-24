@@ -12,7 +12,7 @@ namespace Api.Models.Entity
         public virtual TopicAttatchment TopicAttatchment { get; set; }
 
         [Required]
-        public virtual int TopicAttatchmentId { get; set; }
+        public int TopicAttatchmentId { get; set; }
 
         public DateTime TimeStamp { get; set; }
 
@@ -35,14 +35,14 @@ namespace Api.Models.Entity
 
         public Legal(int attatchmentId, LegalFormModel legalModel)
         {
-            this.TopicAttatchmentId = attatchmentId;
-            this.PublishedDate = legalModel.PublishedDate;
-            this.PublicationType = legalModel.PublicationType;
-            this.Author = legalModel.Author;
-            this.Name = legalModel.Name;
-            this.Description = legalModel.Description;
-            this.PublishedDate = legalModel.PublishedDate;
-            this.Source = legalModel.Source;
+            TopicAttatchmentId = attatchmentId;
+            PublishedDate = legalModel.PublishedDate;
+            PublicationType = legalModel.PublicationType;
+            Author = legalModel.Author;
+            Name = legalModel.Name;
+            Description = legalModel.Description;
+            PublishedDate = legalModel.PublishedDate;
+            Source = legalModel.Source;
         }
 
     }

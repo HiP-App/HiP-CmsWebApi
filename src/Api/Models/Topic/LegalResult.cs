@@ -7,13 +7,13 @@ namespace Api.Models.Topic
     {
         public LegalResult(Legal legal)
         {
-            this.TimeStamp = legal.TimeStamp;
-            this.PublishedDate = legal.PublishedDate;
-            this.PublicationType = legal.PublicationType;
-            this.Author = legal.Author;
-            this.Name = legal.Name;
-            this.Description = legal.Description;
-            this.Source = legal.Source;
+            TimeStamp = legal.TimeStamp;
+            PublishedDate = legal.PublishedDate;
+            PublicationType = legal.PublicationType;
+            Author = legal.Author;
+            Name = legal.Name;
+            Description = legal.Description;
+            Source = legal.Source;
         }
 
         public DateTime TimeStamp { get; set; }

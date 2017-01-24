@@ -52,7 +52,7 @@ namespace Api.Models.Entity
 
         #region Utily Methods
 
-        public string getAbsoluteName()
+        public string GetAbsoluteName()
         {
             if (ParentTag == null)
             {

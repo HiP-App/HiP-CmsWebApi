@@ -4,7 +4,7 @@
     {
         public Base64Image(string base64)
         {
-            this.Base64 = base64;
+            Base64 = base64;
         }
 
         public string Base64 { get; set; }
