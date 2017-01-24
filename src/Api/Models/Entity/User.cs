@@ -1,9 +1,8 @@
 ﻿using Api.Utility;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+// ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity
 {
@@ -33,6 +32,8 @@ namespace Api.Models.Entity
 
         public List<Notification> ProducedNotifications { get; set; }
 
+        public List<Document> Documents { get; set; }
+
         public List<Subscription> Subscriptions { get; set; }
 
         #region Utility Methods
@@ -50,30 +51,32 @@ namespace Api.Models.Entity
 
         public bool HasProfilePicture()
         {
-            return !(ProfilePicture == null || ProfilePicture.Length == 0);
+            return !string.IsNullOrEmpty(ProfilePicture);
         }
 
         public string FullName
         {
             get
             {
+                if (FirstName == null && LastName == null)
+                    return null;
                 return FirstName + ' ' + LastName;
             }
         }
 
         public bool IsAdministrator()
         {
-            return Role == Api.Models.Role.Administrator;
+            return Role == Models.Role.Administrator;
         }
 
         public bool IsSupervisor()
         {
-            return Role == Api.Models.Role.Supervisor;
+            return Role == Models.Role.Supervisor;
         }
 
         public bool IsStudent()
         {
-            return Role == Api.Models.Role.Student;
+            return Role == Models.Role.Student;
         }
 
         #endregion

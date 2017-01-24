@@ -13,18 +13,17 @@ namespace Api.Managers
     {
         public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual IEnumerable<NotificationResult> GetNotificationsForTheUser(int userId, bool onlyUreard)
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(int userId, bool onlyUreard)
         {
-            var query = dbContext.Notifications.Where(n => n.UserId == userId);
+            var query = DbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUreard)
                 query = query.Where(n => !n.IsRead);
 
             var notifications = query.Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
-            List<NotificationResult> result = new List<NotificationResult>();
+            var result = new List<NotificationResult>();
             foreach (Notification not in notifications)
             {
-                var nr = new NotificationResult(not);
-                nr.Updater = new UserResult(not.Updater);
+                var nr = new NotificationResult(not) {Updater = new UserResult(not.Updater)};
 
                 switch (not.Type)
                 {
@@ -42,6 +41,8 @@ namespace Api.Managers
                     case NotificationType.TOPIC_DELETED:
                         nr.Data = new object[] { not.Data };
                         break;
+                    case NotificationType.UNKNOWN:
+                        break;
                 }
                 result.Add(nr);
             }
@@ -49,14 +50,14 @@ namespace Api.Managers
         }
 
 
-        public virtual bool MarkAsRead(int notificationId)
+        public bool MarkAsRead(int notificationId)
         {
             try
             {
-                var notification = dbContext.Notifications.Where(n => n.NotificationId == notificationId).Single();
+                var notification = DbContext.Notifications.Single(n => n.NotificationId == notificationId);
                 notification.IsRead = true;
-                dbContext.Update(notification);
-                dbContext.SaveChanges();
+                DbContext.Update(notification);
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)
@@ -67,42 +68,42 @@ namespace Api.Managers
 
         internal int GetNotificationCount(int userId)
         {
-            return dbContext.Notifications.Where(n => n.UserId == userId && !n.IsRead).Count();
+            return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
         public bool SetSubscription(int userId, NotificationType type, bool subscribe)
         {
-            User user = dbContext.Users.Single(u => u.Id == userId);
+            User user = DbContext.Users.Single(u => u.Id == userId);
             Subscription sub = new Subscription
             {
                 Subscriber = user,
                 Type = type
             };
-            return subscribe ? AddSubscription(user, sub) : RemoveSubscription(user, sub);
+            return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
         public IEnumerable<SubscriptionResult> GetSubscriptions(int userId)
         {
-            return dbContext.Subscriptions.Where(
+            return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
             ).Select(
                 subscription => new SubscriptionResult(subscription)
             );
         }
 
-        private bool AddSubscription(User user, Subscription sub)
+        private bool AddSubscription(Subscription sub)
         {
             try
             {
-                IQueryable<Subscription> subs = findSubscriptionsLike(sub);
-                if (subs.Count() > 0)
+                var subs = FindSubscriptionsLike(sub);
+                if (subs.Any())
                 {
-                    dbContext.Subscriptions.Update(subs.First());
+                    DbContext.Subscriptions.Update(subs.First());
                 } else
                 {
-                    dbContext.Subscriptions.Add(sub);
+                    DbContext.Subscriptions.Add(sub);
                 }
-                dbContext.SaveChanges();
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)
@@ -111,15 +112,15 @@ namespace Api.Managers
             }
         }
 
-        private bool RemoveSubscription(User user, Subscription sub)
+        private bool RemoveSubscription(Subscription sub)
         {
             try
             {
-                foreach (var subscription in findSubscriptionsLike(sub))
+                foreach (var subscription in FindSubscriptionsLike(sub))
                 {
-                    dbContext.Subscriptions.Remove(subscription);
+                    DbContext.Subscriptions.Remove(subscription);
                 }
-                dbContext.SaveChanges();
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)
@@ -128,9 +129,9 @@ namespace Api.Managers
             }
         }
 
-        private IQueryable<Subscription> findSubscriptionsLike(Subscription sub)
+        private IQueryable<Subscription> FindSubscriptionsLike(Subscription sub)
         {
-            return dbContext.Subscriptions.Where(
+            return DbContext.Subscriptions.Where(
                 candidate => sub.Subscriber == candidate.Subscriber && sub.TypeName == candidate.TypeName
             );
         }

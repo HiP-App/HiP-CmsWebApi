@@ -2,14 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
 
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170119123557_Documents")]
+    partial class Documents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
@@ -46,20 +48,6 @@ namespace Api.Migrations
                     b.HasIndex("ParentTagId");
 
                     b.ToTable("AnnotationTags");
-                });
-
-            modelBuilder.Entity("Api.Models.Entity.AnnotationTagInstance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("TagModelId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TagModelId");
-
-                    b.ToTable("AnnotationTagInstances");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
@@ -168,21 +156,6 @@ namespace Api.Migrations
                     b.HasIndex("SubscriberId");
 
                     b.ToTable("Subscriptions");
-                });
-
-            modelBuilder.Entity("Api.Models.Entity.TagRelation", b =>
-                {
-                    b.Property<int>("FirstTagId");
-
-                    b.Property<int>("SecondTagId");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("FirstTagId", "SecondTagId");
-
-                    b.HasIndex("SecondTagId");
-
-                    b.ToTable("TagRelations");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Topic", b =>
@@ -298,14 +271,6 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.AnnotationTagInstance", b =>
-                {
-                    b.HasOne("Api.Models.Entity.AnnotationTag", "TagModel")
-                        .WithMany("TagInstances")
-                        .HasForeignKey("TagModelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
                 {
                     b.HasOne("Api.Models.Entity.Topic", "ChildTopic")
@@ -363,19 +328,6 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.User", "Subscriber")
                         .WithMany("Subscriptions")
                         .HasForeignKey("SubscriberId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Api.Models.Entity.TagRelation", b =>
-                {
-                    b.HasOne("Api.Models.Entity.AnnotationTagInstance", "FirstTag")
-                        .WithMany("Relations")
-                        .HasForeignKey("FirstTagId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Api.Models.Entity.AnnotationTagInstance", "SecondTag")
-                        .WithMany("IncomingRelations")
-                        .HasForeignKey("SecondTagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

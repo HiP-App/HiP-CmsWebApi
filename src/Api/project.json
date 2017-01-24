@@ -5,7 +5,6 @@
     "MailKit": "1.8.1",
     "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0",
     "Microsoft.AspNetCore.Mvc": "1.1.0",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
     "Microsoft.Extensions.Configuration.Binder": "1.1.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
@@ -28,10 +27,6 @@
   },
 
   "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.1.0-preview4-final",
-      "imports": "portable-net45+win8+dnxcore50"
-    },
     "Microsoft.EntityFrameworkCore.Tools": {
       "imports": [
         "portable-net45+win8+dnxcore50",
@@ -73,9 +68,5 @@
       "appsettings.json",
       "web.config"
     ]
-  },
-
-  "scripts": {
-    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
   }
 }

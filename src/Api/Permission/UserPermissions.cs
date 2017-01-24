@@ -2,27 +2,24 @@
 using Api.Managers;
 using Api.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Permission
 {
     public class UserPermissions : BaseManager
     {
-        private UserManager userManager;
+        private readonly UserManager _userManager;
 
 
         public UserPermissions(CmsDbContext dbContext) : base(dbContext)
         {
-            this.userManager = new UserManager(dbContext);
+            _userManager = new UserManager(dbContext);
         }
 
         public bool IsAllowedToAdminister(int userId)
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 return user.Role.Equals(Role.Administrator);
             }
             catch (InvalidOperationException)
@@ -35,7 +32,7 @@ namespace Api.Permission
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)

@@ -17,51 +17,78 @@ namespace Api.Managers
         public AttachmentsManager(CmsDbContext dbContext) : base(dbContext) { }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual TopicAttatchment GetAttachmentById(int attachmentId)
+        public TopicAttatchment GetAttachmentById(int attachmentId)
         {
-            return dbContext.TopicAttatchments.Single(ta => (ta.Id == attachmentId));
+            return DbContext.TopicAttatchments.Single(ta => (ta.Id == attachmentId));
         }
 
-        public virtual IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
+        public IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return dbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).ToList().Select(at => new TopicAttachmentResult(at));
+            return DbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
-        public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model, IFormFile file)
+        public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model)
         {
-            Topic topic;
             try
             {
-                topic = dbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+                DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
                 return EntityResult.Error("Unknown Topic");
             }
 
-            string topicFolder = Path.Combine(Constants.AttatchmentPath, topicId.ToString());
-            if (!System.IO.Directory.Exists(topicFolder))
-                System.IO.Directory.CreateDirectory(topicFolder);
+            try
+            {
+                var attatchment = new TopicAttatchment(model)
+                {
+                    UserId = userId,
+                    TopicId = topicId,
+                    Type = "TODO"
+                };
 
-            string fileName = (Path.Combine(topicFolder, file.FileName));
-            using (FileStream outputStream = new FileStream(fileName, FileMode.Create))
+                DbContext.TopicAttatchments.Add(attatchment);
+                DbContext.SaveChanges();
+
+                return EntityResult.Successfull(attatchment.Id);
+            }
+            catch (Exception e)
+            {
+                return EntityResult.Error(e.Message);
+            }
+        }
+        public EntityResult PutAttachment(int attachmentId, int userId, IFormFile file)
+        {
+            TopicAttatchment attachment;
+            try
+            {
+                attachment = DbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t => t.TopicUsers).Single(t => t.Id == attachmentId);
+            }
+            catch (InvalidOperationException)
+            {
+                return EntityResult.Error("Unknown Attachment");
+            }
+
+            var topicFolder = Path.Combine(Constants.AttatchmentPath, attachment.TopicId.ToString());
+            if (!Directory.Exists(topicFolder))
+                Directory.CreateDirectory(topicFolder);
+
+            var fileName = (Path.Combine(topicFolder, file.FileName));
+            using (var outputStream = new FileStream(fileName, FileMode.Create))
             {
                 file.CopyTo(outputStream);
             }
             try
             {
-                var attatchment = new TopicAttatchment(model);
-                attatchment.UserId = userId;
-                attatchment.TopicId = topicId;
-                attatchment.Path = file.FileName;
-                attatchment.Type = "TODO";
+                attachment.Path = file.FileName;
+                attachment.Type = "TODO";
 
-                dbContext.TopicAttatchments.Add(attatchment);
-                dbContext.SaveChanges();
+                DbContext.Update(attachment);
+                DbContext.SaveChanges();
 
-                new NotificationProcessor(dbContext, topic, userId).OnAttachmetAdded(model.AttatchmentName);
+                new NotificationProcessor(DbContext, attachment.Topic, userId).OnAttachmetAdded(attachment.Name);
 
-                return EntityResult.Successfull(attatchment.Id);
+                return EntityResult.Successfull(attachment.Id);
             }
             catch (Exception e)
             {
@@ -75,10 +102,13 @@ namespace Api.Managers
             try
             {
                 var attachment = GetAttachmentById(attachmentId);
-                string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
-                DeleteFile(fileName);
-                dbContext.Remove(attachment);
-                dbContext.SaveChanges();
+                if (!string.IsNullOrEmpty(attachment.Path))
+                {
+                    var fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
+                    DeleteFile(fileName);
+                }
+                DbContext.Remove(attachment);
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)
@@ -86,5 +116,55 @@ namespace Api.Managers
                 return false;
             }
         }
+        #region Legal
+
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
+        private Legal GetLegalById(int attachmentId)
+        {
+            return DbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
+        }
+
+        internal EntityResult CreateLegal(int topicId, int attachmentId, int userId, LegalFormModel legalModel)
+        {
+            try
+            {
+                DbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
+            }
+            catch (InvalidOperationException)
+            {
+                return EntityResult.Error("Unknown Attachment");
+            }
+            // TODO already exitst´s
+            try
+            {
+                Legal legal = new Legal(attachmentId, legalModel);
+
+                DbContext.Add(legal);
+                DbContext.SaveChanges();
+
+                return EntityResult.Successfull();
+            }
+            catch (Exception e)
+            {
+                return EntityResult.Error(e.Message);
+            }
+        }
+
+        public bool DeleteLegal(int topicId, int attachmentId)
+        {
+            try
+            {
+                var legal = GetLegalById(attachmentId);
+                DbContext.Remove(legal);
+                DbContext.SaveChanges();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

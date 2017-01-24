@@ -2,11 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Models.Entity
 {
@@ -14,9 +10,8 @@ namespace Api.Models.Entity
     {
         public TopicAttatchment(AttatchmentFormModel model)
         {
-            this.Name = model.AttatchmentName;
-            this.Description = model.Description;
-            this.Legal = model.Legal;
+            Name = model.AttatchmentName;
+            Description = model.Description;
         }
 
         [Key]
@@ -29,7 +24,7 @@ namespace Api.Models.Entity
 
         public String Description { get; set; }
 
-        public String Legal { get; set; }
+        public Legal Legal { get; set; }
 
         public String Type { get; set; }
 
@@ -42,6 +37,7 @@ namespace Api.Models.Entity
         public User User { get; set; }
 
         public DateTime UpdatedAt { get; set; }
+
         public TopicAttatchment() { }
 
     }

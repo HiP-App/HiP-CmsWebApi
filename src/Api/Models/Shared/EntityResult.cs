@@ -8,6 +8,11 @@ namespace Api.Models
 
         public string ErrorMessage { get; set; }
 
+        public static EntityResult Successfull()
+        {
+            return Successfull(null);
+        }
+
         public static EntityResult Successfull(object value)
         {
             return new EntityResult() { Success = true, Value = value };

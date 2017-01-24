@@ -11,9 +11,8 @@ namespace Api.Models
         [Required]
         public string Status { get; set; }
 
-        [Required]
         public DateTime? Deadline { get; set; }
-
+        [Required]
         public string Description { get; set; }
 
         public string Requirements { get; set; }   

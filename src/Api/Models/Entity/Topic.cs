@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata;
+// ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity
 {
@@ -44,11 +43,14 @@ namespace Api.Models.Entity
 
         public List<TopicAttatchment> Attatchments { get; set; }
 
+        public virtual Document Document { get; set; }
+
         public Topic(TopicFormModel model)
         {
             Title = model.Title;
             Status = model.Status;
-            Deadline = (DateTime)model.Deadline;
+            if (model.Deadline != null)
+                Deadline = (DateTime)model.Deadline;
             Description = model.Description;
             Requirements = model.Requirements;
 

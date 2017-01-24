@@ -1,6 +1,5 @@
 ﻿using Api.Data;
 using Api.Tests.Utility;
-using Api.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using Api.Services;
 
 namespace Api.Tests
 {
@@ -51,7 +51,6 @@ namespace Api.Tests
                 .UseKestrel()
                 .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
                 .UseStartup<TestStartup>()
                 .Build();
 

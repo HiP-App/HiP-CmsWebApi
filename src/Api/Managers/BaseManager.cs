@@ -4,15 +4,15 @@ namespace Api.Managers
 {
     public class BaseManager
     {
-        protected readonly CmsDbContext dbContext;
+        protected readonly CmsDbContext DbContext;
 
-        public BaseManager(CmsDbContext dbContext)
+        protected BaseManager(CmsDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            DbContext = dbContext;
         }
 
 
-        protected void DeleteFile(string path)
+        protected static void DeleteFile(string path)
         {
             if (System.IO.File.Exists(path))
                 System.IO.File.Delete(path);
