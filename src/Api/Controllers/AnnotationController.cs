@@ -13,13 +13,13 @@ namespace Api.Controllers
 {
     public class AnnotationController : ApiController
     {
-        private AnnotationTagManager tagManager;
-        private AnnotationPermissions annotationPermissions;
+        private readonly AnnotationTagManager _tagManager;
+        private readonly AnnotationPermissions _annotationPermissions;
 
         public AnnotationController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
-            tagManager = new AnnotationTagManager(dbContext);
-            annotationPermissions = new AnnotationPermissions(dbContext);
+            _tagManager = new AnnotationTagManager(dbContext);
+            _annotationPermissions = new AnnotationPermissions(dbContext);
         }
 
         #region GET
@@ -29,17 +29,17 @@ namespace Api.Controllers
         /// <summary>
         /// All Annotation Tags saved in the system
         /// </summary>
-        /// <param name="IncludeDeleted">Include already deleted, but still used Tags?</param>
-        /// <param name="IncludeOnlyRoot">Include only root tags?</param>
+        /// <param name="includeDeleted">Include already deleted, but still used Tags?</param>
+        /// <param name="includeOnlyRoot">Include only root tags?</param>
         /// <response code="200">A List of AnnotationTagResults</response>
         /// <response code="204">There are no Tags in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags")]
         [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
-        public IActionResult GetAllTags(bool IncludeDeleted = false, bool IncludeOnlyRoot = false)
+        public IActionResult GetAllTags([FromQuery]bool includeDeleted = false, [FromQuery]bool includeOnlyRoot = false)
         {
-            return Ok(tagManager.getAllTags(IncludeDeleted, IncludeOnlyRoot));
+            return Ok(_tagManager.GetAllTags(includeDeleted, includeOnlyRoot));
         }
 
         // Get api/Annotation/Tags/:id
@@ -54,11 +54,11 @@ namespace Api.Controllers
         [HttpGet("Tags/{id}")]
         [ProducesResponseType(typeof(AnnotationTagResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetTag(int id)
+        public IActionResult GetTag([FromRoute]int id)
         {
             try
             {
-                var tag = tagManager.getTag(id);
+                var tag = _tagManager.GetTag(id);
                 return Ok(tag);
             }
             catch (InvalidOperationException)
@@ -80,9 +80,9 @@ namespace Api.Controllers
         [HttpGet("Tags/{id}/ChildTags")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
-        public IActionResult GetChildTagsOf(int id)
+        public IActionResult GetChildTagsOf([FromRoute]int id)
         {
-            var tags = tagManager.getChildTagsOf(id);
+            var tags = _tagManager.GetChildTagsOf(id);
             return Ok(tags);
         }
 
@@ -104,14 +104,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post(AnnotationTagFormModel tag)
+        public IActionResult Post([FromBody]AnnotationTagFormModel tag)
         {
-            if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
 
             if (ModelState.IsValid)
             {
-                var result = tagManager.AddTag(tag);
+                var result = _tagManager.AddTag(tag);
                 if (result.Success)
                     return Ok(result);
                 return BadRequest(result);
@@ -134,12 +134,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post(int parentId, int childId)
+        public IActionResult Post([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            bool success = tagManager.AddChildTag(parentId, childId);
+            bool success = _tagManager.AddChildTag(parentId, childId);
             if (success)
                 return Ok();
             return BadRequest();
@@ -154,22 +154,22 @@ namespace Api.Controllers
         /// <summary>
         /// Edit Tag {Id} 
         /// </summary>
-        /// <param name="Id">Tag to be edited</param>
+        /// <param name="id">Tag to be edited</param>
         /// <param name="model">Date to be changed</param>
         /// <response code="200">Tag edited successful</response>
         /// <response code="403">User not allowed to edit Tags</response>
         /// <response code="404">No such Tag</response>
         /// <response code="401">User is denied</response>
-        [HttpPut("Tags/{Id}")]
+        [HttpPut("Tags/{id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTag(int Id, AnnotationTagFormModel model)
+        public IActionResult PutTag([FromRoute]int id, [FromBody]AnnotationTagFormModel model)
         {
-            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            var success = tagManager.EditTag(model, Id);
+            var success = _tagManager.EditTag(model, id);
             if (success)
                 return Ok();
             return NotFound();
@@ -184,21 +184,21 @@ namespace Api.Controllers
         /// <summary>
         /// Delete Tag {Id} 
         /// </summary>
-        /// <param name="Id">Tag to be delete</param>
+        /// <param name="id">Tag to be delete</param>
         /// <response code="200">Tag ddeleted successful</response>
         /// <response code="403">User not allowed to delete Tags</response>
         /// <response code="404">No such Tag</response>
         /// <response code="401">User is denied</response>
-        [HttpDelete("Tags/{Id}")]
+        [HttpDelete("Tags/{id}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Delete(int Id)
+        public IActionResult Delete([FromRoute]int id)
         {
-            if (!annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            bool success = tagManager.DeleteTag(Id);
+            bool success = _tagManager.DeleteTag(id);
             if (success)
                 return Ok();
             return NotFound();
@@ -217,12 +217,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteChildOf(int parentId, int childId)
+        public IActionResult DeleteChildOf([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
-            bool success = tagManager.RemoveChildTag(parentId, childId);
+            bool success = _tagManager.RemoveChildTag(parentId, childId);
             if (success)
                 return Ok();
             return NotFound();

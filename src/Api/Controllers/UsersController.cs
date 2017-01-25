@@ -2,37 +2,33 @@
 using Microsoft.AspNetCore.Mvc;
 using Api.Managers;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using System.IO;
 using Api.Data;
 using Api.Models;
 using Api.Models.User;
 using Api.Permission;
+using Api.Services;
 using System;
 
 namespace Api.Controllers
 {
-    public class UsersController : ApiController
+    public partial class UsersController : ApiController
     {
-        private UserManager userManager;
-        private IEmailSender emailSender;
-        private UserPermissions userPermissions;
+        private readonly UserManager _userManager;
+        private readonly UserPermissions _userPermissions;
 
-        public UsersController(CmsDbContext dbContext, IEmailSender emailSender, ILoggerFactory _logger) : base(dbContext, _logger)
+        public UsersController(CmsDbContext dbContext, ILoggerFactory logger) : base(dbContext, logger)
         {
-            userManager = new UserManager(dbContext);
-            userPermissions = new UserPermissions(dbContext);
-            this.emailSender = emailSender;
+            _userManager = new UserManager(dbContext);
+            _userPermissions = new UserPermissions(dbContext);
         }
 
         #region invite
 
-        // POST api/users/invite
-
         /// <summary>
         /// Add new users and send invitation to the added users for registration
         /// </summary>        
-        /// <param name="model">Contains a list of emails</param>                         
+        /// <param name="model">Contains a list of emails</param>
+        /// <param name="emailSender">EmailSender Service</param>
         /// <response code="202">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to invite new users</response>        
@@ -40,44 +36,28 @@ namespace Api.Controllers
         /// <response code="503">Service unavailable</response>        
         /// <response code="401">User is denied</response>
         [HttpPost("Invite")]
-        [ProducesResponseType(typeof(void), 202)]
+        [ProducesResponseType(typeof(UserManager.InvitationResult), 202)]
         [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 401)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 409)]
+        [ProducesResponseType(typeof(UserManager.InvitationResult), 409)]
         [ProducesResponseType(typeof(void), 503)]
-        public IActionResult Post(InviteFormModel model)
+        public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
-            if (!userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
                 return Forbidden();
 
-            if (ModelState.IsValid)
-            {
-                int failCount = 0;
-                foreach (string email in model.emails)
-                {
-                    try
-                    {
-                        userManager.AddUserbyEmail(email);
-                        emailSender.InviteAsync(email);
-                    }
-                    //user already exists in Database
-                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
-                    {
-                        failCount++;
-                    }
-                    //something went wrong when sending email
-                    catch (MailKit.Net.Smtp.SmtpCommandException SmtpError)
-                    {
-                        _logger.LogDebug(SmtpError.ToString());
-                        return ServiceUnavailable();
-                    }
-                }
-                if (failCount == model.emails.Length)
-                    return Conflict();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                return Accepted();
-            }
-            return BadRequest(ModelState);
+            var result = _userManager.InviteUsers(model.emails, emailSender);
+            if (result.FailedInvitations.Count == model.emails.Length)
+                return BadRequest(result);
+
+            if (result.ExistingUsers.Count == model.emails.Length)
+                return StatusCode(409, result);
+
+            return Accepted(result);
         }
 
         #endregion
@@ -96,10 +76,10 @@ namespace Api.Controllers
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
-        public IActionResult Get(string query, string role, int page = 1)
+        public IActionResult Get([FromQuery]string query, [FromQuery]string role, [FromQuery] int page = 1)
         {
-            var users = userManager.GetAllUsers(query, role, page, Constants.PageSize);
-            int count = userManager.GetUsersCount();
+            var users = _userManager.GetAllUsers(query, role, page, Constants.PageSize);
+            int count = _userManager.GetUsersCount();
 
             return Ok(new PagedResult<UserResult>(users, page, count));
         }
@@ -117,11 +97,11 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Get(int id)
+        public IActionResult Get([FromRoute]int id)
         {
             try
             {
-                var user = userManager.GetUserById(id);
+                var user = _userManager.GetUserById(id);
                 return Ok(new UserResult(user));
             }
             catch (InvalidOperationException)
@@ -163,7 +143,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put(UserFormModel model)
+        public IActionResult Put([FromBody]UserFormModel model)
         {
             return PutUser(User.Identity.GetUserId(), model);
         }
@@ -185,15 +165,15 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put(int id, AdminUserFormModel model)
+        public IActionResult Put([FromRoute]int id, [FromBody]AdminUserFormModel model)
         {
-            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
                 return Forbidden();
 
             return PutUser(id, model);
         }
 
-        private IActionResult PutUser(int id, UserFormModel model)
+        private IActionResult PutUser([FromRoute]int id, [FromBody]UserFormModel model)
         {
             if (ModelState.IsValid)
             {
@@ -203,226 +183,15 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    if (userManager.UpdateUser(id, model))
-                    {
-                        _logger.LogInformation(5, "User with ID: " + id + " updated.");
-                        return Ok();
-                    }
-                    return NotFound();
+                    if (!_userManager.UpdateUser(id, model))
+                        return NotFound();
+
+                    Logger.LogInformation(5, "User with ID: " + id + " updated.");
+                    return Ok();
                 }
             }
 
             return BadRequest(ModelState);
-        }
-
-        #endregion
-
-        #region GET picture
-
-        // GET api/users/{userId}/picture/
-
-        /// <summary>
-        /// Get the profile picture of the user {userId}
-        /// </summary>   
-        /// <param name="userId">Represents the Id of the user</param>
-        /// <response code="200">Returns profile picture of the user {userId}</response>        
-        /// <response code="404">Resource not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpGet("{userId}/picture/")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureById(int userId)
-        {
-            return GetPicture(userId);
-        }
-
-        // GET api/users/current/picture/
-
-        /// <summary>
-        /// Get the profile picture of the current user
-        /// </summary>           
-        /// <response code="200">Returns profile picture of the current user</response>        
-        /// <response code="404">Resource not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpGet("Current/picture/")]
-        [ProducesResponseType(typeof(string), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureForCurrentUser()
-        {
-            return GetPicture(User.Identity.GetUserId());
-        }
-
-        private IActionResult GetPicture(int userId)
-        {
-            try
-            {
-                var user = userManager.GetUserById(userId);
-                string path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
-                if (!System.IO.File.Exists(path))
-                    path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
-
-                return Ok(ToBase64String(path));
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        #endregion
-
-        #region POST picture
-
-
-        // Post api/users/{id}/picture/
-
-        /// <summary>
-        /// Add picture for the user {id}
-        /// </summary>        
-        /// <param name="id">The Id of the user</param>                         
-        /// <param name="file">The file to be uploaded</param>                         
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>        
-        /// <response code="403">User not allowed to add picture</response>                
-        /// <response code="401">User is denied</response>
-        [HttpPost("{id}/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutPicture(int id, IFormFile file)
-        {
-            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
-                return Forbidden();
-            return PutUserPicture(id, file);
-        }
-
-        // Post api/users/current/picture/
-
-        /// <summary>
-        /// Add picture for the current user
-        /// </summary>                
-        /// <param name="file">The file to be uploaded</param>                         
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>                
-        /// <response code="401">User is denied</response>
-        [HttpPost("Current/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutPicture(IFormFile file)
-        {
-            return PutUserPicture(User.Identity.GetUserId(), file);
-        }
-
-        private IActionResult PutUserPicture(int userId, IFormFile file)
-        {
-            var uploads = Path.Combine(Constants.ProfilePicturePath);
-            if (file == null)
-                ModelState.AddModelError("file", "File is null");
-            else if (file.Length > 1024 * 1024 * 5) // Limit to 5 MB
-                ModelState.AddModelError("file", "Picture is to large");
-            else if (!IsImage(file))
-                ModelState.AddModelError("file", "Invalid Image");
-            else
-            {
-                try
-                {
-                    var user = userManager.GetUserById(userId);
-                    string fileName = user.Id + Path.GetExtension(file.FileName);
-                    DeleteFile(Path.Combine(uploads, fileName));
-
-                    using (FileStream outputStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(outputStream);
-                    }
-
-                    userManager.UpdateProfilePicture(user, fileName);
-                    return Ok();
-                }
-                catch (InvalidOperationException)
-                {
-                    ModelState.AddModelError("userId", "Unkonown User");
-                }
-            }
-            return BadRequest(ModelState);
-        }
-
-        private bool IsImage(IFormFile file)
-        {
-            return ((file != null) && System.Text.RegularExpressions.Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
-        }
-
-        #endregion
-
-        #region DELETE picture
-
-        // Delete api/users/:id/picture/
-
-        /// <summary>
-        /// Delete picture for the user {id}
-        /// </summary>        
-        /// <param name="id">The Id of the user</param>                                 
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>        
-        /// <response code="403">User not allowed to delete picture</response>                
-        /// <response code="401">User is denied</response>
-        [HttpDelete("{id}/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Delete(int id)
-        {
-            if (!userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
-                return Forbidden();
-            return DeletePicture(id);
-        }
-
-        // Delete api/users/current/picture/
-
-        /// <summary>
-        /// Delete picture for the current user
-        /// </summary>        
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>                
-        /// <response code="401">User is denied</response>
-        [HttpDelete("Current/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Delete()
-        {
-            return DeletePicture(User.Identity.GetUserId());
-        }
-
-        private IActionResult DeletePicture(int userId)
-        {
-            // Fetch user
-            try
-            {
-                var user = userManager.GetUserById(userId);
-                // Has A Picture?
-                if (!user.HasProfilePicture())
-                    return BadRequest("No picture set");
-
-                bool success = userManager.UpdateProfilePicture(user, "");
-                // Delete Picture If Exists
-                string fileName = Path.Combine(Constants.ProfilePicturePath, user.Picture);
-
-                DeleteFile(fileName);
-
-                if (success)
-                    return Ok();
-                else
-                    return BadRequest();
-            }
-            catch (InvalidOperationException)
-            {
-                return BadRequest("Could not find User");
-            }
-        }
-
-        private void DeleteFile(string path)
-        {
-            if (System.IO.File.Exists(path))
-                System.IO.File.Delete(path);
         }
 
         #endregion

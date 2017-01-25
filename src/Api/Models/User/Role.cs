@@ -1,6 +1,6 @@
 ﻿namespace Api.Models
 {
-    public class Role
+    public static class Role
     {
         public const string Student = "Student";
         public const string Supervisor = "Supervisor";

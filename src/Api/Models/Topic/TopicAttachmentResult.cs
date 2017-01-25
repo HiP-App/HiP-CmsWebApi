@@ -1,9 +1,6 @@
 ﻿using Api.Models.Entity;
 using Api.Models.User;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Models.Topic
 {
@@ -11,14 +8,15 @@ namespace Api.Models.Topic
     {
         public TopicAttachmentResult(TopicAttatchment att)
         {
-            this.Id = att.Id;
-            this.Name = att.Name;
-            this.Description = att.Description;
-            this.Legal = att.Legal;
-            this.Type = att.Type;
+            Id = att.Id;
+            Name = att.Name;
+            Description = att.Description;
+            if (att.Legal != null)
+                Legal = new LegalResult(att.Legal);
+            Type = att.Type;
             if (att.User != null)
-                this.User = new UserResult(att.User);
-            this.CreatedAt = att.UpdatedAt;
+                User = new UserResult(att.User);
+            CreatedAt = att.UpdatedAt;
         }
 
 
@@ -28,7 +26,7 @@ namespace Api.Models.Topic
 
         public String Description { get; set; }
 
-        public String Legal { get; set; }
+        public LegalResult Legal { get; set; }
 
         public String Type { get; set; }
 

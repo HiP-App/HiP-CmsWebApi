@@ -42,22 +42,22 @@ namespace Api.Managers
 
             public DownloadResource(string fileName, IPAddress userIp)
             {
-                this.FileName = fileName;
-                this.UserIp = userIp;
+                FileName = fileName;
+                UserIp = userIp;
 
                 using (var md5 = MD5.Create())
                 {
                     var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(fileName + DateTime.Now));
-                    this.HashValue = string.Concat(hash.Select(x => x.ToString("X2")));
+                    HashValue = string.Concat(hash.Select(x => x.ToString("X2")));
                 }
-                this.Expires = DateTime.Now.AddMinutes(30);
+                Expires = DateTime.Now.AddMinutes(30);
             }
 
             public string FileName { get; }
 
             public string HashValue { get; }
 
-            public IPAddress UserIp { get; }
+            private IPAddress UserIp { get; }
 
             public bool IsSameUser(IPAddress userIp)
             {

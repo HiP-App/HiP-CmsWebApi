@@ -2,7 +2,6 @@
 using Api.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,12 +10,15 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.Swagger.Model;
 using System;
 using System.IO;
+using Api.Services;
 
 namespace Api
 {
     public class Startup
     {
         internal static IServiceProvider ServiceProvider { get; set; }
+
+        private IConfigurationRoot Configuration { get; }
 
         public Startup(IHostingEnvironment env)
         {
@@ -28,8 +30,6 @@ namespace Api
 
             Configuration = builder.Build();
         }
-
-        public IConfigurationRoot Configuration { get; }
 
 
         /// <summary>
@@ -45,6 +45,7 @@ namespace Api
 
             // Register AppConfig in Services 
             services.AddSingleton(appConfig);
+            services.AddTransient<IEmailSender, EmailSender>();
 
             // Adding Cross Orign Requests 
             services.AddCors();
@@ -52,8 +53,8 @@ namespace Api
             // Add database service for Postgres
             services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
 
-            // Add framework services. (Workaround: https://github.com/aspnet/Mvc/issues/4945)
-            services.AddMvc(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
+            // Add framework services.
+            services.AddMvc();
 
             // Add Swagger service
             services.AddSwaggerGen();
@@ -71,8 +72,6 @@ namespace Api
                 options.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
                 options.OperationFilter<SwaggerOperationFilter>();
             });
-
-            services.AddTransient<IEmailSender,EmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -121,7 +120,6 @@ namespace Api
                 .UseKestrel()
                 .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
 

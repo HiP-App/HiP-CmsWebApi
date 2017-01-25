@@ -15,56 +15,56 @@ namespace Api.Managers
 
         #region GET
 
-        public virtual IEnumerable<AnnotationTagResult> getAllTags(bool IncludeDeleted, bool IncludeOnlyRoot)
+        public IEnumerable<AnnotationTagResult> GetAllTags(bool includeDeleted, bool includeOnlyRoot)
         {
-            return dbContext
+            return DbContext
                 .AnnotationTags
-                .Where(t => !IncludeOnlyRoot || t.ParentTag == null)
-                .Where(t => IncludeDeleted || !t.IsDeleted)
+                .Where(t => !includeOnlyRoot || t.ParentTag == null)
+                .Where(t => includeDeleted || !t.IsDeleted)
                 .ToList()
                 .Select(at => new AnnotationTagResult(at));
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        internal AnnotationTagResult getTag(int Id)
+        internal AnnotationTagResult GetTag(int id)
         {
-            return new AnnotationTagResult(dbContext.AnnotationTags.Single(t => t.Id == Id));
+            return new AnnotationTagResult(DbContext.AnnotationTags.Single(t => t.Id == id));
         }
 
-        public virtual IEnumerable<AnnotationTagResult> getChildTagsOf(int Id)
+        public IEnumerable<AnnotationTagResult> GetChildTagsOf(int id)
         {
-            return dbContext.AnnotationTags.Where(at => at.ParentTagId == Id).ToList().Select(at => new AnnotationTagResult(at));
+            return DbContext.AnnotationTags.Where(at => at.ParentTagId == id).ToList().Select(at => new AnnotationTagResult(at));
         }
 
         #endregion
 
         #region Adding
 
-        public virtual EntityResult AddTag(AnnotationTagFormModel tagModel)
+        public EntityResult AddTag(AnnotationTagFormModel tagModel)
         {
-            AnnotationTag tag = new AnnotationTag(tagModel);
+            var tag = new AnnotationTag(tagModel);
 
-            dbContext.AnnotationTags.Add(tag);
-            dbContext.SaveChanges();
+            DbContext.AnnotationTags.Add(tag);
+            DbContext.SaveChanges();
 
             return EntityResult.Successfull(tag.Id);
         }
 
-        public virtual bool AddChildTag(int parentId, int childId)
+        public bool AddChildTag(int parentId, int childId)
         {
             if (parentId == childId)
                 return false;
             try
             {
-                var child = dbContext.AnnotationTags.Single(t => t.Id == childId);
-                if (HasDuplicateParent(child, dbContext.AnnotationTags.Single(t => t.Id == parentId)))
+                var child = DbContext.AnnotationTags.Single(t => t.Id == childId);
+                if (HasDuplicateParent(child, DbContext.AnnotationTags.Single(t => t.Id == parentId)))
                 {
                     return false;
-                } else if (dbContext.AnnotationTags.Any(t => t.Id == parentId))
+                } else if (DbContext.AnnotationTags.Any(t => t.Id == parentId))
                 {
                     child.ParentTagId = parentId;
-                    dbContext.Update(child);
-                    dbContext.SaveChanges();
+                    DbContext.Update(child);
+                    DbContext.SaveChanges();
                     return true;
                 }
             }
@@ -74,14 +74,14 @@ namespace Api.Managers
 
         private bool HasDuplicateParent(AnnotationTag original, AnnotationTag check)
         {
-            bool duplicate = original.Id == check.Id;
+            var duplicate = original.Id == check.Id;
             if (duplicate)
             {
                 return true;
             }
             else
             {
-                return check.ParentTagId != null && HasDuplicateParent(original, dbContext.AnnotationTags.Single(t => t.Id == check.ParentTagId));
+                return check.ParentTagId != null && HasDuplicateParent(original, DbContext.AnnotationTags.Single(t => t.Id == check.ParentTagId));
             }
         }
 
@@ -89,35 +89,34 @@ namespace Api.Managers
 
         #region edit
 
-        public virtual bool EditTag(AnnotationTagFormModel model, int Id)
+        public bool EditTag(AnnotationTagFormModel model, int id)
         {
-            var tag = dbContext.AnnotationTags.First(t => t.Id == Id);
-            if (tag != null)
+            var tag = DbContext.AnnotationTags.First(t => t.Id == id);
+            if (tag == null)
+                return false;
+
+            if (model.Description != null)
             {
-                if (model.Description != null)
-                {
-                    tag.Description = model.Description;
-                }
-                if (model.Layer != null)
-                {
-                    tag.Layer = model.Layer;
-                }
-                if (model.Name != null)
-                {
-                    tag.Name = model.Name;
-                }
-                if (model.ShortName != null)
-                {
-                    tag.ShortName = model.ShortName;
-                }
-                if (model.Style != null)
-                {
-                    tag.Style = model.Style;
-                }
-                dbContext.SaveChanges();
-                return true;
+                tag.Description = model.Description;
             }
-            return false;
+            if (model.Layer != null)
+            {
+                tag.Layer = model.Layer;
+            }
+            if (model.Name != null)
+            {
+                tag.Name = model.Name;
+            }
+            if (model.ShortName != null)
+            {
+                tag.ShortName = model.ShortName;
+            }
+            if (model.Style != null)
+            {
+                tag.Style = model.Style;
+            }
+            DbContext.SaveChanges();
+            return true;
         }
 
         #endregion
@@ -128,17 +127,17 @@ namespace Api.Managers
         {
             try
             {
-                var tag = dbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
+                var tag = DbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
                 if (tag.UsageCounter == 0)
                 {
-                    dbContext.AnnotationTags.Remove(tag);
+                    DbContext.AnnotationTags.Remove(tag);
                 }
                 else
                 {
                     tag.IsDeleted = true;
-                    dbContext.AnnotationTags.Update(tag);
+                    DbContext.AnnotationTags.Update(tag);
                 }
-                dbContext.SaveChanges();
+                DbContext.SaveChanges();
                 return true;
             }
             catch (InvalidOperationException)
@@ -149,17 +148,13 @@ namespace Api.Managers
 
         internal bool RemoveChildTag(int parentId, int childId)
         {
-            var child = dbContext.AnnotationTags.First(t => t.Id == childId);
-            if (child != null)
-            {
-                if (child.ParentTagId == parentId)
-                {
-                    child.ParentTagId = null;
-                    dbContext.SaveChanges();
-                    return true;
-                }
-            }
-            return false;
+            var child = DbContext.AnnotationTags.First(t => t.Id == childId);
+            if (child?.ParentTagId != parentId)
+                return false;
+
+            child.ParentTagId = null;
+            DbContext.SaveChanges();
+            return true;
         }
 
         #endregion

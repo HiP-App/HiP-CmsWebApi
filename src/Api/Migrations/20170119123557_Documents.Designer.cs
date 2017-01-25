@@ -2,14 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
 
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170119123557_Documents")]
+    partial class Documents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)

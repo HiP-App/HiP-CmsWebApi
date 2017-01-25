@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using Api.Managers;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Api.Models.Entity
@@ -53,7 +52,7 @@ namespace Api.Models.Entity
 
         #region Utily Methods
 
-        public string getAbsoluteName()
+        public string GetAbsoluteName()
         {
             if (ParentTag == null)
             {

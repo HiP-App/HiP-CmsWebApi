@@ -1,27 +1,24 @@
 ﻿using Api.Models.User;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Models.Topic
 {
     public class TopicResult
     {
 
-        public TopicResult(Api.Models.Entity.Topic topic)
+        public TopicResult(Entity.Topic topic)
         {
-            this.Id = topic.Id;
-            this.Title = topic.Title;
-            this.Status = topic.Status;
-            this.Deadline = topic.Deadline;
-            this.Description = topic.Description;
-            this.Requirements = topic.Requirements;
-            this.CreatedAt = topic.CreatedAt;
-            this.UpdatedAt = topic.UpdatedAt;
+            Id = topic.Id;
+            Title = topic.Title;
+            Status = topic.Status;
+            Deadline = topic.Deadline;
+            Description = topic.Description;
+            Requirements = topic.Requirements;
+            CreatedAt = topic.CreatedAt;
+            UpdatedAt = topic.UpdatedAt;
 
             if (topic.CreatedBy != null)
-                this.CreatedBy = new UserResult(topic.CreatedBy);
+                CreatedBy = new UserResult(topic.CreatedBy);
 
             // TODO this.CreatedBy = topic.UpdatedBy;
         }

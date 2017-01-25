@@ -2,20 +2,17 @@
 using Api.Managers;
 using Api.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Permission
 {
     public class AnnotationPermissions : BaseManager
     {
-        private UserManager userManager;
+        private readonly UserManager _userManager;
 
 
         public AnnotationPermissions(CmsDbContext dbContext) : base(dbContext)
         {
-            this.userManager = new UserManager(dbContext);
+            _userManager = new UserManager(dbContext);
         }
 
 
@@ -24,7 +21,7 @@ namespace Api.Permission
             try
             {
                 // Admin or Supervisor?
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 return (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor));
             }
             catch (InvalidOperationException)
@@ -37,7 +34,7 @@ namespace Api.Permission
         {
             try
             {
-                var user = userManager.GetUserById(userId);
+                var user = _userManager.GetUserById(userId);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)

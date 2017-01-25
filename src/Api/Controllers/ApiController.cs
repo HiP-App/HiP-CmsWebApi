@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Text;
 
 namespace Api.Controllers
 {
@@ -17,25 +16,25 @@ namespace Api.Controllers
     [ProducesResponseType(typeof(void), 401)]
     public class ApiController : Controller
     {
-        protected readonly CmsDbContext dbContext;
-        protected readonly ILogger _logger;
+        protected readonly CmsDbContext DbContext;
+        protected readonly ILogger Logger;
 
         public ApiController(CmsDbContext dbContext, ILoggerFactory loggerFactory)
         {
-            this.dbContext = dbContext;
-            _logger = loggerFactory.CreateLogger<ApiController>();
+            DbContext = dbContext;
+            Logger = loggerFactory.CreateLogger<ApiController>();
         }
 
-        protected static String ToBase64String(string source)
+        protected static string ToBase64String(string source)
         {
             return Convert.ToBase64String(System.IO.File.ReadAllBytes(source));
         }
 
         public static StatusCodeResult Forbidden() { return new StatusCodeResult(403); }
-        public static StatusCodeResult Conflict() { return new StatusCodeResult(409); }
+        protected static StatusCodeResult Conflict() { return new StatusCodeResult(409); }
         public static StatusCodeResult Gone() { return new StatusCodeResult(410); }
-        public static StatusCodeResult ServiceUnavailable() { return new StatusCodeResult(503); }
-        public static ObjectResult InternalServerError(Object error) { return new ObjectResult(error) { StatusCode = 500 }; }
+        protected static StatusCodeResult ServiceUnavailable() { return new StatusCodeResult(503); }
+        protected static ObjectResult InternalServerError(object error) { return new ObjectResult(error) { StatusCode = 500 }; }
 
 
     }
