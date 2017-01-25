@@ -21,7 +21,7 @@ namespace Api.Controllers
         public IActionResult GetRelations([FromRoute] int maxDepth = int.MaxValue)
         {
             // TODO: Do we need pagination here?
-            return BadRequest();
+            return ServiceUnavailable();
         }
 
         /// <summary>
@@ -35,7 +35,36 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelationsForId([FromRoute] int id)
         {
-            return BadRequest();
+            return ServiceUnavailable();
+        }
+
+        /// <summary>
+        /// Get all tags that the tag identified by the given id may have a relation to.
+        /// </summary>
+        /// <param name="id">The Id of the tag that you want the allowed relations for</param>
+        /// <response code="200">Returns a list of tags</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpGet("Tags/{id}/AllowedRelations")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult GetAllowedRelationsForId([FromRoute] int id)
+        {
+            return ServiceUnavailable();
+        }
+
+        /// <summary>
+        /// Get all tag relations that are available for the tag instance identified by the given id.
+        /// The relations are ordered descending by relevance.
+        /// </summary>
+        /// <param name="id">The Id of the tag that you want the allowed relations for</param>
+        /// <response code="200">Returns a list of tags</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpGet("Tags/Instance/{id}/AvailableRelations")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult GetAvailableRelationsForInstance([FromRoute] int id)
+        {
+            return ServiceUnavailable();
         }
 
         #endregion
@@ -70,6 +99,28 @@ namespace Api.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        #endregion
+
+        #region PUT
+
+        /// <summary>
+        /// Modify the relation from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// </summary>
+        /// <param name="sourceId">ID of the source tag of the relation</param>
+        /// <param name="targetId">ID of the target tag of the relation</param>
+        /// <param name="name" optional="true">Relation name</param>
+        /// <response code="200">Relation modified</response>
+        /// <response code="403">User not allowed to modify a relation</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPut("Tags/{sourceId}/Relation/{targetId}")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutTagRelation([FromRoute] int sourceId, [FromRoute] int targetId, [FromQuery] string name = "")
+        {
+            return ServiceUnavailable();
         }
 
         #endregion

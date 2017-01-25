@@ -17,8 +17,9 @@ namespace Api.Tests.ControllerTests
         private User _admin;
         private User _student;
         private AnnotationTag _tag1;
-        private TagRelation _relation12;
         private AnnotationTag _tag2;
+        private AnnotationTag _tag3;
+        private TagRelation _relation12;
 
         [SetUp]
         public void BeforeTest()
@@ -38,6 +39,7 @@ namespace Api.Tests.ControllerTests
             };
             _tag1 = new AnnotationTag() { Id = 1 };
             _tag2 = new AnnotationTag() { Id = 2 };
+            _tag3 = new AnnotationTag() { Id = 3 };
             _relation12 = new TagRelation(); // TODO: Pass tag1 and tag2 as parameters as soon as the TagRelation object is fixed
         }
 
@@ -209,6 +211,62 @@ namespace Api.Tests.ControllerTests
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .ShouldReturn()
+                .Forbid();
+        }
+
+        #endregion
+
+        #region PutTagRelation
+
+        /// <summary>
+        /// Should return code 200 if called with ids of two existing tags that have a relation
+        /// </summary>
+        [Test]
+        public void PutTagRelationTest()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                )
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, "mychangedrelation"))
+                .ShouldReturn()
+                .Ok();
+        }
+
+        /// <summary>
+        /// Should return 400 for relations that do not exist
+        /// </summary>
+        [Test]
+        public void PutTagRelationTest400()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                )
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, "mychangedrelation"))
+                .ShouldReturn()
+                .BadRequest();
+        }
+        
+        /// <summary>
+        /// Should return 403 for users with the student role
+        /// </summary>
+        [Test]
+        public void PutTagRelationTest403()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, "mychangedrelation"))
                 .ShouldReturn()
                 .Forbid();
         }
