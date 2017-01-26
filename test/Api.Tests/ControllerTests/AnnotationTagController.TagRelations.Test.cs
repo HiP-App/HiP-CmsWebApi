@@ -48,7 +48,7 @@ namespace Api.Tests.ControllerTests
             _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
             // TODO: Pass tag parameters as soon as the TagRelation object is fixed
             _relation12 = new TagRelation();
-            _relation32 = new TagRelation();
+            _relation32 = new TagRelation(); // this relation is not allowed because _tag2 is a top-level tag (e.g. "Perpective")
             _relation34 = new TagRelation();
         }
 
@@ -183,7 +183,7 @@ namespace Api.Tests.ControllerTests
         {
             var tag5 = new AnnotationTag() { Id = 5 };
             _tag4.ChildTags = new List<AnnotationTag>() { tag5 };
-            var expected = new List<AnnotationTag>() { _tag2, _tag4, tag5 }; // TODO: Maybe remove _tag2 from expected list
+            var expected = new List<AnnotationTag>() { _tag4, tag5 };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -212,7 +212,7 @@ namespace Api.Tests.ControllerTests
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<TagRelation>(db => db.AddRange(_relation12, _relation32, _relation34))
+                    .WithSet<TagRelation>(db => db.AddRange(_relation12, _relation34))
                 )
                 .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
                 .ShouldReturn()
@@ -235,9 +235,9 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
                     .WithSet<TagRelation>(db => db.Add(_relation12))
-                    // no relation from _tag2 to _tag1 --> relation between _tag3 and _tag2 / _tag4 not possible
+                    // no relation from _tag2 to _tag1 --> relation from _tag4 to _tag3 not possible
                 )
-                .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationsForId(_tag4.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -358,6 +358,55 @@ namespace Api.Tests.ControllerTests
                 .Calling(c => c.PostTagRelation(_tag1.Id, _tag2.Id, "myrelation"))
                 .ShouldReturn()
                 .Ok();
+        }
+
+        /// <summary>
+        /// Should return 400 for relations that are not allowed (child tag to top-level tag)
+        /// </summary>
+        [Test]
+        public void PostTagRelationTest_NoChildToFirstLevelRelation()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
+                )
+                .Calling(c => c.PostTagRelation(_tag3.Id, _tag2.Id, "child-to-toplevel-relation"))
+                .ShouldReturn()
+                .BadRequest();
+
+            // other way around is also not allowed:
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
+                )
+                .Calling(c => c.PostTagRelation(_tag2.Id, _tag3.Id, "toplevel-to-child-relation"))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        /// <summary>
+        /// Should return 400 for duplicate tag relations
+        /// </summary>
+        [Test]
+        public void PostTagRelationTest_NoDuplicateRelations()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                )
+                .Calling(c => c.PostTagRelation(_tag1.Id, _tag2.Id, "duplicate-relation"))
+                .ShouldReturn()
+                .BadRequest();
         }
 
         /// <summary>
