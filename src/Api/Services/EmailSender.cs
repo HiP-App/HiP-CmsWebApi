@@ -22,7 +22,7 @@ namespace Api.Services
         private Task SendMail(string recipient, string subject, string templateFile, Dictionary<string, string> parameters) 
         {
             var smtp = appConfig.SMTPConfig;
-            var bodyHtml = File.ReadAllText(Path.Combine("Utility", templateFile));
+            var bodyHtml = File.ReadAllText(Path.Combine("Services", templateFile));
             bodyHtml = parameters.Aggregate(bodyHtml, (current, entry) => current.Replace(@"{" + entry.Key + "}", entry.Value));
 
             var message = new MimeMessage();
