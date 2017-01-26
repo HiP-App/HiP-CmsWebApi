@@ -76,26 +76,24 @@ namespace Api.Controllers
         #region POST
 
         /// <summary>
-        /// Add Relation from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// Creates the given AnnotationTagRelation.
         /// </summary>
-        /// <param name="sourceId">ID of the source tag of the relation</param>
-        /// <param name="targetId">ID of the target tag of the relation</param>
-        /// <param name="name" optional="true">Relation name</param>
+        /// <param name="model">The relation that should be created</param>
         /// <response code="200">Relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
         /// <response code="400">Request was misformed</response>
-        [HttpPost("Tags/{sourceId}/Relation/{targetId}")]
+        [HttpPost("Tags/Relation")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation([FromRoute] int sourceId, [FromRoute] int targetId, [FromQuery] string name = "")
+        public IActionResult PostTagRelation([FromBody] AnnotationTagRelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
             try
             {
-                var success = _tagManager.AddTagRelation(sourceId, targetId, name);
+                var success = _tagManager.AddTagRelation(model);
                 if (success) return Ok();
                 else return BadRequest();
             }
@@ -111,18 +109,20 @@ namespace Api.Controllers
 
         /// <summary>
         /// Modify the relation from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// The new relation must be given in the body of the call.
+        /// Source and target tags of the relations may *not* be changed for now.
         /// </summary>
         /// <param name="sourceId">ID of the source tag of the relation</param>
         /// <param name="targetId">ID of the target tag of the relation</param>
-        /// <param name="name" optional="true">Relation name</param>
+        /// <param name="model">The changed AnnotationTagRelation</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="400">Request was misformed</response>
-        [HttpPut("Tags/{sourceId}/Relation/{targetId}")]
+        [HttpPut("Tags/Relation")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutTagRelation([FromRoute] int sourceId, [FromRoute] int targetId, [FromQuery] string name = "")
+        public IActionResult PutTagRelation([FromBody] int sourceId, [FromBody] int targetId, [FromBody] AnnotationTagRelationFormModel model)
         {
             return ServiceUnavailable();
         }
@@ -132,25 +132,24 @@ namespace Api.Controllers
         #region DELETE
 
         /// <summary>
-        /// Remove the relation from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// Remove the given relation from the database.
         /// </summary>
-        /// <param name="sourceId">ID of the source tag of the relation</param>
-        /// <param name="targetId">ID of the target tag of the relation</param>
+        /// <param name="model">The relation to remove</param>
         /// <response code="200">Relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
         /// <response code="400">Request was misformed</response>
-        [HttpDelete("Tags/{sourceId}/Relation/{targetId}")]
+        [HttpDelete("Tags/Relation")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagRelation([FromRoute] int sourceId, [FromRoute] int targetId)
+        public IActionResult DeleteTagRelation([FromBody] AnnotationTagRelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
 
             try
             {
-                var success = _tagManager.RemoveTagRelation(sourceId, targetId);
+                var success = _tagManager.RemoveTagRelation(model);
                 if (success) return Ok();
                 else return BadRequest();
             }

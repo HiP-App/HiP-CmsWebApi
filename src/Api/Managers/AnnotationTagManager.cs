@@ -92,16 +92,16 @@ namespace Api.Managers
             }
         }
 
-        internal bool AddTagRelation(int sourceTagId, int targetTagId, string name)
+        internal bool AddTagRelation(AnnotationTagRelationFormModel model)
         {
-            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == sourceTagId);
-            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == targetTagId);
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
             if (TagRelationExists(tag1, tag2))
             {
                 return false;
             } else if (tag1 != null && tag2 != null)
             {
-                var forwardRelation = new AnnotationTagRelation(tag1, tag2, name);
+                var forwardRelation = new AnnotationTagRelation(tag1, tag2, model.Name, model.ArrowStyle, model.Color);
                 DbContext.TagRelations.Add(forwardRelation);
                 DbContext.SaveChanges();
                 return true;
@@ -192,10 +192,10 @@ namespace Api.Managers
             return true;
         }
 
-        internal bool RemoveTagRelation(int sourceTagId, int targetTagId)
+        internal bool RemoveTagRelation(AnnotationTagRelationFormModel model)
         {
-            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == sourceTagId);
-            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == targetTagId);
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
             if (TagRelationExists(tag1, tag2))
             {
                 RemoveRelationFor(tag1, tag2);

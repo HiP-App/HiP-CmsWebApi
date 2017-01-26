@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Api.Models.AnnotationTag;
 
 namespace Api.Models.Entity
 {
@@ -39,6 +40,15 @@ namespace Api.Models.Entity
         }
 
         public AnnotationTagRelation() { }
+
+        public AnnotationTagRelation(AnnotationTagRelationFormModel model)
+        {
+            FirstTagId = model.FirstTagId;
+            SecondTagId = model.SecondTagId;
+            Name = model.Name;
+            ArrowStyle = model.ArrowStyle;
+            Color = model.Color;
+        }
     }
 
     public class TagRelationMap

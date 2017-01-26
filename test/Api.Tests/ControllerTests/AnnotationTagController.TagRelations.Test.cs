@@ -460,7 +460,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, "mychangedrelation"))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, TODO))
                 .ShouldReturn()
                 .Ok();
         }
@@ -478,7 +478,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, "mychangedrelation"))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, TODO))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -493,7 +493,7 @@ namespace Api.Tests.ControllerTests
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, "mychangedrelation"))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, TODO))
                 .ShouldReturn()
                 .Forbid();
         }
