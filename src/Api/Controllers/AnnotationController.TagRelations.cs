@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using Api.Models.AnnotationTag;
+using Api.Models.Entity;
 using Api.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +19,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Relations/{maxDepth}")]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(List<AnnotationTagRelation>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelations([FromRoute] int maxDepth = int.MaxValue)
         {
@@ -31,7 +34,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/{id}/Relations")]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(List<AnnotationTagRelation>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelationsForId([FromRoute] int id)
         {
@@ -45,7 +48,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tags</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/{id}/AllowedRelations")]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationsForId([FromRoute] int id)
         {
@@ -60,10 +63,11 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tags</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Instance/{id}/AvailableRelations")]
-        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(List<AnnotationTagRelation>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAvailableRelationsForInstance([FromRoute] int id)
         {
+            // TODO: Waiting for relations in tag instances / documents
             return ServiceUnavailable();
         }
 
@@ -157,5 +161,7 @@ namespace Api.Controllers
         }
 
         #endregion
+
+        // TODO: Documents may also have relations in them --> need GET, POST, PUT, DELETE etc. for relations of a document (i.e. relations between tag instances)
     }
 }
