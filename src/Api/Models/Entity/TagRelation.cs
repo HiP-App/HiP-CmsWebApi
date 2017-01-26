@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Api.Models.Entity
 {
     /// <summary>
-    /// Represents a *directed* relation between two tag instances (i.e. AnnotationTagInstance).
+    /// Represents a *directed* relation between two tags (i.e. AnnotationTag).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
     public class TagRelation
@@ -14,22 +14,28 @@ namespace Api.Models.Entity
         [Required]
         public int FirstTagId { get; set; }
 
-        public AnnotationTagInstance FirstTag { get; set; }
+        public AnnotationTag FirstTag { get; set; }
 
         [Required]
         public int SecondTagId { get; set; }
 
-        public AnnotationTagInstance SecondTag { get; set; }
+        public AnnotationTag SecondTag { get; set; }
 
-        public String Name { get; set; }
+        public string Name { get; set; }
 
-        public TagRelation(AnnotationTagInstance firstTag, AnnotationTagInstance secondTag, string name = "")
+        public string ArrowStyle { get; set; }
+
+        public string Color { get; set; }
+
+        public TagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "", string arrowStyle = "", string color = "")
         {
             FirstTag = firstTag;
             FirstTagId = firstTag.Id;
             SecondTag = secondTag;
             SecondTagId = secondTag.Id;
             Name = name;
+            ArrowStyle = arrowStyle;
+            Color = color;
         }
 
         public TagRelation() { }

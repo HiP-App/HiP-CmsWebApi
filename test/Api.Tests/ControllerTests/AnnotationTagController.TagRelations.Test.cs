@@ -46,10 +46,9 @@ namespace Api.Tests.ControllerTests
             _tag4 = new AnnotationTag() { Id = 4 };
             _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
             _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
-            // TODO: Pass tag parameters as soon as the TagRelation object is fixed
-            _relation12 = new TagRelation();
-            _relation32 = new TagRelation(); // this relation is not allowed because _tag2 is a top-level tag (e.g. "Perpective")
-            _relation34 = new TagRelation();
+            _relation12 = new TagRelation(_tag1, _tag2);
+            _relation32 = new TagRelation(_tag3, _tag2); // this relation is not allowed because _tag2 is a top-level tag (e.g. "Perpective")
+            _relation34 = new TagRelation(_tag3, _tag4);
         }
 
         #region GetRelations
@@ -268,14 +267,17 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void GetAvailableRelationsForIdTest()
         {
-            var expected = new List<TagRelation>() { _relation34, _relation32 }; // TODO: Maybe remove _relation32 from expected list - if yes, add relation 3->5
+            var tag5 = new AnnotationTag() { Id = 5 };
+            var relation35 = new TagRelation(_tag3, tag5);
+            var expected = new List<TagRelation>() { _relation34, relation35 };
             var instance3 = new AnnotationTagInstance(_tag3);
             var instances = new List<AnnotationTagInstance>()
             {
                 new AnnotationTagInstance(_tag1),
                 new AnnotationTagInstance(_tag2),
                 instance3,
-                new AnnotationTagInstance(_tag4)
+                new AnnotationTagInstance(_tag4),
+                new AnnotationTagInstance(tag5)
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -283,7 +285,7 @@ namespace Api.Tests.ControllerTests
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                    .WithSet<TagRelation>(db => db.AddRange(_relation12, _relation34, relation35))
                     // TODO How to model that the tag instances are part of the same document?
                 )
                 .Calling(c => c.GetAvailableRelationsForInstance(instance3.Id))

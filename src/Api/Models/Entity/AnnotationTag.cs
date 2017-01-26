@@ -38,6 +38,10 @@ namespace Api.Models.Entity
 
         public List<AnnotationTagInstance> TagInstances { get; set; }
 
+        public List<TagRelation> Relations { get; set; }
+
+        public List<TagRelation> IncomingRelations { get; set; }
+
         public AnnotationTag() { }
 
         public AnnotationTag(AnnotationTagFormModel model)

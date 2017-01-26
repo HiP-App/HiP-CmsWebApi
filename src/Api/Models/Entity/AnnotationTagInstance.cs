@@ -15,10 +15,6 @@ namespace Api.Models.Entity
 
         public AnnotationTag TagModel { get; set; }
 
-        public List<TagRelation> Relations { get; set; }
-
-        public List<TagRelation> IncomingRelations { get; set; }
-
         public AnnotationTagInstance(AnnotationTag model)
         {
             TagModel = model;
