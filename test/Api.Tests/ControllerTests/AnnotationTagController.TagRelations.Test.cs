@@ -260,6 +260,86 @@ namespace Api.Tests.ControllerTests
 
         #endregion
 
+        #region GetAllowedRelationsForId
+
+        /// <summary>
+        /// Should return code 200 and a list of all tag relations that are available for the given tag instance
+        /// </summary>
+        [Test]
+        public void GetAvailableRelationsForIdTest()
+        {
+            var expected = new List<TagRelation>() { _relation34, _relation32 }; // TODO: Maybe remove _relation32 from expected list - if yes, add relation 3->5
+            var instance3 = new AnnotationTagInstance(_tag3);
+            var instances = new List<AnnotationTagInstance>()
+            {
+                new AnnotationTagInstance(_tag1),
+                new AnnotationTagInstance(_tag2),
+                instance3,
+                new AnnotationTagInstance(_tag4)
+            };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                    // TODO How to model that the tag instances are part of the same document?
+                )
+                .Calling(c => c.GetAvailableRelationsForInstance(instance3.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<TagRelation>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
+        /// </summary>
+        [Test]
+        public void GetAvailableRelationsForIdTest_NoRelations()
+        {
+            var expected = new List<TagRelation>() { };
+            var instance3 = new AnnotationTagInstance(_tag3);
+            var instances = new List<AnnotationTagInstance>()
+            {
+                new AnnotationTagInstance(_tag1),
+                new AnnotationTagInstance(_tag2),
+                instance3,
+                new AnnotationTagInstance(_tag4)
+            };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
+                    // no relations exist between the tags
+                    // TODO How to model that the tag instances are part of the same document?
+                )
+                .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<TagRelation>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return 400 for tags that do not exist
+        /// </summary>
+        [Test]
+        public void GetAvailableRelationsForIdTest400()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        #endregion
+
         #region PostTagRelation
 
         /// <summary>
