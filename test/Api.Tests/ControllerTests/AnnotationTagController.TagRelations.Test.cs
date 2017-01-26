@@ -19,7 +19,10 @@ namespace Api.Tests.ControllerTests
         private AnnotationTag _tag1;
         private AnnotationTag _tag2;
         private AnnotationTag _tag3;
+        private AnnotationTag _tag4;
         private TagRelation _relation12;
+        private TagRelation _relation32;
+        private TagRelation _relation34;
 
         [SetUp]
         public void BeforeTest()
@@ -40,7 +43,13 @@ namespace Api.Tests.ControllerTests
             _tag1 = new AnnotationTag() { Id = 1 };
             _tag2 = new AnnotationTag() { Id = 2 };
             _tag3 = new AnnotationTag() { Id = 3 };
-            _relation12 = new TagRelation(); // TODO: Pass tag1 and tag2 as parameters as soon as the TagRelation object is fixed
+            _tag4 = new AnnotationTag() { Id = 4 };
+            _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
+            _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
+            // TODO: Pass tag parameters as soon as the TagRelation object is fixed
+            _relation12 = new TagRelation();
+            _relation32 = new TagRelation();
+            _relation34 = new TagRelation();
         }
 
         #region GetRelations
@@ -158,6 +167,93 @@ namespace Api.Tests.ControllerTests
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .Calling(c => c.GetRelationsForId(1))
+                .ShouldReturn()
+                .BadRequest();
+        }
+
+        #endregion
+
+        #region GetAllowedRelationsForId
+
+        /// <summary>
+        /// Should return code 200 and a list of all tags that relations are allowed to if called properly
+        /// </summary>
+        [Test]
+        public void GetAllowedRelationsForIdTest()
+        {
+            var tag5 = new AnnotationTag() { Id = 5 };
+            _tag4.ChildTags = new List<AnnotationTag>() { tag5 };
+            var expected = new List<AnnotationTag>() { _tag2, _tag4, tag5 }; // TODO: Maybe remove _tag2 from expected list
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4, tag5))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                )
+                .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<AnnotationTag>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return code 200 and an empty list tags if there are no additional relations possible aside from those which already exist
+        /// </summary>
+        [Test]
+        public void GetAllowedRelationsForIdTest_NoAdditionalRelations()
+        {
+            var expected = new List<AnnotationTag>() {  };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
+                    .WithSet<TagRelation>(db => db.AddRange(_relation12, _relation32, _relation34))
+                )
+                .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<AnnotationTag>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return code 200 and an empty list tags if there are no relations possible because the top-level tags do not have a relation
+        /// </summary>
+        [Test]
+        public void GetAllowedRelationsForIdTest_NoToplevelRelation()
+        {
+            var expected = new List<AnnotationTag>() { };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_admin))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
+                    .WithSet<TagRelation>(db => db.Add(_relation12))
+                    // no relation from _tag2 to _tag1 --> relation between _tag3 and _tag2 / _tag4 not possible
+                )
+                .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<AnnotationTag>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        /// <summary>
+        /// Should return 400 for tags that do not exist
+        /// </summary>
+        [Test]
+        public void GetAllowedRelationsForIdTest400()
+        {
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .Calling(c => c.GetAllowedRelationsForId(_tag1.Id))
                 .ShouldReturn()
                 .BadRequest();
         }
