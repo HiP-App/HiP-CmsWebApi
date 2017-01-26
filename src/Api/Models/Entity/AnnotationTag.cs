@@ -38,9 +38,9 @@ namespace Api.Models.Entity
 
         public List<AnnotationTagInstance> TagInstances { get; set; }
 
-        public List<TagRelation> Relations { get; set; }
+        public List<AnnotationTagRelation> Relations { get; set; }
 
-        public List<TagRelation> IncomingRelations { get; set; }
+        public List<AnnotationTagRelation> IncomingRelations { get; set; }
 
         public AnnotationTag() { }
 

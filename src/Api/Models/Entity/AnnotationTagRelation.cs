@@ -9,7 +9,7 @@ namespace Api.Models.Entity
     /// Represents a *directed* relation between two tags (i.e. AnnotationTag).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
-    public class TagRelation
+    public class AnnotationTagRelation
     {
         [Required]
         public int FirstTagId { get; set; }
@@ -27,7 +27,7 @@ namespace Api.Models.Entity
 
         public string Color { get; set; }
 
-        public TagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "", string arrowStyle = "", string color = "")
+        public AnnotationTagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "", string arrowStyle = "", string color = "")
         {
             FirstTag = firstTag;
             FirstTagId = firstTag.Id;
@@ -38,12 +38,12 @@ namespace Api.Models.Entity
             Color = color;
         }
 
-        public TagRelation() { }
+        public AnnotationTagRelation() { }
     }
 
     public class TagRelationMap
     {
-        public TagRelationMap(EntityTypeBuilder<TagRelation> entityBuilder)
+        public TagRelationMap(EntityTypeBuilder<AnnotationTagRelation> entityBuilder)
         {
             entityBuilder.HasKey(r => new { r.FirstTagId, r.SecondTagId });
             entityBuilder.HasOne(r => r.FirstTag).WithMany(t => t.Relations).HasForeignKey(r => r.FirstTagId).OnDelete(DeleteBehavior.Cascade);

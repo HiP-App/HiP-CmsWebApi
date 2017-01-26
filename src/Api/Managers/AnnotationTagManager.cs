@@ -101,7 +101,7 @@ namespace Api.Managers
                 return false;
             } else if (tag1 != null && tag2 != null)
             {
-                var forwardRelation = new TagRelation(tag1, tag2, name);
+                var forwardRelation = new AnnotationTagRelation(tag1, tag2, name);
                 DbContext.TagRelations.Add(forwardRelation);
                 DbContext.SaveChanges();
                 return true;
