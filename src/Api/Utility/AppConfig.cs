@@ -5,17 +5,17 @@ namespace Api.Utility
 {
     public class AppConfig
     {
-        public DatabaseConfig DatabaseConfig { get; set; }
+        public DatabaseConfig DatabaseConfig { get; }
 
-        public AuthConfig AuthConfig { get; set; }
+        public AuthConfig AuthConfig { get; }
 
-        public SMTPConfig SMTPConfig { get; set; }
+        public string EmailService { get; }
 
-        public bool RequireHttpsMetadata { get; set; }
+        public bool RequireHttpsMetadata { get; }
 
-        public string AdminEmail { get; set; }
+        public string AdminEmail { get; }
 
-        public AppConfig(IConfigurationRoot configuration)
+        public AppConfig(IConfiguration configuration)
         {
             DatabaseConfig = new DatabaseConfig
             {
@@ -25,21 +25,13 @@ namespace Api.Utility
                 Name = configuration.GetValue<string>("DB_NAME")
             };
 
-            AuthConfig = new AuthConfig 
+            AuthConfig = new AuthConfig
             {
                 ClientId = configuration.GetValue<string>("CLIENT_ID"),
                 Domain = configuration.GetValue<string>("DOMAIN")
             };
 
-            SMTPConfig = new SMTPConfig
-            {
-                From = configuration.GetValue<string>("SMTP_FROM"),
-                Server = configuration.GetValue<string>("SMTP_SERVER"),
-                Port = configuration.GetValue<int>("SMTP_PORT"),
-                WithSSL = configuration.GetValue<bool>("SMTP_WITH_SSL"),
-                User = configuration.GetValue<string>("SMTP_USER"),
-                Password = configuration.GetValue<string>("SMTP_PASSWORD")
-            };
+            EmailService = configuration.GetValue<string>("EMAIL_SERVICE");
 
             RequireHttpsMetadata = !configuration.GetValue<bool>("ALLOW_HTTP");
             AdminEmail = configuration.GetValue<string>("ADMIN_EMAIL");
@@ -57,10 +49,12 @@ namespace Api.Utility
 
         public string Password { get; set; }
 
-        public string ConnectionString { 
-            get {
-                StringBuilder connectionString = new StringBuilder();
-                
+        public string ConnectionString
+        {
+            get
+            {
+                var connectionString = new StringBuilder();
+
                 connectionString.Append($"Host={Host};");
                 connectionString.Append($"Username={Username};");
                 connectionString.Append($"Password={Password};");
@@ -77,15 +71,5 @@ namespace Api.Utility
         public string ClientId { get; set; }
 
         public string Domain { get; set; }
-    }
-
-    public class SMTPConfig
-    {
-        public string From { get; set; }
-        public string Server { get; set; }
-        public int Port { get; set; }
-        public bool WithSSL { get; set; }
-        public string User { get; set; }
-        public string Password { get; set; }
     }
 }
