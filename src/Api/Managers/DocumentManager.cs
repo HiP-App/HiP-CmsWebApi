@@ -18,7 +18,7 @@ namespace Api.Managers
             return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
         }
 
-        internal EntityResult UpdateDocument(int topicId, int userId, String htmlContent)
+        internal EntityResult UpdateDocument(int topicId, int userId, string htmlContent)
         {
             try
             {
@@ -29,24 +29,22 @@ namespace Api.Managers
                 return EntityResult.Error("Unknown Topic");
             }
             // already exitsts
-
+            
+            Document document;
             try
             {
-                var document = GetDocumentById(topicId);
-                // Yes -> delete Old at first
-                DbContext.Remove(document);
+                document = GetDocumentById(topicId);
+                document.UpdaterId = userId;
+                document.Content = htmlContent;
             }
             catch (InvalidOperationException)
             {
-                // no -> create new.
+                document = new Document(topicId, userId, htmlContent);
+                DbContext.Add(document);
             }
             try
             {
-                Document document = new Document(topicId, userId, htmlContent);
-
-                DbContext.Add(document);
                 DbContext.SaveChanges();
-
                 return EntityResult.Successfull();
             }
             catch (Exception e)
