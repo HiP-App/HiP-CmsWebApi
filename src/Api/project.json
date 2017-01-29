@@ -2,6 +2,7 @@
   "version": "0.0.1",
 
   "dependencies": {
+    "MailKit": "1.8.1",
     "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0",
     "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
