@@ -75,7 +75,7 @@ namespace Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppConfig appConfig, IHostingEnvironment env)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -103,7 +103,7 @@ namespace Api
             app.UseSwaggerUi();
 
             // Run all pending Migrations and Seed DB with initial data
-            app.RunMigrationsAndSeedDb();
+            app.RunMigrationsAndSeedDb(env);
             app.UseStaticFiles();
 
             ServiceProvider = app.ApplicationServices;
