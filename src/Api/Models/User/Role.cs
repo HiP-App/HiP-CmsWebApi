@@ -1,4 +1,6 @@
-﻿namespace Api.Models
+﻿using System;
+
+namespace Api.Models
 {
     public static class Role
     {
@@ -9,9 +11,9 @@
 
         public static bool IsRoleValid(string role)
         {
-            return role.CompareTo(Student) == 0 || 
-                role.CompareTo(Supervisor) == 0 || 
-                role.CompareTo(Administrator) == 0;
+            return string.Compare(role, Student, StringComparison.Ordinal) == 0 || 
+                string.Compare(role, Supervisor, StringComparison.Ordinal) == 0 || 
+                string.Compare(role, Administrator, StringComparison.Ordinal) == 0;
         }
     }
 }
