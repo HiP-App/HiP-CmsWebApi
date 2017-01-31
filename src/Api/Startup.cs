@@ -7,10 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using Swashbuckle.Swagger.Model;
 using System;
 using System.IO;
 using Api.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Api
 {
@@ -31,7 +31,6 @@ namespace Api
 
             Configuration = builder.Build();
         }
-
 
         /// <summary>
         /// Configures the built-in container's services, i.e. the services added to the IServiceCollection
@@ -58,20 +57,12 @@ namespace Api
             services.AddMvc();
 
             // Add Swagger service
-            services.AddSwaggerGen();
-
-            // Configurig Metadata in Swagger
-            services.ConfigureSwaggerGen(options =>
+            services.AddSwaggerGen(c =>
             {
-                options.SingleApiVersion(new Info
-                {
-                    Version = "v1",
-                    Title = "HiPCMS API",
-                    Description = "A REST api to serve History in Paderborn CMS System"
-                });
-                //Set the comments path for the swagger json and ui.
-                options.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
-                options.OperationFilter<SwaggerOperationFilter>();
+                c.SwaggerDoc("v1", new Info() { Title = "HiPCMS API", Version = "v1", Description = "A REST api to serve History in Paderborn CMS System" });
+
+                c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
+                c.OperationFilter<SwaggerOperationFilter>();
             });
         }
 
@@ -102,8 +93,14 @@ namespace Api
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
-            app.UseSwagger();
-            app.UseSwaggerUi();
+            app.UseSwagger(c =>
+            {
+                c.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Host = httpReq.Host.Value);
+            });
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "HiPCMS API V1");
+            });
 
             // Run all pending Migrations and Seed DB with initial data
             app.RunMigrationsAndSeedDb();
