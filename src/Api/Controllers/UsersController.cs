@@ -50,11 +50,11 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _userManager.InviteUsers(model.emails, emailSender);
-            if (result.FailedInvitations.Count == model.emails.Length)
+            var result = _userManager.InviteUsers(model.Emails, emailSender);
+            if (result.FailedInvitations.Count == model.Emails.Length)
                 return BadRequest(result);
 
-            if (result.ExistingUsers.Count == model.emails.Length)
+            if (result.ExistingUsers.Count == model.Emails.Length)
                 return StatusCode(409, result);
 
             return Accepted(result);

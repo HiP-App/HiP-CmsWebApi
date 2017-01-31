@@ -14,9 +14,10 @@ using Api.Services;
 
 namespace Api
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-        internal static IServiceProvider ServiceProvider { get; set; }
+        internal static IServiceProvider ServiceProvider { get; private set; }
 
         private IConfigurationRoot Configuration { get; }
 
