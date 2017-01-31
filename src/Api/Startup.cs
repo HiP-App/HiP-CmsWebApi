@@ -76,10 +76,12 @@ namespace Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AppConfig appConfig)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            if (env.IsDevelopment())
+                loggerFactory.AddDebug();
+
             app.UseCors(builder =>
                 // This will allow any request from any server. Tweak to fit your needs!
                 builder.AllowAnyHeader()
