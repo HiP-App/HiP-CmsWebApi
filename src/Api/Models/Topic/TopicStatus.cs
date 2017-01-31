@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models
@@ -12,17 +13,17 @@ namespace Api.Models
             return IsStatusValid(Status);
         }
 
-        public const string Todo = "Todo";
-        public const string InProgress = "InProgress";
-        public const string InReview = "InReview";
-        public const string Done = "Done";
+        private const string Todo = "Todo";
+        private const string InProgress = "InProgress";
+        private const string InReview = "InReview";
+        private const string Done = "Done";
 
         public static bool IsStatusValid(string status)
         {
-            return status.CompareTo(Todo) == 0 ||
-                status.CompareTo(InProgress) == 0 ||
-                status.CompareTo(InReview) == 0 ||
-                status.CompareTo(Done) == 0;
+            return string.Compare(status, Todo, StringComparison.Ordinal) == 0 ||
+                string.Compare(status, InProgress, StringComparison.Ordinal) == 0 ||
+                string.Compare(status, InReview, StringComparison.Ordinal) == 0 ||
+                string.Compare(status, Done, StringComparison.Ordinal) == 0;
         }
     }
 }

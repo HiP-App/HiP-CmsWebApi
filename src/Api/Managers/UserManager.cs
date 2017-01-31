@@ -135,8 +135,8 @@ namespace Api.Managers
         /// <returns>Tuple containing (1) the failed invitations and (2) existing users lists.</returns>
         public InvitationResult InviteUsers(IEnumerable<string> emails, IEmailSender emailSender)
         {
-            List<String> failedInvitations = new List<string>();
-            List<String> existingUsers = new List<string>();
+            var failedInvitations = new List<string>();
+            var existingUsers = new List<string>();
             foreach (var email in emails)
             {
                 try
@@ -156,11 +156,6 @@ namespace Api.Managers
                 {
                     //user already exists in Database
                     existingUsers.Add(email);
-                }
-                catch (MailKit.Net.Smtp.SmtpCommandException)
-                {
-                    //something went wrong when sending email
-                    failedInvitations.Add(email);
                 }
             }
             return new InvitationResult() { FailedInvitations = failedInvitations, ExistingUsers = existingUsers };

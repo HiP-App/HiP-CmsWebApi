@@ -50,11 +50,11 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _userManager.InviteUsers(model.emails, emailSender);
-            if (result.FailedInvitations.Count == model.emails.Length)
+            var result = _userManager.InviteUsers(model.Emails, emailSender);
+            if (result.FailedInvitations.Count == model.Emails.Length)
                 return BadRequest(result);
 
-            if (result.ExistingUsers.Count == model.emails.Length)
+            if (result.ExistingUsers.Count == model.Emails.Length)
                 return StatusCode(409, result);
 
             return Accepted(result);
@@ -69,14 +69,14 @@ namespace Api.Controllers
         /// <summary>
         /// All users matching query and role
         /// </summary>   
-        /// <param name="query">Users containing query in email, first and last name</param>
-        /// <param name="role">Represents role of the user</param>        
+        /// <param name="role">Represents role of the user</param>
+        /// <param name="query">Users containing query in email, first and last name</param>        
         /// <param name="page">Represents the page</param>
         /// <response code="200">Returns PagedResults of UserResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
-        public IActionResult Get([FromQuery]string query, [FromQuery]string role, [FromQuery] int page = 1)
+        public IActionResult Get([FromQuery]string role, [FromQuery]string query, [FromQuery] int page = 1)
         {
             var users = _userManager.GetAllUsers(query, role, page, Constants.PageSize);
             int count = _userManager.GetUsersCount();

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using HeyRed.Mime;
 
 namespace Api.Controllers
 {
@@ -37,7 +38,7 @@ namespace Api.Controllers
             if (!resource.IsSameUser(userIp))
                 return ApiController.Forbidden();
 
-            var contentType = MimeKit.MimeTypes.GetMimeType(resource.FileName);
+            var contentType = MimeGuesser.GuessMimeType(resource.FileName);
             return File(resource.FileName, contentType, Path.GetFileName(resource.FileName));
         }
     }
