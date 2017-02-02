@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc.Authorization;
-using Swashbuckle.Swagger.Model;
-using Swashbuckle.SwaggerGen.Generator;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.Linq;
+using Swashbuckle.AspNetCore.Swagger;
+using System;
 
 namespace Api.Utility
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class SwaggerOperationFilter : IOperationFilter
     {
         public void Apply(Operation operation, OperationFilterContext context)

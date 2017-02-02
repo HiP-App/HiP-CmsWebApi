@@ -16,7 +16,7 @@ namespace Api.Managers
         private readonly List<int> notifiedUsers = new List<int>();
         private readonly Topic topic;
         private readonly int currentUser;
-        private readonly EmailSender emailSender;
+        private readonly IEmailSender emailSender;
 
         public NotificationProcessor(
             CmsDbContext dbContext,
@@ -26,7 +26,7 @@ namespace Api.Managers
         {
             topic = currentTopic;
             this.currentUser = currentUser;
-            emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(EmailSender)); // TODO: This is probably not such a good idea...
+            emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(IEmailSender)); // TODO: This is probably not such a good idea...
             // Do not notify yourself
             notifiedUsers.Add(currentUser);
         }

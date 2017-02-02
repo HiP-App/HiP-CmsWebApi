@@ -1,4 +1,5 @@
-﻿namespace Api.Models.Notifications
+﻿// ReSharper disable InconsistentNaming
+namespace Api.Models.Notifications
 {
     public enum NotificationType
     {

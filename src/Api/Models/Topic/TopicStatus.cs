@@ -13,10 +13,10 @@ namespace Api.Models
             return IsStatusValid(Status);
         }
 
-        public const string Todo = "Todo";
-        public const string InProgress = "InProgress";
-        public const string InReview = "InReview";
-        public const string Done = "Done";
+        private const string Todo = "Todo";
+        private const string InProgress = "InProgress";
+        private const string InReview = "InReview";
+        private const string Done = "Done";
 
         public static bool IsStatusValid(string status)
         {
