@@ -6,6 +6,7 @@ using Api.Controllers;
 using Api.Managers;
 using Api.Models;
 using Api.Models.Entity;
+using Api.Models.AnnotationTag;
 using MyTested.AspNetCore.Mvc;
 using NUnit.Framework;
 
@@ -350,6 +351,13 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest()
         {
+            var expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _tag1.Id,
+                SecondTagId = _tag2.Id,
+                Name = "relationName",
+                Color = "schwarzgelb",
+                ArrowStyle = "dotted"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -357,7 +365,18 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
-                .Calling(c => c.PostTagRelation(_tag1.Id, _tag2.Id, "myrelation"))
+                .Calling(c => c.PostTagRelation(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    relations.Any(actual =>
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name &&
+                        actual.Color == expected.Color &&
+                        actual.ArrowStyle == expected.ArrowStyle
+                    )
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .Ok();
         }
@@ -368,6 +387,11 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest_NoChildToFirstLevelRelation()
         {
+            var expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _tag3.Id,
+                SecondTagId = _tag2.Id,
+                Name = "child-to-toplevel-relation"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -375,11 +399,25 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
                 )
-                .Calling(c => c.PostTagRelation(_tag3.Id, _tag2.Id, "child-to-toplevel-relation"))
+                .Calling(c => c.PostTagRelation(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    !relations.Any(actual => // negated --> NO relation like this exists
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name
+                    )
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .BadRequest();
 
             // other way around is also not allowed:
+            expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _tag2.Id,
+                SecondTagId = _tag3.Id,
+                Name = "toplevel-to-child-relation"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -387,7 +425,16 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
                 )
-                .Calling(c => c.PostTagRelation(_tag2.Id, _tag3.Id, "toplevel-to-child-relation"))
+                .Calling(c => c.PostTagRelation(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    !relations.Any(actual => // negated --> NO relation like this exists
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name
+                    )
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -398,6 +445,11 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest_NoDuplicateRelations()
         {
+            var expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id,
+                Name = "duplcate-relation"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -406,7 +458,16 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.PostTagRelation(_tag1.Id, _tag2.Id, "duplicate-relation"))
+                .Calling(c => c.PostTagRelation(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    relations.Count(actual =>
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name
+                    ) == 1 // should only contain 1 entry, not two
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -417,12 +478,26 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest400()
         {
+            var expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _tag1.Id,
+                SecondTagId = _tag2.Id,
+                Name = "relation-with-nonexisting-tags"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_admin)))
                 // --> tags 1 and 2 were NOT added to the database
-                .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .Calling(c => c.PostTagRelation(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    !relations.Any(actual => // negated --> NO relation like this exists
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name
+                    )
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -433,11 +508,25 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest403()
         {
+            var expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _tag1.Id,
+                SecondTagId = _tag2.Id,
+                Name = "relation-with-nonexisting-tags"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.PostTagRelation(1, 2, "myrelation"))
+                .Calling(c => c.PostTagRelation(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    !relations.Any(actual => // negated --> NO relation like this exists
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name
+                    )
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .Forbid();
         }
@@ -452,6 +541,13 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PutTagRelationTest()
         {
+            var expected = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id,
+                Name = "changedName"
+            };
+            var expectedColor = "oldColor";
+            _relation12.ArrowStyle = expectedColor;
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -460,7 +556,17 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, TODO))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                    relations.Any(actual =>
+                        actual.FirstTagId == expected.FirstTagId &&
+                        actual.SecondTagId == expected.SecondTagId &&
+                        actual.Name == expected.Name &&
+                        actual.Color == expectedColor // color should not change as it was not set in the model
+                    )
+                ))
+                .AndAlso()
                 .ShouldReturn()
                 .Ok();
         }
@@ -471,6 +577,11 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PutTagRelationTest400()
         {
+            var model = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id,
+                Name = "changedName"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -478,7 +589,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, TODO))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -489,11 +600,16 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PutTagRelationTest403()
         {
+            var model = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id,
+                Name = "changedName"
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, TODO))
+                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
                 .ShouldReturn()
                 .Forbid();
         }
@@ -509,6 +625,10 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest()
         {
+            var model = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -517,7 +637,12 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.DeleteTagRelation(_relation12.FirstTagId, _relation12.SecondTagId))
+                .Calling(c => c.DeleteTagRelation(model))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelation>(rels =>
+                    !rels.Any(rel => rel.FirstTagId == model.FirstTagId && rel.SecondTagId == model.SecondTagId))
+                )
+                .AndAlso()
                 .ShouldReturn()
                 .Ok();
         }
@@ -528,6 +653,10 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest400()
         {
+            var model = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -536,7 +665,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
                 // --> no TagRelation objects were added to the database
-                .Calling(c => c.DeleteTagRelation(1, 2))
+                .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -547,11 +676,15 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest403()
         {
+            var model = new AnnotationTagRelationFormModel() {
+                FirstTagId = _relation12.FirstTag.Id,
+                SecondTagId = _relation12.SecondTag.Id
+            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.DeleteTagRelation(1, 2))
+                .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
                 .Forbid();
         }
