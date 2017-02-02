@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Api.Models.AnnotationTag;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Models.Entity
+namespace Api.Models.Entity.Annotation
 {
     /// <summary>
     /// Represents a *directed* relation between two tags (i.e. AnnotationTag).

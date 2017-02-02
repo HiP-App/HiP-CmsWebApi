@@ -1,6 +1,7 @@
 ﻿using Api.Models.Entity;
+using Api.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
-using static Api.Models.Entity.AnnotationTag;
+using static Api.Models.Entity.Annotation.AnnotationTag;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ObjectCreationAsStatement
 

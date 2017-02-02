@@ -7,6 +7,7 @@ using Api.Managers;
 using Api.Models;
 using Api.Models.Entity;
 using Api.Models.AnnotationTag;
+using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using NUnit.Framework;
 
