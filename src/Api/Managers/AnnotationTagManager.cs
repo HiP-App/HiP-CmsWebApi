@@ -43,6 +43,11 @@ namespace Api.Managers
         {
             return DbContext.AnnotationTags.Where(at => at.ParentTagId == id).ToList().Select(at => new AnnotationTagResult(at));
         }
+        
+        public IEnumerable<Layer> GetAllLayers()
+        {
+            return DbContext.Layers.ToList();
+        }
 
         #endregion
 

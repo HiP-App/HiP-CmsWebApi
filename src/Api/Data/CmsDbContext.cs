@@ -1,4 +1,5 @@
-﻿using Api.Models.Entity;
+﻿using Api.Models.AnnotationTag;
+using Api.Models.Entity;
 using Api.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
 using static Api.Models.Entity.Annotation.AnnotationTag;
@@ -35,6 +36,8 @@ namespace Api.Data
         public DbSet<AnnotationTagRelation> TagRelations { get; set; }
 
         public DbSet<AnnotationTagInstance> AnnotationTagInstances { get; set; }
+
+        public DbSet<Layer> Layers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

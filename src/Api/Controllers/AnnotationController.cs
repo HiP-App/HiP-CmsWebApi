@@ -8,6 +8,7 @@ using Api.Permission;
 using Api.Utility;
 using Api.Models;
 using System;
+using Api.Models.Entity.Annotation;
 
 namespace Api.Controllers
 {
@@ -40,6 +41,21 @@ namespace Api.Controllers
         public IActionResult GetAllTags([FromQuery]bool includeDeleted = false, [FromQuery]bool includeOnlyRoot = false)
         {
             return Ok(_tagManager.GetAllTags(includeDeleted, includeOnlyRoot));
+        }
+
+        // Get api/annotation/layers
+
+        /// <summary>
+        /// All tag layers saved in the system.
+        /// </summary>
+        /// <response code="200">A list of tag layers</response>
+        /// <response code="401">User is denied</response>
+        [HttpGet("Layers")]
+        [ProducesResponseType(typeof(IEnumerable<Layer>), 200)]
+        [ProducesResponseType(typeof(void), 401)]
+        public IActionResult GetAllLayers()
+        {
+            return Ok(_tagManager.GetAllLayers());
         }
 
         // Get api/Annotation/Tags/:id
