@@ -49,6 +49,11 @@ namespace Api.Managers
             return DbContext.Layers.ToList();
         }
 
+        public IEnumerable<LayerRelationRule> GetAllLayerRelationRules()
+        {
+            return DbContext.LayerRelationRules.ToList();
+        }
+
         #endregion
 
         #region Adding

@@ -39,6 +39,8 @@ namespace Api.Data
 
         public DbSet<Layer> Layers { get; set; }
 
+        public DbSet<LayerRelationRule> LayerRelationRules { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();

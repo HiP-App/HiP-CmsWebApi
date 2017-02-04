@@ -25,6 +25,9 @@ namespace Api.Tests.ControllerTests
         private AnnotationTagRelation _relation12;
         private AnnotationTagRelation _relation32;
         private AnnotationTagRelation _relation34;
+        private Layer _layer2;
+        private Layer _layer1;
+        private LayerRelationRule _layerRelation;
 
         [SetUp]
         public void BeforeTest()
@@ -51,7 +54,35 @@ namespace Api.Tests.ControllerTests
             _relation12 = new AnnotationTagRelation(_tag1, _tag2);
             _relation32 = new AnnotationTagRelation(_tag3, _tag2); // this relation is not allowed because _tag2 is a top-level tag (e.g. "Perpective")
             _relation34 = new AnnotationTagRelation(_tag3, _tag4);
+            _layer1 = new Layer() { Name = "Time" };
+            _layer2 = new Layer() { Name = "Perspective" };
+            _layerRelation = new LayerRelationRule() {};
         }
+
+        #region GetLayerRelationRules
+
+        /// <summary>
+        /// Should return code 200 and a list of all layer relation rules if called properly
+        /// </summary>
+        [Test]
+        public void GetLayerRelationRulesTest()
+        {
+            var expected = new List<LayerRelationRule>() { _layerRelation };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelation))
+                )
+                .Calling(c => c.GetRelations(0))
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<List<LayerRelationRule>>()
+                .Passing(actual => expected.SequenceEqual(actual));
+        }
+
+        #endregion
 
         #region GetRelations
 

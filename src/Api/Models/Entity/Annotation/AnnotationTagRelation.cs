@@ -9,7 +9,7 @@ namespace Api.Models.Entity.Annotation
     /// Represents a *directed* relation between two tags (i.e. AnnotationTag).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
-    public class AnnotationTagRelation
+    public class AnnotationTagRelation : RelationRule
     {
         [Required]
         public int FirstTagId { get; set; }
@@ -22,10 +22,7 @@ namespace Api.Models.Entity.Annotation
         public AnnotationTag SecondTag { get; set; }
 
         public string Name { get; set; }
-
-        public string ArrowStyle { get; set; }
-
-        public string Color { get; set; }
+        
 
         public AnnotationTagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "", string arrowStyle = "", string color = "")
         {

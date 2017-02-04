@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace Api.Models.Entity.Annotation
 {
-    public class Layer
+    public class RelationRule
     {
         [Key]
         public int Id { get; set; }
 
-        public String Name { get; set; }
+        public string ArrowStyle { get; set; }
 
-        public List<LayerRelationRule> Relations { get; set; }
-
-        public List<LayerRelationRule> IncomingRelations { get; set; }
+        public string Color { get; set; }
     }
 }

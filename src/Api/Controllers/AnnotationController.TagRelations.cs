@@ -72,6 +72,19 @@ namespace Api.Controllers
             // TODO: Waiting for relations in tag instances / documents
             return ServiceUnavailable();
         }
+        
+        /// <summary>
+        /// All layer relation rules saved in the system.
+        /// </summary>
+        /// <response code="200">A list of layer relation rules</response>
+        /// <response code="401">User is denied</response>
+        [HttpGet("Layers/RelationRules")]
+        [ProducesResponseType(typeof(IEnumerable<LayerRelationRule>), 200)]
+        [ProducesResponseType(typeof(void), 401)]
+        public IActionResult GetAllLayerRelationRules()
+        {
+            return Ok(_tagManager.GetAllLayerRelationRules());
+        }
 
         #endregion
 
