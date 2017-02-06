@@ -75,10 +75,10 @@ namespace Api.Tests.ControllerTests
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(_layerRelation))
                 )
-                .Calling(c => c.GetRelations(0))
+                .Calling(c => c.GetAllLayerRelationRules())
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<LayerRelationRule>>()
+                .WithModelOfType<List<LayerRelationRule>>() 
                 .Passing(actual => expected.SequenceEqual(actual));
         }
 

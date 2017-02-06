@@ -19,7 +19,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and a list of all tag layers if called properly
         /// </summary>
         [Test]
-        public void GetRelationsTest()
+        public void GetLayersTest()
         {
             var layer = new Layer() { Name = "Time" };
             var expected = new HashSet<Layer>() { layer };

@@ -1,8 +1,6 @@
-﻿using Api.Models.AnnotationTag;
-using Api.Models.Entity;
+﻿using Api.Models.Entity;
 using Api.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
-using static Api.Models.Entity.Annotation.AnnotationTag;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ObjectCreationAsStatement
 
@@ -51,11 +49,12 @@ namespace Api.Data
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new DocumentMap(modelBuilder.Entity<Document>());
             new NotificationMap(modelBuilder.Entity<Notification>());
-            new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
+            new AnnotationTag.AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
             new TagRelationMap(modelBuilder.Entity<AnnotationTagRelation>());
             new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
             new LegalMap(modelBuilder.Entity<Legal>());
+            new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
         }
     }
 }
