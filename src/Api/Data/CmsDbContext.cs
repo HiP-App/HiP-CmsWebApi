@@ -31,6 +31,8 @@ namespace Api.Data
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
+        public DbSet<StudentDetails> StudentDetails { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
@@ -44,6 +46,7 @@ namespace Api.Data
             new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
             new LegalMap(modelBuilder.Entity<Legal>());
+            new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
         }
     }
 }

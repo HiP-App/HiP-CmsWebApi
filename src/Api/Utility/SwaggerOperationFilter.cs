@@ -3,7 +3,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 using System.Linq;
 using Swashbuckle.AspNetCore.Swagger;
-using System;
 
 namespace Api.Utility
 {
@@ -16,20 +15,19 @@ namespace Api.Utility
             var isAuthorized = filterPipeline.Select(filterInfo => filterInfo.Filter).Any(filter => filter is AuthorizeFilter);
             var allowAnonymous = filterPipeline.Select(filterInfo => filterInfo.Filter).Any(filter => filter is IAllowAnonymousFilter);
 
-            if (isAuthorized && !allowAnonymous)
-            {
-                if (operation.Parameters == null)
-                    operation.Parameters = new List<IParameter>();
+            if (!isAuthorized || allowAnonymous)
+                return;
+            if (operation.Parameters == null)
+                operation.Parameters = new List<IParameter>();
 
-                operation.Parameters.Add(new NonBodyParameter
-                {
-                    Name = "Authorization",
-                    In = "header",
-                    Description = "access token",
-                    Required = true,
-                    Type = "string"
-                });
-            }
+            operation.Parameters.Add(new NonBodyParameter
+            {
+                Name = "Authorization",
+                In = "header",
+                Description = "access token",
+                Required = true,
+                Type = "string"
+            });
         }
     }
 }
