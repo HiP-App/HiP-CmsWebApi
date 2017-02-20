@@ -36,7 +36,7 @@ namespace Api.Managers
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserById(int userId)
         {
-            return DbContext.Users.Single(u => u.Id == userId);
+            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Id == userId);
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
