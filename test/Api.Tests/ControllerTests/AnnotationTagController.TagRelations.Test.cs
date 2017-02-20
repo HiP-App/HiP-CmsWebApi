@@ -171,7 +171,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-/*
+
         #region GetRelations
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-*/
+
         #region GetAllowedRelationsForId
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-/*
+
         #region PostTagRelation
 
         /// <summary>
@@ -652,7 +652,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-*//*
+
         #region PutTagRelation
 
         /// <summary>
@@ -735,7 +735,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-*//*
+
         #region DeleteTagRelation
 
 
@@ -810,6 +810,6 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-        */
+        
     }
 }
