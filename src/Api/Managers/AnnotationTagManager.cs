@@ -18,7 +18,7 @@ namespace Api.Managers
         {
             return tag1 != null &&
                 tag2 != null &&
-                DbContext.TagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+                DbContext.AnnotationTagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
         }
 
         #region GET
@@ -113,7 +113,7 @@ namespace Api.Managers
             } else if (tag1 != null && tag2 != null)
             {
                 var forwardRelation = new AnnotationTagRelation(tag1, tag2, model.Name, model.ArrowStyle, model.Color);
-                DbContext.TagRelations.Add(forwardRelation);
+                DbContext.AnnotationTagRelations.Add(forwardRelation);
                 DbContext.SaveChanges();
                 return true;
             } else
@@ -253,8 +253,8 @@ namespace Api.Managers
 
         private void RemoveRelationFor(AnnotationTag source, AnnotationTag target)
         {
-            var relation = DbContext.TagRelations.Single(rel => rel.FirstTagId == source.Id && rel.SecondTagId == target.Id);
-            DbContext.TagRelations.Remove(relation);
+            var relation = DbContext.AnnotationTagRelations.Single(rel => rel.FirstTagId == source.Id && rel.SecondTagId == target.Id);
+            DbContext.AnnotationTagRelations.Remove(relation);
         }
 
         internal bool RemoveTagInstance(int tagInstanceid)

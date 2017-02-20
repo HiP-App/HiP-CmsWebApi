@@ -29,7 +29,7 @@ namespace Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TagRelations",
+                name: "AnnotationTagRelations",
                 columns: table => new
                 {
                     FirstTagId = table.Column<int>(nullable: false),
@@ -41,16 +41,16 @@ namespace Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TagRelations", x => new { x.FirstTagId, x.SecondTagId });
-                    table.UniqueConstraint("AK_TagRelations_Id", x => x.Id);
+                    table.PrimaryKey("PK_AnnotationTagRelations", x => new { x.FirstTagId, x.SecondTagId });
+                    table.UniqueConstraint("AK_AnnotationTagRelations_Id", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TagRelations_AnnotationTags_FirstTagId",
+                        name: "FK_AnnotationTagRelations_AnnotationTags_FirstTagId",
                         column: x => x.FirstTagId,
                         principalTable: "AnnotationTags",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TagRelations_AnnotationTags_SecondTagId",
+                        name: "FK_AnnotationTagRelations_AnnotationTags_SecondTagId",
                         column: x => x.SecondTagId,
                         principalTable: "AnnotationTags",
                         principalColumn: "Id",
@@ -104,8 +104,8 @@ namespace Api.Migrations
                 column: "TagModelId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TagRelations_SecondTagId",
-                table: "TagRelations",
+                name: "IX_AnnotationTagRelations_SecondTagId",
+                table: "AnnotationTagRelations",
                 column: "SecondTagId");
 
             migrationBuilder.CreateIndex(
@@ -120,7 +120,7 @@ namespace Api.Migrations
                 name: "AnnotationTagInstances");
 
             migrationBuilder.DropTable(
-                name: "TagRelations");
+                name: "AnnotationTagRelations");
 
             migrationBuilder.DropTable(
                 name: "LayerRelationRules");

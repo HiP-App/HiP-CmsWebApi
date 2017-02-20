@@ -31,7 +31,7 @@ namespace Api.Data
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
-        public DbSet<AnnotationTagRelation> TagRelations { get; set; }
+        public DbSet<AnnotationTagRelation> AnnotationTagRelations { get; set; }
 
         public DbSet<AnnotationTagInstance> AnnotationTagInstances { get; set; }
 
@@ -49,9 +49,9 @@ namespace Api.Data
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new DocumentMap(modelBuilder.Entity<Document>());
             new NotificationMap(modelBuilder.Entity<Notification>());
+            new TagRelationMap(modelBuilder.Entity<AnnotationTagRelation>());
             new AnnotationTag.AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
-            new TagRelationMap(modelBuilder.Entity<AnnotationTagRelation>());
             new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
             new LegalMap(modelBuilder.Entity<Legal>());
             new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());

@@ -14,12 +14,12 @@ namespace Api.Models.Entity.Annotation
         [Required]
         public int FirstTagId { get; set; }
 
-        public AnnotationTag FirstTag { get; set; }
+        public virtual AnnotationTag FirstTag { get; set; }
 
         [Required]
         public int SecondTagId { get; set; }
 
-        public AnnotationTag SecondTag { get; set; }
+        public virtual AnnotationTag SecondTag { get; set; }
 
         public string Name { get; set; }
         

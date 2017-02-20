@@ -83,7 +83,7 @@ namespace Api.Migrations
 
                     b.HasIndex("SecondTagId");
 
-                    b.ToTable("TagRelations");
+                    b.ToTable("AnnotationTagRelations");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.Layer", b =>

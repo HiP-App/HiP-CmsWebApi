@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170206145747_layer-relations")]
+    [Migration("20170220132748_layer-relations")]
     partial class layerrelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,7 +84,7 @@ namespace Api.Migrations
 
                     b.HasIndex("SecondTagId");
 
-                    b.ToTable("TagRelations");
+                    b.ToTable("AnnotationTagRelations");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.Layer", b =>
