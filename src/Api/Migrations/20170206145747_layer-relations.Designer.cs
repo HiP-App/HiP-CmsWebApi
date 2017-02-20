@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170206122943_layer-relations")]
+    [Migration("20170206145747_layer-relations")]
     partial class layerrelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -352,7 +352,7 @@ namespace Api.Migrations
             modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
                 {
                     b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "FirstTag")
-                        .WithMany("Relations")
+                        .WithMany("TagRelations")
                         .HasForeignKey("FirstTagId")
                         .OnDelete(DeleteBehavior.Cascade);
 

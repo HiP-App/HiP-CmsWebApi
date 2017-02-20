@@ -15,32 +15,34 @@ namespace Api.Permission
             _userManager = new UserManager(dbContext);
         }
 
-
-        public bool IsAllowedToEditTags(int userId)
+        private bool IsAdminOrSupervisor(int userId)
         {
+            bool allowed;
             try
             {
-                // Admin or Supervisor?
                 var user = _userManager.GetUserById(userId);
-                return (user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor));
+                allowed = user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
             {
-                return false;
+                allowed = false;
             }
+            return allowed;
+        }
+
+        public bool IsAllowedToEditTags(int userId)
+        {
+            return IsAdminOrSupervisor(userId);
         }
 
         public bool IsAllowedToCreateTags(int userId)
         {
-            try
-            {
-                var user = _userManager.GetUserById(userId);
-                return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
-            }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
+            return IsAdminOrSupervisor(userId);
+        }
+
+        public bool IsAllowedToCreateRelationRules(int userId)
+        {
+            return IsAdminOrSupervisor(userId);
         }
 
     }

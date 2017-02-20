@@ -52,7 +52,7 @@ namespace Api.Models.Entity.Annotation
         public TagRelationMap(EntityTypeBuilder<AnnotationTagRelation> entityBuilder)
         {
             entityBuilder.HasKey(r => new { r.FirstTagId, r.SecondTagId });
-            entityBuilder.HasOne(r => r.FirstTag).WithMany(t => t.Relations).HasForeignKey(r => r.FirstTagId).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasOne(r => r.FirstTag).WithMany(t => t.TagRelations).HasForeignKey(r => r.FirstTagId).OnDelete(DeleteBehavior.Cascade);
             entityBuilder.HasOne(r => r.SecondTag).WithMany(t => t.IncomingRelations).HasForeignKey(r => r.SecondTagId).OnDelete(DeleteBehavior.Cascade);
         }
     }

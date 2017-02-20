@@ -351,7 +351,7 @@ namespace Api.Migrations
             modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
                 {
                     b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "FirstTag")
-                        .WithMany("Relations")
+                        .WithMany("TagRelations")
                         .HasForeignKey("FirstTagId")
                         .OnDelete(DeleteBehavior.Cascade);
 

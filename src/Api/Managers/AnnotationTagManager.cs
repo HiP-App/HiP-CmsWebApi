@@ -131,6 +131,25 @@ namespace Api.Managers
             return true;
         }
 
+        internal bool AddLayerRelationRule(LayerRelationRuleFormModel model)
+        {
+            var srcLayer = DbContext.Layers.Single(l => l.Id == model.SourceLayerId);
+            var targetLayer = DbContext.Layers.Single(l => l.Id == model.TargetLayerId);
+            var rule = new LayerRelationRule()
+            {
+                SourceLayer = srcLayer,
+                SourceLayerId = srcLayer.Id,
+                TargetLayer = targetLayer,
+                TargetLayerId = targetLayer.Id,
+                Color = model.Color,
+                ArrowStyle = model.ArrowStyle
+            };
+            DbContext.LayerRelationRules.Add(rule);
+            DbContext.SaveChanges();
+            Console.Write("added relation:" + model.SourceLayerId + model.TargetLayerId);
+            return true;
+        }
+
         #endregion
 
         #region edit

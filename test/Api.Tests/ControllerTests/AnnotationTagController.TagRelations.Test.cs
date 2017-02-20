@@ -18,6 +18,7 @@ namespace Api.Tests.ControllerTests
     {
         private User _admin;
         private User _student;
+        private User _supervisor;
         private AnnotationTag _tag1;
         private AnnotationTag _tag2;
         private AnnotationTag _tag3;
@@ -45,6 +46,12 @@ namespace Api.Tests.ControllerTests
                 Email = "student@hipapp.de",
                 Role = "Student"
             };
+            _supervisor = new User
+            {
+                Id = 3,
+                Email = "supervisor@hipapp.de",
+                Role = "Supervisor"
+            };
             _tag1 = new AnnotationTag() { Id = 1 };
             _tag2 = new AnnotationTag() { Id = 2 };
             _tag3 = new AnnotationTag() { Id = 3 };
@@ -56,7 +63,15 @@ namespace Api.Tests.ControllerTests
             _relation34 = new AnnotationTagRelation(_tag3, _tag4);
             _layer1 = new Layer() { Name = "Time" };
             _layer2 = new Layer() { Name = "Perspective" };
-            _layerRelation = new LayerRelationRule() {};
+            _layerRelation = new LayerRelationRule()
+            {
+                SourceLayer = _layer1,
+                SourceLayerId = _layer1.Id,
+                TargetLayer = _layer2,
+                TargetLayerId = _layer2.Id,
+                Color = "test-color",
+                ArrowStyle = "test-style"
+            };
         }
 
         #region GetLayerRelationRules
@@ -83,7 +98,80 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
+        
+        #region PostLayerRelationRule
 
+        /// <summary>
+        /// Should return code 200 and create the layer relation rule if called properly
+        /// </summary>
+        [Test]
+        public void PostLayerRelationRuleTest()
+        {
+            var expected = _layerRelation;
+            var model = new LayerRelationRuleFormModel()
+            {
+                SourceLayerId = expected.SourceLayerId,
+                TargetLayerId = expected.TargetLayerId,
+                Color = expected.Color,
+                ArrowStyle = expected.ArrowStyle
+            };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", _supervisor.Id.ToString()))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_supervisor))
+                    .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
+                )
+                .Calling(c => c.PostLayerRelationRule(model))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<LayerRelationRule>(relations =>
+                    relations.Any(actual =>
+                        expected.SourceLayerId == actual.SourceLayerId &&
+                        expected.TargetLayerId == actual.TargetLayerId &&
+                        expected.Color == actual.Color &&
+                        expected.ArrowStyle == actual.ArrowStyle
+                    )
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Ok()
+                .WithModelOfType<LayerRelationRule>()
+                .Passing(actual => expected.Equals(actual));
+        }
+
+        /// <summary>
+        /// Should return code 403 if a student tries to create layer relation rules
+        /// </summary>
+        [Test]
+        public void PostLayerRelationRuleTest403()
+        {
+            var expected = _layerRelation;
+            var model = new LayerRelationRuleFormModel()
+            {
+                SourceLayerId = expected.SourceLayerId,
+                TargetLayerId = expected.TargetLayerId,
+                Color = expected.Color,
+                ArrowStyle = expected.ArrowStyle
+            };
+            MyMvc
+                .Controller<AnnotationController>()
+                .WithAuthenticatedUser(user => user.WithClaim("Id", _student.Id.ToString()))
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<User>(db => db.Add(_student))
+                    .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
+                )
+                .Calling(c => c.PostLayerRelationRule(model))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<LayerRelationRule>(relations =>
+                    !relations.Any(actual => actual.Equals(expected))
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Forbid();
+        }
+
+        #endregion
+/*
         #region GetRelations
 
         /// <summary>
@@ -204,7 +292,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-
+*/
         #region GetAllowedRelationsForId
 
         /// <summary>
@@ -374,7 +462,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-
+/*
         #region PostTagRelation
 
         /// <summary>
@@ -564,7 +652,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-
+*//*
         #region PutTagRelation
 
         /// <summary>
@@ -647,7 +735,7 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
-
+*//*
         #region DeleteTagRelation
 
 
@@ -722,5 +810,6 @@ namespace Api.Tests.ControllerTests
         }
 
         #endregion
+        */
     }
 }

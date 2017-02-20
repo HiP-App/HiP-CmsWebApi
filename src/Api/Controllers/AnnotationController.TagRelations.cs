@@ -118,6 +118,33 @@ namespace Api.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Create a new layer relation rule.
+        /// </summary>
+        /// <response code="200">Rule created</response>
+        /// <response code="403">User not allowed to create a layer relation rule</response>
+        [HttpPost("Layers/RelationRule")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        public IActionResult PostLayerRelationRule([FromBody] LayerRelationRuleFormModel model)
+        {
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            {
+                return Forbid();
+            }
+            try
+            {
+                var success = _tagManager.AddLayerRelationRule(model);
+                if (success) return Ok();
+                else return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
+        }        
+
         #endregion
 
         #region PUT
