@@ -5,7 +5,7 @@ namespace Api.Utility
 {
     public class PagedResult<TEntity>
     {
-        public PagedResult(IEnumerable<TEntity> list, int page, int total)
+        public PagedResult(IEnumerable<TEntity> list, int page, int pageSize, int total)
         {
             Items = list;
 
@@ -13,7 +13,8 @@ namespace Api.Utility
                 ItemsCount = Items.Count(),
                 TotalItems = total,
                 Page = page,
-                TotalPages = (total + Constants.PageSize - 1) / Constants.PageSize
+                PageSize = pageSize,
+                TotalPages = (total + pageSize - 1) / pageSize
             };
         }
         
@@ -29,6 +30,8 @@ namespace Api.Utility
         public int TotalItems { get; set; }
 
         public int Page { get; set; }
+
+        public int PageSize { get; set; }
 
         public int TotalPages { get; set; }
     }
