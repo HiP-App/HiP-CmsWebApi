@@ -22,7 +22,6 @@
     "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.1.0",
     "AutoRest": "0.17.3",
     "Microsoft.Rest.ClientRuntime": "2.3.4",
-    "Mime": "2.0.0",
     "Swashbuckle.AspNetCore": "1.0.0-rc1"
   },
 

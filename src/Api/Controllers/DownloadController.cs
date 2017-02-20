@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using HeyRed.Mime;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Api.Controllers
 {
@@ -38,7 +38,10 @@ namespace Api.Controllers
             if (!resource.IsSameUser(userIp))
                 return ApiController.Forbidden();
 
-            var contentType = MimeGuesser.GuessMimeType(resource.FileName);
+            string contentType;
+            if (!new FileExtensionContentTypeProvider().TryGetContentType(resource.FileName, out contentType))
+                contentType = "octet-stream";
+
             return File(resource.FileName, contentType, Path.GetFileName(resource.FileName));
         }
     }
