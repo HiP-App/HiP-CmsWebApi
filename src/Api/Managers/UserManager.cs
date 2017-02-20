@@ -171,7 +171,14 @@ namespace Api.Managers
         {
             try
             {
-                student.StudentDetails = new Models.Entity.StudentDetails(student, model);
+                if (student.StudentDetails == null)
+                    student.StudentDetails = new Models.Entity.StudentDetails(student, model);
+                else
+                {
+                    student.StudentDetails.Discipline = model.Discipline;
+                    student.StudentDetails.CurrentDegree = model.CurrentDegree;
+                    student.StudentDetails.CurrentSemester = model.CurrentSemester;
+                }
                 DbContext.SaveChanges();
                 return true;
             }
