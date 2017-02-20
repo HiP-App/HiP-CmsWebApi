@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170220135434_layer-relations")]
+    [Migration("20170220145023_layer-relations")]
     partial class layerrelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,19 +101,20 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
                 {
-                    b.Property<int>("SourceLayerId");
-
-                    b.Property<int>("TargetLayerId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ArrowStyle");
 
                     b.Property<string>("Color");
 
-                    b.Property<int>("Id");
+                    b.Property<int>("SourceLayerId");
 
-                    b.HasKey("SourceLayerId", "TargetLayerId");
+                    b.Property<int>("TargetLayerId");
 
-                    b.HasAlternateKey("Id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceLayerId");
 
                     b.HasIndex("TargetLayerId");
 

@@ -164,7 +164,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutTagRelation([FromBody] int sourceId, [FromBody] int targetId, [FromBody] AnnotationTagRelationFormModel model)
+        public IActionResult PutTagRelation([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] AnnotationTagRelationFormModel model)
         {
             return ServiceUnavailable();
         }
@@ -184,7 +184,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromBody] int sourceId, [FromBody] int targetId, [FromBody] LayerRelationRuleFormModel model)
+        public IActionResult PutLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] LayerRelationRuleFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
             {
@@ -246,7 +246,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteLayerRelationRule([FromBody] int sourceId, [FromBody] int targetId)
+        public IActionResult DeleteLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
             {

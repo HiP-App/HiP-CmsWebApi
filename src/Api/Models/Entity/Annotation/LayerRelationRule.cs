@@ -23,7 +23,6 @@ namespace Api.Models.Entity.Annotation
         {
             public LayerRelationRuleMap(EntityTypeBuilder<LayerRelationRule> entityBuilder)
             {
-                entityBuilder.HasKey(r => new { r.SourceLayerId, r.TargetLayerId });
                 entityBuilder
                     .HasOne(r => r.SourceLayer)
                     .WithMany(l => l.Relations)

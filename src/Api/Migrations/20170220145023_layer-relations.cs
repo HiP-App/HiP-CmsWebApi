@@ -77,16 +77,16 @@ namespace Api.Migrations
                 name: "LayerRelationRules",
                 columns: table => new
                 {
-                    SourceLayerId = table.Column<int>(nullable: false),
-                    TargetLayerId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ArrowStyle = table.Column<string>(nullable: true),
                     Color = table.Column<string>(nullable: true),
-                    Id = table.Column<int>(nullable: false)
+                    SourceLayerId = table.Column<int>(nullable: false),
+                    TargetLayerId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LayerRelationRules", x => new { x.SourceLayerId, x.TargetLayerId });
-                    table.UniqueConstraint("AK_LayerRelationRules_Id", x => x.Id);
+                    table.PrimaryKey("PK_LayerRelationRules", x => x.Id);
                     table.ForeignKey(
                         name: "FK_LayerRelationRules_Layers_SourceLayerId",
                         column: x => x.SourceLayerId,
@@ -110,6 +110,11 @@ namespace Api.Migrations
                 name: "IX_AnnotationTagRelations_SecondTagId",
                 table: "AnnotationTagRelations",
                 column: "SecondTagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LayerRelationRules_SourceLayerId",
+                table: "LayerRelationRules",
+                column: "SourceLayerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LayerRelationRules_TargetLayerId",

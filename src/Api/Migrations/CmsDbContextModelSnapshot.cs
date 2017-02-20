@@ -100,19 +100,20 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
                 {
-                    b.Property<int>("SourceLayerId");
-
-                    b.Property<int>("TargetLayerId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ArrowStyle");
 
                     b.Property<string>("Color");
 
-                    b.Property<int>("Id");
+                    b.Property<int>("SourceLayerId");
 
-                    b.HasKey("SourceLayerId", "TargetLayerId");
+                    b.Property<int>("TargetLayerId");
 
-                    b.HasAlternateKey("Id");
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceLayerId");
 
                     b.HasIndex("TargetLayerId");
 
