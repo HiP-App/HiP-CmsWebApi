@@ -1,11 +1,26 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Api.Utility
 {
     public class PagedResult<TEntity>
     {
-        public PagedResult(IEnumerable<TEntity> list, int page, int total)
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public PagedResult(IEnumerable<TEntity> list, int total)
+        {
+            Items = list;
+            Metadata = new Pagination
+            {
+                ItemsCount = total,
+                TotalItems = total,
+                Page = 1,
+                PageSize = total,
+                TotalPages = 1
+            };
+        }
+
+        public PagedResult(IEnumerable<TEntity> list, int page, int pageSize, int total)
         {
             Items = list;
 
@@ -13,7 +28,8 @@ namespace Api.Utility
                 ItemsCount = Items.Count(),
                 TotalItems = total,
                 Page = page,
-                TotalPages = (total + Constants.PageSize - 1) / Constants.PageSize
+                PageSize = pageSize,
+                TotalPages = (total + pageSize - 1) / pageSize
             };
         }
         
@@ -29,6 +45,8 @@ namespace Api.Utility
         public int TotalItems { get; set; }
 
         public int Page { get; set; }
+
+        public int PageSize { get; set; }
 
         public int TotalPages { get; set; }
     }

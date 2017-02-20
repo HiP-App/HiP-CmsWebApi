@@ -15,7 +15,7 @@ namespace Api.Managers
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page)
+        public PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page, int pageSize)
         {
             IQueryable<Topic> query = DbContext.Topics.Include(t => t.CreatedBy);
             if (!string.IsNullOrEmpty(queryString))
@@ -34,24 +34,24 @@ namespace Api.Managers
                 query = query.Where(t => !topicsWithParent.Contains(t.Id));
             }
 
-            int count = query.Count();
-            var topics = query.Skip((page - 1) * Constants.PageSize).ToList().Select(t => new TopicResult(t));
+            var totalCount = query.Count();
+            if (page != 0)
+                return new PagedResult<TopicResult>(query.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(t => new TopicResult(t)), page, pageSize, totalCount);
+            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), totalCount);
 
-            return new PagedResult<TopicResult>(topics, page, count);
         }
 
-        public PagedResult<TopicResult> GetTopicsForUser(int userId, int page)
+        public PagedResult<TopicResult> GetTopicsForUser(int userId, int page, int pageSize)
         {
             var relatedTopicIds = DbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
-                 .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id))
-                 .Skip((page - 1) * Constants.PageSize).Take(Constants.PageSize).ToList();
+                 .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id));
 
-            int count = query.Count();
-            var topics = query.Skip((page - 1) * Constants.PageSize).Select(t => new TopicResult(t));
-
-            return new PagedResult<TopicResult>(topics, page, count);
+            var totalCount = query.Count();
+            if (page != 0)
+                return new PagedResult<TopicResult>(query.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(t => new TopicResult(t)), page, pageSize, totalCount);
+            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), totalCount);
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
@@ -121,7 +121,7 @@ namespace Api.Managers
         {
             try
             {
-                var topic = new Topic(model) {CreatedById = userId};
+                var topic = new Topic(model) { CreatedById = userId };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
                 new NotificationProcessor(DbContext, topic, userId).OnNewTopic();

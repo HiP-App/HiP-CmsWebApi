@@ -36,13 +36,14 @@ namespace Api.Controllers
         /// <param name="deadline">Topics with deadline </param>
         /// <param name="onlyParents">Indicates to get only parent topics</param>
         /// <param name="page">Represents the page</param>
+        /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult Get([FromQuery]string query, [FromQuery] string status, [FromQuery]DateTime? deadline, [FromQuery]bool onlyParents = false, [FromQuery]int page = 1)
+        public IActionResult Get([FromQuery]string query, [FromQuery] string status, [FromQuery]DateTime? deadline, [FromQuery]bool onlyParents = false, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            var topics = _topicManager.GetAllTopics(query, status, deadline, onlyParents, page);
+            var topics = _topicManager.GetAllTopics(query, status, deadline, onlyParents, page, pageSize);
             return Ok(topics);
         }
 
@@ -52,13 +53,14 @@ namespace Api.Controllers
         /// All topics of the current user
         /// </summary>
         /// <param name="page">Represents the page</param>
+        /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("OfUser/Current")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromQuery]int page = 1)
+        public IActionResult GetTopicsForUser([FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            return GetTopicsForUser(User.Identity.GetUserId(), page);
+            return GetTopicsForUser(User.Identity.GetUserId(), page, pageSize);
         }
 
         // GET api/topics/OfUser/:userId
@@ -68,13 +70,14 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="userId">Represents the user Id of the user</param>
         /// <param name="page">Represents the page</param>
+        /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("OfUser/{userId}")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromRoute]int userId, [FromQuery]int page = 1)
+        public IActionResult GetTopicsForUser([FromRoute]int userId, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            var topics = _topicManager.GetTopicsForUser(userId, page);
+            var topics = _topicManager.GetTopicsForUser(userId, page, pageSize);
             return Ok(topics);
         }
 

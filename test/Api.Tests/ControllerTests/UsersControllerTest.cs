@@ -17,7 +17,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<UsersController>()
-                .Calling(c => c.Get(null, null, 1))
+                .Calling(c => c.Get(null, null, 0, 0))
                 .ShouldReturn()
                 .Ok();
         }
