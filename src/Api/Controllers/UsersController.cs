@@ -77,12 +77,9 @@ namespace Api.Controllers
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
-        public IActionResult Get([FromQuery]string role, [FromQuery]string query, [FromQuery] int page = 1, [FromQuery] int pageSize = Constants.PageSize)
+        public IActionResult Get([FromQuery]string role, [FromQuery]string query, [FromQuery] int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            var users = _userManager.GetAllUsers(query, role, page, pageSize);
-            int count = _userManager.GetUsersCount();
-
-            return Ok(new PagedResult<UserResult>(users, page, pageSize, count));
+            return Ok(_userManager.GetAllUsers(query, role, page, pageSize));
         }
 
 

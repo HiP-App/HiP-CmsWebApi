@@ -7,6 +7,7 @@ using Api.Models.Entity;
 using Api.Models.User;
 using Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Api.Utility;
 
 namespace Api.Managers
 {
@@ -14,14 +15,17 @@ namespace Api.Managers
     {
         public UserManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual IEnumerable<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
+        public virtual PagedResult<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
         {
             var qry = DbContext.Users.Select(u => u)
                .Where(u => 
                    (string.IsNullOrEmpty(query) || (u.Email.Contains(query) || u.FirstName.Contains(query) || u.LastName.Contains(query)))
                    && (string.IsNullOrEmpty(role) || u.Role == role)).Include(u => u.StudentDetails);
 
-            return qry.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(user => new UserResult(user));
+            var totalCount = qry.Count();
+            if (page != 0)
+                return new PagedResult<UserResult>(qry.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(user => new UserResult(user)), page, pageSize, totalCount);
+            return new PagedResult<UserResult>(qry.ToList().Select(user => new UserResult(user)), page, totalCount, totalCount);
         }
 
         public virtual int GetUsersCount()
