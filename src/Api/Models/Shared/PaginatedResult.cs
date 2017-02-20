@@ -1,10 +1,25 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Api.Utility
 {
     public class PagedResult<TEntity>
     {
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        public PagedResult(IEnumerable<TEntity> list, int total)
+        {
+            Items = list;
+            Metadata = new Pagination
+            {
+                ItemsCount = total,
+                TotalItems = total,
+                Page = 1,
+                PageSize = total,
+                TotalPages = 1
+            };
+        }
+
         public PagedResult(IEnumerable<TEntity> list, int page, int pageSize, int total)
         {
             Items = list;

@@ -37,7 +37,7 @@ namespace Api.Managers
             var totalCount = query.Count();
             if (page != 0)
                 return new PagedResult<TopicResult>(query.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(t => new TopicResult(t)), page, pageSize, totalCount);
-            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), page, totalCount, totalCount);
+            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), totalCount);
 
         }
 
@@ -51,7 +51,7 @@ namespace Api.Managers
             var totalCount = query.Count();
             if (page != 0)
                 return new PagedResult<TopicResult>(query.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(t => new TopicResult(t)), page, pageSize, totalCount);
-            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), page, totalCount, totalCount);
+            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), totalCount);
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
