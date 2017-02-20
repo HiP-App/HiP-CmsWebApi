@@ -184,6 +184,19 @@ namespace Api.Managers
             return true;
         }
 
+
+        internal bool ChangeLayerRelationRule(int sourceId, int targetId, LayerRelationRuleFormModel model)
+        {
+            var srcLayer = DbContext.Layers.Single(l => l.Id == sourceId);
+            var targetLayer = DbContext.Layers.Single(l => l.Id == targetId);
+            var rule = DbContext.LayerRelationRules.Single(r => r.SourceLayerId == sourceId && r.TargetLayerId == targetId);
+            rule.ArrowStyle = model.ArrowStyle;
+            rule.Color = model.Color;
+            DbContext.SaveChanges();
+            Console.Write("changed relation:" + model.SourceLayerId + model.TargetLayerId);
+            return true;
+        }
+
         #endregion
 
         #region delete / remove
@@ -248,6 +261,14 @@ namespace Api.Managers
         {
             var instance = DbContext.AnnotationTagInstances.Single(i => i.Id == tagInstanceid);
             DbContext.AnnotationTagInstances.Remove(instance);
+            DbContext.SaveChanges();
+            return true;
+        }
+
+        internal bool RemoveLayerRelationRule(int sourceId, int targetId)
+        {
+            var entity = DbContext.LayerRelationRules.Single(r => r.SourceLayerId == sourceId && r.TargetLayerId == targetId);
+            DbContext.Remove(entity);
             DbContext.SaveChanges();
             return true;
         }

@@ -169,6 +169,39 @@ namespace Api.Controllers
             return ServiceUnavailable();
         }
 
+        /// <summary>
+        /// Modify the layer relation rule for the layer represented by {sourceId} to the layer represented by {targetId}.
+        /// The new relation must be given in the body of the call.
+        /// Source and target layers of the relations may *not* be changed for now.
+        /// </summary>
+        /// <param name="sourceId">ID of the source layer of the relation</param>
+        /// <param name="targetId">ID of the target layer of the relation</param>
+        /// <param name="model">The changed LayerRelationRuleFormModel</param>
+        /// <response code="200">Relation modified</response>
+        /// <response code="403">User not allowed to modify a relation</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPut("Layers/RelationRule")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutLayerRelationRule([FromBody] int sourceId, [FromBody] int targetId, [FromBody] LayerRelationRuleFormModel model)
+        {
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            {
+                return Forbid();
+            }
+            try
+            {
+                var success = _tagManager.ChangeLayerRelationRule(sourceId, targetId, model);
+                if (success) return Ok();
+                else return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
+        }
+
         #endregion
 
         #region DELETE
@@ -192,6 +225,36 @@ namespace Api.Controllers
             try
             {
                 var success = _tagManager.RemoveTagRelation(model);
+                if (success) return Ok();
+                else return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Remove the layer relation rule for the layer represented by {sourceId} to the layer represented by {targetId}.
+        /// </summary>
+        /// <param name="sourceId">ID of the source layer of the relation</param>
+        /// <param name="targetId">ID of the target layer of the relation</param>
+        /// <response code="200">Relation removed</response>
+        /// <response code="403">User not allowed to delete a relation</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpDelete("Layers/RelationRule")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteLayerRelationRule([FromBody] int sourceId, [FromBody] int targetId)
+        {
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            {
+                return Forbid();
+            }
+            try
+            {
+                var success = _tagManager.RemoveLayerRelationRule(sourceId, targetId);
                 if (success) return Ok();
                 else return BadRequest();
             }
