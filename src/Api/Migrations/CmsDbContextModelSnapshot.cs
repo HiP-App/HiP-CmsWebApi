@@ -212,6 +212,21 @@ namespace Api.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<string>("CurrentDegree");
+
+                    b.Property<short>("CurrentSemester");
+
+                    b.Property<string>("Discipline");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("StudentDetails");
+                });
+
             modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
                 {
                     b.Property<int>("SubscriptionId")
@@ -424,6 +439,14 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+                {
+                    b.HasOne("Api.Models.Entity.User", "User")
+                        .WithOne("StudentDetails")
+                        .HasForeignKey("Api.Models.Entity.StudentDetails", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170220145023_layer-relations")]
+    [Migration("20170221104107_layer-relations")]
     partial class layerrelations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -211,6 +211,21 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<string>("CurrentDegree");
+
+                    b.Property<short>("CurrentSemester");
+
+                    b.Property<string>("Discipline");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("StudentDetails");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
@@ -425,6 +440,14 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+                {
+                    b.HasOne("Api.Models.Entity.User", "User")
+                        .WithOne("StudentDetails")
+                        .HasForeignKey("Api.Models.Entity.StudentDetails", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

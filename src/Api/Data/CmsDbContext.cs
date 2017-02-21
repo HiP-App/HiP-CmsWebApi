@@ -39,6 +39,8 @@ namespace Api.Data
 
         public DbSet<LayerRelationRule> LayerRelationRules { get; set; }
 
+        public DbSet<StudentDetails> StudentDetails { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
@@ -55,6 +57,7 @@ namespace Api.Data
             new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
             new LegalMap(modelBuilder.Entity<Legal>());
             new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
+            new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
         }
     }
 }

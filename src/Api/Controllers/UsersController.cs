@@ -72,16 +72,14 @@ namespace Api.Controllers
         /// <param name="role">Represents role of the user</param>
         /// <param name="query">Users containing query in email, first and last name</param>        
         /// <param name="page">Represents the page</param>
+        /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of UserResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
-        public IActionResult Get([FromQuery]string role, [FromQuery]string query, [FromQuery] int page = 1)
+        public IActionResult Get([FromQuery]string role, [FromQuery]string query, [FromQuery] int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            var users = _userManager.GetAllUsers(query, role, page, Constants.PageSize);
-            int count = _userManager.GetUsersCount();
-
-            return Ok(new PagedResult<UserResult>(users, page, count));
+            return Ok(_userManager.GetAllUsers(query, role, page, pageSize));
         }
 
 

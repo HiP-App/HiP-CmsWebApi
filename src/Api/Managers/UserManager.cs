@@ -6,6 +6,8 @@ using System;
 using Api.Models.Entity;
 using Api.Models.User;
 using Api.Services;
+using Microsoft.EntityFrameworkCore;
+using Api.Utility;
 
 namespace Api.Managers
 {
@@ -13,19 +15,17 @@ namespace Api.Managers
     {
         public UserManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public virtual IEnumerable<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
+        public virtual PagedResult<UserResult> GetAllUsers(string query, string role, int page, int pageSize)
         {
-            var qry = DbContext.Users.Select(u => u);
+            var qry = DbContext.Users.Select(u => u)
+               .Where(u =>
+                   (string.IsNullOrEmpty(query) || (u.Email.Contains(query) || u.FirstName.Contains(query) || u.LastName.Contains(query)))
+                   && (string.IsNullOrEmpty(role) || u.Role == role)).Include(u => u.StudentDetails);
 
-            if (!string.IsNullOrEmpty(query))
-                qry = qry.Where(u => u.Email.Contains(query) || u.FirstName.Contains(query) || u.LastName.Contains(query));
-
-            if (!string.IsNullOrEmpty(role))
-                qry = qry.Where(u => u.Role == role);
-
-            var users = qry.ToList().Select(user => new UserResult(user));
-
-            return users.Skip((page - 1) * pageSize).Take(pageSize);
+            var totalCount = qry.Count();
+            if (page != 0)
+                return new PagedResult<UserResult>(qry.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(user => new UserResult(user)), page, pageSize, totalCount);
+            return new PagedResult<UserResult>(qry.ToList().Select(user => new UserResult(user)), totalCount);
         }
 
         public virtual int GetUsersCount()
@@ -36,13 +36,19 @@ namespace Api.Managers
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserById(int userId)
         {
-            return DbContext.Users.Single(u => u.Id == userId);
+            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Id == userId);
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetUserByEmail(string email)
         {
             return DbContext.Users.Single(u => u.Email == email);
+        }
+
+        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
+        public virtual User GeStudentById(int userId)
+        {
+            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Id == userId && string.Equals(u.Role, Role.Student));
         }
 
         public virtual bool UpdateUser(int userId, UserFormModel model)
@@ -152,13 +158,35 @@ namespace Api.Managers
                     }
                 }
 
-                catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                catch (DbUpdateException)
                 {
                     //user already exists in Database
                     existingUsers.Add(email);
                 }
             }
             return new InvitationResult() { FailedInvitations = failedInvitations, ExistingUsers = existingUsers };
+        }
+
+        public bool PutStudentDetials(User student, StudentFormModel model)
+        {
+            try
+            {
+                if (student.StudentDetails == null)
+                    student.StudentDetails = new Models.Entity.StudentDetails(student, model);
+                else
+                {
+                    student.StudentDetails.Discipline = model.Discipline;
+                    student.StudentDetails.CurrentDegree = model.CurrentDegree;
+                    student.StudentDetails.CurrentSemester = model.CurrentSemester;
+                }
+                DbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.Error.Write(e);
+            }
+            return false;
         }
     }
 }

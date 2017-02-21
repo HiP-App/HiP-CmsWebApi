@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 // ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity
@@ -35,6 +36,8 @@ namespace Api.Models.Entity
         public List<Document> Documents { get; set; }
 
         public List<Subscription> Subscriptions { get; set; }
+
+        public virtual StudentDetails StudentDetails { get; set; }
 
         #region Utility Methods
 
