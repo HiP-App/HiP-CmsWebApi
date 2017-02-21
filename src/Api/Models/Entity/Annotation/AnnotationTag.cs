@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Api.Managers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+// ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity.Annotation
 {

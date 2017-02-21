@@ -5,14 +5,11 @@
 namespace Api.Clients
 {
     using System;
-    using System.Linq;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Rest;
@@ -446,12 +443,8 @@ namespace Api.Clients
 
 namespace Api.Clients
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Rest;
     using Models;
 
     /// <summary>
@@ -538,7 +531,6 @@ namespace Api.Clients
 {
     using System;
     using System.Collections.Generic;
-    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -604,12 +596,8 @@ namespace Api.Clients
 
 namespace Api.Clients.Models
 {
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
     using Newtonsoft.Json;
     using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
 
     public partial class EmailModel
     {
@@ -670,11 +658,8 @@ namespace Api.Clients.Models
 namespace Api.Clients.Models
 {
     using System;
-    using System.Linq;
-    using System.Collections.Generic;
     using Newtonsoft.Json;
     using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
 
     public partial class NotificationModel
     {
@@ -760,12 +745,8 @@ namespace Api.Clients.Models
 
 namespace Api.Clients.Models
 {
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
     using Newtonsoft.Json;
     using Microsoft.Rest;
-    using Microsoft.Rest.Serialization;
 
     public partial class InvitationModel
     {

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Api.Models.AnnotationTag;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,8 +6,6 @@ namespace Api.Models.Entity.Annotation
 {
     public class LayerRelationRule : RelationRule
     {
-        public LayerRelationRule() { }
-
         [Required]
         public int SourceLayerId { get; set; }
 

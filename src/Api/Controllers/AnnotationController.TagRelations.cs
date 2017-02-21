@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Api.Models.AnnotationTag;
-using Api.Models.Entity;
 using Api.Models.Entity.Annotation;
 using Api.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -124,9 +123,11 @@ namespace Api.Controllers
         /// </summary>
         /// <response code="200">Rule created</response>
         /// <response code="403">User not allowed to create a layer relation rule</response>
+        /// <response code="404">Layers not found</response>
         [HttpPost("Layers/RelationRule")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult PostLayerRelationRule([FromBody] LayerRelationRuleFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
@@ -135,13 +136,13 @@ namespace Api.Controllers
             }
             try
             {
-                var success = _tagManager.AddLayerRelationRule(model);
-                if (success) return Ok();
-                else return BadRequest();
+                if (_tagManager.AddLayerRelationRule(model))
+                    return Ok();
+                return BadRequest();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }        
 
@@ -192,9 +193,9 @@ namespace Api.Controllers
             }
             try
             {
-                var success = _tagManager.ChangeLayerRelationRule(sourceId, targetId, model);
-                if (success) return Ok();
-                else return BadRequest();
+                if (_tagManager.ChangeLayerRelationRule(sourceId, targetId, model))
+                    return Ok();
+                return BadRequest();
             }
             catch (InvalidOperationException)
             {

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Api.Controllers;
-using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using NUnit.Framework;

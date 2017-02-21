@@ -1,7 +1,6 @@
 ﻿using Api.Data;
 using Api.Models;
 using Api.Models.AnnotationTag;
-using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -133,14 +132,12 @@ namespace Api.Managers
 
         internal bool AddLayerRelationRule(LayerRelationRuleFormModel model)
         {
-            var srcLayer = DbContext.Layers.Single(l => l.Id == model.SourceLayerId);
-            var targetLayer = DbContext.Layers.Single(l => l.Id == model.TargetLayerId);
+            if (!(DbContext.Layers.Any(l => l.Id == model.SourceLayerId) || DbContext.Layers.Any(l => l.Id == model.TargetLayerId)))
+                return false;
             var rule = new LayerRelationRule()
             {
-                SourceLayer = srcLayer,
-                SourceLayerId = srcLayer.Id,
-                TargetLayer = targetLayer,
-                TargetLayerId = targetLayer.Id,
+                SourceLayerId = model.SourceLayerId,
+                TargetLayerId = model.TargetLayerId,
                 Color = model.Color,
                 ArrowStyle = model.ArrowStyle
             };
@@ -187,8 +184,9 @@ namespace Api.Managers
 
         internal bool ChangeLayerRelationRule(int sourceId, int targetId, LayerRelationRuleFormModel model)
         {
-            var srcLayer = DbContext.Layers.Single(l => l.Id == sourceId);
-            var targetLayer = DbContext.Layers.Single(l => l.Id == targetId);
+            if (!(DbContext.Layers.Any(l => l.Id == sourceId) || DbContext.Layers.Any(l => l.Id == targetId)))
+                return false;
+
             var rule = DbContext.LayerRelationRules.Single(r => r.SourceLayerId == sourceId && r.TargetLayerId == targetId);
             rule.ArrowStyle = model.ArrowStyle;
             rule.Color = model.Color;

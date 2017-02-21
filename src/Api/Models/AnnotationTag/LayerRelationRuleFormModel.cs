@@ -4,8 +4,6 @@ namespace Api.Models.AnnotationTag
 {
     public class LayerRelationRuleFormModel
     {
-        public LayerRelationRuleFormModel() {}
-
         [Required]
         public int SourceLayerId { get; set; }
 
