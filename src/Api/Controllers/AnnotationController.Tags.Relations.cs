@@ -19,9 +19,9 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Relations/{maxDepth}")]
-        [ProducesResponseType(typeof(List<AnnotationTagRelation>), 200)]
+        [ProducesResponseType(typeof(List<AnnotationTagRelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetRelations([FromRoute] int maxDepth = int.MaxValue)
+        public IActionResult GetRelations([FromQuery] int maxDepth = int.MaxValue)
         {
             // TODO: Do we need pagination here?
             return ServiceUnavailable();
@@ -30,13 +30,13 @@ namespace Api.Controllers
         /// <summary>
         /// Get all existing tag relations for the tag represented by the given id.
         /// </summary>
-        /// <param name="id">The Id of the tag that you want the relations for</param>
+        /// <param name="tagId">The Id of the tag that you want the relations for</param>
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/{id}/Relations")]
-        [ProducesResponseType(typeof(List<AnnotationTagRelation>), 200)]
+        [HttpGet("Tags/{tagId}/Relations")]
+        [ProducesResponseType(typeof(List<AnnotationTagRelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetRelationsForId([FromRoute] int id)
+        public IActionResult GetRelationsForId([FromRoute] int tagId)
         {
             return ServiceUnavailable();
         }
@@ -44,13 +44,13 @@ namespace Api.Controllers
         /// <summary>
         /// Get all tags that the tag identified by the given id may have a relation to.
         /// </summary>
-        /// <param name="id">The Id of the tag that you want the allowed relations for</param>
+        /// <param name="tagId">The Id of the tag that you want the allowed relations for</param>
         /// <response code="200">Returns a list of tags</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/{id}/AllowedRelations")]
+        [HttpGet("Tags/{tagId}/AllowedRelations")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetAllowedRelationsForId([FromRoute] int id)
+        public IActionResult GetAllowedRelationsForId([FromRoute] int tagId)
         {
             // TODO: Probably not needed - maybe use for TagRelationRules
             return ServiceUnavailable();
@@ -71,7 +71,7 @@ namespace Api.Controllers
             // TODO: Waiting for relations in tag instances / documents
             return ServiceUnavailable();
         }
-        
+
         /// <summary>
         /// All layer relation rules saved in the system.
         /// </summary>
@@ -107,9 +107,9 @@ namespace Api.Controllers
 
             try
             {
-                var success = _tagManager.AddTagRelation(model);
-                if (success) return Ok();
-                else return BadRequest();
+                if (_tagManager.AddTagRelation(model))
+                    return Ok();
+                return BadRequest();
             }
             catch (InvalidOperationException)
             {
@@ -131,9 +131,8 @@ namespace Api.Controllers
         public IActionResult PostLayerRelationRule([FromBody] LayerRelationRuleFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
-            {
                 return Forbid();
-            }
+            
             try
             {
                 if (_tagManager.AddLayerRelationRule(model))
@@ -144,7 +143,7 @@ namespace Api.Controllers
             {
                 return NotFound();
             }
-        }        
+        }
 
         #endregion
 
@@ -188,9 +187,8 @@ namespace Api.Controllers
         public IActionResult PutLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] LayerRelationRuleFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
-            {
                 return Forbid();
-            }
+            
             try
             {
                 if (_tagManager.ChangeLayerRelationRule(sourceId, targetId, model))
@@ -225,9 +223,8 @@ namespace Api.Controllers
 
             try
             {
-                var success = _tagManager.RemoveTagRelation(model);
-                if (success) return Ok();
-                else return BadRequest();
+                if (_tagManager.RemoveTagRelation(model)) return Ok();
+                return BadRequest();
             }
             catch (InvalidOperationException)
             {
@@ -250,14 +247,13 @@ namespace Api.Controllers
         public IActionResult DeleteLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
-            {
                 return Forbid();
-            }
+
             try
             {
-                var success = _tagManager.RemoveLayerRelationRule(sourceId, targetId);
-                if (success) return Ok();
-                else return BadRequest();
+                if (_tagManager.RemoveLayerRelationRule(sourceId, targetId))
+                    return Ok();
+                return BadRequest();
             }
             catch (InvalidOperationException)
             {

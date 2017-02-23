@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 // ReSharper disable CollectionNeverUpdated.Global
 
@@ -10,7 +9,7 @@ namespace Api.Models.Entity.Annotation
         [Key]
         public int Id { get; set; }
 
-        public String Name { get; set; }
+        public string Name { get; set; }
 
         public List<LayerRelationRule> Relations { get; set; }
 
