@@ -10,7 +10,7 @@ public class SubscriptionResult
         Type = sub.Type;
 	}
 
-    public int Id { get; private set; }
-    public int SubscriberId { get; private set; }
-    public NotificationType Type { get; private set; }
+    public int Id { get; set; }
+    public int SubscriberId { get; set; }
+    public NotificationType Type { get; set; }
 }
