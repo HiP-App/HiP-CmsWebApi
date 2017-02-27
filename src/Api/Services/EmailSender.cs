@@ -32,6 +32,7 @@ namespace Api.Services
         {
             var notificationModel = new NotificationModel()
             {
+                Recipient = email,
                 Action = notification.TypeName,
                 Date = notification.TimeStamp,
                 Topic = notification.Topic.Title,
