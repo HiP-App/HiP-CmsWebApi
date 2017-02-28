@@ -73,18 +73,30 @@ namespace Api.Tests.ControllerTests
         #region GetLayerRelationRules
 
         /// <summary>
-        /// Should return code 200 and a list of all layer relation rules if called properly
+        /// Should return code 200 and a list of all layer relation rules if called properly.
+        /// Layer Relations can have a title, description, color and arrow-style.
         /// </summary>
         [Test]
         public void GetLayerRelationRulesTest()
         {
-            var expected = new List<LayerRelationRule>() { _layerRelation };
+            var myRelation = new LayerRelationRule()
+            {
+                SourceLayer = _layer1,
+                SourceLayerId = _layer1.Id,
+                TargetLayer = _layer2,
+                TargetLayerId = _layer2.Id,
+                Color = "my-color",
+                ArrowStyle = "my-style",
+                Title = "my-title",
+                Description= "my-description"
+            };
+            var expected = new List<LayerRelationRule>() { myRelation };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
-                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelation))
+                    .WithSet<LayerRelationRule>(db => db.Add(myRelation))
                 )
                 .Calling(c => c.GetAllLayerRelationRules())
                 .ShouldReturn()
