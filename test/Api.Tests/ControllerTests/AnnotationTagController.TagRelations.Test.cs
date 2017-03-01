@@ -316,12 +316,13 @@ namespace Api.Tests.ControllerTests
         #region GetAllowedRelationRulesForTag
 
         /// <summary>
-        /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly
+        /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly.
+        /// Duplicate relations are also allowed --> tag2 is also expected to be in the returned list
         /// </summary>
         [Test]
         public void GetAllowedRelationRulesForTagTest()
         {
-            var expected = new List<AnnotationTag>() { _tag4 };
+            var expected = new List<AnnotationTag>() { _tag2, _tag4 };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -336,30 +337,7 @@ namespace Api.Tests.ControllerTests
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
                 .Passing(actual => expected.SequenceEqual(actual));
-        }
-
-        /// <summary>
-        /// Should return code 200 and an empty list tags if there are no additional relations possible aside from those which already exist
-        /// </summary>
-        [Test]
-        public void GetAllowedRelationRulesForTagTest_NoAdditionalRelations()
-        {
-            var expected = new List<AnnotationTag>();
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
-                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
-                )
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag3.Id))
-                .ShouldReturn()
-                .Ok()
-                .WithModelOfType<List<AnnotationTag>>()
-                .Passing(actual => expected.SequenceEqual(actual));
-        }
+        }        
 
         /// <summary>
         /// Should return code 200 and an empty list tags if there are no relations possible because

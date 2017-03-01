@@ -53,8 +53,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationRulesForTag([FromRoute] int tagId)
         {
-            // TODO: Probably not needed - maybe use for TagRelationRules
-            return ServiceUnavailable();
+            try
+            {
+                return Ok(_tagManager.GetAllowedRelationRulesForTag(tagId));
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>

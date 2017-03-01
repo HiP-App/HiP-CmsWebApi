@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Api.Models.Entity.Annotation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Managers
 {
@@ -51,6 +52,21 @@ namespace Api.Managers
         public IEnumerable<LayerRelationRule> GetAllLayerRelationRules()
         {
             return DbContext.LayerRelationRules.ToList();
+        }
+
+        public IEnumerable<AnnotationTag> GetAllowedRelationRulesForTag(int tagId)
+        {
+            var tag = DbContext.AnnotationTags.Single(t => t.Id == tagId);
+            var rules = DbContext.LayerRelationRules.Where(r => r.SourceLayer.Name == tag.Layer);
+            var tags = new List<AnnotationTag>();
+            // add all tags that rules are allowed to
+            foreach (var relationRule in rules)
+            {
+                tags.AddRange(DbContext.AnnotationTags.Where(
+                    t => relationRule.TargetLayer.Name == t.Layer
+                ));
+            }
+            return tags;
         }
 
         #endregion
