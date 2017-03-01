@@ -300,13 +300,13 @@ namespace Api.Tests.ControllerTests
 
         #endregion
 
-        #region GetAllowedRelationsForId
+        #region GetAllowedRelationRulesForTag
 
         /// <summary>
-        /// Should return code 200 and a list of all tags that relations are allowed to if called properly
+        /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly
         /// </summary>
         // TODO [Test]
-        public void GetAllowedRelationsForIdTest()
+        public void GetAllowedRelationRulesForTagTest()
         {
             var tag5 = new AnnotationTag() { Id = 5 };
             _tag4.ChildTags = new List<AnnotationTag>() { tag5 };
@@ -319,7 +319,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4, tag5))
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationRulesForTag(_tag3.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -330,7 +330,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and an empty list tags if there are no additional relations possible aside from those which already exist
         /// </summary>
        // TODO [Test]
-        public void GetAllowedRelationsForIdTest_NoAdditionalRelations()
+        public void GetAllowedRelationRulesForTagTest_NoAdditionalRelations()
         {
             var expected = new List<AnnotationTag>() { };
             MyMvc
@@ -341,7 +341,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
                     .WithSet<AnnotationTagRelation>(db => db.AddRange(_relation12, _relation34))
                 )
-                .Calling(c => c.GetAllowedRelationsForId(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationRulesForTag(_tag3.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -352,7 +352,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and an empty list tags if there are no relations possible because the top-level tags do not have a relation
         /// </summary>
        // TODO  [Test]
-        public void GetAllowedRelationsForIdTest_NoToplevelRelation()
+        public void GetAllowedRelationRulesForTagTest_NoToplevelRelation()
         {
             var expected = new List<AnnotationTag>() { };
             MyMvc
@@ -364,7 +364,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 // no relation from _tag2 to _tag1 --> relation from _tag4 to _tag3 not possible
                 )
-                .Calling(c => c.GetAllowedRelationsForId(_tag4.Id))
+                .Calling(c => c.GetAllowedRelationRulesForTag(_tag4.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -375,19 +375,19 @@ namespace Api.Tests.ControllerTests
         /// Should return 400 for tags that do not exist
         /// </summary>
        // TODO [Test]
-        public void GetAllowedRelationsForIdTest400()
+        public void GetAllowedRelationRulesForTagTest400()
         {
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .Calling(c => c.GetAllowedRelationsForId(_tag1.Id))
+                .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
                 .ShouldReturn()
                 .BadRequest();
         }
 
         #endregion
 
-        #region GetAllowedRelationsForId
+        #region GetAllowedRelationRulesForTag
 
         /// <summary>
         /// Should return code 200 and a list of all tag relations that are available for the given tag instance

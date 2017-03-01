@@ -42,15 +42,16 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// Get all tags that the tag identified by the given id may have a relation to.
+        /// Get all tags that the tag identified by the given id may create have a relation *rule* to.
+        /// The allowed relation rules are defined by LayerRelationRules.
         /// </summary>
-        /// <param name="tagId">The Id of the tag that you want the allowed relations for</param>
-        /// <response code="200">Returns a list of tags</response>
+        /// <param name="tagId">The Id of the tag that you want the allowed relation rules for</param>
+        /// <response code="200">Returns a list of tags that the user may create a relation rule to</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/{tagId}/AllowedRelations")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetAllowedRelationsForId([FromRoute] int tagId)
+        public IActionResult GetAllowedRelationRulesForTag([FromRoute] int tagId)
         {
             // TODO: Probably not needed - maybe use for TagRelationRules
             return ServiceUnavailable();
