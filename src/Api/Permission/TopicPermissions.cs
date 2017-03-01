@@ -66,5 +66,15 @@ namespace Api.Permission
             }
         }
 
+        public bool IsReviewer(int userId, int topicId)
+        {
+            try
+            {
+                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Reviewer)))
+                    return true;
+            }
+            catch (InvalidOperationException) { }
+            return false;
+        }
     }
 }
