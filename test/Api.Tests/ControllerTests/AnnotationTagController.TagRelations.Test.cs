@@ -24,7 +24,7 @@ namespace Api.Tests.ControllerTests
         private AnnotationTagRelation _relation34;
         private Layer _layer2;
         private Layer _layer1;
-        private LayerRelationRule _layerRelation;
+        private LayerRelationRule _layerRelationRule;
 
         [SetUp]
         public void BeforeTest()
@@ -48,18 +48,31 @@ namespace Api.Tests.ControllerTests
                 Email = "supervisor@hipapp.de",
                 Role = "Supervisor"
             };
-            _tag1 = new AnnotationTag() { Id = 1 };
-            _tag2 = new AnnotationTag() { Id = 2 };
-            _tag3 = new AnnotationTag() { Id = 3 };
-            _tag4 = new AnnotationTag() { Id = 4 };
+            /*
+             * Layer1   Layer2
+             * |-tag1   |-tag2
+             * |-tag3   |-tag4
+             * 
+             * Layer Relation Rules:
+             * Layer1 -> Layer2
+             * 
+             * Annotation Tag Relations:
+             * tag1 -> tag2
+             * tag3 -> tag2
+             * tag3 -> tag4
+             */
+            _layer1 = new Layer() { Id = 1, Name = "Time" };
+            _layer2 = new Layer() { Id = 2, Name = "Perspective" };
+            _tag1 = new AnnotationTag() { Id = 1, Layer = _layer1.Name };
+            _tag2 = new AnnotationTag() { Id = 2, Layer = _layer2.Name };
+            _tag3 = new AnnotationTag() { Id = 3, Layer = _layer1.Name };
+            _tag4 = new AnnotationTag() { Id = 4, Layer = _layer2.Name };
             _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
             _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
             _relation12 = new AnnotationTagRelation(_tag1, _tag2);
-            _relation32 = new AnnotationTagRelation(_tag3, _tag2); // this relation is not allowed because _tag2 is a top-level tag (e.g. "Perpective")
+            _relation32 = new AnnotationTagRelation(_tag3, _tag2);
             _relation34 = new AnnotationTagRelation(_tag3, _tag4);
-            _layer1 = new Layer() { Id = 1, Name = "Time" };
-            _layer2 = new Layer() { Id = 2, Name = "Perspective" };
-            _layerRelation = new LayerRelationRule()
+            _layerRelationRule = new LayerRelationRule()
             {
                 SourceLayer = _layer1,
                 SourceLayerId = _layer1.Id,
@@ -115,7 +128,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostLayerRelationRuleTest()
         {
-            var expected = _layerRelation;
+            var expected = _layerRelationRule;
             var model = new LayerRelationRuleFormModel()
             {
                 SourceLayerId = expected.SourceLayerId,
@@ -128,7 +141,7 @@ namespace Api.Tests.ControllerTests
                 .WithAuthenticatedUser(user => user.WithClaim("Id", _supervisor.Id.ToString()))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_supervisor))
-                    .WithSet<Layer>(db => db.AddRange(_layerRelation.SourceLayer, _layerRelation.TargetLayer))
+                    .WithSet<Layer>(db => db.AddRange(_layerRelationRule.SourceLayer, _layerRelationRule.TargetLayer))
                 )
                 .Calling(c => c.PostLayerRelationRule(model))
                 .ShouldHave()
@@ -152,7 +165,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostLayerRelationRuleTest403()
         {
-            var expected = _layerRelation;
+            var expected = _layerRelationRule;
             var model = new LayerRelationRuleFormModel()
             {
                 SourceLayerId = expected.SourceLayerId,
@@ -305,21 +318,20 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly
         /// </summary>
-        // TODO [Test]
+        [Test]
         public void GetAllowedRelationRulesForTagTest()
         {
-            var tag5 = new AnnotationTag() { Id = 5 };
-            _tag4.ChildTags = new List<AnnotationTag>() { tag5 };
-            var expected = new List<AnnotationTag>() { _tag4, tag5 };
+            var expected = new List<AnnotationTag>() { _tag4 };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4, tag5))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -329,17 +341,18 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list tags if there are no additional relations possible aside from those which already exist
         /// </summary>
-       // TODO [Test]
+        [Test]
         public void GetAllowedRelationRulesForTagTest_NoAdditionalRelations()
         {
-            var expected = new List<AnnotationTag>() { };
+            var expected = new List<AnnotationTag>();
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<AnnotationTagRelation>(db => db.AddRange(_relation12, _relation34))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
                 .Calling(c => c.GetAllowedRelationRulesForTag(_tag3.Id))
                 .ShouldReturn()
@@ -349,22 +362,24 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return code 200 and an empty list tags if there are no relations possible because the top-level tags do not have a relation
+        /// Should return code 200 and an empty list tags if there are no relations possible because
+        /// the top-level tags do not have a layer relation rule defined
         /// </summary>
-       // TODO  [Test]
+        [Test]
         public void GetAllowedRelationRulesForTagTest_NoToplevelRelation()
         {
-            var expected = new List<AnnotationTag>() { };
+            var expected = new List<AnnotationTag>();
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
-                // no relation from _tag2 to _tag1 --> relation from _tag4 to _tag3 not possible
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag4.Id))
+                // no layer relation rules exist from layer2 to layer1 --> no relations from tag2 to tag1 / tag3 allowed
+                .Calling(c => c.GetAllowedRelationRulesForTag(_tag2.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -374,7 +389,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-       // TODO [Test]
+       [Test]
         public void GetAllowedRelationRulesForTagTest400()
         {
             MyMvc
