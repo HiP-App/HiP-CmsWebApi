@@ -43,13 +43,13 @@ namespace Api.Managers
             finnish();
         }
 
-        public void OnStateChanged(String state)
+        public void OnStateChanged(string state)
         {
             NotifyAll(NotificationType.TOPIC_STATE_CHANGED, state);
             finnish();
         }
 
-        public void OnAttachmetAdded(String name)
+        public void OnAttachmetAdded(string name)
         {
             NotifyAll(NotificationType.TOPIC_ATTACHMENT_ADDED, name);
             finnish();

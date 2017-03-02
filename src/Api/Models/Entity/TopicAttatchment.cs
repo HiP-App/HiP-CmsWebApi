@@ -18,15 +18,15 @@ namespace Api.Models.Entity
         public int Id { get; set; }
 
         [Required]
-        public String Name { get; set; }
+        public string Name { get; set; }
 
-        public String Path { get; set; }
+        public string Path { get; set; }
 
-        public String Description { get; set; }
+        public string Description { get; set; }
 
         public Legal Legal { get; set; }
 
-        public String Type { get; set; }
+        public string Type { get; set; }
 
         public int TopicId { get; set; }
 

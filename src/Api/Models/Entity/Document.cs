@@ -22,7 +22,7 @@ namespace Api.Models.Entity
         public User Updater { get; set; }
 
         [MaxLength(65536)]
-        public String Content { get; set; }
+        public string Content { get; set; }
 
         public Document() { }
 

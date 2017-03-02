@@ -1,6 +1,6 @@
 ﻿using Api.Models.Entity;
+using Api.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
-using static Api.Models.Entity.AnnotationTag;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ObjectCreationAsStatement
 
@@ -31,6 +31,14 @@ namespace Api.Data
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
+        public DbSet<AnnotationTagRelation> AnnotationTagRelations { get; set; }
+
+        public DbSet<AnnotationTagInstance> AnnotationTagInstances { get; set; }
+
+        public DbSet<Layer> Layers { get; set; }
+
+        public DbSet<LayerRelationRule> LayerRelationRules { get; set; }
+
         public DbSet<StudentDetails> StudentDetails { get; set; }
 
         public DbSet<TopicReview> TopicReviews { get; set; }
@@ -45,9 +53,12 @@ namespace Api.Data
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new DocumentMap(modelBuilder.Entity<Document>());
             new NotificationMap(modelBuilder.Entity<Notification>());
-            new AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
+            new TagRelationMap(modelBuilder.Entity<AnnotationTagRelation>());
+            new AnnotationTag.AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
+            new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
             new LegalMap(modelBuilder.Entity<Legal>());
+            new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
             new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
             new TopicReviewMap(modelBuilder.Entity<TopicReview>());
         }

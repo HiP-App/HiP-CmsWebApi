@@ -2,14 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
 
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170221104107_layer-relations")]
+    partial class layerrelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
@@ -307,25 +309,6 @@ namespace Api.Migrations
                     b.ToTable("TopicAttatchments");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicReview", b =>
-                {
-                    b.Property<int>("TopicId");
-
-                    b.Property<int>("ReviewerId");
-
-                    b.Property<string>("Status");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.HasKey("TopicId", "ReviewerId");
-
-                    b.HasIndex("ReviewerId");
-
-                    b.ToTable("TopicReviews");
-                });
-
             modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
                 {
                     b.Property<int>("TopicId");
@@ -495,19 +478,6 @@ namespace Api.Migrations
                         .WithMany("Attatchments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
-                });
-
-            modelBuilder.Entity("Api.Models.Entity.TopicReview", b =>
-                {
-                    b.HasOne("Api.Models.Entity.User", "Reviewer")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Api.Models.Entity.Topic", "Topic")
-                        .WithMany("Reviews")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
