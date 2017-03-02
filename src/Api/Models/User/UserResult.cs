@@ -11,7 +11,7 @@
             Role = user.Role;
             if (user.StudentDetails != null)
             {
-                StudentDetails = new StudentDetails()
+                StudentDetails = new StudentDetailsResult()
                 {
                     Discipline = user.StudentDetails.Discipline,
                     CurrentDegree = user.StudentDetails.CurrentDegree,
@@ -30,7 +30,7 @@
 
         public string Role { get; set; }
 
-        public StudentDetails StudentDetails { get; set; }
+        public StudentDetailsResult StudentDetails { get; set; }
 
     public string FullName
         {
@@ -38,7 +38,7 @@
         }
     }
 
-    public class StudentDetails
+    public class StudentDetailsResult
     {
         public string Discipline { get; set; }
 
