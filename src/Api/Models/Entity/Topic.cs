@@ -45,6 +45,8 @@ namespace Api.Models.Entity
 
         public virtual Document Document { get; set; }
 
+        public List<TopicReview> Reviews { get; set; }
+
         public Topic(TopicFormModel model)
         {
             Title = model.Title;

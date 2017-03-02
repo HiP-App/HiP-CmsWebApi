@@ -13,6 +13,11 @@ namespace Api.Models
             return IsStatusValid(Status);
         }
 
+        public bool IsDone()
+        {
+            return string.Compare(Status, Done, StringComparison.Ordinal) == 0;
+        }
+
         private const string Todo = "Todo";
         private const string InProgress = "InProgress";
         private const string InReview = "InReview";

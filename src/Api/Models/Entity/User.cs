@@ -39,6 +39,8 @@ namespace Api.Models.Entity
 
         public virtual StudentDetails StudentDetails { get; set; }
 
+        public List<TopicReview> Reviews { get; set; }
+
         #region Utility Methods
 
         [NotMapped]

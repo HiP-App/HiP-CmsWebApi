@@ -11,7 +11,7 @@ using Api.Utility;
 
 namespace Api.Managers
 {
-    public class TopicManager : BaseManager
+    public partial class TopicManager : BaseManager
     {
         public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
 
@@ -58,6 +58,19 @@ namespace Api.Managers
         public Topic GetTopicById(int topicId)
         {
             return DbContext.Topics.Include(t => t.CreatedBy).Single(t => t.Id == topicId);
+        }
+
+        public bool IsValidTopicId(int topicId)
+        {
+            try
+            {
+                GetTopicById(topicId);
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
+            }
+            return true;
         }
 
         public IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)

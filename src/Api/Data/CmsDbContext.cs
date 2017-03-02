@@ -41,6 +41,8 @@ namespace Api.Data
 
         public DbSet<StudentDetails> StudentDetails { get; set; }
 
+        public DbSet<TopicReview> TopicReviews { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
@@ -58,6 +60,7 @@ namespace Api.Data
             new LegalMap(modelBuilder.Entity<Legal>());
             new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
             new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
+            new TopicReviewMap(modelBuilder.Entity<TopicReview>());
         }
     }
 }

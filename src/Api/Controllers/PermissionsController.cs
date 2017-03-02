@@ -102,6 +102,19 @@ namespace Api.Controllers
             return Forbidden();
         }
 
+        /// <summary>
+        /// Is the current user allowed to review the topic.
+        /// </summary>
+        /// <response code="200">User is allowed</response>
+        /// <response code="403">User is denied</response>
+        [HttpGet("Topics/{topicId}/Permission/IsReviewer")]
+        public IActionResult IsAllowedToReview([FromRoute]int topicId)
+        {
+            if (_topicPermissions.IsReviewer(User.Identity.GetUserId(), topicId))
+                return Ok();
+            return Forbidden();
+        }
+
         #endregion
 
         #region User
