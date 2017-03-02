@@ -86,7 +86,7 @@ namespace Api.Managers
         {
             return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
-            ).Select(
+            ).ToList().Select(
                 subscription => new SubscriptionResult(subscription)
             );
         }

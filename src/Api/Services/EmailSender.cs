@@ -32,10 +32,12 @@ namespace Api.Services
         {
             var notificationModel = new NotificationModel()
             {
+                Recipient = email,
+                Subject = "History in Paderborn Notification",
                 Action = notification.TypeName,
-                Date = notification.TimeStamp,
+                Date = DateTime.Now,
                 Topic = notification.Topic.Title,
-                Updater = notification.Updater.FullName
+                Updater = notification.Updater.FullName ?? notification.Updater.Email
             };
 
             return _emailClient.EmailNotificationPostAsync(notificationModel);
