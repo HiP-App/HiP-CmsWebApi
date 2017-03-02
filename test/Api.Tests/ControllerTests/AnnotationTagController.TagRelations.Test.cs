@@ -755,11 +755,6 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest()
         {
-            var model = new AnnotationTagRelationFormModel()
-            {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id
-            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -768,10 +763,10 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.DeleteTagRelation(model))
+                .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagRelation>(rels =>
-                    !rels.Any(rel => rel.FirstTagId == model.FirstTagId && rel.SecondTagId == model.SecondTagId))
+                    !rels.Any(rel => rel.FirstTagId == _relation12.FirstTag.Id && rel.SecondTagId == _relation12.SecondTag.Id))
                 )
                 .AndAlso()
                 .ShouldReturn()
@@ -797,7 +792,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
                 // --> no TagRelation objects were added to the database
-                .Calling(c => c.DeleteTagRelation(model))
+                .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -808,16 +803,11 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest403()
         {
-            var model = new AnnotationTagRelationFormModel()
-            {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id
-            };
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.DeleteTagRelation(model))
+                .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
                 .ShouldReturn()
                 .Forbid();
         }
