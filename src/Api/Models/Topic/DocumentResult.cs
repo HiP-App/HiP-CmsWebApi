@@ -19,6 +19,6 @@ namespace Api.Models.Topic
 
         public UserResult Updater { get; set; }
 
-        public String Content { get; set; }
+        public string Content { get; set; }
     }
 }

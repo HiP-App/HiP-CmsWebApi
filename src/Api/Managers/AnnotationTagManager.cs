@@ -1,17 +1,25 @@
 ﻿using Api.Data;
 using Api.Models;
 using Api.Models.AnnotationTag;
-using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Api.Models.Entity.Annotation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Managers
 {
     public class AnnotationTagManager : BaseManager
     {
         public AnnotationTagManager(CmsDbContext dbContext) : base(dbContext) { }
+
+        private bool TagRelationExists(AnnotationTag tag1, AnnotationTag tag2)
+        {
+            return tag1 != null &&
+                tag2 != null &&
+                DbContext.AnnotationTagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+        }
 
         #region GET
 
@@ -34,6 +42,31 @@ namespace Api.Managers
         public IEnumerable<AnnotationTagResult> GetChildTagsOf(int id)
         {
             return DbContext.AnnotationTags.Where(at => at.ParentTagId == id).ToList().Select(at => new AnnotationTagResult(at));
+        }
+        
+        public IEnumerable<Layer> GetAllLayers()
+        {
+            return DbContext.Layers.ToList();
+        }
+
+        public IEnumerable<LayerRelationRule> GetAllLayerRelationRules()
+        {
+            return DbContext.LayerRelationRules.ToList();
+        }
+
+        public IEnumerable<AnnotationTag> GetAllowedRelationRulesForTag(int tagId)
+        {
+            var tag = DbContext.AnnotationTags.Single(t => t.Id == tagId);
+            var rules = DbContext.LayerRelationRules.Where(r => r.SourceLayer.Name == tag.Layer);
+            var tags = new List<AnnotationTag>();
+            // add all tags that rules are allowed to
+            foreach (var relationRule in rules)
+            {
+                tags.AddRange(DbContext.AnnotationTags.Where(
+                    t => relationRule.TargetLayer.Name == t.Layer
+                ));
+            }
+            return tags;
         }
 
         #endregion
@@ -85,6 +118,51 @@ namespace Api.Managers
             }
         }
 
+        internal bool AddTagRelation(AnnotationTagRelationFormModel model)
+        {
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
+            if (TagRelationExists(tag1, tag2))
+            {
+                return false;
+            } else if (tag1 != null && tag2 != null)
+            {
+                var forwardRelation = new AnnotationTagRelation(tag1, tag2, model.Name, model.ArrowStyle, model.Color);
+                DbContext.AnnotationTagRelations.Add(forwardRelation);
+                DbContext.SaveChanges();
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        internal bool AddTagInstance(int tagModelId)
+        {
+            AnnotationTag model = DbContext.AnnotationTags.Single(m => m.Id == tagModelId);
+            AnnotationTagInstance instance = new AnnotationTagInstance(model);
+            DbContext.AnnotationTagInstances.Add(instance);
+            DbContext.SaveChanges();
+            return true;
+        }
+
+        internal bool AddLayerRelationRule(LayerRelationRuleFormModel model)
+        {
+            if (!(DbContext.Layers.Any(l => l.Id == model.SourceLayerId) || DbContext.Layers.Any(l => l.Id == model.TargetLayerId)))
+                return false;
+            var rule = new LayerRelationRule()
+            {
+                SourceLayerId = model.SourceLayerId,
+                TargetLayerId = model.TargetLayerId,
+                Color = model.Color,
+                ArrowStyle = model.ArrowStyle
+            };
+            DbContext.LayerRelationRules.Add(rule);
+            DbContext.SaveChanges();
+            Console.Write("added relation:" + model.SourceLayerId + model.TargetLayerId);
+            return true;
+        }
+
         #endregion
 
         #region edit
@@ -116,6 +194,20 @@ namespace Api.Managers
                 tag.Style = model.Style;
             }
             DbContext.SaveChanges();
+            return true;
+        }
+
+
+        internal bool ChangeLayerRelationRule(int sourceId, int targetId, LayerRelationRuleFormModel model)
+        {
+            if (!(DbContext.Layers.Any(l => l.Id == sourceId) || DbContext.Layers.Any(l => l.Id == targetId)))
+                return false;
+
+            var rule = DbContext.LayerRelationRules.Single(r => r.SourceLayerId == sourceId && r.TargetLayerId == targetId);
+            rule.ArrowStyle = model.ArrowStyle;
+            rule.Color = model.Color;
+            DbContext.SaveChanges();
+            Console.Write("changed relation:" + model.SourceLayerId + model.TargetLayerId);
             return true;
         }
 
@@ -153,6 +245,44 @@ namespace Api.Managers
                 return false;
 
             child.ParentTagId = null;
+            DbContext.SaveChanges();
+            return true;
+        }
+
+        internal bool RemoveTagRelation(AnnotationTagRelationFormModel model)
+        {
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
+            if (TagRelationExists(tag1, tag2))
+            {
+                RemoveRelationFor(tag1, tag2);
+                DbContext.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void RemoveRelationFor(AnnotationTag source, AnnotationTag target)
+        {
+            var relation = DbContext.AnnotationTagRelations.Single(rel => rel.FirstTagId == source.Id && rel.SecondTagId == target.Id);
+            DbContext.AnnotationTagRelations.Remove(relation);
+        }
+
+        internal bool RemoveTagInstance(int tagInstanceid)
+        {
+            var instance = DbContext.AnnotationTagInstances.Single(i => i.Id == tagInstanceid);
+            DbContext.AnnotationTagInstances.Remove(instance);
+            DbContext.SaveChanges();
+            return true;
+        }
+
+        internal bool RemoveLayerRelationRule(int sourceId, int targetId)
+        {
+            var entity = DbContext.LayerRelationRules.Single(r => r.SourceLayerId == sourceId && r.TargetLayerId == targetId);
+            DbContext.Remove(entity);
             DbContext.SaveChanges();
             return true;
         }

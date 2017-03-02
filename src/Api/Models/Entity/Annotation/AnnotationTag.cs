@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Api.Managers;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+// ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity
+namespace Api.Models.Entity.Annotation
 {
     public class AnnotationTag
     {
@@ -35,6 +36,12 @@ namespace Api.Models.Entity
         public int UsageCounter { get; set; }
 
         public bool IsDeleted { get; set; }
+
+        public List<AnnotationTagInstance> TagInstances { get; set; }
+
+        public List<AnnotationTagRelation> TagRelations { get; set; }
+
+        public List<AnnotationTagRelation> IncomingRelations { get; set; }
 
         public AnnotationTag() { }
 

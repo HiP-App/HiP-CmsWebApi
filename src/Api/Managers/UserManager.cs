@@ -95,7 +95,7 @@ namespace Api.Managers
         }
 
         // Use dataobject
-        public virtual bool UpdateProfilePicture(User user, String fileName)
+        public virtual bool UpdateProfilePicture(User user, string fileName)
         {
             if (user != null)
             {
