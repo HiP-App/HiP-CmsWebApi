@@ -6,6 +6,10 @@ using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using NUnit.Framework;
+// TODO fix ReSharper
+// ReSharper disable AccessToModifiedClosure
+// ReSharper disable UnusedVariable
+// ReSharper disable CollectionNeverUpdated.Local
 
 namespace Api.Tests.ControllerTests
 {
@@ -20,7 +24,6 @@ namespace Api.Tests.ControllerTests
         private AnnotationTag _tag3;
         private AnnotationTag _tag4;
         private AnnotationTagRelation _relation12;
-        private AnnotationTagRelation _relation32;
         private AnnotationTagRelation _relation34;
         private Layer _layer2;
         private Layer _layer1;
@@ -70,7 +73,6 @@ namespace Api.Tests.ControllerTests
             _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
             _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
             _relation12 = new AnnotationTagRelation(_tag1, _tag2);
-            _relation32 = new AnnotationTagRelation(_tag3, _tag2);
             _relation34 = new AnnotationTagRelation(_tag3, _tag4);
             _layerRelationRule = new LayerRelationRule()
             {
@@ -346,7 +348,6 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void GetAllowedRelationRulesForTagTest_NoToplevelRelation()
         {
-            var expected = new List<AnnotationTag>();
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -361,7 +362,7 @@ namespace Api.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .Passing(actual => !actual.Any());
         }
 
         /// <summary>
@@ -422,7 +423,7 @@ namespace Api.Tests.ControllerTests
        // TODO [Test]
         public void GetAvailableRelationsForIdTest_NoRelations()
         {
-            var expected = new List<AnnotationTagRelation>() { };
+            var expected = new List<AnnotationTagRelation>();
             var instance3 = new AnnotationTagInstance(_tag3);
             var instances = new List<AnnotationTagInstance>()
             {

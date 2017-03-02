@@ -5,7 +5,6 @@ using Api.Models.AnnotationTag;
 using Api.Utility;
 using Api.Models;
 using System;
-using Api.Models.Entity.Annotation;
 
 namespace Api.Controllers
 {
