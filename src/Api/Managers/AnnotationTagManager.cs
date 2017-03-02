@@ -163,6 +163,11 @@ namespace Api.Managers
             return true;
         }
 
+        public bool AddTagRelationRule(RelationRuleFormModel model)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region edit
@@ -285,6 +290,11 @@ namespace Api.Managers
             DbContext.Remove(entity);
             DbContext.SaveChanges();
             return true;
+        }
+
+        public bool RemoveTagRelationRule(RelationRuleFormModel model)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -113,12 +113,40 @@ namespace Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates the given AnnotationTagRelationRule.
+        /// </summary>
+        /// <param name="model">The relation rule that should be created</param>
+        /// <response code="200">Relation rule added</response>
+        /// <response code="403">User not allowed to add a relation rule</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPost("Tags/RelationRule")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PostTagRelationRule([FromBody] RelationRuleFormModel model)
+        {
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            try
+            {
+                if (_tagManager.AddTagRelationRule(model))
+                    return Ok();
+                return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
+        }
+
         #endregion
 
         #region PUT
 
         /// <summary>
-        /// Modify the relation from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// Modify the tag relation from the tag represented by {sourceId} to the tag represented by {targetId}.
         /// The new relation must be given in the body of the call.
         /// Source and target tags of the relations may *not* be changed for now.
         /// NOT IMPLEMENTED YET.
@@ -138,12 +166,32 @@ namespace Api.Controllers
             return ServiceUnavailable();
         }
 
+        /// <summary>
+        /// Modify the tag relation rule from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// The new relation rule must be given in the body of the call.
+        /// Source and target tags of the relations may *not* be changed for now.
+        /// </summary>
+        /// <param name="sourceId">ID of the source tag of the relation rule</param>
+        /// <param name="targetId">ID of the target tag of the relation rule</param>
+        /// <param name="model">The changed AnnotationTagRelationRule</param>
+        /// <response code="200">Relation rule modified</response>
+        /// <response code="403">User not allowed to modify a relation rule</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpPut("Tags/RelationRule")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult PutTagRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationRuleFormModel model)
+        {
+            return ServiceUnavailable();
+        }
+
         #endregion
 
         #region DELETE
 
         /// <summary>
-        /// Remove the given relation from the database.
+        /// Remove the given tag relation from the database.
         /// </summary>
         /// <param name="model">The relation to remove</param>
         /// <response code="200">Relation removed</response>
@@ -169,8 +217,33 @@ namespace Api.Controllers
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Remove the given tag relation rule from the database.
+        /// </summary>
+        /// <param name="model">The relation rule to remove</param>
+        /// <response code="200">Relation rule removed</response>
+        /// <response code="403">User not allowed to remove a relation rule</response>
+        /// <response code="400">Request was misformed</response>
+        [HttpDelete("Tags/RelationRule")]
+        [ProducesResponseType(typeof(void), 200)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 400)]
+        public IActionResult DeleteTagRelationRule([FromBody] RelationRuleFormModel model)
+        {
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
 
-        // TODO: Documents may also have relations in them --> need GET, POST, PUT, DELETE etc. for relations of a document (i.e. relations between tag instances)
+            try
+            {
+                if (_tagManager.RemoveTagRelationRule(model)) return Ok();
+                return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
+        }
+
+        #endregion
     }
 }
