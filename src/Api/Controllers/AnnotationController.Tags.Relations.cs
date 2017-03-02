@@ -43,7 +43,7 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// Get all tags that the tag identified by the given id may create have a relation *rule* to.
+        /// Get all target tags that the given tag may have a relation *rule* to.
         /// The allowed relation rules are defined by LayerRelationRules.
         /// </summary>
         /// <param name="tagId">The Id of the tag that you want the allowed relation rules for</param>
