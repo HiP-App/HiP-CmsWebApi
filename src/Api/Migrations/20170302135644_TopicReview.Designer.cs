@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170228210943_TopicReview")]
+    [Migration("20170302135644_TopicReview")]
     partial class TopicReview
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,7 +17,7 @@ namespace Api.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
 
-            modelBuilder.Entity("Api.Models.Entity.AnnotationTag", b =>
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -48,6 +48,85 @@ namespace Api.Migrations
                     b.HasIndex("ParentTagId");
 
                     b.ToTable("AnnotationTags");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("TagModelId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TagModelId");
+
+                    b.ToTable("AnnotationTagInstances");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
+                {
+                    b.Property<int>("FirstTagId");
+
+                    b.Property<int>("SecondTagId");
+
+                    b.Property<string>("ArrowStyle");
+
+                    b.Property<string>("Color");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("Id");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("FirstTagId", "SecondTagId");
+
+                    b.HasAlternateKey("Id");
+
+                    b.HasIndex("SecondTagId");
+
+                    b.ToTable("AnnotationTagRelations");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.Layer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Layers");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ArrowStyle");
+
+                    b.Property<string>("Color");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("SourceLayerId");
+
+                    b.Property<int>("TargetLayerId");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceLayerId");
+
+                    b.HasIndex("TargetLayerId");
+
+                    b.ToTable("LayerRelationRules");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
@@ -297,12 +376,46 @@ namespace Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.AnnotationTag", b =>
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTag", b =>
                 {
-                    b.HasOne("Api.Models.Entity.AnnotationTag", "ParentTag")
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "ParentTag")
                         .WithMany("ChildTags")
                         .HasForeignKey("ParentTagId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TagModel")
+                        .WithMany("TagInstances")
+                        .HasForeignKey("TagModelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "FirstTag")
+                        .WithMany("TagRelations")
+                        .HasForeignKey("FirstTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "SecondTag")
+                        .WithMany("IncomingRelations")
+                        .HasForeignKey("SecondTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Annotation.Layer", "SourceLayer")
+                        .WithMany("Relations")
+                        .HasForeignKey("SourceLayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Annotation.Layer", "TargetLayer")
+                        .WithMany("IncomingRelations")
+                        .HasForeignKey("TargetLayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Api.Data;
 
 namespace Api.Migrations
@@ -72,9 +73,13 @@ namespace Api.Migrations
 
                     b.Property<string>("Color");
 
+                    b.Property<string>("Description");
+
                     b.Property<int>("Id");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("Title");
 
                     b.HasKey("FirstTagId", "SecondTagId");
 
@@ -106,9 +111,13 @@ namespace Api.Migrations
 
                     b.Property<string>("Color");
 
+                    b.Property<string>("Description");
+
                     b.Property<int>("SourceLayerId");
 
                     b.Property<int>("TargetLayerId");
+
+                    b.Property<string>("Title");
 
                     b.HasKey("Id");
 
