@@ -27,19 +27,14 @@ namespace Api.Managers
             return DbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
-        public EntityResult CreateAttachment(int topicId, int userId, AttatchmentFormModel model)
+        public EntityResult CreateAttachment(int topicId, string userIdenty, AttatchmentFormModel model)
         {
-            try
-            {
-                DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
-            }
-            catch (InvalidOperationException)
-            {
+            if (!DbContext.Topics.Include(t => t.TopicUsers).Any(t => t.Id == topicId))
                 return EntityResult.Error("Unknown Topic");
-            }
 
             try
             {
+                var userId = DbContext.Users.Single(u => u.Email == userIdenty).Id;
                 var attatchment = new TopicAttatchment(model)
                 {
                     UserId = userId,
@@ -57,7 +52,7 @@ namespace Api.Managers
                 return EntityResult.Error(e.Message);
             }
         }
-        public EntityResult PutAttachment(int attachmentId, int userId, IFormFile file)
+        public EntityResult PutAttachment(int attachmentId, string userIdenty, IFormFile file)
         {
             TopicAttatchment attachment;
             try
@@ -86,7 +81,7 @@ namespace Api.Managers
                 DbContext.Update(attachment);
                 DbContext.SaveChanges();
 
-                new NotificationProcessor(DbContext, attachment.Topic, userId).OnAttachmetAdded(attachment.Name);
+                new NotificationProcessor(DbContext, attachment.Topic, userIdenty).OnAttachmetAdded(attachment.Name);
 
                 return EntityResult.Successfull(attachment.Id);
             }
@@ -124,7 +119,7 @@ namespace Api.Managers
             return DbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
         }
 
-        internal EntityResult CreateLegal(int topicId, int attachmentId, int userId, LegalFormModel legalModel)
+        internal EntityResult CreateLegal(int topicId, int attachmentId, string userIdenty, LegalFormModel legalModel)
         {
             try
             {

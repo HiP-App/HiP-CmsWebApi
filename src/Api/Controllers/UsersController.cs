@@ -44,7 +44,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 503)]
         public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
-            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdenty()))
                 return Forbidden();
 
             if (!ModelState.IsValid)
@@ -88,18 +88,18 @@ namespace Api.Controllers
         /// <summary>
         /// Get the user {id}
         /// </summary>   
-        /// <param name="id">The Id of the user</param>        
+        /// <param name="identy">The identy of the user </param>       
         /// <response code="200">Returns the user</response>        
         /// <response code="404">User not found</response>
         /// <response code="401">User is denied</response>
-        [HttpGet("{id}")]
+        [HttpGet]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Get([FromRoute]int id)
+        public IActionResult Get([FromQuery] string identy)
         {
             try
             {
-                var user = _userManager.GetUserById(id);
+                var user = _userManager.GetUserByIdenty(identy ?? User.Identity.GetUserIdenty());
                 return Ok(new UserResult(user));
             }
             catch (InvalidOperationException)
@@ -108,50 +108,16 @@ namespace Api.Controllers
             }
         }
 
-
-        // GET api/users/current
-
-        /// <summary>
-        /// Get the current user
-        /// </summary>           
-        /// <response code="200">Returns the current user</response>        
-        /// <response code="404">User not found</response>
-        /// <response code="401">User is denied</response>
-        [HttpGet("Current")]
-        [ProducesResponseType(typeof(UserResult), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult CurrentUser()
-        {
-            return Get(User.Identity.GetUserId());
-        }
         #endregion
 
         #region PUT user
-        // PUT api/users/current
 
-        /// <summary>
-        /// Edit the current user
-        /// </summary>   
-        /// <param name="model">Contains details of the user to be edited</param>        
-        /// <response code="200">User edited successfully</response>        
-        /// <response code="400">Request incorrect</response>        
-        /// <response code="404">User not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpPut("Current")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put([FromBody]UserFormModel model)
-        {
-            return PutUser(User.Identity.GetUserId(), model);
-        }
-
-        // PUT api/users/:id
+        // PUT api/users
 
         /// <summary>
         /// Edit the user {id}
-        /// </summary>   
-        /// <param name="id">The Id of the user to be edited</param>        
+        /// </summary> 
+        /// <param name="identy">The identy of the user to be edited (For admins)</param>          
         /// <param name="model">Contains details of the user to be edited</param>        
         /// <response code="200">User edited successfully</response>        
         /// <response code="400">Request incorrect</response>        

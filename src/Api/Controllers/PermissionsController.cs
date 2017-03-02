@@ -38,7 +38,7 @@ namespace Api.Controllers
         [HttpGet("Annotation/Tags/All/Permission/IsAllowedToCreate")]
         public IActionResult IsAllowedToCreateTags()
         {
-            if (_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdenty()))
                 return Ok();
             return Unauthorized();
         }
@@ -69,7 +69,7 @@ namespace Api.Controllers
         [HttpGet("Topics/All/Permission/IsAllowedToCreate")]
         public IActionResult IsAllowedToCreate()
         {
-            if (_topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
+            if (_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdenty()))
                 return Ok();
             return Forbidden();
         }
@@ -84,7 +84,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 401)]
         public IActionResult IsAssociatedTo([FromRoute]int topicId)
         {
-            if (_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdenty(), topicId))
                 return Ok();
             return Forbidden();
         }
@@ -97,7 +97,7 @@ namespace Api.Controllers
         [HttpGet("Topics/{topicId}/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEdit([FromRoute]int topicId)
         {
-            if (_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
                 return Ok();
             return Forbidden();
         }
@@ -110,7 +110,7 @@ namespace Api.Controllers
         [HttpGet("Topics/{topicId}/Permission/IsReviewer")]
         public IActionResult IsAllowedToReview([FromRoute]int topicId)
         {
-            if (_topicPermissions.IsReviewer(User.Identity.GetUserId(), topicId))
+            if (_topicPermissions.IsReviewer(User.Identity.GetUserIdenty(), topicId))
                 return Ok();
             return Forbidden();
         }
@@ -127,7 +127,7 @@ namespace Api.Controllers
         [HttpGet("Users/All/Permission/IsAllowedToAdminister")]
         public IActionResult IsAllowedToAdminister()
         {
-            if (_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
                 return Ok();
             return Forbidden();
         }
@@ -140,7 +140,7 @@ namespace Api.Controllers
         [HttpGet("Users/All/Permission/IsAllowedToInvite")]
         public IActionResult IsAllowedToInvite()
         {
-            if (_userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+            if (_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdenty()))
                 return Ok();
             return Forbidden();
         }

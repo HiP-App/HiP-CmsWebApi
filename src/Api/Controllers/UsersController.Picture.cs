@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Api.Models.User;
 using System;
+using Api.Permission;
 
 namespace Api.Controllers
 {
@@ -42,7 +43,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetPictureForCurrentUser()
         {
-            return GetPicture(User.Identity.GetUserId());
+            return GetPicture(User.ClaimUtils.GetUserIdentity());
         }
 
         private IActionResult GetPicture([FromRoute]int userId)
@@ -72,7 +73,7 @@ namespace Api.Controllers
         /// <summary>
         /// Add picture for the user {id}
         /// </summary>        
-        /// <param name="id">The Id of the user</param>                         
+        /// <param name="identy">The identy of the user to be edited (For admins)</param>                      
         /// <param name="file">The file to be uploaded</param>                         
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
@@ -82,32 +83,11 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutPicture([FromRoute]int id, [FromForm] IFormFile file)
+        public IActionResult PutPicture([FromQuery] string identy, [FromForm] IFormFile file)
         {
-            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (identy != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
                 return Forbidden();
-            return PutUserPicture(id, file);
-        }
 
-        // Post api/users/current/picture/
-
-        /// <summary>
-        /// Add picture for the current user
-        /// </summary>                
-        /// <param name="file">The file to be uploaded</param>                         
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>                
-        /// <response code="401">User is denied</response>
-        [HttpPut("Current/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutPicture([FromForm]IFormFile file)
-        {
-            return PutUserPicture(User.Identity.GetUserId(), file);
-        }
-
-        private IActionResult PutUserPicture(int userId, IFormFile file)
-        {
             var uploads = Path.Combine(Constants.ProfilePicturePath);
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
@@ -119,8 +99,8 @@ namespace Api.Controllers
             {
                 try
                 {
-                    var user = _userManager.GetUserById(userId);
-                    string fileName = user.Id + Path.GetExtension(file.FileName);
+                    var user = _userManager.GetUserByIdenty(identy ?? User.Identity.GetUserIdenty());
+                    var fileName = user.Id + Path.GetExtension(file.FileName);
                     DeleteFile(Path.Combine(uploads, fileName));
 
                     using (FileStream outputStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
@@ -151,46 +131,25 @@ namespace Api.Controllers
         // Delete api/users/:id/picture/
 
         /// <summary>
-        /// Delete picture for the user {id}
+        /// Delete picture for the current user
         /// </summary>        
-        /// <param name="id">The Id of the user</param>                                 
+        /// <param name="identy">The identy of the user to be delete (For admins)</param>                                 
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to delete picture</response>                
         /// <response code="401">User is denied</response>
-        [HttpDelete("{id}/picture/")]
+        [HttpDelete("picture")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Delete([FromRoute]int id)
+        public IActionResult Delete([FromQuery] string identy)
         {
-            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (identy == null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
                 return Forbidden();
-            return DeletePicture(id);
-        }
-
-        // Delete api/users/current/picture/
-
-        /// <summary>
-        /// Delete picture for the current user
-        /// </summary>        
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>                
-        /// <response code="401">User is denied</response>
-        [HttpDelete("Current/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Delete()
-        {
-            return DeletePicture(User.Identity.GetUserId());
-        }
-
-        private IActionResult DeletePicture([FromRoute]int userId)
-        {
             // Fetch user
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdenty(identy ?? User.Identity.GetUserIdenty());
                 // Has A Picture?
                 if (string.IsNullOrEmpty(user.ProfilePicture) || Constants.DefaultPircture.Equals(user.ProfilePicture))
                     return BadRequest("No picture set");
@@ -199,7 +158,7 @@ namespace Api.Controllers
                 var fileName = Path.Combine(Constants.ProfilePicturePath, user.ProfilePicture);
 
                 DeleteFile(fileName);
- 
+
                 if (_userManager.UpdateProfilePicture(user, null))
                     return Ok();
                 return BadRequest();

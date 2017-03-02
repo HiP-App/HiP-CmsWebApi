@@ -54,7 +54,7 @@ namespace Api.Controllers
 
         private IActionResult GetNotifications([FromQuery]bool onlyUnread)
         {
-            var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUnread);
+            var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserIdenty(), onlyUnread);
 
             if (notifications != null)
                 return Ok(notifications);
@@ -73,7 +73,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(int), 200)]
         public IActionResult GetNotificationCount()
         {
-            return Ok(_notificationManager.GetNotificationCount(User.Identity.GetUserId()));
+            return Ok(_notificationManager.GetNotificationCount(User.Identity.GetUserIdenty()));
         }
 
         // GET api/Notifications/Subscriptions
@@ -87,7 +87,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
         public IActionResult GetSubscriptions()
         {
-            return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserId()));
+            return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserIdenty()));
         }
 
         #endregion
@@ -151,7 +151,7 @@ namespace Api.Controllers
             NotificationType type;
             if (Enum.TryParse(notificationType, out type))
             {
-                if (_notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
+                if (_notificationManager.SetSubscription(User.Identity.GetUserIdenty(), type, subscribe))
                 {
                     return Ok();
                 }

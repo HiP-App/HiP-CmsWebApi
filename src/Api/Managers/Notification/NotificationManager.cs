@@ -13,9 +13,9 @@ namespace Api.Managers
     {
         public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public IEnumerable<NotificationResult> GetNotificationsForTheUser(int userId, bool onlyUreard)
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userIdenty, bool onlyUreard)
         {
-            var query = DbContext.Notifications.Where(n => n.UserId == userId);
+            var query = DbContext.Notifications.Include(n => n.User).Where(n => n.User.Email == userIdenty);
             if (onlyUreard)
                 query = query.Where(n => !n.IsRead);
 
@@ -66,14 +66,14 @@ namespace Api.Managers
             }
         }
 
-        internal int GetNotificationCount(int userId)
+        internal int GetNotificationCount(string userIdenty)
         {
-            return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
+            return DbContext.Notifications.Include(n => n.Updater).Count(n => n.User.Email == userIdenty && !n.IsRead);
         }
 
-        public bool SetSubscription(int userId, NotificationType type, bool subscribe)
+        public bool SetSubscription(string userIdenty, NotificationType type, bool subscribe)
         {
-            User user = DbContext.Users.Single(u => u.Id == userId);
+            var user = DbContext.Users.Single(u => u.Email == userIdenty);
             Subscription sub = new Subscription
             {
                 Subscriber = user,
@@ -82,10 +82,10 @@ namespace Api.Managers
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<SubscriptionResult> GetSubscriptions(int userId)
+        public IEnumerable<SubscriptionResult> GetSubscriptions(string userIdenty)
         {
-            return DbContext.Subscriptions.Where(
-                subscription => subscription.SubscriberId == userId
+            return DbContext.Subscriptions.Include(s => s.Subscriber).Where(
+                subscription => subscription.Subscriber.Email == userIdenty
             ).ToList().Select(
                 subscription => new SubscriptionResult(subscription)
             );
