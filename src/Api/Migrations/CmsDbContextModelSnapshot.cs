@@ -40,8 +40,6 @@ namespace Api.Migrations
 
                     b.Property<string>("Style");
 
-                    b.Property<int>("UsageCounter");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ParentTagId");
@@ -54,9 +52,19 @@ namespace Api.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("IdInDocument");
+
+                    b.Property<int?>("InDocumentTopicId");
+
+                    b.Property<int>("PositionInDocument");
+
                     b.Property<int>("TagModelId");
 
+                    b.Property<string>("Value");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("InDocumentTopicId");
 
                     b.HasIndex("TagModelId");
 
@@ -385,6 +393,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
                 {
+                    b.HasOne("Api.Models.Entity.Document", "InDocument")
+                        .WithMany()
+                        .HasForeignKey("InDocumentTopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TagModel")
                         .WithMany("TagInstances")
                         .HasForeignKey("TagModelId")

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Api.Managers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 // ReSharper disable CollectionNeverUpdated.Global
 
 namespace Api.Models.Entity.Annotation
@@ -33,8 +34,6 @@ namespace Api.Models.Entity.Annotation
 
         public string Icon { get; set; }
 
-        public int UsageCounter { get; set; }
-
         public bool IsDeleted { get; set; }
 
         public List<AnnotationTagInstance> TagInstances { get; set; }
@@ -43,7 +42,9 @@ namespace Api.Models.Entity.Annotation
 
         public List<AnnotationTagRelation> IncomingRelations { get; set; }
 
-        public AnnotationTag() { }
+        public AnnotationTag()
+        {
+        }
 
         public AnnotationTag(AnnotationTagFormModel model)
         {
@@ -53,7 +54,7 @@ namespace Api.Models.Entity.Annotation
             Description = model.Description;
             Style = model.Style;
 
-            UsageCounter = 0;
+            TagInstances = new List<AnnotationTagInstance>();
             IsDeleted = false;
         }
 
@@ -68,14 +69,29 @@ namespace Api.Models.Entity.Annotation
             return ParentTag.ShortName + "-" + ShortName;
         }
 
+        public int UsageCounter()
+        {
+            try
+            {
+                return TagInstances.Count;
+            }
+            catch (System.NullReferenceException)
+            {
+                return 0;
+            }
+        }
+
         #endregion
 
         public class AnnotationTagMap
         {
             public AnnotationTagMap(EntityTypeBuilder<AnnotationTag> entityBuilder)
             {
-                entityBuilder.HasOne(at => at.ParentTag).WithMany(pt => pt.ChildTags)
-                    .HasForeignKey(at => at.ParentTagId).OnDelete(DeleteBehavior.SetNull);
+                entityBuilder.HasOne(at => at.ParentTag)
+                    .WithMany(pt => pt.ChildTags)
+                    .HasForeignKey(at => at.ParentTagId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                entityBuilder.HasMany(at => at.TagInstances).WithOne(ati => ati.TagModel);
             }
         }
     }
