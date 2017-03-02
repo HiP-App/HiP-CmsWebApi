@@ -145,7 +145,8 @@ namespace Api.Controllers
         /// <summary>
         /// Remove the given relation from the database.
         /// </summary>
-        /// <param name="model">The relation to remove</param>
+        /// <param name="firstTagId">Id of the FirstTag</param>
+        /// <param name="secondTagId">Id of the SecondTag</param>
         /// <response code="200">Relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
         /// <response code="400">Request was misformed</response>
@@ -153,14 +154,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagRelation([FromBody] AnnotationTagRelationFormModel model)
+        public IActionResult DeleteTagRelation([FromQuery] int firstTagId, [FromQuery] int secondTagId)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
-
             try
             {
-                if (_tagManager.RemoveTagRelation(model)) return Ok();
+                if (_tagManager.RemoveTagRelation(firstTagId, secondTagId))
+                    return Ok();
                 return BadRequest();
             }
             catch (InvalidOperationException)

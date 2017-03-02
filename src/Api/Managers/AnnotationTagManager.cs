@@ -249,10 +249,10 @@ namespace Api.Managers
             return true;
         }
 
-        internal bool RemoveTagRelation(AnnotationTagRelationFormModel model)
+        internal bool RemoveTagRelation(int firstTagId, int secondTagId)
         {
-            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
-            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == firstTagId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == secondTagId);
             if (TagRelationExists(tag1, tag2))
             {
                 RemoveRelationFor(tag1, tag2);
