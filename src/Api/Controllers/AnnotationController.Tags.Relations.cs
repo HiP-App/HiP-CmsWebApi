@@ -13,12 +13,12 @@ namespace Api.Controllers
         #region GET
 
         /// <summary>
-        /// Get all existing tag relations. Provide a maxDepth parameter for limiting the maximum depth of the returned tags in the tag tree.
+        /// Get all existing tag relations.
+        /// NOT IMPLEMENTED YET.
         /// </summary>
-        /// <param name="maxDepth" optional="true">The maximum depth of the returned tags. Set to 0 to get only the root tags' relations. Defaults to infinity.</param>
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/Relations/{maxDepth}")]
+        [HttpGet("Tags/Relations")]
         [ProducesResponseType(typeof(List<AnnotationTagRelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelations([FromQuery] int maxDepth = int.MaxValue)
@@ -29,6 +29,7 @@ namespace Api.Controllers
 
         /// <summary>
         /// Get all existing tag relations for the tag represented by the given id.
+        /// NOT IMPLEMENTED YET.
         /// </summary>
         /// <param name="tagId">The Id of the tag that you want the relations for</param>
         /// <response code="200">Returns a list of tag relations</response>
@@ -66,6 +67,7 @@ namespace Api.Controllers
         /// <summary>
         /// Get all tag relations that are available for the tag instance identified by the given id.
         /// The relations are ordered descending by relevance.
+        /// NOT IMPLEMENTED YET.
         /// </summary>
         /// <param name="id">The Id of the tag that you want the allowed relations for</param>
         /// <response code="200">Returns a list of tags</response>
@@ -119,6 +121,7 @@ namespace Api.Controllers
         /// Modify the relation from the tag represented by {sourceId} to the tag represented by {targetId}.
         /// The new relation must be given in the body of the call.
         /// Source and target tags of the relations may *not* be changed for now.
+        /// NOT IMPLEMENTED YET.
         /// </summary>
         /// <param name="sourceId">ID of the source tag of the relation</param>
         /// <param name="targetId">ID of the target tag of the relation</param>
