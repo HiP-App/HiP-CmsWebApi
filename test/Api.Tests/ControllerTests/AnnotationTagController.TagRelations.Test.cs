@@ -129,7 +129,7 @@ namespace Api.Tests.ControllerTests
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
-            var model = new LayerRelationRuleFormModel()
+            var model = new RelationRuleFormModel()
             {
                 SourceLayerId = expected.SourceLayerId,
                 TargetLayerId = expected.TargetLayerId,
@@ -166,7 +166,7 @@ namespace Api.Tests.ControllerTests
         public void PostLayerRelationRuleTest403()
         {
             var expected = _layerRelationRule;
-            var model = new LayerRelationRuleFormModel()
+            var model = new RelationRuleFormModel()
             {
                 SourceLayerId = expected.SourceLayerId,
                 TargetLayerId = expected.TargetLayerId,

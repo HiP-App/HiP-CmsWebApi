@@ -46,7 +46,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PostLayerRelationRule([FromBody] LayerRelationRuleFormModel model)
+        public IActionResult PostLayerRelationRule([FromBody] RelationRuleFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
                 return Forbid();
@@ -70,7 +70,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="sourceId">ID of the source layer of the relation</param>
         /// <param name="targetId">ID of the target layer of the relation</param>
-        /// <param name="model">The changed LayerRelationRuleFormModel</param>
+        /// <param name="model">The changed RelationRuleFormModel</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="400">Request was misformed</response>
@@ -78,7 +78,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] LayerRelationRuleFormModel model)
+        public IActionResult PutLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationRuleFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
                 return Forbid();

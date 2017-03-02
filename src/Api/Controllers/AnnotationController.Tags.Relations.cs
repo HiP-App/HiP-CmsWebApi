@@ -49,7 +49,7 @@ namespace Api.Controllers
         /// <param name="tagId">The Id of the tag that you want the allowed relation rules for</param>
         /// <response code="200">Returns a list of tags that the user may create a relation rule to</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/{tagId}/AllowedRelations")]
+        [HttpGet("Tags/{tagId}/AllowedRelationRules")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationRulesForTag([FromRoute] int tagId)
@@ -66,16 +66,16 @@ namespace Api.Controllers
 
         /// <summary>
         /// Get all tag relations that are available for the tag instance identified by the given id.
+        /// These depend on the configured tag relation rules.
         /// The relations are ordered descending by relevance.
-        /// NOT IMPLEMENTED YET.
         /// </summary>
-        /// <param name="id">The Id of the tag that you want the allowed relations for</param>
-        /// <response code="200">Returns a list of tags</response>
+        /// <param name="id">The Id of the tag instance that you want the allowed relations for</param>
+        /// <response code="200">Returns a list of tag instances</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/Instance/{id}/AvailableRelations")]
-        [ProducesResponseType(typeof(List<AnnotationTagRelation>), 200)]
+        [HttpGet("Tags/Instance/{id}/AllowedRelations")]
+        [ProducesResponseType(typeof(List<AnnotationTagInstance>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetAvailableRelationsForInstance([FromRoute] int id)
+        public IActionResult GetAllowedRelationsForInstance([FromRoute] int id)
         {
             // TODO: Waiting for relations in tag instances / documents
             return ServiceUnavailable();

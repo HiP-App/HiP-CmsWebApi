@@ -146,7 +146,7 @@ namespace Api.Managers
             return true;
         }
 
-        internal bool AddLayerRelationRule(LayerRelationRuleFormModel model)
+        internal bool AddLayerRelationRule(RelationRuleFormModel model)
         {
             if (!(DbContext.Layers.Any(l => l.Id == model.SourceLayerId) || DbContext.Layers.Any(l => l.Id == model.TargetLayerId)))
                 return false;
@@ -198,7 +198,7 @@ namespace Api.Managers
         }
 
 
-        internal bool ChangeLayerRelationRule(int sourceId, int targetId, LayerRelationRuleFormModel model)
+        internal bool ChangeLayerRelationRule(int sourceId, int targetId, RelationRuleFormModel model)
         {
             if (!(DbContext.Layers.Any(l => l.Id == sourceId) || DbContext.Layers.Any(l => l.Id == targetId)))
                 return false;
