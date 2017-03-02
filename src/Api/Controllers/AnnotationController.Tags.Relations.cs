@@ -49,7 +49,7 @@ namespace Api.Controllers
         /// <param name="tagId">The Id of the tag that you want the allowed relation rules for</param>
         /// <response code="200">Returns a list of tags that the user may create a relation rule to</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/{tagId}/AllowedRelations")]
+        [HttpGet("Tags/{tagId}/AllowedRelationRules")]
         [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationRulesForTag([FromRoute] int tagId)
