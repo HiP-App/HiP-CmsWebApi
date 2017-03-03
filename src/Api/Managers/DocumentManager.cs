@@ -36,6 +36,7 @@ namespace Api.Managers
             }
             // already exitsts
 
+
             Document document;
             try
             {
@@ -48,52 +49,54 @@ namespace Api.Managers
                 document = new Document(topicId, userId, htmlContent);
                 DbContext.Add(document);
             }
+
+            // document is saved, so now we can parse it
+            var stream = new System.IO.StringReader("<pseudo-root>" + htmlContent + "</pseudo-root>");
+            var xmlReader = XmlReader.Create(stream);
+            var tagInstances = new List<AnnotationTagInstance>();
+
+            try
+            {
+                while (xmlReader.Read())
+                {
+                    if (xmlReader.NodeType != XmlNodeType.Element) continue;
+                    if (!xmlReader.HasAttributes) continue;
+
+                    var tagModelId = int.Parse(xmlReader.GetAttribute("data-tag-model-id"));
+                    var tagInstanceId = int.Parse(xmlReader.GetAttribute("data-tag-id"));
+                    var tagValue = xmlReader.ReadElementContentAsString();
+                    var rx = new Regex("<span[^>]+?data-tag-id=\"" + tagInstanceId + "\".*?>");
+                    var tagPosition = rx.Match(htmlContent).Index;
+
+                    var tagModel = DbContext.AnnotationTags.First(t => t.Id == tagModelId);
+                    var tag = new AnnotationTagInstance(tagModel)
+                    {
+                        IdInDocument = tagInstanceId,
+                        Value = tagValue,
+                        PositionInDocument = tagPosition,
+                        InDocument = document
+                    };
+
+                    tagInstances.Add(tag);
+                }
+                var oldInstances = DbContext.AnnotationTagInstances;
+                DbContext.AnnotationTagInstances.RemoveRange(oldInstances);
+                DbContext.AnnotationTagInstances.AddRange(tagInstances);
+            }
+            catch (Exception)
+            {
+                return EntityResult.Error("Parsing Error");
+            }
+
             try
             {
                 DbContext.SaveChanges();
-                //return EntityResult.Successfull();
+                return EntityResult.Successfull();
             }
             catch (Exception e)
             {
                 return EntityResult.Error(e.Message);
             }
-
-            // document is saved, so now we can parse it
-            System.IO.StringReader stream =
-                new System.IO.StringReader("<pseudo-root>" + htmlContent + "</pseudo-root>");
-            XmlReader xmlReader = XmlReader.Create(stream);
-
-            List<AnnotationTagInstance> tagInstances = new List<AnnotationTagInstance>();
-
-            while (xmlReader.Read())
-            {
-                switch (xmlReader.NodeType)
-                {
-                    case XmlNodeType.Element:
-                        if (xmlReader.HasAttributes)
-                        {
-                            int tagModelId = Int32.Parse(xmlReader.GetAttribute("data-tag-model-id"));
-                            int tagInstanceId = Int32.Parse(xmlReader.GetAttribute("data-tag-id"));
-                            string tagValue = xmlReader.ReadElementContentAsString();
-                            Regex rx = new Regex("<span[^>]+?data-tag-id=\"" + tagInstanceId + "\".*?>");
-                            int tagPosition = rx.Match(htmlContent).Index;
-
-                            AnnotationTag tagModel = DbContext.AnnotationTags.First(t => t.Id == tagModelId);
-                            AnnotationTagInstance tag = new AnnotationTagInstance(tagModel);
-                            tag.IdInDocument = tagInstanceId;
-                            tag.Value = tagValue;
-                            tag.PositionInDocument = tagPosition;
-                            tag.InDocument = document;
-
-                            tagInstances.Add(tag);
-                        }
-                        break;
-                }
-            }
-            DbContext.AnnotationTagInstances.AddRange(tagInstances);
-            DbContext.SaveChanges();
-
-            return EntityResult.Successfull();
         }
 
 
