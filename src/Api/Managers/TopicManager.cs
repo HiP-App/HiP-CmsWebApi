@@ -41,12 +41,12 @@ namespace Api.Managers
 
         }
 
-        public PagedResult<TopicResult> GetTopicsForUser(int userId, int page, int pageSize)
+        public PagedResult<TopicResult> GetTopicsForUser(string userIdenty, int page, int pageSize)
         {
-            var relatedTopicIds = DbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
+            var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.User.Email == userIdenty).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
-                 .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id));
+                 .Where(t => t.CreatedBy.Email == userIdenty || relatedTopicIds.Contains(t.Id));
 
             var totalCount = query.Count();
             if (page != 0)

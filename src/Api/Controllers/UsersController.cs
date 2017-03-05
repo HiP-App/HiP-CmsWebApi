@@ -131,7 +131,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put([FromRoute]int id, [FromBody]AdminUserFormModel model)
         {
-            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
                 return Forbidden();
 
             return PutUser(id, model);

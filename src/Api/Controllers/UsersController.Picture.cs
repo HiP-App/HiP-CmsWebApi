@@ -43,7 +43,8 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetPictureForCurrentUser()
         {
-            return GetPicture(User.ClaimUtils.GetUserIdentity());
+            var userId = _userManager.GetUserByIdenty(User.Identity.GetUserIdenty());
+            return GetPicture(userId.Id);
         }
 
         private IActionResult GetPicture([FromRoute]int userId)

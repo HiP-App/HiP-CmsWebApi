@@ -52,7 +52,7 @@ namespace Api.Controllers
         [HttpGet("Annotation/Tags/All/Permission/IsAllowedToEdit")]
         public IActionResult IsAllowedToEditTags()
         {
-            if (_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdenty()))
                 return Ok();
             return Unauthorized();
         }
