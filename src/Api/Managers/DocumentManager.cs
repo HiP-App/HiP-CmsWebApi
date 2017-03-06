@@ -79,8 +79,11 @@ namespace Api.Managers
 
                     tagInstances.Add(tag);
                 }
-                var oldInstances = DbContext.AnnotationTagInstances.Where(i => i.Document == document);
-                DbContext.AnnotationTagInstances.RemoveRange(oldInstances);
+                if (DbContext.AnnotationTagInstances.Any(i => i.Document == document))
+                {
+                    var oldInstances = DbContext.AnnotationTagInstances.Where(i => i.Document == document);
+                    DbContext.AnnotationTagInstances.RemoveRange(oldInstances);
+                }
                 DbContext.AnnotationTagInstances.AddRange(tagInstances);
             }
             catch (Exception)
