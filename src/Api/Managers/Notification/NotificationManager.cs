@@ -82,12 +82,12 @@ namespace Api.Managers
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<SubscriptionResult> GetSubscriptions(int userId)
+        public IEnumerable<string> GetSubscriptions(int userId)
         {
             return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
             ).ToList().Select(
-                subscription => new SubscriptionResult(subscription)
+                subscription => subscription.TypeName
             );
         }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Api.Managers;
 using System.Collections.Generic;
+using System.Linq;
 using Api.Models.Notifications;
 
 namespace Api.Controllers
@@ -84,12 +85,26 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of subscriptions for the current user</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("Subscriptions")]
-        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetSubscriptions()
         {
             return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserId()));
         }
 
+        // GET api/Notifications/Types
+
+        /// <summary>
+        /// Get all Notification Types
+        /// </summary>
+        [HttpGet("Types")]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
+        public IActionResult GetNotificationsTypes()
+        {
+            var result = (from object type in Enum.GetValues(typeof(NotificationType)) select Enum.GetName(typeof(NotificationType), type)).ToList();
+            return Ok(result);
+        }
+
+        
         #endregion
 
         #region POST
@@ -149,21 +164,10 @@ namespace Api.Controllers
         private IActionResult SetSubscription(string notificationType, bool subscribe)
         {
             NotificationType type;
-            if (Enum.TryParse(notificationType, out type))
-            {
-                if (_notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
-            }
-            else
-            {
-                return BadRequest();
-            }
+            if (Enum.TryParse(notificationType, out type) && _notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
+                return Ok();
+
+            return BadRequest();
         }
 
         #endregion
