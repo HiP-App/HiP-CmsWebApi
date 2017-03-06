@@ -8,9 +8,10 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170302162626_TagAnalysis")]
+    partial class TagAnalysis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
@@ -52,9 +53,9 @@ namespace Api.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("DocumentId");
-
                     b.Property<int>("IdInDocument");
+
+                    b.Property<int?>("InDocumentTopicId");
 
                     b.Property<int>("PositionInDocument");
 
@@ -64,7 +65,7 @@ namespace Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentId");
+                    b.HasIndex("InDocumentTopicId");
 
                     b.HasIndex("TagModelId");
 
@@ -393,9 +394,9 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Document", "Document")
-                        .WithMany("TagsInstances")
-                        .HasForeignKey("DocumentId")
+                    b.HasOne("Api.Models.Entity.Document", "InDocument")
+                        .WithMany()
+                        .HasForeignKey("InDocumentTopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TagModel")

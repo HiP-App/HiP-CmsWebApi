@@ -60,14 +60,14 @@ namespace Api.Controllers
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
                 return Forbidden();
 
-            if (ModelState.IsValid)
-            {
-                var result = _documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent.HtmlContent);
-                if (result.Success)
-                    return Ok(result);
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return BadRequest(ModelState);
+            var result = _documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent.HtmlContent);
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
         }
 
         /// <summary>

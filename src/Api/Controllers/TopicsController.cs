@@ -23,6 +23,7 @@ namespace Api.Controllers
             _topicPermissions = new TopicPermissions(dbContext);
             TopicsAttachmentsController();
             TopicsDocumentController();
+            TopicsAnalyticsController();
         }
 
         #region GET topics
