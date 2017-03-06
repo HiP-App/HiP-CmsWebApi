@@ -72,7 +72,8 @@ namespace Api.Permission
         {
             try
             {
-                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Reviewer)))
+                var user = _userManager.GetUserByIdenty(userIdenty);
+                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
                     return true;
             }
             catch (InvalidOperationException) { }

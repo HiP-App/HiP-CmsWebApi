@@ -25,7 +25,7 @@ namespace Api.Managers
         ) : base(dbContext)
         {
             topic = currentTopic;
-            currentUser = dbContext.Users.Single(u => u.Email == userIdenty).Id;
+            currentUser = GetUserByIdenty(userIdenty).Id;
             emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(IEmailSender)); // TODO: This is probably not such a good idea...
             // Do not notify yourself
             notifiedUsers.Add(currentUser);

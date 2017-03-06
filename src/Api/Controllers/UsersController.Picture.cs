@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Api.Models.User;
 using System;
-using Api.Permission;
 
 namespace Api.Controllers
 {
@@ -52,6 +51,33 @@ namespace Api.Controllers
             try
             {
                 var user = _userManager.GetUserById(userId);
+                var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
+                if (!System.IO.File.Exists(path))
+                    path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
+
+                return Ok(new Base64Image(ToBase64String(path)));
+            }
+            catch (InvalidOperationException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Get the profile picture 
+         /// <param name="userIdenty">Specify the identy</param>
+        /// </summary>           
+        /// <response code="200">Returns profile picture of the current user</response>        
+        /// <response code="404">Resource not found</response>        
+        /// <response code="401">User is denied</response>
+        [HttpGet("picture/")]
+        [ProducesResponseType(typeof(Base64Image), 200)]
+        [ProducesResponseType(typeof(void), 404)]
+        public IActionResult GetPictureByIdenty([FromQuery]string userIdenty)
+        {
+            try
+            {
+                var user = _userManager.GetUserByIdenty(userIdenty ?? User.Identity.GetUserIdenty());
                 var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);

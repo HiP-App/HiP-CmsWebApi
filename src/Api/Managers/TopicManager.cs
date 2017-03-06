@@ -134,7 +134,8 @@ namespace Api.Managers
         {
             try
             {
-                var topic = new Topic(model) { CreatedById = DbContext.Users.Single(u => u.Email == updaterIdenty).Id };
+                var user = GetUserByIdenty(updaterIdenty);
+                var topic = new Topic(model) { CreatedById = user.Id };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
                 new NotificationProcessor(DbContext, topic, updaterIdenty).OnNewTopic();

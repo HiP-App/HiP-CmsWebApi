@@ -29,18 +29,18 @@ namespace Api.Managers
                 return EntityResult.Error("Unknown Topic");
             }
             // already exitsts
-            
-            var userId = DbContext.Users.Select()
+
+            var user = GetUserByIdenty(userIdenty);
             Document document;
             try
             {
                 document = GetDocumentById(topicId);
-                document.UpdaterId = userId;
+                document.UpdaterId = user.Id;
                 document.Content = htmlContent;
             }
             catch (InvalidOperationException)
             {
-                document = new Document(topicId, userId, htmlContent);
+                document = new Document(topicId, user.Id, htmlContent);
                 DbContext.Add(document);
             }
             try

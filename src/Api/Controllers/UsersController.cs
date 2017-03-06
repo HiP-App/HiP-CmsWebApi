@@ -8,6 +8,7 @@ using Api.Models.User;
 using Api.Permission;
 using Api.Services;
 using System;
+using Api.Models.Entity;
 
 namespace Api.Controllers
 {
@@ -92,7 +93,7 @@ namespace Api.Controllers
         /// <response code="200">Returns the user</response>        
         /// <response code="404">User not found</response>
         /// <response code="401">User is denied</response>
-        [HttpGet]
+        [HttpGet("User")]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Get([FromQuery] string identy)
@@ -131,13 +132,16 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put([FromRoute]int id, [FromBody]AdminUserFormModel model)
         {
+            // TODO
             if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
                 return Forbidden();
 
-            return PutUser(id, model);
+            var user = _userManager.GetUserById(id);
+
+            return PutUser(user, model);
         }
 
-        private IActionResult PutUser([FromRoute]int id, [FromBody]UserFormModel model)
+        private IActionResult PutUser(User user, UserFormModel model)
         {
             if (ModelState.IsValid)
             {
@@ -147,10 +151,10 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    if (!_userManager.UpdateUser(id, model))
+                    if (!_userManager.UpdateUser(user.Email, model))
                         return NotFound();
 
-                    Logger.LogInformation(5, "User with ID: " + id + " updated.");
+                    Logger.LogInformation(5, "User with ID: " + user.Id + " updated.");
                     return Ok();
                 }
             }

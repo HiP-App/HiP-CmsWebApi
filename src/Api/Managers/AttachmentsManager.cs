@@ -34,10 +34,10 @@ namespace Api.Managers
 
             try
             {
-                var userId = DbContext.Users.Single(u => u.Email == userIdenty).Id;
+                var user = GetUserByIdenty(userIdenty);
                 var attatchment = new TopicAttatchment(model)
                 {
-                    UserId = userId,
+                    UserId = user.Id,
                     TopicId = topicId,
                     Type = "TODO"
                 };

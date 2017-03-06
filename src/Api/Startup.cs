@@ -87,7 +87,7 @@ namespace Api
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents(app.ApplicationServices.GetRequiredService<CmsDbContext>())
+                Events = new CmsApuJwtBearerEvents()
             });
 
             app.UseMvc();

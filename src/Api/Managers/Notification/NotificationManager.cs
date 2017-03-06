@@ -73,8 +73,8 @@ namespace Api.Managers
 
         public bool SetSubscription(string userIdenty, NotificationType type, bool subscribe)
         {
-            var user = DbContext.Users.Single(u => u.Email == userIdenty);
-            Subscription sub = new Subscription
+            var user = GetUserByIdenty(userIdenty);
+            var sub = new Subscription
             {
                 Subscriber = user,
                 Type = type
