@@ -74,12 +74,12 @@ namespace Api.Managers
                         IdInDocument = tagInstanceId,
                         Value = tagValue,
                         PositionInDocument = tagPosition,
-                        InDocument = document
+                        Document = document
                     };
 
                     tagInstances.Add(tag);
                 }
-                var oldInstances = DbContext.AnnotationTagInstances;
+                var oldInstances = DbContext.AnnotationTagInstances.Where(i => i.Document == document);
                 DbContext.AnnotationTagInstances.RemoveRange(oldInstances);
                 DbContext.AnnotationTagInstances.AddRange(tagInstances);
             }

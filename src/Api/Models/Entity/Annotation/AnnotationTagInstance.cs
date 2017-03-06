@@ -16,7 +16,9 @@ namespace Api.Models.Entity.Annotation
 
         public string Value { get; set; }
 
-        public Document InDocument { get; set; }
+        public virtual Document Document { get; set; }
+
+        public int DocumentId { get; set; }
 
         public int IdInDocument { get; set; }
 
@@ -40,7 +42,9 @@ namespace Api.Models.Entity.Annotation
                     .WithMany(model => model.TagInstances)
                     .HasForeignKey(tag => tag.TagModelId)
                     .OnDelete(DeleteBehavior.Cascade);
-                entityBuilder.HasOne(tag => tag.InDocument).WithMany()
+                entityBuilder.HasOne(tag => tag.Document)
+                    .WithMany(doc => doc.TagsInstances)
+                    .HasForeignKey(tag => tag.DocumentId)
                     .OnDelete(DeleteBehavior.Cascade);
             }
         }

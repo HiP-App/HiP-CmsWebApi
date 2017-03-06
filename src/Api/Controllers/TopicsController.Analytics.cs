@@ -34,7 +34,7 @@ namespace Api.Controllers
 
             try
             {
-                return Ok(new TagFrequencyAnalyticsResult() {TagFrequency = _analyticsManager.GetFrequencyAnalytic(topicId) });
+                return Ok(_analyticsManager.GetFrequencyAnalytic(topicId));
             }
             catch (InvalidOperationException)
             {

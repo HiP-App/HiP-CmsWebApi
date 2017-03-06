@@ -9,11 +9,11 @@ namespace Api.Managers
     {
         public ContentAnalyticsManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public IEnumerable<TagFrequency> GetFrequencyAnalytic(int topicId)
+        public TagFrequencyAnalyticsResult GetFrequencyAnalytic(int topicId)
         {
             var document = DbContext.Documents.First(d => d.TopicId == topicId);
             var tags = DbContext.AnnotationTagInstances
-                .Where(t => t.InDocument == document)
+                .Where(t => t.Document == document)
                 .GroupBy(t => new { t.Value, t.TagModelId });
 
 
@@ -22,7 +22,7 @@ namespace Api.Managers
             {
                 result.Add(new TagFrequency(tag.Key.TagModelId, tag.Key.Value, tag.Count()));
             }
-            return result;
+            return new TagFrequencyAnalyticsResult {TagFrequency = result};
         }
     }
 }

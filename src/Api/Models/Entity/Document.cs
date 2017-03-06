@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Api.Models.Entity.Annotation;
 
 namespace Api.Models.Entity
 {
@@ -24,6 +26,8 @@ namespace Api.Models.Entity
         [MaxLength(65536)]
         public string Content { get; set; }
 
+        public IEnumerable<AnnotationTagInstance> TagsInstances { get; set; }
+
         public Document() { }
 
         public Document(int topicId, int userId, string htmlContent)
@@ -44,6 +48,7 @@ namespace Api.Models.Entity
             entityBuilder.Property(d => d.TimeStamp).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
             entityBuilder.HasOne(d => d.Updater).WithMany(u => u.Documents).HasForeignKey(n => n.UpdaterId).OnDelete(DeleteBehavior.SetNull);
             entityBuilder.HasOne(d => d.Topic).WithOne(t => t.Document).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasMany(d => d.TagsInstances).WithOne(t => t.Document).OnDelete(DeleteBehavior.Cascade);
 
         }
     }
