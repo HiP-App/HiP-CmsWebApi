@@ -91,6 +91,11 @@ namespace Api.Controllers
             return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserId()));
         }
 
+        // GET api/Notifications/Types
+
+        /// <summary>
+        /// Get all Notification Types
+        /// </summary>
         [HttpGet("Types")]
         [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetNotificationsTypes()
