@@ -409,7 +409,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<AnnotationTagRelation>(db => db.AddRange(_relation12, _relation34, relation35))
                 // TODO How to model that the tag instances are part of the same document?
                 )
-                .Calling(c => c.GetAvailableRelationsForInstance(instance3.Id))
+                .Calling(c => c.GetAllowedRelationsForInstance(instance3.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTagRelation>>()
@@ -440,7 +440,7 @@ namespace Api.Tests.ControllerTests
                 // no relations exist between the tags
                 // TODO How to model that the tag instances are part of the same document?
                 )
-                .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTagRelation>>()
@@ -456,7 +456,7 @@ namespace Api.Tests.ControllerTests
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
                 .BadRequest();
         }
