@@ -5,6 +5,7 @@ using Api.Models.Entity;
 using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
+using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 using NUnit.Framework;
 
 namespace Api.Tests.ControllerTests
@@ -12,6 +13,7 @@ namespace Api.Tests.ControllerTests
     [TestFixture]
     public class AnnotationTagRelationsControllerTest
     {
+        private ControllerTester<AnnotationController> _tester;
         private User _admin;
         private User _student;
         private User _supervisor;
@@ -29,6 +31,7 @@ namespace Api.Tests.ControllerTests
         [SetUp]
         public void BeforeTest()
         {
+            _tester = new ControllerTester<AnnotationController>();
             // create some User, Tag and TagRelation objects for mocking the database
             _admin = new User
             {
@@ -104,9 +107,7 @@ namespace Api.Tests.ControllerTests
                 Description= "my-description"
             };
             var expected = new List<LayerRelationRule>() { myRelation };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(myRelation))
