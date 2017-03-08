@@ -120,8 +120,8 @@ namespace Api.Managers
 
         internal bool AddTagRelation(RelationFormModel model)
         {
-            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
-            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SourceId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.TargetId);
             if (TagRelationExists(tag1, tag2))
             {
                 return false;
@@ -256,8 +256,8 @@ namespace Api.Managers
 
         internal bool RemoveTagRelation(RelationFormModel model)
         {
-            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
-            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
+            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SourceId);
+            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.TargetId);
             if (TagRelationExists(tag1, tag2))
             {
                 RemoveRelationFor(tag1, tag2);

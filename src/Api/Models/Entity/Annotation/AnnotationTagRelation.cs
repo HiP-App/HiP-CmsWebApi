@@ -41,8 +41,8 @@ namespace Api.Models.Entity.Annotation
 
         public AnnotationTagRelation(RelationFormModel model)
         {
-            FirstTagId = model.FirstTagId;
-            SecondTagId = model.SecondTagId;
+            FirstTagId = model.SourceId;
+            SecondTagId = model.TargetId;
             Name = model.Name;
             ArrowStyle = model.ArrowStyle;
             Color = model.Color;
