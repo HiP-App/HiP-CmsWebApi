@@ -124,7 +124,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelationRule([FromBody] RelationRuleFormModel model)
+        public IActionResult PostTagRelationRule([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -181,7 +181,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutTagRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationRuleFormModel model)
+        public IActionResult PutTagRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationFormModel model)
         {
             return ServiceUnavailable();
         }
@@ -228,7 +228,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteTagRelationRule([FromBody] RelationRuleFormModel model)
+        public IActionResult DeleteTagRelationRule([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();

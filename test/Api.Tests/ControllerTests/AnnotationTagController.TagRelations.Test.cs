@@ -130,10 +130,10 @@ namespace Api.Tests.ControllerTests
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
-            var model = new RelationRuleFormModel()
+            var model = new RelationFormModel()
             {
-                SourceLayerId = expected.SourceLayerId,
-                TargetLayerId = expected.TargetLayerId,
+                SourceId = expected.SourceLayerId,
+                TargetId = expected.TargetLayerId,
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
@@ -167,10 +167,10 @@ namespace Api.Tests.ControllerTests
         public void PostLayerRelationRuleTest403()
         {
             var expected = _layerRelationRule;
-            var model = new RelationRuleFormModel()
+            var model = new RelationFormModel()
             {
-                SourceLayerId = expected.SourceLayerId,
-                TargetLayerId = expected.TargetLayerId,
+                SourceId = expected.SourceLayerId,
+                TargetId = expected.TargetLayerId,
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };

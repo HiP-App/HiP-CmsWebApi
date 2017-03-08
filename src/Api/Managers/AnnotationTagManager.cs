@@ -146,24 +146,24 @@ namespace Api.Managers
             return true;
         }
 
-        internal bool AddLayerRelationRule(RelationRuleFormModel model)
+        internal bool AddLayerRelationRule(RelationFormModel model)
         {
-            if (!(DbContext.Layers.Any(l => l.Id == model.SourceLayerId) || DbContext.Layers.Any(l => l.Id == model.TargetLayerId)))
+            if (!(DbContext.Layers.Any(l => l.Id == model.SourceId) || DbContext.Layers.Any(l => l.Id == model.TargetId)))
                 return false;
             var rule = new LayerRelationRule()
             {
-                SourceLayerId = model.SourceLayerId,
-                TargetLayerId = model.TargetLayerId,
+                SourceLayerId = model.SourceId,
+                TargetLayerId= model.TargetId,
                 Color = model.Color,
                 ArrowStyle = model.ArrowStyle
             };
             DbContext.LayerRelationRules.Add(rule);
             DbContext.SaveChanges();
-            Console.Write("added relation:" + model.SourceLayerId + model.TargetLayerId);
+            Console.Write("added relation:" + model.SourceId + model.TargetId);
             return true;
         }
 
-        public bool AddTagRelationRule(RelationRuleFormModel model)
+        public bool AddTagRelationRule(RelationFormModel model)
         {
             throw new NotImplementedException();
         }
@@ -203,7 +203,7 @@ namespace Api.Managers
         }
 
 
-        internal bool ChangeLayerRelationRule(int sourceId, int targetId, RelationRuleFormModel model)
+        internal bool ChangeLayerRelationRule(int sourceId, int targetId, RelationFormModel model)
         {
             if (!(DbContext.Layers.Any(l => l.Id == sourceId) || DbContext.Layers.Any(l => l.Id == targetId)))
                 return false;
@@ -212,7 +212,7 @@ namespace Api.Managers
             rule.ArrowStyle = model.ArrowStyle;
             rule.Color = model.Color;
             DbContext.SaveChanges();
-            Console.Write("changed relation:" + model.SourceLayerId + model.TargetLayerId);
+            Console.Write("changed relation:" + model.SourceId + model.TargetId);
             return true;
         }
 
@@ -292,7 +292,7 @@ namespace Api.Managers
             return true;
         }
 
-        public bool RemoveTagRelationRule(RelationRuleFormModel model)
+        public bool RemoveTagRelationRule(RelationFormModel model)
         {
             throw new NotImplementedException();
         }
