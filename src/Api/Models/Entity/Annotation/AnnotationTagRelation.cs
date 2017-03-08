@@ -39,7 +39,7 @@ namespace Api.Models.Entity.Annotation
 
         public AnnotationTagRelation() { }
 
-        public AnnotationTagRelation(AnnotationTagRelationFormModel model)
+        public AnnotationTagRelation(RelationFormModel model)
         {
             FirstTagId = model.FirstTagId;
             SecondTagId = model.SecondTagId;

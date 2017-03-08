@@ -472,7 +472,7 @@ namespace Api.Tests.ControllerTests
        // TODO [Test]
         public void PostTagRelationTest()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
                 FirstTagId = _tag1.Id,
                 SecondTagId = _tag2.Id,
@@ -509,7 +509,7 @@ namespace Api.Tests.ControllerTests
        // TODO [Test]
         public void PostTagRelationTest_NoChildToFirstLevelRelation()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
                 FirstTagId = _tag3.Id,
                 SecondTagId = _tag2.Id,
@@ -536,7 +536,7 @@ namespace Api.Tests.ControllerTests
                 .BadRequest();
 
             // other way around is also not allowed:
-            expected = new AnnotationTagRelationFormModel()
+            expected = new RelationFormModel()
             {
                 FirstTagId = _tag2.Id,
                 SecondTagId = _tag3.Id,
@@ -569,7 +569,7 @@ namespace Api.Tests.ControllerTests
      // TODO   [Test]
         public void PostTagRelationTest_NoDuplicateRelations()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id,
@@ -603,7 +603,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest400()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
                 FirstTagId = _tag1.Id,
                 SecondTagId = _tag2.Id,
@@ -634,7 +634,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void PostTagRelationTest403()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
                 FirstTagId = _tag1.Id,
                 SecondTagId = _tag2.Id,
@@ -668,7 +668,7 @@ namespace Api.Tests.ControllerTests
         // TODO [Test]
         public void PutTagRelationTest()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id,
@@ -705,7 +705,7 @@ namespace Api.Tests.ControllerTests
        // TODO [Test]
         public void PutTagRelationTest400()
         {
-            var model = new AnnotationTagRelationFormModel()
+            var model = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id,
@@ -729,7 +729,7 @@ namespace Api.Tests.ControllerTests
         // TODO [Test]
         public void PutTagRelationTest403()
         {
-            var model = new AnnotationTagRelationFormModel()
+            var model = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id,
@@ -755,7 +755,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest()
         {
-            var model = new AnnotationTagRelationFormModel()
+            var model = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id
@@ -784,7 +784,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest400()
         {
-            var model = new AnnotationTagRelationFormModel()
+            var model = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id
@@ -808,7 +808,7 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void DeleteTagRelationTest403()
         {
-            var model = new AnnotationTagRelationFormModel()
+            var model = new RelationFormModel()
             {
                 FirstTagId = _relation12.FirstTag.Id,
                 SecondTagId = _relation12.SecondTag.Id

@@ -1,6 +1,9 @@
 ﻿namespace Api.Models.AnnotationTag
 {
-    public class AnnotationTagRelationFormModel
+    /// <summary>
+    /// Generic FormModel for annotation tag relations and annotation tag relation rules
+    /// </summary>
+    public class RelationFormModel
     {
         public int FirstTagId { get; set; }        
 

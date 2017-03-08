@@ -118,7 +118,7 @@ namespace Api.Managers
             }
         }
 
-        internal bool AddTagRelation(AnnotationTagRelationFormModel model)
+        internal bool AddTagRelation(RelationFormModel model)
         {
             var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
             var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
@@ -254,7 +254,7 @@ namespace Api.Managers
             return true;
         }
 
-        internal bool RemoveTagRelation(AnnotationTagRelationFormModel model)
+        internal bool RemoveTagRelation(RelationFormModel model)
         {
             var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.FirstTagId);
             var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SecondTagId);
