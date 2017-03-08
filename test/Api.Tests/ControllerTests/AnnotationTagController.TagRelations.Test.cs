@@ -21,6 +21,10 @@ namespace Api.Tests.ControllerTests
         private AnnotationTag _tag2;
         private AnnotationTag _tag3;
         private AnnotationTag _tag4;
+        private AnnotationTagInstance _tagInstance1;
+        private AnnotationTagInstance _tagInstance2;
+        private AnnotationTagInstance _tagInstance3;
+        private AnnotationTagInstance _tagInstance4;
         private AnnotationTagRelation _relation12;
         private AnnotationTagRelation _relation32;
         private AnnotationTagRelation _relation34;
@@ -72,9 +76,13 @@ namespace Api.Tests.ControllerTests
             _tag4 = new AnnotationTag() { Id = 4, Layer = _layer2.Name };
             _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
             _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
-            _relation12 = new AnnotationTagRelation(_tag1, _tag2);
-            _relation32 = new AnnotationTagRelation(_tag3, _tag2);
-            _relation34 = new AnnotationTagRelation(_tag3, _tag4);
+            _tagInstance1 = new AnnotationTagInstance(_tag1);
+            _tagInstance2 = new AnnotationTagInstance(_tag2);
+            _tagInstance3 = new AnnotationTagInstance(_tag3);
+            _tagInstance4 = new AnnotationTagInstance(_tag4);
+            _relation12 = new AnnotationTagRelation(_tagInstance1, _tagInstance2);
+            _relation32 = new AnnotationTagRelation(_tagInstance3, _tagInstance2);
+            _relation34 = new AnnotationTagRelation(_tagInstance3, _tagInstance4);
             _layerRelationRule = new LayerRelationRule()
             {
                 SourceLayer = _layer1,
@@ -389,8 +397,8 @@ namespace Api.Tests.ControllerTests
       // TODO  [Test]
         public void GetAvailableRelationsForIdTest()
         {
-            var tag5 = new AnnotationTag() { Id = 5 };
-            var relation35 = new AnnotationTagRelation(_tag3, tag5);
+            var tagInstance5 = new AnnotationTagInstance(new AnnotationTag() { Id = 5 });
+            var relation35 = new AnnotationTagRelation(_tagInstance3, tagInstance5);
             var expected = new List<AnnotationTagRelation>() { _relation34, relation35 };
             var instance3 = new AnnotationTagInstance(_tag3);
             var instances = new List<AnnotationTagInstance>()
@@ -399,7 +407,7 @@ namespace Api.Tests.ControllerTests
                 new AnnotationTagInstance(_tag2),
                 instance3,
                 new AnnotationTagInstance(_tag4),
-                new AnnotationTagInstance(tag5)
+                tagInstance5
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -476,7 +484,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _tag1.Id,
                 TargetId = _tag2.Id,
-                Name = "relationName",
+                Title = "relationName",
                 Color = "schwarzgelb",
                 ArrowStyle = "dotted"
             };
@@ -493,7 +501,7 @@ namespace Api.Tests.ControllerTests
                     relations.Any(actual =>
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name &&
+                        actual.Title == expected.Title &&
                         actual.Color == expected.Color &&
                         actual.ArrowStyle == expected.ArrowStyle
                     )
@@ -513,7 +521,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _tag3.Id,
                 TargetId = _tag2.Id,
-                Name = "child-to-toplevel-relation"
+                Title = "child-to-toplevel-relation"
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -528,7 +536,7 @@ namespace Api.Tests.ControllerTests
                     !relations.Any(actual => // negated --> NO relation like this exists
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
@@ -540,7 +548,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _tag2.Id,
                 TargetId = _tag3.Id,
-                Name = "toplevel-to-child-relation"
+                Title = "toplevel-to-child-relation"
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -555,7 +563,7 @@ namespace Api.Tests.ControllerTests
                     !relations.Any(actual => // negated --> NO relation like this exists
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
@@ -573,7 +581,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _relation12.FirstTag.Id,
                 TargetId = _relation12.SecondTag.Id,
-                Name = "duplcate-relation"
+                Title = "duplcate-relation"
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -589,7 +597,7 @@ namespace Api.Tests.ControllerTests
                     relations.Count(actual =>
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name
+                        actual.Title == expected.Title
                     ) == 1 // should only contain 1 entry, not two
                 ))
                 .AndAlso()
@@ -607,7 +615,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _tag1.Id,
                 TargetId = _tag2.Id,
-                Name = "relation-with-nonexisting-tags"
+                Title = "relation-with-nonexisting-tags"
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -620,7 +628,7 @@ namespace Api.Tests.ControllerTests
                     !relations.Any(actual => // negated --> NO relation like this exists
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
@@ -638,7 +646,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _tag1.Id,
                 TargetId = _tag2.Id,
-                Name = "relation-with-nonexisting-tags"
+                Title = "relation-with-nonexisting-tags"
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -650,12 +658,52 @@ namespace Api.Tests.ControllerTests
                     !relations.Any(actual => // negated --> NO relation like this exists
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
                 .ShouldReturn()
                 .Forbid();
+        }
+
+        #endregion
+
+        #region PostTagRelationRule
+
+        /// <summary>
+        /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
+        /// </summary>
+        [Test]
+        public void PostTagRelationRuleTest()
+        {
+            var expected = new RelationFormModel()
+            {
+                SourceId = _tag1.Id,
+                TargetId = _tag2.Id,
+                Title = "relationName",
+                Color = "schwarzgelb",
+                ArrowStyle = "dotted"
+            };
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
+                )
+                .Calling(c => c.PostTagRelationRule(expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<TagRelationRule>(relations =>
+                    relations.Any(actual =>
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title &&
+                        actual.Color == expected.Color &&
+                        actual.ArrowStyle == expected.ArrowStyle
+                    )
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Ok();
         }
 
         #endregion
@@ -672,7 +720,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _relation12.FirstTag.Id,
                 TargetId = _relation12.SecondTag.Id,
-                Name = "changedName"
+                Title = "changedName"
             };
             var expectedColor = "oldColor";
             _relation12.ArrowStyle = expectedColor;
@@ -690,7 +738,7 @@ namespace Api.Tests.ControllerTests
                     relations.Any(actual =>
                         actual.FirstTagId == expected.SourceId &&
                         actual.SecondTagId == expected.TargetId &&
-                        actual.Name == expected.Name &&
+                        actual.Title == expected.Title &&
                         actual.Color == expectedColor // color should not change as it was not set in the model
                     )
                 ))
@@ -709,7 +757,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _relation12.FirstTag.Id,
                 TargetId = _relation12.SecondTag.Id,
-                Name = "changedName"
+                Title = "changedName"
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -733,7 +781,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _relation12.FirstTag.Id,
                 TargetId = _relation12.SecondTag.Id,
-                Name = "changedName"
+                Title = "changedName"
             };
             MyMvc
                 .Controller<AnnotationController>()

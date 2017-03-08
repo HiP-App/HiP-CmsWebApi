@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Api.Models.Entity.Annotation
 {
     /// <summary>
-    /// Represents a *directed* relation between two tags (i.e. AnnotationTag).
+    /// Represents a *directed* relation between two tag instances (i.e. AnnotationTag).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
     public class AnnotationTagRelation : RelationRule
@@ -15,24 +15,22 @@ namespace Api.Models.Entity.Annotation
         [Required]
         public int FirstTagId { get; set; }
 
-        public virtual AnnotationTag FirstTag { get; set; }
+        public virtual AnnotationTagInstance FirstTag { get; set; }
 
         [Required]
         public int SecondTagId { get; set; }
 
-        public virtual AnnotationTag SecondTag { get; set; }
-
-        public string Name { get; set; }
+        public virtual AnnotationTagInstance SecondTag { get; set; }
         
 
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")] // Not good but otherwise tests don't work.
-        public AnnotationTagRelation(AnnotationTag firstTag, AnnotationTag secondTag, string name = "", string arrowStyle = "", string color = "")
+        public AnnotationTagRelation(AnnotationTagInstance firstTag, AnnotationTagInstance secondTag, string title = "", string arrowStyle = "", string color = "")
         {
             FirstTag = firstTag;
             FirstTagId = firstTag.Id;
             SecondTag = secondTag;
             SecondTagId = secondTag.Id;
-            Name = name;
+            Title = title;
             ArrowStyle = arrowStyle;
             Color = color;
         }
@@ -43,7 +41,7 @@ namespace Api.Models.Entity.Annotation
         {
             FirstTagId = model.SourceId;
             SecondTagId = model.TargetId;
-            Name = model.Name;
+            Title = model.Title;
             ArrowStyle = model.ArrowStyle;
             Color = model.Color;
         }

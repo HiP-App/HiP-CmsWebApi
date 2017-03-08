@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Api.Models.Entity.Annotation;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Managers
 {
@@ -120,14 +119,11 @@ namespace Api.Managers
 
         internal bool AddTagRelation(RelationFormModel model)
         {
-            var tag1 = DbContext.AnnotationTags.Single(tag => tag.Id == model.SourceId);
-            var tag2 = DbContext.AnnotationTags.Single(tag => tag.Id == model.TargetId);
-            if (TagRelationExists(tag1, tag2))
+            var tag1 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == model.SourceId);
+            var tag2 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == model.TargetId);
+            if (tag1 != null && tag2 != null)
             {
-                return false;
-            } else if (tag1 != null && tag2 != null)
-            {
-                var forwardRelation = new AnnotationTagRelation(tag1, tag2, model.Name, model.ArrowStyle, model.Color);
+                var forwardRelation = new AnnotationTagRelation(tag1, tag2, model.Title, model.ArrowStyle, model.Color);
                 DbContext.AnnotationTagRelations.Add(forwardRelation);
                 DbContext.SaveChanges();
                 return true;
@@ -165,7 +161,23 @@ namespace Api.Managers
 
         public bool AddTagRelationRule(RelationFormModel model)
         {
-            throw new NotImplementedException();
+            if (!(DbContext.AnnotationTags.Any(t => t.Id == model.SourceId) &&
+                    DbContext.AnnotationTags.Any(t => t.Id == model.TargetId)))
+            {
+                return false;
+            }
+            var rule = new TagRelationRule()
+            {
+                SourceTagId = model.SourceId,
+                TargetTagId = model.TargetId,
+                Title = model.Title,
+                Description = model.Description,
+                Color = model.Color,
+                ArrowStyle = model.ArrowStyle
+            };
+            DbContext.TagRelationRules.Add(rule);
+            DbContext.SaveChanges();
+            return true;
         }
 
         #endregion

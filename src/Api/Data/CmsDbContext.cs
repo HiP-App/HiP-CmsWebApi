@@ -39,6 +39,8 @@ namespace Api.Data
 
         public DbSet<LayerRelationRule> LayerRelationRules { get; set; }
 
+        public DbSet<TagRelationRule> TagRelationRules { get; set; }
+
         public DbSet<StudentDetails> StudentDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,6 +59,7 @@ namespace Api.Data
             new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
             new LegalMap(modelBuilder.Entity<Legal>());
             new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
+            new TagRelationRule.TagRelationRuleMap(modelBuilder.Entity<TagRelationRule>());
             new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
         }
     }

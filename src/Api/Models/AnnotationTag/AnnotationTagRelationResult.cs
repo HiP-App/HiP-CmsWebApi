@@ -6,9 +6,9 @@ namespace Api.Models.AnnotationTag
     {
         public AnnotationTagRelationResult(AnnotationTagRelation relation)
         {
-            Name = relation.Name;
-            FirstTag = new AnnotationTagResult(relation.FirstTag);
-            SecondTag = new AnnotationTagResult(relation.SecondTag);
+            Name = relation.Title;
+            /*FirstTag = new AnnotationTagResult(relation.FirstTag);
+            SecondTag = new AnnotationTagResult(relation.SecondTag);*/
         }
 
         public string Name { get; set; }
