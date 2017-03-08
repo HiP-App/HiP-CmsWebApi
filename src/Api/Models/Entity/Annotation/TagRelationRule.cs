@@ -9,12 +9,12 @@ namespace Api.Models.Entity.Annotation
         [Required]
         public int SourceTagId { get; set; }
 
-        public AnnotationTag SourceTag { get; set; }
+        public Tag SourceTag { get; set; }
 
         [Required]
         public int TargetTagId { get; set; }
 
-        public AnnotationTag TargetTag { get; set; }
+        public Tag TargetTag { get; set; }
 
         public class TagRelationRuleMap
         {

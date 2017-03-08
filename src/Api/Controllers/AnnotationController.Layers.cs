@@ -4,6 +4,7 @@ using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using Api.Utility;
 using Microsoft.AspNetCore.Mvc;
+using Layer = Api.Models.Entity.Annotation.Layer;
 
 namespace Api.Controllers
 {

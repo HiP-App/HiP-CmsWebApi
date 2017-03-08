@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Api.Models.Entity.Annotation;
+using Layer = Api.Models.Entity.Annotation.Layer;
 
 namespace Api.Managers
 {
@@ -13,7 +14,7 @@ namespace Api.Managers
     {
         public AnnotationTagManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        private bool TagRelationExists(AnnotationTag tag1, AnnotationTag tag2)
+        private bool TagRelationExists(Tag tag1, Tag tag2)
         {
             return tag1 != null &&
                 tag2 != null &&
@@ -22,25 +23,25 @@ namespace Api.Managers
 
         #region GET
 
-        public IEnumerable<AnnotationTagResult> GetAllTags(bool includeDeleted, bool includeOnlyRoot)
+        public IEnumerable<TagResult> GetAllTags(bool includeDeleted, bool includeOnlyRoot)
         {
             return DbContext
                 .AnnotationTags
                 .Where(t => !includeOnlyRoot || t.ParentTag == null)
                 .Where(t => includeDeleted || !t.IsDeleted)
                 .ToList()
-                .Select(at => new AnnotationTagResult(at));
+                .Select(at => new TagResult(at));
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        internal AnnotationTagResult GetTag(int id)
+        internal TagResult GetTag(int id)
         {
-            return new AnnotationTagResult(DbContext.AnnotationTags.Single(t => t.Id == id));
+            return new TagResult(DbContext.AnnotationTags.Single(t => t.Id == id));
         }
 
-        public IEnumerable<AnnotationTagResult> GetChildTagsOf(int id)
+        public IEnumerable<TagResult> GetChildTagsOf(int id)
         {
-            return DbContext.AnnotationTags.Where(at => at.ParentTagId == id).ToList().Select(at => new AnnotationTagResult(at));
+            return DbContext.AnnotationTags.Where(at => at.ParentTagId == id).ToList().Select(at => new TagResult(at));
         }
         
         public IEnumerable<Layer> GetAllLayers()
@@ -53,11 +54,11 @@ namespace Api.Managers
             return DbContext.LayerRelationRules.ToList();
         }
 
-        public IEnumerable<AnnotationTag> GetAllowedRelationRulesForTag(int tagId)
+        public IEnumerable<Tag> GetAllowedRelationRulesForTag(int tagId)
         {
             var tag = DbContext.AnnotationTags.Single(t => t.Id == tagId);
             var rules = DbContext.LayerRelationRules.Where(r => r.SourceLayer.Name == tag.Layer);
-            var tags = new List<AnnotationTag>();
+            var tags = new List<Tag>();
             // add all tags that rules are allowed to
             foreach (var relationRule in rules)
             {
@@ -72,9 +73,9 @@ namespace Api.Managers
 
         #region Adding
 
-        public EntityResult AddTag(AnnotationTagFormModel tagModel)
+        public EntityResult AddTag(TagFormModel tagModel)
         {
-            var tag = new AnnotationTag(tagModel);
+            var tag = new Tag(tagModel);
 
             DbContext.AnnotationTags.Add(tag);
             DbContext.SaveChanges();
@@ -104,7 +105,7 @@ namespace Api.Managers
             return false;
         }
 
-        private bool HasDuplicateParent(AnnotationTag original, AnnotationTag check)
+        private bool HasDuplicateParent(Tag original, Tag check)
         {
             var duplicate = original.Id == check.Id;
             if (duplicate)
@@ -123,7 +124,7 @@ namespace Api.Managers
             var tag2 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == model.TargetId);
             if (tag1 != null && tag2 != null)
             {
-                var forwardRelation = new AnnotationTagRelation(tag1, tag2, model.Title, model.ArrowStyle, model.Color);
+                var forwardRelation = new TagRelation(tag1, tag2, model.Title, model.ArrowStyle, model.Color);
                 DbContext.AnnotationTagRelations.Add(forwardRelation);
                 DbContext.SaveChanges();
                 return true;
@@ -135,8 +136,8 @@ namespace Api.Managers
 
         internal bool AddTagInstance(int tagModelId)
         {
-            AnnotationTag model = DbContext.AnnotationTags.Single(m => m.Id == tagModelId);
-            AnnotationTagInstance instance = new AnnotationTagInstance(model);
+            Tag model = DbContext.AnnotationTags.Single(m => m.Id == tagModelId);
+            TagInstance instance = new TagInstance(model);
             DbContext.AnnotationTagInstances.Add(instance);
             DbContext.SaveChanges();
             return true;
@@ -184,7 +185,7 @@ namespace Api.Managers
 
         #region edit
 
-        public bool EditTag(AnnotationTagFormModel model, int id)
+        public bool EditTag(TagFormModel model, int id)
         {
             var tag = DbContext.AnnotationTags.First(t => t.Id == id);
             if (tag == null)
@@ -282,7 +283,7 @@ namespace Api.Managers
             }
         }
 
-        private void RemoveRelationFor(AnnotationTag source, AnnotationTag target)
+        private void RemoveRelationFor(Tag source, Tag target)
         {
             var relation = DbContext.AnnotationTagRelations.Single(rel => rel.FirstTagId == source.Id && rel.SecondTagId == target.Id);
             DbContext.AnnotationTagRelations.Remove(relation);

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Api.Models.Entity.Annotation
 {
-    public class AnnotationTagInstance
+    public class TagInstance
     {
         [Key]
         public int Id { get; set; }
@@ -13,25 +13,25 @@ namespace Api.Models.Entity.Annotation
         [Required]
         public int TagModelId { get; set; }
 
-        public AnnotationTag TagModel { get; set; }
+        public Tag TagModel { get; set; }
 
-        public List<AnnotationTagRelation> TagRelations { get; set; }
+        public List<TagRelation> TagRelations { get; set; }
 
-        public List<AnnotationTagRelation> IncomingRelations { get; set; }
+        public List<TagRelation> IncomingRelations { get; set; }
 
-        public AnnotationTagInstance(AnnotationTag model)
+        public TagInstance(Tag model)
         {
             TagModel = model;
             TagModelId = model.Id;
         }
 
-        public AnnotationTagInstance()
+        public TagInstance()
         {
         }
 
         public class AnnotationTagInstanceMap
         {
-            public AnnotationTagInstanceMap(EntityTypeBuilder<AnnotationTagInstance> entityBuilder)
+            public AnnotationTagInstanceMap(EntityTypeBuilder<TagInstance> entityBuilder)
             {
                 entityBuilder.HasOne(tag => tag.TagModel).WithMany(model => model.TagInstances)
                     .HasForeignKey(tag => tag.TagModelId).OnDelete(DeleteBehavior.Cascade);

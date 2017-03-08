@@ -27,13 +27,13 @@ namespace Api.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
-        public DbSet<AnnotationTag> AnnotationTags { get; set; }
+        public DbSet<Tag> AnnotationTags { get; set; }
 
         public DbSet<Subscription> Subscriptions { get; set; }
 
-        public DbSet<AnnotationTagRelation> AnnotationTagRelations { get; set; }
+        public DbSet<TagRelation> AnnotationTagRelations { get; set; }
 
-        public DbSet<AnnotationTagInstance> AnnotationTagInstances { get; set; }
+        public DbSet<TagInstance> AnnotationTagInstances { get; set; }
 
         public DbSet<Layer> Layers { get; set; }
 
@@ -53,10 +53,10 @@ namespace Api.Data
             new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
             new DocumentMap(modelBuilder.Entity<Document>());
             new NotificationMap(modelBuilder.Entity<Notification>());
-            new TagRelationMap(modelBuilder.Entity<AnnotationTagRelation>());
-            new AnnotationTag.AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
+            new TagRelationMap(modelBuilder.Entity<TagRelation>());
+            new Tag.AnnotationTagMap(modelBuilder.Entity<Tag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
-            new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
+            new TagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<TagInstance>());
             new LegalMap(modelBuilder.Entity<Legal>());
             new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
             new TagRelationRule.TagRelationRuleMap(modelBuilder.Entity<TagRelationRule>());

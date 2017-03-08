@@ -10,21 +10,21 @@ namespace Api.Models.Entity.Annotation
     /// Represents a *directed* relation between two tag instances (i.e. AnnotationTag).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
-    public class AnnotationTagRelation : RelationRule
+    public class TagRelation : RelationRule
     {
         [Required]
         public int FirstTagId { get; set; }
 
-        public virtual AnnotationTagInstance FirstTag { get; set; }
+        public virtual TagInstance FirstTag { get; set; }
 
         [Required]
         public int SecondTagId { get; set; }
 
-        public virtual AnnotationTagInstance SecondTag { get; set; }
+        public virtual TagInstance SecondTag { get; set; }
         
 
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")] // Not good but otherwise tests don't work.
-        public AnnotationTagRelation(AnnotationTagInstance firstTag, AnnotationTagInstance secondTag, string title = "", string arrowStyle = "", string color = "")
+        public TagRelation(TagInstance firstTag, TagInstance secondTag, string title = "", string arrowStyle = "", string color = "")
         {
             FirstTag = firstTag;
             FirstTagId = firstTag.Id;
@@ -35,9 +35,9 @@ namespace Api.Models.Entity.Annotation
             Color = color;
         }
 
-        public AnnotationTagRelation() { }
+        public TagRelation() { }
 
-        public AnnotationTagRelation(RelationFormModel model)
+        public TagRelation(RelationFormModel model)
         {
             FirstTagId = model.SourceId;
             SecondTagId = model.TargetId;
@@ -49,7 +49,7 @@ namespace Api.Models.Entity.Annotation
 
     public class TagRelationMap
     {
-        public TagRelationMap(EntityTypeBuilder<AnnotationTagRelation> entityBuilder)
+        public TagRelationMap(EntityTypeBuilder<TagRelation> entityBuilder)
         {
             entityBuilder.HasKey(r => new { r.FirstTagId, r.SecondTagId });
             entityBuilder.HasOne(r => r.FirstTag).WithMany(t => t.TagRelations).HasForeignKey(r => r.FirstTagId).OnDelete(DeleteBehavior.Cascade);

@@ -23,7 +23,7 @@ namespace Api.Controllers
         /// <response code="204">There are no Tags in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags")]
-        [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetAllTags([FromQuery]bool includeDeleted = false, [FromQuery]bool includeOnlyRoot = false)
         {
@@ -36,11 +36,11 @@ namespace Api.Controllers
         /// A specific Tag save in the system
         /// </summary>
         /// <param name="id">The id of the Tag</param>
-        /// <response code="200">A AnnotationTagResult</response>
+        /// <response code="200">A TagResult</response>
         /// <response code="404">There is no Tag {id} in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}")]
-        [ProducesResponseType(typeof(AnnotationTagResult), 200)]
+        [ProducesResponseType(typeof(TagResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetTag([FromRoute]int id)
         {
@@ -66,7 +66,7 @@ namespace Api.Controllers
         /// <response code="204">The parent Tag {id} has no Children</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}/ChildTags")]
-        [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
+        [ProducesResponseType(typeof(List<TagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetChildTagsOf([FromRoute]int id)
         {
@@ -92,7 +92,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post([FromBody]AnnotationTagFormModel tag)
+        public IActionResult Post([FromBody]TagFormModel tag)
         {
             if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
                 return Forbid();
@@ -150,7 +150,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTag([FromRoute]int id, [FromBody]AnnotationTagFormModel model)
+        public IActionResult PutTag([FromRoute]int id, [FromBody]TagFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
                 return Forbid();

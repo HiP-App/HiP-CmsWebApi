@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Api.Models.Entity.Annotation
 {
-    public class AnnotationTag
+    public class Tag
     {
         [Key]
         public int Id { get; set; }
@@ -23,9 +23,9 @@ namespace Api.Models.Entity.Annotation
 
         public int? ParentTagId { get; set; }
 
-        public AnnotationTag ParentTag { get; set; }
+        public Tag ParentTag { get; set; }
 
-        public List<AnnotationTag> ChildTags { get; set; }
+        public List<Tag> ChildTags { get; set; }
 
         public string Style { get; set; }
 
@@ -37,15 +37,15 @@ namespace Api.Models.Entity.Annotation
 
         public bool IsDeleted { get; set; }
 
-        public List<AnnotationTagInstance> TagInstances { get; set; }
+        public List<TagInstance> TagInstances { get; set; }
 
         public List<TagRelationRule> TagRelationRules { get; set; }
 
         public List<TagRelationRule> IncomingTagRelationRules { get; set; }
 
-        public AnnotationTag() { }
+        public Tag() { }
 
-        public AnnotationTag(AnnotationTagFormModel model)
+        public Tag(TagFormModel model)
         {
             Name = model.Name;
             ShortName = model.ShortName;
@@ -72,7 +72,7 @@ namespace Api.Models.Entity.Annotation
 
         public class AnnotationTagMap
         {
-            public AnnotationTagMap(EntityTypeBuilder<AnnotationTag> entityBuilder)
+            public AnnotationTagMap(EntityTypeBuilder<Tag> entityBuilder)
             {
                 entityBuilder.HasOne(at => at.ParentTag).WithMany(pt => pt.ChildTags)
                     .HasForeignKey(at => at.ParentTagId).OnDelete(DeleteBehavior.SetNull);
