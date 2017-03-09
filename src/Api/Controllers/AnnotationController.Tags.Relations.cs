@@ -146,7 +146,7 @@ namespace Api.Controllers
         #region PUT
 
         /// <summary>
-        /// Modify the tag relation from the tag represented by {sourceId} to the tag represented by {targetId}.
+        /// Modify the tag relation rule represented by the given original model to the tag represented by {targetId}.
         /// The new relation must be given in the body of the call.
         /// Source and target tags of the relations may *not* be changed for now.
         /// NOT IMPLEMENTED YET.
@@ -161,7 +161,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutTagRelation([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationFormModel model)
+        public IActionResult PutTagRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
             return ServiceUnavailable();
         }
@@ -181,9 +181,21 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutTagRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationFormModel model)
+        public IActionResult PutTagRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
-            return ServiceUnavailable();
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            try
+            {
+                if (_tagManager.ChangeTagRelationRule(original, changed))
+                    return Ok();
+                return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
         }
 
         #endregion

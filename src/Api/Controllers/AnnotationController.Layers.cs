@@ -69,9 +69,8 @@ namespace Api.Controllers
         /// The new relation must be given in the body of the call.
         /// Source and target layers of the relations may *not* be changed for now.
         /// </summary>
-        /// <param name="sourceId">ID of the source layer of the relation</param>
-        /// <param name="targetId">ID of the target layer of the relation</param>
-        /// <param name="model">The changed RelationFormModel</param>
+        /// <param name="original">The layer relation rule that you want to modify</param>
+        /// <param name="changed">The changed layer relation rule</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="400">Request was misformed</response>
@@ -79,14 +78,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId, [FromBody] RelationFormModel model)
+        public IActionResult PutLayerRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
                 return Forbid();
 
             try
             {
-                if (_tagManager.ChangeLayerRelationRule(sourceId, targetId, model))
+                if (_tagManager.ChangeLayerRelationRule(original, changed))
                     return Ok();
                 return BadRequest();
             }

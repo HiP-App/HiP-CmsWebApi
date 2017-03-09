@@ -216,16 +216,38 @@ namespace Api.Managers
         }
 
 
-        internal bool ChangeLayerRelationRule(int sourceId, int targetId, RelationFormModel model)
+        internal bool ChangeLayerRelationRule(RelationFormModel original, RelationFormModel changed)
         {
-            if (!(DbContext.Layers.Any(l => l.Id == sourceId) || DbContext.Layers.Any(l => l.Id == targetId)))
+            if (!(DbContext.Layers.Any(l => l.Id == original.SourceId) &&
+                    DbContext.Layers.Any(l => l.Id == original.TargetId)))
                 return false;
 
-            var rule = DbContext.LayerRelationRules.Single(r => r.SourceLayerId == sourceId && r.TargetLayerId == targetId);
-            rule.ArrowStyle = model.ArrowStyle;
-            rule.Color = model.Color;
+            var rule = DbContext.LayerRelationRules.Single(
+                r => r.SourceLayerId == original.SourceId &&
+                r.TargetLayerId == original.TargetId &&
+                r.Title == original.Title);
+            rule.Title = changed.Title;
+            rule.Description = changed.Description;
+            rule.ArrowStyle = changed.ArrowStyle;
+            rule.Color = changed.Color;
             DbContext.SaveChanges();
-            Console.Write("changed relation:" + model.SourceId + model.TargetId);
+            return true;
+        }
+        public bool ChangeTagRelationRule(RelationFormModel original, RelationFormModel changed)
+        {
+            if (!(DbContext.AnnotationTags.Any(l => l.Id == original.SourceId) &&
+                    DbContext.AnnotationTags.Any(l => l.Id == original.TargetId)))
+                return false;
+
+            var rule = DbContext.TagRelationRules.Single(
+                r => r.SourceTagId == original.SourceId &&
+                r.TargetTagId == original.TargetId &&
+                r.Title == original.Title);
+            rule.Title = changed.Title;
+            rule.Description = changed.Description;
+            rule.ArrowStyle = changed.ArrowStyle;
+            rule.Color = changed.Color;
+            DbContext.SaveChanges();
             return true;
         }
 

@@ -26,6 +26,7 @@ namespace Api.Tests.ControllerTests
         private TagInstance _tagInstance2;
         private TagInstance _tagInstance3;
         private TagInstance _tagInstance4;
+        private TagRelationRule _relationRule12;
         private TagRelation _relation12;
         private TagRelation _relation32;
         private TagRelation _relation34;
@@ -77,6 +78,7 @@ namespace Api.Tests.ControllerTests
             _tag4 = new Tag() { Id = 4, Layer = _layer2.Name };
             _tag1.ChildTags = new List<Tag>() { _tag3 };
             _tag2.ChildTags = new List<Tag>() { _tag4 };
+            _relationRule12 = new TagRelationRule() { SourceTagId = _tag1.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 1->2"};
             _tagInstance1 = new TagInstance(_tag1);
             _tagInstance2 = new TagInstance(_tag2);
             _tagInstance3 = new TagInstance(_tag3);
@@ -717,6 +719,7 @@ namespace Api.Tests.ControllerTests
         // TODO [Test]
         public void PutTagRelationTest()
         {
+            var original = RelationFormModelFromRelation(_relation12);
             var expected = new RelationFormModel()
             {
                 SourceId = _relation12.FirstTag.Id,
@@ -733,7 +736,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<TagRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, expected))
+                .Calling(c => c.PutTagRelation(original, expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     relations.Any(actual =>
@@ -754,12 +757,7 @@ namespace Api.Tests.ControllerTests
        // TODO [Test]
         public void PutTagRelationTest400()
         {
-            var model = new RelationFormModel()
-            {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id,
-                Title = "changedName"
-            };
+            var model = RelationFormModelFromRelation(_relation12);
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
@@ -767,7 +765,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
+                .Calling(c => c.PutTagRelation(model, model))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -778,19 +776,58 @@ namespace Api.Tests.ControllerTests
         // TODO [Test]
         public void PutTagRelationTest403()
         {
-            var model = new RelationFormModel()
-            {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id,
-                Title = "changedName"
-            };
+            var model = RelationFormModelFromRelation(_relation12);
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
+                .Calling(c => c.PutTagRelation(model, model))
                 .ShouldReturn()
                 .Forbid();
+        }
+
+        #endregion
+
+        #region PutTagRelationRule
+
+        /// <summary>
+        /// Should return code 200 if called with ids of two existing tags that have an existing relation
+        /// </summary>
+        [Test]
+        public void PutTagRelationRuleTest()
+        {
+            var original = RelationFormModelFromRelationRule(_relationRule12);
+            var expected = new RelationFormModel()
+            {
+                SourceId = _relationRule12.SourceTagId,
+                TargetId = _relationRule12.TargetTagId,
+                Title = "relationName",
+                Description = "my relation",
+                Color = "schwarzgelb",
+                ArrowStyle = "dotted"
+            };
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
+                    .WithSet<TagRelationRule>(db => db.Add(_relationRule12))
+                )
+                .Calling(c => c.PutTagRelationRule(original, expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<TagRelationRule>(relations =>
+                    relations.Any(actual =>
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title &&
+                        actual.Description == expected.Description &&
+                        actual.Color == expected.Color &&
+                        actual.ArrowStyle == expected.ArrowStyle
+                    )
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Ok();
         }
 
         #endregion
@@ -873,5 +910,17 @@ namespace Api.Tests.ControllerTests
 
         #endregion
 
+        #region Helper Methods
+
+        private RelationFormModel RelationFormModelFromRelation(TagRelation rel)
+        {
+            return new RelationFormModel(rel.FirstTagId, rel.SecondTagId, rel);
+        }
+        private RelationFormModel RelationFormModelFromRelationRule(TagRelationRule rel)
+        {
+            return new RelationFormModel(rel.SourceTagId, rel.TargetTagId, rel);
+        }
+
+        #endregion
     }
 }

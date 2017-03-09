@@ -1,4 +1,6 @@
-﻿namespace Api.Models.AnnotationTag
+﻿using Api.Models.Entity.Annotation;
+
+namespace Api.Models.AnnotationTag
 {
     /// <summary>
     /// Generic FormModel for annotation tag relations, annotation tag relation rules, and layer relation rules.
@@ -16,5 +18,17 @@
         public string Color { get; set; }
 
         public string Description { get; set; }
+
+        public RelationFormModel() { }
+
+        public RelationFormModel(int sourceId, int targetId, RelationRule relation)
+        {
+            SourceId = sourceId;
+            TargetId = targetId;
+            Title = relation.Title;
+            Description = relation.Description;
+            Color = relation.Color;
+            ArrowStyle = relation.ArrowStyle;
+        }
     }
 }
