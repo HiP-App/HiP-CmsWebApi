@@ -816,14 +816,7 @@ namespace Api.Tests.ControllerTests
                 .Calling(c => c.PutTagRelationRule(original, expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelationRule>(relations =>
-                    relations.Any(actual =>
-                        actual.SourceTagId == expected.SourceId &&
-                        actual.TargetTagId == expected.TargetId &&
-                        actual.Title == expected.Title &&
-                        actual.Description == expected.Description &&
-                        actual.Color == expected.Color &&
-                        actual.ArrowStyle == expected.ArrowStyle
-                    )
+                    relations.Any(actual => TagRulesEqual(actual, expected))
                 ))
                 .AndAlso()
                 .ShouldReturn()
@@ -919,6 +912,16 @@ namespace Api.Tests.ControllerTests
         private RelationFormModel RelationFormModelFromRelationRule(TagRelationRule rel)
         {
             return new RelationFormModel(rel.SourceTagId, rel.TargetTagId, rel);
+        }
+
+        private static bool TagRulesEqual(TagRelationRule actual, RelationFormModel expected)
+        {
+            return actual.SourceTagId == expected.SourceId &&
+                   actual.TargetTagId == expected.TargetId &&
+                   actual.Title == expected.Title &&
+                   actual.Description == expected.Description &&
+                   actual.Color == expected.Color &&
+                   actual.ArrowStyle == expected.ArrowStyle;
         }
 
         #endregion
