@@ -19,7 +19,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Relations")]
-        [ProducesResponseType(typeof(List<TagRelationResult>), 200)]
+        [ProducesResponseType(typeof(List<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelations([FromQuery] int maxDepth = int.MaxValue)
         {
@@ -35,7 +35,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/{tagId}/Relations")]
-        [ProducesResponseType(typeof(List<TagRelationResult>), 200)]
+        [ProducesResponseType(typeof(List<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelationsForId([FromRoute] int tagId)
         {
@@ -69,16 +69,22 @@ namespace Api.Controllers
         /// These depend on the configured tag relation rules.
         /// The relations are ordered descending by relevance.
         /// </summary>
-        /// <param name="id">The Id of the tag instance that you want the allowed relations for</param>
+        /// <param name="tagInstanceId">The Id of the tag instance that you want the allowed relations for</param>
         /// <response code="200">Returns a list of tag instances</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Instance/{id}/AllowedRelations")]
-        [ProducesResponseType(typeof(List<TagInstance>), 200)]
+        [ProducesResponseType(typeof(List<TagInstanceResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetAllowedRelationsForInstance([FromRoute] int id)
+        public IActionResult GetAllowedRelationsForInstance([FromRoute] int tagInstanceId)
         {
-            // TODO: Waiting for relations in tag instances / documents
-            return ServiceUnavailable();
+            try
+            {
+                return Ok(/*_tagManager.GetAllowedRelationsForTagInstance(tagInstanceId)*/);
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
         }
 
         #endregion
@@ -151,9 +157,8 @@ namespace Api.Controllers
         /// Source and target tags of the relations may *not* be changed for now.
         /// NOT IMPLEMENTED YET.
         /// </summary>
-        /// <param name="sourceId">ID of the source tag of the relation</param>
-        /// <param name="targetId">ID of the target tag of the relation</param>
-        /// <param name="model">The changed TagRelation</param>
+        /// <param name="original">The model describing the original relation</param>
+        /// <param name="changed">The model describing the changed relation</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="400">Request was misformed</response>
@@ -171,9 +176,8 @@ namespace Api.Controllers
         /// The new relation rule must be given in the body of the call.
         /// Source and target tags of the relations may *not* be changed for now.
         /// </summary>
-        /// <param name="sourceId">ID of the source tag of the relation rule</param>
-        /// <param name="targetId">ID of the target tag of the relation rule</param>
-        /// <param name="model">The changed AnnotationTagRelationRule</param>
+        /// <param name="original">The model describing the original relation rule</param>
+        /// <param name="changed">The model describing the changed relation rule</param>
         /// <response code="200">Relation rule modified</response>
         /// <response code="403">User not allowed to modify a relation rule</response>
         /// <response code="400">Request was misformed</response>

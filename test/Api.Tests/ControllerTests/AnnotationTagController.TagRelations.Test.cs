@@ -397,7 +397,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations that are available for the given tag instance
         /// </summary>
-      // TODO  [Test]
+        [Test]
         public void GetAvailableRelationsForIdTest()
         {
             var tagInstance5 = new TagInstance(new Tag() { Id = 5 });
