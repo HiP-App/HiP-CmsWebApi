@@ -791,7 +791,7 @@ namespace Api.Tests.ControllerTests
         #region PutTagRelationRule
 
         /// <summary>
-        /// Should return code 200 if called with ids of two existing tags that have an existing relation
+        /// Should return code 200 if called with a RelationFormModel describing an existing TagRelationRule
         /// </summary>
         [Test]
         public void PutTagRelationRuleTest()
@@ -899,6 +899,35 @@ namespace Api.Tests.ControllerTests
                 .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
                 .Forbid();
+        }
+
+        #endregion
+
+        #region DeleteTagRelationRule
+
+
+        /// <summary>
+        /// Should return code 200 if called with the RelationFormModel describing an existing TagRelationRule
+        /// </summary>
+        [Test]
+        public void DeleteTagRelationRuleTest()
+        {
+            var original = RelationFormModelFromRelationRule(_relationRule12);
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
+                    .WithSet<TagRelationRule>(db => db.Add(_relationRule12))
+                )
+                .Calling(c => c.DeleteTagRelationRule(original))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<TagRelationRule>(relations =>
+                    !(relations.Any(actual => TagRulesEqual(actual, original)))
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Ok();
         }
 
         #endregion

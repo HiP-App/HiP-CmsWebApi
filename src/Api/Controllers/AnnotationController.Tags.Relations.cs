@@ -247,7 +247,8 @@ namespace Api.Controllers
 
             try
             {
-                if (_tagManager.RemoveTagRelationRule(model)) return Ok();
+                if (_tagManager.RemoveTagRelationRule(model))
+                    return Ok();
                 return BadRequest();
             }
             catch (InvalidOperationException)

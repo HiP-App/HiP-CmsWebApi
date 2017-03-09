@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Api.Models.Entity.Annotation;
 using Layer = Api.Models.Entity.Annotation.Layer;
 
@@ -239,10 +240,7 @@ namespace Api.Managers
                     DbContext.AnnotationTags.Any(l => l.Id == original.TargetId)))
                 return false;
 
-            var rule = DbContext.TagRelationRules.Single(
-                r => r.SourceTagId == original.SourceId &&
-                r.TargetTagId == original.TargetId &&
-                r.Title == original.Title);
+            var rule = DbContext.TagRelationRules.Single(EqualsTagRelationRule(original));
             rule.Title = changed.Title;
             rule.Description = changed.Description;
             rule.ArrowStyle = changed.ArrowStyle;
@@ -327,12 +325,22 @@ namespace Api.Managers
             return true;
         }
 
-        public bool RemoveTagRelationRule(RelationFormModel model)
+        public bool RemoveTagRelationRule(RelationFormModel original)
         {
-            throw new NotImplementedException();
+            var entity = DbContext.TagRelationRules.Single(EqualsTagRelationRule(original));
+            DbContext.Remove(entity);
+            DbContext.SaveChanges();
+            return true;
         }
 
         #endregion
+
+        private static Expression<Func<TagRelationRule, bool>> EqualsTagRelationRule(RelationFormModel original)
+        {
+            return r => r.SourceTagId == original.SourceId &&
+                        r.TargetTagId == original.TargetId &&
+                        r.Title == original.Title;
+        }
     }
 
 }
