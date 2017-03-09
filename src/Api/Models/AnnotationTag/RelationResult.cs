@@ -10,10 +10,10 @@ namespace Api.Models.AnnotationTag
     public class RelationResult: RelationFormModel
     {
         public RelationResult(TagRelation rel)
-            : base(rel.FirstTagId, rel.SecondTagId, rel)
+            : base(rel.SourceTagId, rel.TargetTagId, rel)
         {
-            SourceName = rel.FirstTag.TagModel.Name;
-            TargetName = rel.SecondTag.TagModel.Name;
+            SourceName = rel.SourceTag.TagModel.Name;
+            TargetName = rel.TargetTag.TagModel.Name;
         }
 
         public RelationResult(TagRelationRule rule)

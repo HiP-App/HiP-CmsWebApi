@@ -19,7 +19,7 @@ namespace Api.Managers
         {
             return tag1 != null &&
                 tag2 != null &&
-                DbContext.AnnotationTagRelations.Any(rel => rel.FirstTagId == tag1.Id && rel.SecondTagId == tag2.Id);
+                DbContext.AnnotationTagRelations.Any(rel => rel.SourceTagId == tag1.Id && rel.TargetTagId == tag2.Id);
         }
 
         #region GET
@@ -305,7 +305,7 @@ namespace Api.Managers
 
         private void RemoveRelationFor(Tag source, Tag target)
         {
-            var relation = DbContext.AnnotationTagRelations.Single(rel => rel.FirstTagId == source.Id && rel.SecondTagId == target.Id);
+            var relation = DbContext.AnnotationTagRelations.Single(rel => rel.SourceTagId == source.Id && rel.TargetTagId == target.Id);
             DbContext.AnnotationTagRelations.Remove(relation);
         }
 

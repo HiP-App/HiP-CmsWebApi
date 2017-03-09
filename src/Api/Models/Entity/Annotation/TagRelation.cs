@@ -13,23 +13,23 @@ namespace Api.Models.Entity.Annotation
     public class TagRelation : RelationRule
     {
         [Required]
-        public int FirstTagId { get; set; }
+        public int SourceTagId { get; set; }
 
-        public virtual TagInstance FirstTag { get; set; }
+        public virtual TagInstance SourceTag { get; set; }
 
         [Required]
-        public int SecondTagId { get; set; }
+        public int TargetTagId { get; set; }
 
-        public virtual TagInstance SecondTag { get; set; }
+        public virtual TagInstance TargetTag { get; set; }
         
 
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")] // Not good but otherwise tests don't work.
-        public TagRelation(TagInstance firstTag, TagInstance secondTag, string title = "", string arrowStyle = "", string color = "")
+        public TagRelation(TagInstance sourceTag, TagInstance targetTag, string title = "", string arrowStyle = "", string color = "")
         {
-            FirstTag = firstTag;
-            FirstTagId = firstTag.Id;
-            SecondTag = secondTag;
-            SecondTagId = secondTag.Id;
+            SourceTag = sourceTag;
+            SourceTagId = sourceTag.Id;
+            TargetTag = targetTag;
+            TargetTagId = targetTag.Id;
             Title = title;
             ArrowStyle = arrowStyle;
             Color = color;
@@ -39,8 +39,8 @@ namespace Api.Models.Entity.Annotation
 
         public TagRelation(RelationFormModel model)
         {
-            FirstTagId = model.SourceId;
-            SecondTagId = model.TargetId;
+            SourceTagId = model.SourceId;
+            TargetTagId = model.TargetId;
             Title = model.Title;
             ArrowStyle = model.ArrowStyle;
             Color = model.Color;
@@ -51,9 +51,9 @@ namespace Api.Models.Entity.Annotation
     {
         public TagRelationMap(EntityTypeBuilder<TagRelation> entityBuilder)
         {
-            entityBuilder.HasKey(r => new { r.FirstTagId, r.SecondTagId });
-            entityBuilder.HasOne(r => r.FirstTag).WithMany(t => t.TagRelations).HasForeignKey(r => r.FirstTagId).OnDelete(DeleteBehavior.Cascade);
-            entityBuilder.HasOne(r => r.SecondTag).WithMany(t => t.IncomingRelations).HasForeignKey(r => r.SecondTagId).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasKey(r => new { FirstTagId = r.SourceTagId, SecondTagId = r.TargetTagId });
+            entityBuilder.HasOne(r => r.SourceTag).WithMany(t => t.TagRelations).HasForeignKey(r => r.SourceTagId).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasOne(r => r.TargetTag).WithMany(t => t.IncomingRelations).HasForeignKey(r => r.TargetTagId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

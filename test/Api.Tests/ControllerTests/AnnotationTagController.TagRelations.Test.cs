@@ -502,8 +502,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     relations.Any(actual =>
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title &&
                         actual.Color == expected.Color &&
                         actual.ArrowStyle == expected.ArrowStyle
@@ -537,8 +537,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title
                     )
                 ))
@@ -564,8 +564,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title
                     )
                 ))
@@ -582,8 +582,8 @@ namespace Api.Tests.ControllerTests
         {
             var expected = new RelationFormModel()
             {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id,
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id,
                 Title = "duplcate-relation"
             };
             MyMvc
@@ -598,8 +598,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     relations.Count(actual =>
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title
                     ) == 1 // should only contain 1 entry, not two
                 ))
@@ -629,8 +629,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title
                     )
                 ))
@@ -659,8 +659,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title
                     )
                 ))
@@ -722,8 +722,8 @@ namespace Api.Tests.ControllerTests
             var original = RelationFormModelFromRelation(_relation12);
             var expected = new RelationFormModel()
             {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id,
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id,
                 Title = "changedName"
             };
             var expectedColor = "oldColor";
@@ -740,8 +740,8 @@ namespace Api.Tests.ControllerTests
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(relations =>
                     relations.Any(actual =>
-                        actual.FirstTagId == expected.SourceId &&
-                        actual.SecondTagId == expected.TargetId &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
                         actual.Title == expected.Title &&
                         actual.Color == expectedColor // color should not change as it was not set in the model
                     )
@@ -836,8 +836,8 @@ namespace Api.Tests.ControllerTests
         {
             var model = new RelationFormModel()
             {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -850,7 +850,7 @@ namespace Api.Tests.ControllerTests
                 .Calling(c => c.DeleteTagRelation(model))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TagRelation>(rels =>
-                    !rels.Any(rel => rel.FirstTagId == model.SourceId && rel.SecondTagId == model.TargetId))
+                    !rels.Any(rel => rel.SourceTagId == model.SourceId && rel.TargetTagId == model.TargetId))
                 )
                 .AndAlso()
                 .ShouldReturn()
@@ -865,8 +865,8 @@ namespace Api.Tests.ControllerTests
         {
             var model = new RelationFormModel()
             {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -889,8 +889,8 @@ namespace Api.Tests.ControllerTests
         {
             var model = new RelationFormModel()
             {
-                SourceId = _relation12.FirstTag.Id,
-                TargetId = _relation12.SecondTag.Id
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id
             };
             MyMvc
                 .Controller<AnnotationController>()
@@ -936,7 +936,7 @@ namespace Api.Tests.ControllerTests
 
         private RelationFormModel RelationFormModelFromRelation(TagRelation rel)
         {
-            return new RelationFormModel(rel.FirstTagId, rel.SecondTagId, rel);
+            return new RelationFormModel(rel.SourceTagId, rel.TargetTagId, rel);
         }
         private RelationFormModel RelationFormModelFromRelationRule(TagRelationRule rel)
         {
