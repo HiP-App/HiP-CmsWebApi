@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Api.Controllers;
 using Api.Models.Entity;
@@ -27,6 +28,8 @@ namespace Api.Tests.ControllerTests
         private TagInstance _tagInstance3;
         private TagInstance _tagInstance4;
         private TagRelationRule _relationRule12;
+        private TagRelationRule _relationRule32;
+        private TagRelationRule _relationRule34;
         private TagRelation _relation12;
         private TagRelation _relation32;
         private TagRelation _relation34;
@@ -78,16 +81,19 @@ namespace Api.Tests.ControllerTests
             _tag4 = new Tag() { Id = 4, Layer = _layer2.Name };
             _tag1.ChildTags = new List<Tag>() { _tag3 };
             _tag2.ChildTags = new List<Tag>() { _tag4 };
-            _relationRule12 = new TagRelationRule() { SourceTagId = _tag1.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 1->2"};
-            _tagInstance1 = new TagInstance(_tag1);
-            _tagInstance2 = new TagInstance(_tag2);
-            _tagInstance3 = new TagInstance(_tag3);
-            _tagInstance4 = new TagInstance(_tag4);
-            _relation12 = new TagRelation(_tagInstance1, _tagInstance2);
-            _relation32 = new TagRelation(_tagInstance3, _tagInstance2);
-            _relation34 = new TagRelation(_tagInstance3, _tagInstance4);
+            _relationRule12 = new TagRelationRule() { Id = 3, SourceTagId = _tag1.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 1->2" };
+            _relationRule32 = new TagRelationRule() { Id = 5, SourceTagId = _tag3.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 3->2" };
+            _relationRule34 = new TagRelationRule() { Id = 7, SourceTagId = _tag3.Id, TargetTagId = _tag4.Id, Title = "Tag Relation Rule 3->4" };
+            _tagInstance1 = new TagInstance(_tag1) {Id = 1};
+            _tagInstance2 = new TagInstance(_tag2) {Id = 2};
+            _tagInstance3 = new TagInstance(_tag3) {Id = 3};
+            _tagInstance4 = new TagInstance(_tag4) {Id = 4};
+            _relation12 = new TagRelation(_tagInstance1, _tagInstance2) { Id = 3 };
+            _relation32 = new TagRelation(_tagInstance3, _tagInstance2) { Id = 5 };
+            _relation34 = new TagRelation(_tagInstance3, _tagInstance4) { Id = 7 };
             _layerRelationRule = new LayerRelationRule()
             {
+                Id = 3,
                 SourceLayer = _layer1,
                 SourceLayerId = _layer1.Id,
                 TargetLayer = _layer2,
@@ -325,7 +331,7 @@ namespace Api.Tests.ControllerTests
 
         #endregion
 
-        #region GetAllowedRelationRulesForTag
+        #region GetAllowedRelationRuleTargetsForTag
 
         /// <summary>
         /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly.
@@ -344,7 +350,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
+                .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag1.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<Tag>>()
@@ -369,7 +375,7 @@ namespace Api.Tests.ControllerTests
                     .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
                 // no layer relation rules exist from layer2 to layer1 --> no relations from tag2 to tag1 / tag3 allowed
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag2.Id))
+                .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag2.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<Tag>>()
@@ -385,14 +391,14 @@ namespace Api.Tests.ControllerTests
             MyMvc
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
+                .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag1.Id))
                 .ShouldReturn()
                 .BadRequest();
         }
 
         #endregion
 
-        #region GetAllowedRelationRulesForTag
+        #region GetAllowedRelationRuleTargetsForTag
 
         /// <summary>
         /// Should return code 200 and a list of all tag relations that are available for the given tag instance
@@ -400,32 +406,21 @@ namespace Api.Tests.ControllerTests
         [Test]
         public void GetAvailableRelationsForIdTest()
         {
-            var tagInstance5 = new TagInstance(new Tag() { Id = 5 });
-            var relation35 = new TagRelation(_tagInstance3, tagInstance5);
-            var expected = new List<TagRelation>() { _relation34, relation35 };
-            var instance3 = new TagInstance(_tag3);
-            var instances = new List<TagInstance>()
-            {
-                new TagInstance(_tag1),
-                new TagInstance(_tag2),
-                instance3,
-                new TagInstance(_tag4),
-                tagInstance5
-            };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            var tagInstance5 = new TagInstance(new Tag() { Id = 5 }) {Id = 5};
+            var relation35 = new TagRelation(_tagInstance3, tagInstance5) {Id = 5};
+            var expected = new List<RelationResult>() { new RelationResult(_relation34), new RelationResult(relation35) };
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
+                    .WithSet<TagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2, _tagInstance3, _tagInstance4, tagInstance5))
+                    .WithSet<TagRelationRule>(db => db.AddRange(_relationRule12, _relationRule32, _relationRule34))
                     .WithSet<TagRelation>(db => db.AddRange(_relation12, _relation34, relation35))
-                // TODO How to model that the tag instances are part of the same document?
                 )
-                .Calling(c => c.GetAllowedRelationsForInstance(instance3.Id))
+                .Calling(c => c.GetAllowedRelationsForInstance(_tagInstance3.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<TagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         /// <summary>
@@ -952,6 +947,20 @@ namespace Api.Tests.ControllerTests
                    actual.Color == expected.Color &&
                    actual.ArrowStyle == expected.ArrowStyle;
         }
+
+        private static Func<List<RelationResult>, bool> RelationsEqualPredicate(List<RelationResult> expected)
+        {
+            return actual =>
+            {
+                for (var i = 0; i < actual.Capacity; i++)
+                {
+                    if (actual[i].SourceId != expected[i].SourceId || actual[i].TargetId != expected[i].TargetId)
+                        return false;
+                }
+                return true;
+            };
+        }
+
 
         #endregion
     }

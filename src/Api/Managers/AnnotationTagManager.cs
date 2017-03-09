@@ -55,7 +55,7 @@ namespace Api.Managers
             return DbContext.LayerRelationRules.ToList();
         }
 
-        public IEnumerable<Tag> GetAllowedRelationRulesForTag(int tagId)
+        public IEnumerable<Tag> GetAllowedRelationRuleTargetsForTag(int tagId)
         {
             var tag = DbContext.AnnotationTags.Single(t => t.Id == tagId);
             var rules = DbContext.LayerRelationRules.Where(r => r.SourceLayer.Name == tag.Layer);
@@ -68,6 +68,16 @@ namespace Api.Managers
                 ));
             }
             return tags;
+        }
+
+        public IEnumerable<RelationResult> GetAllowedRelationsForTagInstance(int tagInstanceId)
+        {
+            var tagInstance = DbContext.AnnotationTagInstances.Single(t => t.Id == tagInstanceId);
+            var relations = DbContext.AnnotationTagRelations.Where(rel => rel.SourceTagId == tagInstance.Id);
+            // TODO: Also include relations that tagInstance is the *target* of?
+            // TODO: Filter by document
+            var list = relations.ToList().Select(rel => new RelationResult(rel)).ToList();
+            return list;
         }
 
         #endregion

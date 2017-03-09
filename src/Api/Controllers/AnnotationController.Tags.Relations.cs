@@ -49,14 +49,14 @@ namespace Api.Controllers
         /// <param name="tagId">The Id of the tag that you want the allowed relation rules for</param>
         /// <response code="200">Returns a list of tags that the user may create a relation rule to</response>
         /// <response code="400">Request was misformed</response>
-        [HttpGet("Tags/{tagId}/AllowedRelationRules")]
+        [HttpGet("Tags/{tagId}/AllowedRelationRuleTargets")]
         [ProducesResponseType(typeof(List<TagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetAllowedRelationRulesForTag([FromRoute] int tagId)
+        public IActionResult GetAllowedRelationRuleTargetsForTag([FromRoute] int tagId)
         {
             try
             {
-                return Ok(_tagManager.GetAllowedRelationRulesForTag(tagId));
+                return Ok(_tagManager.GetAllowedRelationRuleTargetsForTag(tagId));
             }
             catch (InvalidOperationException)
             {
@@ -73,13 +73,14 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag instances</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Instance/{id}/AllowedRelations")]
-        [ProducesResponseType(typeof(List<TagInstanceResult>), 200)]
+        [ProducesResponseType(typeof(List<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationsForInstance([FromRoute] int tagInstanceId)
         {
             try
             {
-                return Ok(/*_tagManager.GetAllowedRelationsForTagInstance(tagInstanceId)*/);
+                var result = _tagManager.GetAllowedRelationsForTagInstance(tagInstanceId);
+                return Ok(result);
             }
             catch (InvalidOperationException)
             {
