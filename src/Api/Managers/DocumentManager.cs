@@ -3,13 +3,19 @@ using Api.Models;
 using Api.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml;
+using Api.Models.Entity.Annotation;
 
 namespace Api.Managers
 {
     public class DocumentManager : BaseManager
     {
-        public DocumentManager(CmsDbContext dbContext) : base(dbContext) { }
+        public DocumentManager(CmsDbContext dbContext) : base(dbContext)
+        {
+        }
 
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
@@ -18,7 +24,7 @@ namespace Api.Managers
             return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
         }
 
-        internal EntityResult UpdateDocument(int topicId, string userIdenty, string htmlContent)
+        internal EntityResult UpdateDocument(int topicId, int userId, string htmlContent)
         {
             try
             {
@@ -30,19 +36,61 @@ namespace Api.Managers
             }
             // already exitsts
 
-            var user = GetUserByIdenty(userIdenty);
+
             Document document;
             try
             {
                 document = GetDocumentById(topicId);
-                document.UpdaterId = user.Id;
+                document.UpdaterId = userId;
                 document.Content = htmlContent;
             }
             catch (InvalidOperationException)
             {
-                document = new Document(topicId, user.Id, htmlContent);
+                document = new Document(topicId, userId, htmlContent);
                 DbContext.Add(document);
             }
+
+            // document is saved, so now we can parse it
+            var stream = new System.IO.StringReader("<pseudo-root>" + htmlContent + "</pseudo-root>");
+            var xmlReader = XmlReader.Create(stream);
+            var tagInstances = new List<AnnotationTagInstance>();
+
+            try
+            {
+                while (xmlReader.Read())
+                {
+                    if (xmlReader.NodeType != XmlNodeType.Element) continue;
+                    if (!xmlReader.HasAttributes) continue;
+
+                    var tagModelId = int.Parse(xmlReader.GetAttribute("data-tag-model-id"));
+                    var tagInstanceId = int.Parse(xmlReader.GetAttribute("data-tag-id"));
+                    var tagValue = xmlReader.ReadElementContentAsString();
+                    var rx = new Regex("<span[^>]+?data-tag-id=\"" + tagInstanceId + "\".*?>");
+                    var tagPosition = rx.Match(htmlContent).Index;
+
+                    var tagModel = DbContext.AnnotationTags.First(t => t.Id == tagModelId);
+                    var tag = new AnnotationTagInstance(tagModel)
+                    {
+                        IdInDocument = tagInstanceId,
+                        Value = tagValue,
+                        PositionInDocument = tagPosition,
+                        Document = document
+                    };
+
+                    tagInstances.Add(tag);
+                }
+                if (DbContext.AnnotationTagInstances.Any(i => i.Document == document))
+                {
+                    var oldInstances = DbContext.AnnotationTagInstances.Where(i => i.Document == document);
+                    DbContext.AnnotationTagInstances.RemoveRange(oldInstances);
+                }
+                DbContext.AnnotationTagInstances.AddRange(tagInstances);
+            }
+            catch (Exception)
+            {
+                return EntityResult.Error("Parsing Error");
+            }
+
             try
             {
                 DbContext.SaveChanges();

@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Api.Models.Entity.Annotation;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Internal.Networking;
 
 namespace Api.Managers
 {
@@ -26,6 +28,7 @@ namespace Api.Managers
         {
             return DbContext
                 .AnnotationTags
+                .Include(t => t.TagInstances)
                 .Where(t => !includeOnlyRoot || t.ParentTag == null)
                 .Where(t => includeDeleted || !t.IsDeleted)
                 .ToList()
@@ -35,7 +38,7 @@ namespace Api.Managers
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         internal AnnotationTagResult GetTag(int id)
         {
-            return new AnnotationTagResult(DbContext.AnnotationTags.Single(t => t.Id == id));
+            return new AnnotationTagResult(DbContext.AnnotationTags.Include(t => t.TagInstances).Single(t => t.Id == id));
         }
 
         public IEnumerable<AnnotationTagResult> GetChildTagsOf(int id)
@@ -218,8 +221,8 @@ namespace Api.Managers
         {
             try
             {
-                var tag = DbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
-                if (tag.UsageCounter == 0)
+                var tag = DbContext.AnnotationTags.Include(t => t.TagInstances).Include(t => t.ChildTags).Single(t => t.Id == id);
+                if (tag.UsageCounter() == 0)
                 {
                     DbContext.AnnotationTags.Remove(tag);
                 }

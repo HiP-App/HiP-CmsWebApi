@@ -8,8 +8,8 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170302135644_TopicReview")]
-    partial class TopicReview
+    [Migration("20170310205705_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,8 +41,6 @@ namespace Api.Migrations
 
                     b.Property<string>("Style");
 
-                    b.Property<int>("UsageCounter");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ParentTagId");
@@ -55,9 +53,19 @@ namespace Api.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("DocumentId");
+
+                    b.Property<int>("IdInDocument");
+
+                    b.Property<int>("PositionInDocument");
+
                     b.Property<int>("TagModelId");
 
+                    b.Property<string>("Value");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
 
                     b.HasIndex("TagModelId");
 
@@ -386,6 +394,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
                 {
+                    b.HasOne("Api.Models.Entity.Document", "Document")
+                        .WithMany("TagsInstances")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TagModel")
                         .WithMany("TagInstances")
                         .HasForeignKey("TagModelId")

@@ -33,7 +33,7 @@ namespace Api.Models.Entity
 
             entityBuilder.Property(rs => rs.TimeStamp).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
             entityBuilder.HasOne(rs => rs.Reviewer).WithMany(u => u.Reviews).HasForeignKey(rs => rs.ReviewerId).OnDelete(DeleteBehavior.SetNull);
-            entityBuilder.HasOne(rs => rs.Topic).WithMany(t => t.Reviews).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasOne(rs => rs.Topic).WithMany(t => t.Reviews).HasForeignKey(rs => rs.TopicId).OnDelete(DeleteBehavior.Cascade);
 
         }
     }
