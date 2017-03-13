@@ -13,18 +13,24 @@ namespace Api.Controllers
         #region GET
 
         /// <summary>
-        /// Get all existing tag relations.
-        /// NOT IMPLEMENTED YET.
+        /// Get all existing tag instance relations.
         /// </summary>
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Relations")]
         [ProducesResponseType(typeof(List<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult GetRelations([FromQuery] int maxDepth = int.MaxValue)
+        public IActionResult GetRelations()
         {
-            // TODO: Do we need pagination here?
-            return ServiceUnavailable();
+            try
+            {
+                return Ok(_tagManager.GetAllTagInstanceRelations());
+            }
+            catch (Exception ex)
+            {
+                Console.Error.Write(ex);
+                return BadRequest();
+            }
         }
 
         /// <summary>

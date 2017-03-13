@@ -215,33 +215,31 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly
         /// </summary>
-      // TODO  [Test]
+        [Test]
         public void GetRelationsTest()
         {
-            var expected = new List<TagRelation>() { _relation12 };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            var expected = new List<RelationResult>() { new RelationResult(_relation12) };
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext.WithSet<TagRelation>(db => db.Add(_relation12)))
-                .Calling(c => c.GetRelations(0))
+                .Calling(c => c.GetRelations())
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<TagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(actual => RelationsEqualPredicate(expected));
         }
 
         /// <summary>
-        /// Should return 400 for negative maxDepth values
+        /// Should return code 200 and an empty list if no relations are present
         /// </summary>
-       // TODO [Test]
-        public void GetRelationsTest400()
+        [Test]
+        public void GetRelationsTest_EmptyList()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .Calling(c => c.GetRelations(-1))
+            _tester.TestController()
+                .Calling(c => c.GetRelations())
                 .ShouldReturn()
-                .BadRequest();
+                .Ok()
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(actual => actual.Count == 0);
         }
 
         #endregion
