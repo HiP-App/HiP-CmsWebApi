@@ -4,7 +4,7 @@
     {
         public UserResult(Entity.User user)
         {
-            Id = user.Id;
+            Identy = user.Email; // TODO replace with 'identy'
             Email = user.Email;
             FirstName = user.FirstName;
             LastName = user.LastName;
@@ -20,7 +20,7 @@
             }
         }
 
-        public int Id { get; set; }
+        public string Identy { get; set; }
         
         public string Email { get; set; }
 
