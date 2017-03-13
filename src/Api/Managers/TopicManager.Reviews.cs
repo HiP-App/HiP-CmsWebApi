@@ -21,7 +21,7 @@ namespace Api.Managers
             {
                 try
                 {
-                    var review = reviews.Single(r => r.ReviewerId == reviewer.Id);
+                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Identy);
                     result.Add(new TopicReviewResult(review));
                 }
                 catch (InvalidOperationException)
