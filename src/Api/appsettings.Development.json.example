@@ -1,0 +1,33 @@
+﻿{
+  // Database Configurations
+  "DB_HOST": "localhost",
+  "DB_USERNAME": "postgres",
+  "DB_PASSWORD": "postgres",
+  "DB_NAME": "hipcmsdb",
+
+  // Auth Configurations
+  "CLIENT_ID": "HiP-CmsWebApiClientId",
+  "DOMAIN": "http://localhost:5001/",
+
+  // SMTP Configurations
+  "SMTP_FROM": "hipapp@mail.upb.de",
+  "SMTP_SERVER": "mail.uni-paderborn.de",
+  "SMTP_PORT": 465,
+  "SMTP_WITH_SSL": true,
+  "SMTP_USER": "hipapp",
+  "SMTP_PASSWORD": "secret password",
+
+  // Admin Details
+  "ADMIN_EMAIL": "admin@hipapp.de",
+
+  "ALLOW_HTTP": true,
+
+  // SMTP Configurations
+  "SMTP_FROM": "hipapp@mail.upb.de",
+  "SMTP_SERVER": "mail.uni-paderborn.de",
+  "SMTP_PORT": 465,
+  "SMTP_WITH_SSL": true,
+  "SMTP_USER": "hipapp",
+  "SMTP_PASSWORD": "secret password"
+}
+
