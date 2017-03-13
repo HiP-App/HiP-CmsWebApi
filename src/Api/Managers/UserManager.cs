@@ -51,21 +51,15 @@ namespace Api.Managers
             return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == identy && string.Equals(u.Role, Role.Student));
         }
 
-        public virtual bool UpdateUser(string userIdenty, UserFormModel model)
+        public virtual void UpdateUser(User user, UserFormModel model, bool updateRole)
         {
-            var user = GetUserByIdenty(userIdenty);
-            if (user != null)
-            {
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
 
-                if (model is AdminUserFormModel)
-                    user.Role = ((AdminUserFormModel)model).Role;
+            if (updateRole)
+                user.Role = model.Role;
 
-                DbContext.SaveChanges();
-                return true;
-            }
-            return false;
+            DbContext.SaveChanges();
         }
 
         private void AddUserbyEmail(string email)
@@ -166,26 +160,17 @@ namespace Api.Managers
             return new InvitationResult() { FailedInvitations = failedInvitations, ExistingUsers = existingUsers };
         }
 
-        public bool PutStudentDetials(User student, StudentFormModel model)
+        public void PutStudentDetials(User student, StudentFormModel model)
         {
-            try
+            if (student.StudentDetails == null)
+                student.StudentDetails = new StudentDetails(student, model);
+            else
             {
-                if (student.StudentDetails == null)
-                    student.StudentDetails = new Models.Entity.StudentDetails(student, model);
-                else
-                {
-                    student.StudentDetails.Discipline = model.Discipline;
-                    student.StudentDetails.CurrentDegree = model.CurrentDegree;
-                    student.StudentDetails.CurrentSemester = model.CurrentSemester;
-                }
-                DbContext.SaveChanges();
-                return true;
+                student.StudentDetails.Discipline = model.Discipline;
+                student.StudentDetails.CurrentDegree = model.CurrentDegree;
+                student.StudentDetails.CurrentSemester = model.CurrentSemester;
             }
-            catch (Exception e)
-            {
-                Console.Error.Write(e);
-            }
-            return false;
+            DbContext.SaveChanges();
         }
     }
 }

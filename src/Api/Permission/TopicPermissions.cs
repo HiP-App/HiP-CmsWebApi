@@ -27,10 +27,10 @@ namespace Api.Permission
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
-                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedBy.Email == userIdenty)))
+                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
                     return true;
                 // Supervisor?
-                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.User.Email == userIdenty && tu.Role == Role.Supervisor)))
+                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Supervisor)))
                     return true;
             }
             catch (InvalidOperationException) { }
@@ -45,10 +45,10 @@ namespace Api.Permission
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
-                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedBy.Email == userIdenty)))
+                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
                     return true;
                 // Is associated
-                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.User.Email == userIdenty)))
+                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id)))
                     return true;
             }
             catch (InvalidOperationException) { }

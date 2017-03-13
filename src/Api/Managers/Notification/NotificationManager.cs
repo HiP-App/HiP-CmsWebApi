@@ -13,8 +13,9 @@ namespace Api.Managers
     {
         public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public IEnumerable<NotificationResult> GetNotificationsForTheUser(int userId, bool onlyUreard)
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userIdenty, bool onlyUreard)
         {
+            var userId = GetUserByIdenty(userIdenty).Id;
             var query = DbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUreard)
                 query = query.Where(n => !n.IsRead);
@@ -66,13 +67,15 @@ namespace Api.Managers
             }
         }
 
-        internal int GetNotificationCount(int userId)
+        internal int GetNotificationCount(string userIdenty)
         {
+            var userId = GetUserByIdenty(userIdenty).Id;
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
-        public bool SetSubscription(int userId, NotificationType type, bool subscribe)
+        public bool SetSubscription(string userIdenty, NotificationType type, bool subscribe)
         {
+            var userId = GetUserByIdenty(userIdenty).Id;
             User user = DbContext.Users.Single(u => u.Id == userId);
             Subscription sub = new Subscription
             {
@@ -82,8 +85,9 @@ namespace Api.Managers
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<string> GetSubscriptions(int userId)
+        public IEnumerable<string> GetSubscriptions(string userIdenty)
         {
+            var userId = GetUserByIdenty(userIdenty).Id;
             return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
             ).ToList().Select(

@@ -43,10 +43,11 @@ namespace Api.Managers
 
         public PagedResult<TopicResult> GetTopicsForUser(string userIdenty, int page, int pageSize)
         {
-            var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.User.Email == userIdenty).ToList().Select(ut => ut.TopicId);
+            var userId = GetUserByIdenty(userIdenty).Id;
+            var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
-                 .Where(t => t.CreatedBy.Email == userIdenty || relatedTopicIds.Contains(t.Id));
+                 .Where(t => t.CreatedById== userId || relatedTopicIds.Contains(t.Id));
 
             var totalCount = query.Count();
             if (page != 0)
@@ -78,13 +79,12 @@ namespace Api.Managers
             return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
         }
 
-        public bool ChangeAssociatedUsersByRole(string updaterIdenty, int topicId, string role, int[] userIds)
+        public bool ChangeAssociatedUsersByRole(string updaterIdenty, int topicId, string role, UsersFormModel users)
         {
-
             Topic topic;
             try
             {
-                topic = DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+                topic = DbContext.Topics.Include(t => t.TopicUsers).ThenInclude(tu => tu.User).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
@@ -96,16 +96,16 @@ namespace Api.Managers
             var newUsers = new List<TopicUser>();
             var removedUsers = new List<TopicUser>();
 
-            if (userIds != null)
+            if (users.Users != null)
             {
                 // new user?
-                foreach (var userId in userIds)
+                foreach (var userIdenty in users.Users)
                 {
-                    if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = userId, Role = role });
+                    if (!existingUsers.Any(tu => (tu.User.Email == userIdenty && tu.Role == role)))
+                        newUsers.Add(new TopicUser() { UserId = GetUserByIdenty(userIdenty).Id, Role = role });
                 }
                 // removed user?
-                removedUsers.AddRange(existingUsers.Where(existingUser => !userIds.Contains(existingUser.UserId)));
+                removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
             }
 
             topic.TopicUsers.AddRange(newUsers);

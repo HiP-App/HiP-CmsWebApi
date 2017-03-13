@@ -131,7 +131,7 @@ namespace Api.Controllers
                 return Forbidden();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdenty(), topicId, role, users.Users))
+            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdenty(), topicId, role, users))
                 return Ok();
             return BadRequest();
         }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Api.Managers;
 using System.Collections.Generic;
+using System.Linq;
 using Api.Models.Notifications;
 
 namespace Api.Controllers
@@ -84,10 +85,24 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of subscriptions for the current user</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("Subscriptions")]
-        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetSubscriptions()
         {
             return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserIdenty()));
+        }
+
+        // GET api/Notifications/Types
+
+        /// <summary>
+        /// Get all Notification Types
+        /// </summary>
+        /// <response code="200">Returns a list of subscriptions types</response>  
+        [HttpGet("Types")]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
+        public IActionResult GetNotificationsTypes()
+        {
+            var result = (from object type in Enum.GetValues(typeof(NotificationType)) select Enum.GetName(typeof(NotificationType), type)).ToList();
+            return Ok(result);
         }
 
         #endregion

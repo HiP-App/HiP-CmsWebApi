@@ -12,65 +12,14 @@ namespace Api.Controllers
 
         #region GET picture
 
-        // GET api/users/{userId}/picture/
-
-        /// <summary>
-        /// Get the profile picture of the user {userId}
-        /// </summary>   
-        /// <param name="userId">Represents the Id of the user</param>
-        /// <response code="200">Returns profile picture of the user {userId}</response>        
-        /// <response code="404">Resource not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpGet("{userId}/picture/")]
-        [ProducesResponseType(typeof(Base64Image), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureById([FromRoute]int userId)
-        {
-            return GetPicture(userId);
-        }
-
-        // GET api/users/current/picture/
-
-        /// <summary>
-        /// Get the profile picture of the current user
-        /// </summary>           
-        /// <response code="200">Returns profile picture of the current user</response>        
-        /// <response code="404">Resource not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpGet("Current/picture/")]
-        [ProducesResponseType(typeof(Base64Image), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureForCurrentUser()
-        {
-            var userId = _userManager.GetUserByIdenty(User.Identity.GetUserIdenty());
-            return GetPicture(userId.Id);
-        }
-
-        private IActionResult GetPicture([FromRoute]int userId)
-        {
-            try
-            {
-                var user = _userManager.GetUserById(userId);
-                var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
-                if (!System.IO.File.Exists(path))
-                    path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
-
-                return Ok(new Base64Image(ToBase64String(path)));
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
         /// <summary>
         /// Get the profile picture 
-         /// <param name="userIdenty">Specify the identy</param>
-        /// </summary>           
+        /// </summary>       
+        /// <param name="userIdenty">Specify the identy</param>    
         /// <response code="200">Returns profile picture of the current user</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="401">User is denied</response>
-        [HttpGet("picture/")]
+        [HttpGet("Picture/")]
         [ProducesResponseType(typeof(Base64Image), 200)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetPictureByIdenty([FromQuery]string userIdenty)
@@ -98,7 +47,7 @@ namespace Api.Controllers
         // Post api/users/{id}/picture/
 
         /// <summary>
-        /// Add picture for the user {id}
+        /// Add picture for the user
         /// </summary>        
         /// <param name="identy">The identy of the user to be edited (For admins)</param>                      
         /// <param name="file">The file to be uploaded</param>                         
@@ -106,7 +55,7 @@ namespace Api.Controllers
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to add picture</response>                
         /// <response code="401">User is denied</response>
-        [HttpPut("{id}/picture/")]
+        [HttpPut("Picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
@@ -165,7 +114,7 @@ namespace Api.Controllers
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to delete picture</response>                
         /// <response code="401">User is denied</response>
-        [HttpDelete("picture")]
+        [HttpDelete("Picture")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
