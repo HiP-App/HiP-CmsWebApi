@@ -225,7 +225,7 @@ namespace Api.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<RelationResult>>()
-                .Passing(actual => RelationsEqualPredicate(expected));
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         /// <summary>
@@ -249,23 +249,18 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if called for an existing tag that has no relations
         /// </summary>
-        // TODO [Test]
+        [Test]
         public void GetRelationsForIdWithNoExistingRelationsTest()
         {
-            // ReSharper disable once CollectionNeverUpdated.Local
-            var expected = new List<TagRelation>();
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<TagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2))
                 )
-                .Calling(c => c.GetRelationsForId(_tag1.Id))
+                .Calling(c => c.GetRelationsForId(_tagInstance1.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<TagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(actual => actual.Count == 0);
         }
 
         /// <summary>

@@ -85,6 +85,12 @@ namespace Api.Managers
             return DbContext.AnnotationTagRelations.ToList().Select(rel => new RelationResult(rel)).ToList();
         }
 
+        public IEnumerable<RelationResult> GetAllTagInstanceRelations(int tagId)
+        {
+            return DbContext.AnnotationTagRelations.Where(tag => tag.Id == tagId).ToList()
+                .Select(rel => new RelationResult(rel)).ToList();
+        }
+
         #endregion
 
         #region Adding

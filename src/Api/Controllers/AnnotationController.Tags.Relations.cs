@@ -26,9 +26,8 @@ namespace Api.Controllers
             {
                 return Ok(_tagManager.GetAllTagInstanceRelations());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.Error.Write(ex);
                 return BadRequest();
             }
         }
@@ -45,7 +44,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelationsForId([FromRoute] int tagId)
         {
-            return ServiceUnavailable();
+            try
+            {
+                return Ok(_tagManager.GetAllTagInstanceRelations(tagId));
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>
