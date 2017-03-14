@@ -99,7 +99,7 @@ namespace Api
             });
             app.UseSwaggerUi(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "HiPCMS API V1");
+                c.SwaggerEndpoint("../v1/swagger.json", "HiPCMS API V1");
             });
 
             // Run all pending Migrations and Seed DB with initial data
