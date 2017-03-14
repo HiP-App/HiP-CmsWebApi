@@ -18,7 +18,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Relations")]
-        [ProducesResponseType(typeof(List<RelationResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelations()
         {
@@ -40,7 +40,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag relations</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/{tagId}/Relations")]
-        [ProducesResponseType(typeof(List<RelationResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetRelationsForId([FromRoute] int tagId)
         {
@@ -62,7 +62,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tags that the user may create a relation rule to</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/{tagId}/AllowedRelationRuleTargets")]
-        [ProducesResponseType(typeof(List<TagResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TagResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationRuleTargetsForTag([FromRoute] int tagId)
         {
@@ -85,7 +85,7 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of tag instances</response>
         /// <response code="400">Request was misformed</response>
         [HttpGet("Tags/Instance/{id}/AllowedRelations")]
-        [ProducesResponseType(typeof(List<RelationResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<RelationResult>), 200)]
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult GetAllowedRelationsForInstance([FromRoute] int tagInstanceId)
         {

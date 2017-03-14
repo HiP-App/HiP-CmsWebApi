@@ -941,13 +941,14 @@ namespace Api.Tests.ControllerTests
                    actual.ArrowStyle == expected.ArrowStyle;
         }
 
-        private static Func<List<RelationResult>, bool> RelationsEqualPredicate(List<RelationResult> expected)
+        private static Func<IEnumerable<RelationResult>, bool> RelationsEqualPredicate(IEnumerable<RelationResult> expected)
         {
             return actual =>
             {
-                for (var i = 0; i < actual.Capacity; i++)
+                for (var i = 0; i < actual.Count(); i++)
                 {
-                    if (actual[i].SourceId != expected[i].SourceId || actual[i].TargetId != expected[i].TargetId)
+                    if (actual.ElementAt(i).SourceId != expected.ElementAt(i).SourceId
+                        || actual.ElementAt(i).TargetId != expected.ElementAt(i).TargetId)
                         return false;
                 }
                 return true;
