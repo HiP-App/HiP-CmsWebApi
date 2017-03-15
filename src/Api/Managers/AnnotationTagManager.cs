@@ -75,7 +75,7 @@ namespace Api.Managers
             var tagInstance = DbContext.AnnotationTagInstances.Single(t => t.Id == tagInstanceId);
             var relations = DbContext.AnnotationTagRelations.Where(rel => rel.SourceTagId == tagInstance.Id);
             // TODO: Also include relations that tagInstance is the *target* of?
-            // TODO: Filter by document
+            // TODO: Filter by document?
             var list = relations.ToList().Select(rel => new RelationResult(rel)).ToList();
             return list;
         }
@@ -173,6 +173,8 @@ namespace Api.Managers
             {
                 SourceLayerId = model.SourceId,
                 TargetLayerId= model.TargetId,
+				Title = model.Title,
+				Description = model.Description,
                 Color = model.Color,
                 ArrowStyle = model.ArrowStyle
             };
