@@ -47,11 +47,12 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
 
 For getting the project to run with Visual Studio Code, you will have to execute a few more steps:
 
- * go to the Debug view and click the run button - you will be asked if a launch configuration should be created (click yes)
- * in the created `tasks.json`, add the following line: `"options": { "cwd": "${workspaceRoot}/src/Api" },`
+ * go to the Debug view and click the run button - a prompt will appear asking for the launch configuration's target -- choose .NET
  * in the created `launch.json`:
    * replace every occurence of `${workspaceRoot}` with `${workspaceRoot}/src/Api`
    * add `"env": { "ASPNETCORE_ENVIRONMENT": "Development" }` to your run configurations
+ * click run again, which will complain about no task runner being configured -- choose .NET as your task runner, which will create a `tasks.json` file
+ * in the created `tasks.json`, add the following line: `"options": { "cwd": "${workspaceRoot}/src/Api" },`
 
 ## How to develop
 
