@@ -55,6 +55,10 @@ For getting the project to run with Visual Studio Code, you will have to execute
  * click run again, which will complain about no task runner being configured -- choose .NET as your task runner, which will create a `tasks.json` file
  * in the created `tasks.json`, add the following line: `"options": { "cwd": "${workspaceRoot}/src/Api" },`
 
+### Removing .NET packages on Linux / macOS
+
+If you are experiencing issues with your .NET installation on Linux or macOS, you can use the script at https://github.com/dotnet/cli/blob/rel/1.0.0/scripts/obtain/uninstall/dotnet-uninstall-pkgs.sh to remove all .NET packages (i.e. the SDK and runtime) in order to perform a fresh install afterwards.
+
 ## How to develop
 
  * You can [fork](https://help.github.com/articles/fork-a-repo/) or [clone](https://help.github.com/articles/cloning-a-repository/) our repo.
