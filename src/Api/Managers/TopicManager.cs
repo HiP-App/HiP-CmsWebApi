@@ -41,12 +41,13 @@ namespace Api.Managers
 
         }
 
-        public PagedResult<TopicResult> GetTopicsForUser(int userId, int page, int pageSize)
+        public PagedResult<TopicResult> GetTopicsForUser(string userIdenty, int page, int pageSize)
         {
-            var relatedTopicIds = DbContext.TopicUsers.Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
+            var userId = GetUserByIdenty(userIdenty).Id;
+            var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
-                 .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id));
+                 .Where(t => t.CreatedById== userId || relatedTopicIds.Contains(t.Id));
 
             var totalCount = query.Count();
             if (page != 0)
@@ -78,13 +79,12 @@ namespace Api.Managers
             return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
         }
 
-        public bool ChangeAssociatedUsersByRole(int updaterId, int topicId, string role, int[] userIds)
+        public bool ChangeAssociatedUsersByRole(string updaterIdenty, int topicId, string role, UsersFormModel users)
         {
-
             Topic topic;
             try
             {
-                topic = DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
+                topic = DbContext.Topics.Include(t => t.TopicUsers).ThenInclude(tu => tu.User).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
@@ -96,16 +96,16 @@ namespace Api.Managers
             var newUsers = new List<TopicUser>();
             var removedUsers = new List<TopicUser>();
 
-            if (userIds != null)
+            if (users.Users != null)
             {
                 // new user?
-                foreach (var userId in userIds)
+                foreach (var userIdenty in users.Users)
                 {
-                    if (!existingUsers.Any(tu => (tu.UserId == userId && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = userId, Role = role });
+                    if (!existingUsers.Any(tu => (tu.User.Email == userIdenty && tu.Role == role)))
+                        newUsers.Add(new TopicUser() { UserId = GetUserByIdenty(userIdenty).Id, Role = role });
                 }
                 // removed user?
-                removedUsers.AddRange(existingUsers.Where(existingUser => !userIds.Contains(existingUser.UserId)));
+                removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
             }
 
             topic.TopicUsers.AddRange(newUsers);
@@ -113,7 +113,7 @@ namespace Api.Managers
             // Updated // TODO add user
             topic.UpdatedAt = DateTime.Now;
             // Notifications
-            new NotificationProcessor(DbContext, topic, updaterId).OnUsersChanged(newUsers, removedUsers, role);
+            new NotificationProcessor(DbContext, topic, updaterIdenty).OnUsersChanged(newUsers, removedUsers, role);
 
             DbContext.Update(topic);
             DbContext.SaveChanges();
@@ -130,14 +130,15 @@ namespace Api.Managers
             return DbContext.AssociatedTopics.Include(at => at.ParentTopic).Where(at => at.ChildTopicId == topicId).Select(at => at.ParentTopic).ToList();
         }
 
-        public EntityResult AddTopic(int userId, TopicFormModel model)
+        public EntityResult AddTopic(string updaterIdenty, TopicFormModel model)
         {
             try
             {
-                var topic = new Topic(model) { CreatedById = userId };
+                var user = GetUserByIdenty(updaterIdenty);
+                var topic = new Topic(model) { CreatedById = user.Id };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
-                new NotificationProcessor(DbContext, topic, userId).OnNewTopic();
+                new NotificationProcessor(DbContext, topic, updaterIdenty).OnNewTopic();
 
                 return EntityResult.Successfull(topic.Id);
             }
@@ -147,7 +148,7 @@ namespace Api.Managers
             }
         }
 
-        public bool UpdateTopic(int userId, int topicId, TopicFormModel model)
+        public bool UpdateTopic(string userIdenty, int topicId, TopicFormModel model)
         {
             // Using Transactions to roobback Notifications on error.
             using (var transaction = DbContext.Database.BeginTransaction())
@@ -155,7 +156,7 @@ namespace Api.Managers
                 {
                     var topic = DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
                     // REM: do before updating to estimate the changes
-                    new NotificationProcessor(DbContext, topic, userId).OnUpdate(model);
+                    new NotificationProcessor(DbContext, topic, userIdenty).OnUpdate(model);
 
                     // TODO  topic.UpdatedById = userId;
                     topic.Title = model.Title;
@@ -182,7 +183,7 @@ namespace Api.Managers
                 }
         }
 
-        public bool ChangeTopicStatus(int userId, int topicId, string status)
+        public bool ChangeTopicStatus(string userIdenty, int topicId, string status)
         {
             try
             {
@@ -190,7 +191,7 @@ namespace Api.Managers
                 topic.Status = status;
                 DbContext.Update(topic);
                 DbContext.SaveChanges();
-                new NotificationProcessor(DbContext, topic, userId).OnStateChanged(status);
+                new NotificationProcessor(DbContext, topic, userIdenty).OnStateChanged(status);
                 return true;
             }
             catch (InvalidOperationException)
@@ -199,12 +200,12 @@ namespace Api.Managers
             }
         }
 
-        public virtual bool DeleteTopic(int topicId, int userId)
+        public virtual bool DeleteTopic(int topicId, string userIdenty)
         {
             try
             {
                 var topic = DbContext.Topics.Include(t => t.TopicUsers).Single(u => u.Id == topicId);
-                new NotificationProcessor(DbContext, topic, userId).OnDeleteTopic();
+                new NotificationProcessor(DbContext, topic, userIdenty).OnDeleteTopic();
                 DbContext.Remove(topic);
                 DbContext.SaveChanges();
                 return true;

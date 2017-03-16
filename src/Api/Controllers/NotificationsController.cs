@@ -55,7 +55,7 @@ namespace Api.Controllers
 
         private IActionResult GetNotifications([FromQuery]bool onlyUnread)
         {
-            var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUnread);
+            var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserIdenty(), onlyUnread);
 
             if (notifications != null)
                 return Ok(notifications);
@@ -74,7 +74,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(int), 200)]
         public IActionResult GetNotificationCount()
         {
-            return Ok(_notificationManager.GetNotificationCount(User.Identity.GetUserId()));
+            return Ok(_notificationManager.GetNotificationCount(User.Identity.GetUserIdenty()));
         }
 
         // GET api/Notifications/Subscriptions
@@ -88,7 +88,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetSubscriptions()
         {
-            return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserId()));
+            return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserIdenty()));
         }
 
         // GET api/Notifications/Types
@@ -96,6 +96,7 @@ namespace Api.Controllers
         /// <summary>
         /// Get all Notification Types
         /// </summary>
+        /// <response code="200">Returns a list of subscriptions types</response>  
         [HttpGet("Types")]
         [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetNotificationsTypes()
@@ -104,7 +105,6 @@ namespace Api.Controllers
             return Ok(result);
         }
 
-        
         #endregion
 
         #region POST
@@ -164,10 +164,21 @@ namespace Api.Controllers
         private IActionResult SetSubscription(string notificationType, bool subscribe)
         {
             NotificationType type;
-            if (Enum.TryParse(notificationType, out type) && _notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
-                return Ok();
-
-            return BadRequest();
+            if (Enum.TryParse(notificationType, out type))
+            {
+                if (_notificationManager.SetSubscription(User.Identity.GetUserIdenty(), type, subscribe))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         #endregion

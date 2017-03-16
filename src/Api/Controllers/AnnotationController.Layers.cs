@@ -48,7 +48,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult PostLayerRelationRule([FromBody] LayerRelationRuleFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdenty()))
                 return Forbid();
 
             try
@@ -80,7 +80,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutLayerRelationRule([FromQuery] int sourceId, [FromQuery] int targetId, [FromBody] LayerRelationRuleFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdenty()))
                 return Forbid();
 
             try
@@ -109,7 +109,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteLayerRelationRule([FromQuery] int sourceId, [FromQuery] int targetId)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdenty()))
                 return Forbid();
 
             try

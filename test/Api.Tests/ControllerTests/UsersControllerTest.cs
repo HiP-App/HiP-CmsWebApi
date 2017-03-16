@@ -1,4 +1,5 @@
-﻿using Api.Controllers;
+﻿using System.Security.Claims;
+using Api.Controllers;
 using Api.Models;
 using Api.Models.Entity;
 using MyTested.AspNetCore.Mvc;
@@ -30,8 +31,8 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<UsersController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1")) // add claim with custom name and value of 1 (Internal mock by the framework)                             
-                .Calling(c => c.Put(4, new AdminUserFormModel
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de")) // add claim with custom name and value of 1 (Internal mock by the framework)                             
+                .Calling(c => c.Put("admin@hipapp.de", new UserFormModel
                 {
                     FirstName = "First Name",
                     LastName = "Last Name",
@@ -49,7 +50,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<UsersController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1")) // add claim with custom name and value of 1                                                
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de")) // add claim with custom name and value of 1                                                
                 .WithDbContext(dbContext => //This will make the framework mock the actual DbCall and uses InMemoryDatabase internally.
                     dbContext.WithSet<User>(o => o.Add(new User
                     {
@@ -57,7 +58,7 @@ namespace Api.Tests.ControllerTests
                         Email = "admin@hipapp.de",
                         Role = "Administrator"
                     })))
-                .Calling(c => c.Put(4, new AdminUserFormModel
+                .Calling(c => c.Put("admin@hipapp.de", new UserFormModel
                 {
                     FirstName = "First Name",
                     LastName = "Last Name",

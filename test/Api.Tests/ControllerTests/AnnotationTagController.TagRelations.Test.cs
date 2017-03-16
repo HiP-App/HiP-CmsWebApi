@@ -6,6 +6,7 @@ using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using NUnit.Framework;
+using System.Security.Claims;
 // TODO fix ReSharper
 // ReSharper disable AccessToModifiedClosure
 // ReSharper disable UnusedVariable
@@ -108,7 +109,7 @@ namespace Api.Tests.ControllerTests
             var expected = new List<LayerRelationRule>() { myRelation };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(myRelation))
@@ -140,7 +141,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", _supervisor.Id.ToString()))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_supervisor))
                     .WithSet<Layer>(db => db.AddRange(_layerRelationRule.SourceLayer, _layerRelationRule.TargetLayer))
@@ -177,7 +178,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", _student.Id.ToString()))
+                  .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _student.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_student))
                     .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
@@ -205,7 +206,7 @@ namespace Api.Tests.ControllerTests
             var expected = new List<AnnotationTagRelation>() { _relation12 };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext.WithSet<AnnotationTagRelation>(db => db.Add(_relation12)))
                 .Calling(c => c.GetRelations(0))
                 .ShouldReturn()
@@ -222,7 +223,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetRelations(-1))
                 .ShouldReturn()
                 .BadRequest();
@@ -242,7 +243,7 @@ namespace Api.Tests.ControllerTests
             var expected = new List<AnnotationTagRelation>();
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -263,7 +264,7 @@ namespace Api.Tests.ControllerTests
             var expected = new List<AnnotationTagRelation>() { _relation12 };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -286,7 +287,7 @@ namespace Api.Tests.ControllerTests
             var expected = new List<AnnotationTagRelation>();
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -307,7 +308,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetRelationsForId(1))
                 .ShouldReturn()
                 .BadRequest();
@@ -327,7 +328,7 @@ namespace Api.Tests.ControllerTests
             var expected = new List<AnnotationTag>() { _tag2, _tag4 };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -350,7 +351,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -373,7 +374,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
                 .ShouldReturn()
                 .BadRequest();
@@ -403,7 +404,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -434,7 +435,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -456,7 +457,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
                 .BadRequest();
@@ -482,7 +483,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -517,7 +518,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
@@ -544,7 +545,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
@@ -577,7 +578,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -611,7 +612,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_admin)))
                 // --> tags 1 and 2 were NOT added to the database
                 .Calling(c => c.PostTagRelation(expected))
@@ -642,7 +643,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.PostTagRelation(expected))
                 .ShouldHave()
@@ -678,7 +679,7 @@ namespace Api.Tests.ControllerTests
             _relation12.ArrowStyle = expectedColor;
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -713,7 +714,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -737,7 +738,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
                 .ShouldReturn()
@@ -757,7 +758,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -786,7 +787,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -805,7 +806,7 @@ namespace Api.Tests.ControllerTests
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
                 .ShouldReturn()
