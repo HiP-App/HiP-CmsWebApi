@@ -97,7 +97,7 @@ namespace Api
             {
                 c.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Host = httpReq.Host.Value);
             });
-            app.UseSwaggerUi(c =>
+            app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "HiPCMS API V1");
             });
