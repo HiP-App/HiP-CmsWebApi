@@ -11,5 +11,7 @@ VOLUME ["/dotnetapp/Api/wwwroot"]
 
 WORKDIR /dotnetapp/Api
 RUN dotnet restore
-RUN dotnet publish -c Release -o out
-ENTRYPOINT ["dotnet", "out/Api.dll"]
+ENTRYPOINT ["dotnet", "run"]
+
+#RUN dotnet publish -c Release -o out
+#ENTRYPOINT ["dotnet", "out/Api.dll"]
