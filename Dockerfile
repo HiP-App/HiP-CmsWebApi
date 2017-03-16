@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.1.0-sdk
+FROM microsoft/dotnet:1.1.1-sdk
 
 RUN mkdir -p /dotnetapp
 
