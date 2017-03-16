@@ -12,4 +12,5 @@ EXPOSE 5000
 VOLUME ["/dotnetapp/Api/wwwroot"]
 
 WORKDIR /dotnetapp/Api
-ENTRYPOINT ["dotnet", "run"]
+RUN dotnet publish -c Release -o out
+ENTRYPOINT ["dotnet", "out/Api.dll"]
