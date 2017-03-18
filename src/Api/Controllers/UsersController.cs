@@ -130,7 +130,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put([FromRoute]string identy, [FromBody]UserFormModel model)
+        public IActionResult Put([FromQuery]string identy, [FromBody]UserFormModel model)
         {
             if (identy != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
                 return Forbidden();
