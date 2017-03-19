@@ -21,7 +21,7 @@ namespace Api.Managers
             {
                 try
                 {
-                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Identy);
+                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Identity);
                     result.Add(new TopicReviewResult(review));
                 }
                 catch (InvalidOperationException)
@@ -32,11 +32,11 @@ namespace Api.Managers
             return result;
         }
 
-        public bool ChangeReviewStatus(string userIdenty, int topicId, TopicReviewStatus status)
+        public bool ChangeReviewStatus(string userIdentity, int topicId, TopicReviewStatus status)
         {
             try
             {
-                var user = GetUserByIdenty(userIdenty);
+                var user = GetUserByIdentity(userIdentity);
                 if (!DbContext.TopicReviews.Any(rs => rs.TopicId == topicId && rs.ReviewerId == user.Id))
                 {
                     var review = new TopicReview()

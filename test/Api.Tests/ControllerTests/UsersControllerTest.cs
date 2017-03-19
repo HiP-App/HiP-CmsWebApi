@@ -30,7 +30,7 @@ namespace Api.Tests.ControllerTests
         public void UpdateUserTestResponseCode403()
         {
             MyMvc
-                .Controller<UsersController>()
+                .Controller<UserController>()
                 .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de")) // add claim with custom name and value of 1 (Internal mock by the framework)                             
                 .Calling(c => c.Put("admin@hipapp.de", new UserFormModel
                 {
@@ -49,7 +49,7 @@ namespace Api.Tests.ControllerTests
         public void UpdateUserTest()
         {
             MyMvc
-                .Controller<UsersController>()
+                .Controller<UserController>()
                 .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de")) // add claim with custom name and value of 1                                                
                 .WithDbContext(dbContext => //This will make the framework mock the actual DbCall and uses InMemoryDatabase internally.
                     dbContext.WithSet<User>(o => o.Add(new User

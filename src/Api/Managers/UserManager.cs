@@ -46,9 +46,9 @@ namespace Api.Managers
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual User GetStudentById(string identy)
+        public virtual User GetStudentById(string identity)
         {
-            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == identy && string.Equals(u.Role, Role.Student));
+            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == identity && string.Equals(u.Role, Role.Student));
         }
 
         public virtual void UpdateUser(User user, UserFormModel model, bool updateRole)

@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
-    public partial class UsersController
+    public partial class UserController
     {
         /// <summary>
         /// Edit the Student {id}
         /// </summary>         
         /// <param name="model">Contains details of the user to be edited</param>        
-        /// <param name="identy">The identy of the user to be edited (For admins)</param>  
+        /// <param name="identity">The identity of the user to be edited (For admins)</param>  
         /// <response code="200">Student edited successfully</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">Student not allowed to edit</response>        
@@ -23,18 +23,18 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutStudent([FromBody] StudentFormModel model, [FromQuery] string identy)
+        public IActionResult PutStudent([FromBody] StudentFormModel model, [FromQuery] string identity)
         {
-            if (identy != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
                 return Forbidden();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             try
             {
-                var student = _userManager.GetStudentById(identy ?? User.Identity.GetUserIdenty());
+                var student = _userManager.GetStudentById(identity ?? User.Identity.GetUserIdentity());
                 _userManager.PutStudentDetials(student, model);
-                Logger.LogInformation(42, "Studet with identy: " + identy + " updated.");
+                Logger.LogInformation(42, "Studet with identity: " + identity + " updated.");
                 return Ok();
 
             }

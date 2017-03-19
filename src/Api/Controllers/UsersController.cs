@@ -1,23 +1,21 @@
-﻿using Api.Utility;
-using Microsoft.AspNetCore.Mvc;
+﻿using Api.Data;
 using Api.Managers;
-using Microsoft.Extensions.Logging;
-using Api.Data;
 using Api.Models;
 using Api.Models.User;
 using Api.Permission;
 using Api.Services;
-using System;
+using Api.Utility;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
-    [Route("Api/User")]
-    public partial class UsersController : ApiController
+    public class UsersController : ApiController
     {
         private readonly UserManager _userManager;
         private readonly UserPermissions _userPermissions;
 
-        public UsersController(CmsDbContext dbContext, ILoggerFactory logger) : base(dbContext, logger)
+        public UsersController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
             _userManager = new UserManager(dbContext);
             _userPermissions = new UserPermissions(dbContext);
@@ -36,7 +34,7 @@ namespace Api.Controllers
         /// <response code="409">Resource already exists</response>        
         /// <response code="503">Service unavailable</response>        
         /// <response code="401">User is denied</response>
-        [HttpPost("/Api/Users/Invite")]
+        [HttpPost("Invite")]
         [ProducesResponseType(typeof(UserManager.InvitationResult), 202)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 401)]
@@ -45,7 +43,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 503)]
         public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
-            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdenty()))
+            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdentity()))
                 return Forbidden();
 
             if (!ModelState.IsValid)
@@ -60,10 +58,6 @@ namespace Api.Controllers
 
             return Accepted(result);
         }
-
-        #endregion
-
-        #region GET user
 
         // GET api/users
 
@@ -83,78 +77,6 @@ namespace Api.Controllers
             return Ok(_userManager.GetAllUsers(query, role, page, pageSize));
         }
 
-
-        // GET api/users/:id
-
-        /// <summary>
-        /// Get the user
-        /// </summary>   
-        /// <param name="identy">The identy of the user </param>       
-        /// <response code="200">Returns the user</response>        
-        /// <response code="404">User not found</response>
-        /// <response code="401">User is denied</response>
-        [HttpGet]
-        [ProducesResponseType(typeof(UserResult), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Get([FromQuery] string identy)
-        {
-            try
-            {
-                var user = _userManager.GetUserByIdenty(identy ?? User.Identity.GetUserIdenty());
-                return Ok(new UserResult(user));
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-        #endregion
-
-        #region PUT user
-
-        // PUT api/users
-
-        /// <summary>
-        /// Edit the user 
-        /// </summary> 
-        /// <param name="identy">The identy of the user to be edited (For admins)</param>          
-        /// <param name="model">Contains details of the user to be edited</param>        
-        /// <response code="200">User edited successfully</response>        
-        /// <response code="400">Request incorrect</response>        
-        /// <response code="403">User not allowed to edit</response>        
-        /// <response code="404">User not found</response>
-        /// <response code="401">User is denied</response>
-        [HttpPut]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put([FromQuery]string identy, [FromBody]UserFormModel model)
-        {
-            if (identy != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdenty()))
-                return Forbidden();
-
-            if (identy != null && model.Role != null && !Role.IsRoleValid(model.Role))
-                ModelState.AddModelError("Role", "Invalid Role");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            try
-            {
-                var user = _userManager.GetUserByIdenty(identy ?? User.Identity.GetUserIdenty());
-                _userManager.UpdateUser(user, model, (identy != null && model.Role != null));
-                Logger.LogInformation(5, "User with ID: " + user.Id + " updated.");
-                return Ok();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
         #endregion
     }
-
 }

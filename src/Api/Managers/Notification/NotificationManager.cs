@@ -13,11 +13,11 @@ namespace Api.Managers
     {
         public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userIdenty, bool onlyUreard)
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userIdentity, bool onlyUnread)
         {
-            var userId = GetUserByIdenty(userIdenty).Id;
+            var userId = GetUserByIdentity(userIdentity).Id;
             var query = DbContext.Notifications.Where(n => n.UserId == userId);
-            if (onlyUreard)
+            if (onlyUnread)
                 query = query.Where(n => !n.IsRead);
 
             var notifications = query.Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
@@ -67,15 +67,15 @@ namespace Api.Managers
             }
         }
 
-        internal int GetNotificationCount(string userIdenty)
+        internal int GetNotificationCount(string userIdentity)
         {
-            var userId = GetUserByIdenty(userIdenty).Id;
+            var userId = GetUserByIdentity(userIdentity).Id;
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
-        public bool SetSubscription(string userIdenty, NotificationType type, bool subscribe)
+        public bool SetSubscription(string userIdentity, NotificationType type, bool subscribe)
         {
-            var userId = GetUserByIdenty(userIdenty).Id;
+            var userId = GetUserByIdentity(userIdentity).Id;
             User user = DbContext.Users.Single(u => u.Id == userId);
             Subscription sub = new Subscription
             {
@@ -85,9 +85,9 @@ namespace Api.Managers
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<string> GetSubscriptions(string userIdenty)
+        public IEnumerable<string> GetSubscriptions(string userIdentity)
         {
-            var userId = GetUserByIdenty(userIdenty).Id;
+            var userId = GetUserByIdentity(userIdentity).Id;
             return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
             ).ToList().Select(

@@ -7,7 +7,7 @@ namespace Api.Utility
     public static class Auth
     {
         // Adds function to get User Id from Context.User.Identity
-        public static string GetUserIdenty(this IIdentity identity)
+        public static string GetUserIdentity(this IIdentity identity)
         {
             var claimsIdentity = identity as ClaimsIdentity;
             if (claimsIdentity != null)

@@ -21,11 +21,11 @@ namespace Api.Managers
         public NotificationProcessor(
             CmsDbContext dbContext,
             Topic currentTopic,
-            string userIdenty
+            string userIdentity
         ) : base(dbContext)
         {
             topic = currentTopic;
-            currentUser = GetUserByIdenty(userIdenty).Id;
+            currentUser = GetUserByIdentity(userIdentity).Id;
             emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(IEmailSender)); // TODO: This is probably not such a good idea...
             // Do not notify yourself
             notifiedUsers.Add(currentUser);

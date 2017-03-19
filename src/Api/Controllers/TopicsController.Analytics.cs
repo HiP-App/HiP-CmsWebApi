@@ -29,7 +29,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult GetTagFrequencyAnalytics([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             try

@@ -9,7 +9,7 @@ namespace Api.Permission
 {
     public class TopicPermissions : BaseManager
     {
-        // TODO change User.Email to the Identy if changed!
+        // TODO change User.Email to the Identity if changed!
         private readonly UserManager _userManager;
 
 
@@ -19,11 +19,11 @@ namespace Api.Permission
         }
 
 
-        public bool IsAllowedToEdit(string userIdenty, int topicId)
+        public bool IsAllowedToEdit(string userIdentity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdenty(userIdenty);
+                var user = _userManager.GetUserByIdentity(userIdentity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -37,11 +37,11 @@ namespace Api.Permission
             return false;
         }
 
-        public bool IsAssociatedTo(string userIdenty, int topicId)
+        public bool IsAssociatedTo(string userIdentity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdenty(userIdenty);
+                var user = _userManager.GetUserByIdentity(userIdentity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -55,11 +55,11 @@ namespace Api.Permission
             return false;
         }
 
-        public bool IsAllowedToCreate(string userIdenty)
+        public bool IsAllowedToCreate(string userIdentity)
         {
             try
             {
-                var user = _userManager.GetUserByIdenty(userIdenty);
+                var user = _userManager.GetUserByIdentity(userIdentity);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
@@ -68,11 +68,11 @@ namespace Api.Permission
             }
         }
 
-        public bool IsReviewer(string userIdenty, int topicId)
+        public bool IsReviewer(string userIdentity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdenty(userIdenty);
+                var user = _userManager.GetUserByIdentity(userIdentity);
                 if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
                     return true;
             }

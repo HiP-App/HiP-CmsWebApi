@@ -127,11 +127,11 @@ namespace Api.Controllers
 
         private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdenty(), topicId, role, users))
+            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdentity(), topicId, role, users))
                 return Ok();
             return BadRequest();
         }

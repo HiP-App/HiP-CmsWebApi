@@ -24,7 +24,7 @@ namespace Api.Managers
             return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
         }
 
-        internal EntityResult UpdateDocument(int topicId, string userIdenty, string htmlContent)
+        internal EntityResult UpdateDocument(int topicId, string userIdentity, string htmlContent)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Api.Managers
             }
             // already exitsts
 
-            var userId = GetUserByIdenty(userIdenty).Id;
+            var userId = GetUserByIdentity(userIdentity).Id;
             Document document;
             try
             {

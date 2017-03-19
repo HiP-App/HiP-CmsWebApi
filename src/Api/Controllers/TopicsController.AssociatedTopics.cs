@@ -56,7 +56,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 403)]
         public IActionResult PutParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             var result = _topicManager.AssociateTopic(parentId, topicId);
@@ -82,7 +82,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 403)]
         public IActionResult PutSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             var result = _topicManager.AssociateTopic(topicId, childId);
@@ -110,7 +110,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Unauthorized();
             if (_topicManager.DeleteAssociated(parentId, topicId))
                 return Ok();
@@ -135,7 +135,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
             if (_topicManager.DeleteAssociated(topicId, childId))
                 return Ok();

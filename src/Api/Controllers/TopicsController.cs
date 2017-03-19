@@ -54,16 +54,16 @@ namespace Api.Controllers
         /// <summary>
         /// All topics of the current user
         /// </summary>
-        /// <param name="userIdenty">Represents the user Identy of the user</param>
+        /// <param name="userIdentity">Represents the user Identity of the user</param>
         /// <param name="page">Represents the page</param>
         /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("OfUser")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromQuery]string userIdenty, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
+        public IActionResult GetTopicsForUser([FromQuery]string userIdentity, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            var topics = _topicManager.GetTopicsForUser(userIdenty ?? User.Identity.GetUserIdenty(), page, pageSize);
+            var topics = _topicManager.GetTopicsForUser(userIdentity ?? User.Identity.GetUserIdentity(), page, pageSize);
             return Ok(topics);
         }
 
@@ -107,7 +107,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Post([FromBody]TopicFormModel model)
         {
-            if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdenty()))
+            if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdentity()))
                 return Forbidden();
 
             if (ModelState.IsValid)
@@ -118,7 +118,7 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    var result = _topicManager.AddTopic(User.Identity.GetUserIdenty(), model);
+                    var result = _topicManager.AddTopic(User.Identity.GetUserIdentity(), model);
                     if (result.Success)
                         return Ok(result);
                 }
@@ -144,14 +144,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Put([FromRoute]int topicId, [FromBody] TopicFormModel model)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             // TODO createUser is Supervisor!
-            if (_topicManager.UpdateTopic(User.Identity.GetUserIdenty(), topicId, model))
+            if (_topicManager.UpdateTopic(User.Identity.GetUserIdentity(), topicId, model))
                 return Ok();
             return BadRequest(ModelState);
         }
@@ -175,7 +175,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 409)]
         public IActionResult ChangeStatus([FromRoute] int topicId, [FromBody] TopicStatus topicStatus)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (!_topicManager.IsValidTopicId(topicId))
@@ -189,7 +189,7 @@ namespace Api.Controllers
             if (topicStatus.IsDone() &&_topicManager.GetReviews(topicId).Any(r => !r.Status.IsReviewed()))
                     return Conflict();
 
-            if (_topicManager.ChangeTopicStatus(User.Identity.GetUserIdenty(), topicId, topicStatus.Status))
+            if (_topicManager.ChangeTopicStatus(User.Identity.GetUserIdentity(), topicId, topicStatus.Status))
                 return Ok();
             return NotFound();
         }
@@ -211,9 +211,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
-            if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserIdenty()))
+            if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserIdentity()))
                 return Ok();
 
             return NotFound();

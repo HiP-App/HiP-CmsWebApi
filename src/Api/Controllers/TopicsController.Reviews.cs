@@ -23,7 +23,7 @@ namespace Api.Controllers
         [HttpGet("{topicId}/ReviewStatus")]
         public IActionResult GetReviewStatus([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
             if (!_topicManager.IsValidTopicId(topicId))
                 return NotFound();
@@ -49,14 +49,14 @@ namespace Api.Controllers
         [HttpPut("{topicId}/ReviewStatus")]
         public IActionResult PutReviewStatus([FromRoute] int topicId, [FromBody] TopicReviewStatus status)
         {
-            if (!_topicPermissions.IsReviewer(User.Identity.GetUserIdenty(), topicId))
+            if (!_topicPermissions.IsReviewer(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
             if (!ModelState.IsValid || !status.IsStatusValid())
                 return BadRequest();
             if(!_topicManager.IsValidTopicId(topicId))
                 return NotFound();
 
-            if (_topicManager.ChangeReviewStatus(User.Identity.GetUserIdenty(), topicId, status))
+            if (_topicManager.ChangeReviewStatus(User.Identity.GetUserIdentity(), topicId, status))
                 return Ok();
 
             return BadRequest();
