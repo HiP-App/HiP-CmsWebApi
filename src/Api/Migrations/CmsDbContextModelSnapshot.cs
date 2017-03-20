@@ -303,6 +303,8 @@ namespace Api.Migrations
 
                     b.Property<string>("Copyright");
 
+                    b.Property<string>("Creator");
+
                     b.Property<string>("Date");
 
                     b.Property<string>("Date2");

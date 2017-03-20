@@ -1,5 +1,4 @@
-﻿using Api.Models;
-using Api.Models.Topic;
+﻿using Api.Models.Topic;
 using Api.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,14 +22,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult PostMetaData([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]Metadata metadata)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            _attachmentsManager.UpdateMetadata(topicId, attachmentId, User.Identity.GetUserIdentity(), metadata);
-                return Ok();
+            return UpdateMetaData(topicId, attachmentId, metadata);
         }
 
         /// <summary>
@@ -48,6 +40,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult PutMetaData([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]Metadata metadata)
         {
+            return UpdateMetaData(topicId, attachmentId, metadata);
+        }
+
+
+        private IActionResult UpdateMetaData(int topicId, int attachmentId, Metadata metadata)
+        {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
@@ -55,7 +53,8 @@ namespace Api.Controllers
                 return BadRequest(ModelState);
 
             _attachmentsManager.UpdateMetadata(topicId, attachmentId, User.Identity.GetUserIdentity(), metadata);
-                return Ok();
+            return Ok();
         }
+
     }
 }

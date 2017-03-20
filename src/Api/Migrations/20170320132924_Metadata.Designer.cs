@@ -8,7 +8,7 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20170320125546_Metadata")]
+    [Migration("20170320132924_Metadata")]
     partial class Metadata
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -303,6 +303,8 @@ namespace Api.Migrations
                     b.Property<int>("TopicAttachmentId");
 
                     b.Property<string>("Copyright");
+
+                    b.Property<string>("Creator");
 
                     b.Property<string>("Date");
 

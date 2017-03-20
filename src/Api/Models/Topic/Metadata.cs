@@ -12,6 +12,7 @@ namespace Api.Models.Topic
             Type = metadata.Type;
             SubType = metadata.SubType;
             Photographer = metadata.Photographer;
+            Creator = metadata.Creator;
             Material = metadata.Material;
             Height = metadata.Height;
             Width = metadata.Width;
@@ -36,7 +37,7 @@ namespace Api.Models.Topic
         public string Type { get; set; }
         public string SubType { get; set; }
         public string Photographer { get; set; }
-    
+        public string Creator { get; set; }
         public string Material { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }

@@ -51,6 +51,7 @@ namespace Api.Migrations
                 {
                     TopicAttachmentId = table.Column<int>(nullable: false),
                     Copyright = table.Column<string>(nullable: true),
+                    Creator = table.Column<string>(nullable: true),
                     Date = table.Column<string>(nullable: true),
                     Date2 = table.Column<string>(nullable: true),
                     Depth = table.Column<int>(nullable: false),
