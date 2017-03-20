@@ -94,7 +94,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post([FromBody]AnnotationTagFormModel tag)
         {
-            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -123,7 +123,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.AddChildTag(parentId, childId))
@@ -152,7 +152,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult PutTag([FromRoute]int id, [FromBody]AnnotationTagFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.EditTag(model, id))
@@ -180,7 +180,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Delete([FromRoute]int id)
         {
-            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.DeleteTag(id))
@@ -203,7 +203,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteChildOf([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.RemoveChildTag(parentId, childId))

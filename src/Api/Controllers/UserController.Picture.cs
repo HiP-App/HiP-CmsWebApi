@@ -7,49 +7,26 @@ using System;
 
 namespace Api.Controllers
 {
-    public partial class UsersController
+    public partial class UserController
     {
 
         #region GET picture
 
-        // GET api/users/{userId}/picture/
-
         /// <summary>
-        /// Get the profile picture of the user {userId}
-        /// </summary>   
-        /// <param name="userId">Represents the Id of the user</param>
-        /// <response code="200">Returns profile picture of the user {userId}</response>        
-        /// <response code="404">Resource not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpGet("{userId}/picture/")]
-        [ProducesResponseType(typeof(Base64Image), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureById([FromRoute]int userId)
-        {
-            return GetPicture(userId);
-        }
-
-        // GET api/users/current/picture/
-
-        /// <summary>
-        /// Get the profile picture of the current user
-        /// </summary>           
+        /// Get the profile picture 
+        /// </summary>       
+        /// <param name="identity">Specify the identity</param>    
         /// <response code="200">Returns profile picture of the current user</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="401">User is denied</response>
-        [HttpGet("Current/picture/")]
+        [HttpGet("Picture/")]
         [ProducesResponseType(typeof(Base64Image), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureForCurrentUser()
-        {
-            return GetPicture(User.Identity.GetUserId());
-        }
-
-        private IActionResult GetPicture([FromRoute]int userId)
+        public IActionResult GetPictureByIdentity([FromQuery]string identity)
         {
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                 var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
@@ -67,47 +44,26 @@ namespace Api.Controllers
         #region PUT picture
 
 
-        // Post api/users/{id}/picture/
+        // Post api/users/picture/
 
         /// <summary>
-        /// Add picture for the user {id}
+        /// Add picture for the user
         /// </summary>        
-        /// <param name="id">The Id of the user</param>                         
+        /// <param name="identity">The identity of the user to be edited (For admins)</param>                      
         /// <param name="file">The file to be uploaded</param>                         
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to add picture</response>                
         /// <response code="401">User is denied</response>
-        [HttpPut("{id}/picture/")]
+        [HttpPut("Picture/")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutPicture([FromRoute]int id, [FromForm] IFormFile file)
+        public IActionResult PutPicture([FromQuery] string identity, [FromForm] IFormFile file)
         {
-            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
                 return Forbidden();
-            return PutUserPicture(id, file);
-        }
 
-        // Post api/users/current/picture/
-
-        /// <summary>
-        /// Add picture for the current user
-        /// </summary>                
-        /// <param name="file">The file to be uploaded</param>                         
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>                
-        /// <response code="401">User is denied</response>
-        [HttpPut("Current/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutPicture([FromForm]IFormFile file)
-        {
-            return PutUserPicture(User.Identity.GetUserId(), file);
-        }
-
-        private IActionResult PutUserPicture(int userId, IFormFile file)
-        {
             var uploads = Path.Combine(Constants.ProfilePicturePath);
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
@@ -119,8 +75,8 @@ namespace Api.Controllers
             {
                 try
                 {
-                    var user = _userManager.GetUserById(userId);
-                    string fileName = user.Id + Path.GetExtension(file.FileName);
+                    var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
+                    var fileName = user.Id + Path.GetExtension(file.FileName);
                     DeleteFile(Path.Combine(uploads, fileName));
 
                     using (FileStream outputStream = new FileStream(Path.Combine(uploads, fileName), FileMode.Create))
@@ -151,46 +107,25 @@ namespace Api.Controllers
         // Delete api/users/:id/picture/
 
         /// <summary>
-        /// Delete picture for the user {id}
+        /// Delete picture for the current user
         /// </summary>        
-        /// <param name="id">The Id of the user</param>                                 
+        /// <param name="identity">The identity of the user to be delete (For admins)</param>                                 
         /// <response code="200">Request is accepted</response>        
         /// <response code="400">Request incorrect</response>        
         /// <response code="403">User not allowed to delete picture</response>                
         /// <response code="401">User is denied</response>
-        [HttpDelete("{id}/picture/")]
+        [HttpDelete("Picture")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Delete([FromRoute]int id)
+        public IActionResult Delete([FromQuery] string identity)
         {
-            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
                 return Forbidden();
-            return DeletePicture(id);
-        }
-
-        // Delete api/users/current/picture/
-
-        /// <summary>
-        /// Delete picture for the current user
-        /// </summary>        
-        /// <response code="200">Request is accepted</response>        
-        /// <response code="400">Request incorrect</response>                
-        /// <response code="401">User is denied</response>
-        [HttpDelete("Current/picture/")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Delete()
-        {
-            return DeletePicture(User.Identity.GetUserId());
-        }
-
-        private IActionResult DeletePicture([FromRoute]int userId)
-        {
             // Fetch user
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                 // Has A Picture?
                 if (string.IsNullOrEmpty(user.ProfilePicture) || Constants.DefaultPircture.Equals(user.ProfilePicture))
                     return BadRequest("No picture set");
@@ -199,7 +134,7 @@ namespace Api.Controllers
                 var fileName = Path.Combine(Constants.ProfilePicturePath, user.ProfilePicture);
 
                 DeleteFile(fileName);
- 
+
                 if (_userManager.UpdateProfilePicture(user, null))
                     return Ok();
                 return BadRequest();

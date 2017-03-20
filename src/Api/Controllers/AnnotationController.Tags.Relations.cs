@@ -98,7 +98,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PostTagRelation([FromBody] AnnotationTagRelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
@@ -156,7 +156,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteTagRelation([FromQuery] int firstTagId, [FromQuery] int secondTagId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
             try
             {

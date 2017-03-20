@@ -32,26 +32,32 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
 
  * Clone the repository.
  * Create a new file `appsettings.Development.json` at `scr/Api`. (See `src/Api/appsettings.Development.json.example`).
+   * The settings can be found on [this page in our internal wiki](https://atlassian-hip.cs.uni-paderborn.de/confluence/pages/viewpage.action?pageId=10326660)
  * Update the new `appsettings.Development.json` file to match your needs.
  * To run using Visual Studio, just start the app with/without debugging.
  * To run through terminal,
-  * Navigate to `src/Api`
-  * Set Environment Variable 
+   * Navigate to `src/Api`
+   * Set Environment Variable 
 		* Windows: `set ASPNETCORE_ENVIRONMENT=Development`
 		* Linux/macOS: `export ASPNETCORE_ENVIRONMENT=Development`
-  * Before your first run, execute `dotnet restore`
-  * Execute `dotnet run`
-  * `{{BaseUrl}}/swagger/ui` will give information about the service endpoints.
+   * Before your first run, execute `dotnet restore`
+   * Execute `dotnet run`
+   * `{{BaseUrl}}/swagger/ui` will give information about the service endpoints.
 
 ### VS Code Setup
 
 For getting the project to run with Visual Studio Code, you will have to execute a few more steps:
 
- * go to the Debug view and click the run button - you will be asked if a launch configuration should be created (click yes)
- * in the created `tasks.json`, add the following line: `"options": { "cwd": "${workspaceRoot}/src/Api" },`
+ * go to the Debug view and click the run button - a prompt will appear asking for the launch configuration's target -- choose .NET
  * in the created `launch.json`:
    * replace every occurence of `${workspaceRoot}` with `${workspaceRoot}/src/Api`
    * add `"env": { "ASPNETCORE_ENVIRONMENT": "Development" }` to your run configurations
+ * click run again, which will complain about no task runner being configured -- choose .NET as your task runner, which will create a `tasks.json` file
+ * in the created `tasks.json`, add the following line: `"options": { "cwd": "${workspaceRoot}/src/Api" },`
+
+### Removing .NET packages on Linux / macOS
+
+If you are experiencing issues with your .NET installation on Linux or macOS, you can use the script at https://github.com/dotnet/cli/blob/rel/1.0.0/scripts/obtain/uninstall/dotnet-uninstall-pkgs.sh to remove all .NET packages (i.e. the SDK and runtime) in order to perform a fresh install afterwards.
 
 ## How to develop
 

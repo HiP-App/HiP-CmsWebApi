@@ -38,7 +38,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachments([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             var attachments = _attachmentsManager.GetAttachments(topicId);
@@ -64,7 +64,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             try
@@ -97,13 +97,13 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttatchmentFormModel model)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model);
+            var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserIdentity(), model);
 
             if (result.Success)
                 return Ok(result);
@@ -131,7 +131,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PutAttachment([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (file == null)
@@ -140,7 +140,7 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserId(), file);
+            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserIdentity(), file);
 
             if (result.Success)
                 return Ok(result);
@@ -164,7 +164,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (_attachmentsManager.DeleteAttachment(topicId, attachmentId))
@@ -193,12 +193,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PostLegal([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]LegalFormModel legalModel)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (ModelState.IsValid)
             {
-                var result = _attachmentsManager.CreateLegal(topicId, attachmentId, User.Identity.GetUserId(), legalModel);
+                var result = _attachmentsManager.CreateLegal(topicId, attachmentId, User.Identity.GetUserIdentity(), legalModel);
                 if (result.Success)
                     return Ok(result);
                 return InternalServerError(result);
@@ -221,7 +221,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteLegal([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (_attachmentsManager.DeleteLegal(topicId, attachmentId))

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using Api.Controllers;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace Api.Tests.ControllerTests
             var expected = new HashSet<Layer>() { layer };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de"))
                 .WithDbContext(dbContext => dbContext.WithSet<Layer>(db => db.Add(layer)))
                 .Calling(c => c.GetAllLayers())
                 .ShouldReturn()

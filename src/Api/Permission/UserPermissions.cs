@@ -15,11 +15,11 @@ namespace Api.Permission
             _userManager = new UserManager(dbContext);
         }
 
-        public bool IsAllowedToAdminister(int userId)
+        public bool IsAllowedToAdminister(string identity)
         {
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity);
                 return user.Role.Equals(Role.Administrator);
             }
             catch (InvalidOperationException)
@@ -28,11 +28,11 @@ namespace Api.Permission
             }
         }
 
-        public bool IsAllowedToInvite(int userId)
+        public bool IsAllowedToInvite(string identity)
         {
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
