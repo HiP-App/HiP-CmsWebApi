@@ -17,17 +17,17 @@ namespace Api.Managers
         public AttachmentsManager(CmsDbContext dbContext) : base(dbContext) { }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public TopicAttatchment GetAttachmentById(int attachmentId)
+        public TopicAttachment GetAttachmentById(int attachmentId)
         {
-            return DbContext.TopicAttatchments.Single(ta => (ta.Id == attachmentId));
+            return DbContext.TopicAttachments.Single(ta => (ta.Id == attachmentId));
         }
 
         public IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return DbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
+            return DbContext.TopicAttachments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Metadata).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
-        public EntityResult CreateAttachment(int topicId, string identity, AttatchmentFormModel model)
+        public EntityResult CreateAttachment(int topicId, string identity, AttachmentFormModel model)
         {
             if (!DbContext.Topics.Include(t => t.TopicUsers).Any(t => t.Id == topicId))
                 return EntityResult.Error("Unknown Topic");
@@ -35,14 +35,14 @@ namespace Api.Managers
             try
             {
                 var user = GetUserByIdentity(identity);
-                var attatchment = new TopicAttatchment(model)
+                var attatchment = new TopicAttachment(model)
                 {
                     UserId = user.Id,
                     TopicId = topicId,
                     Type = "TODO"
                 };
 
-                DbContext.TopicAttatchments.Add(attatchment);
+                DbContext.TopicAttachments.Add(attatchment);
                 DbContext.SaveChanges();
 
                 return EntityResult.Successfull(attatchment.Id);
@@ -54,17 +54,17 @@ namespace Api.Managers
         }
         public EntityResult PutAttachment(int attachmentId, string identity, IFormFile file)
         {
-            TopicAttatchment attachment;
+            TopicAttachment attachment;
             try
             {
-                attachment = DbContext.TopicAttatchments.Include(t => t.Topic).ThenInclude(t => t.TopicUsers).Single(t => t.Id == attachmentId);
+                attachment = DbContext.TopicAttachments.Include(t => t.Topic).ThenInclude(t => t.TopicUsers).Single(t => t.Id == attachmentId);
             }
             catch (InvalidOperationException)
             {
                 return EntityResult.Error("Unknown Attachment");
             }
 
-            var topicFolder = Path.Combine(Constants.AttatchmentPath, attachment.TopicId.ToString());
+            var topicFolder = Path.Combine(Constants.AttachmentPath, attachment.TopicId.ToString());
             if (!Directory.Exists(topicFolder))
                 Directory.CreateDirectory(topicFolder);
 
@@ -81,7 +81,7 @@ namespace Api.Managers
                 DbContext.Update(attachment);
                 DbContext.SaveChanges();
 
-                new NotificationProcessor(DbContext, attachment.Topic, identity).OnAttachmetAdded(attachment.Name);
+                new NotificationProcessor(DbContext, attachment.Topic, identity).OnAttachmetAdded(attachment.Title);
 
                 return EntityResult.Successfull(attachment.Id);
             }
@@ -99,7 +99,7 @@ namespace Api.Managers
                 var attachment = GetAttachmentById(attachmentId);
                 if (!string.IsNullOrEmpty(attachment.Path))
                 {
-                    var fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
+                    var fileName = Path.Combine(Constants.AttachmentFolder, topicId.ToString(), attachment.Path);
                     DeleteFile(fileName);
                 }
                 DbContext.Remove(attachment);
@@ -111,55 +111,26 @@ namespace Api.Managers
                 return false;
             }
         }
-        #region Legal
+        #region Metadata
 
-        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        private Legal GetLegalById(int attachmentId)
+        internal void UpdateMetadata(int topicId, int attachmentId, string identity, Metadata metadata)
         {
-            return DbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
-        }
-
-        internal EntityResult CreateLegal(int topicId, int attachmentId, string identity, LegalFormModel legalModel)
-        {
+            // Delete current
             try
             {
-                DbContext.TopicAttatchments.Include(at => at.Legal).Single(at => at.Id == attachmentId);
+                var existing = DbContext.TopicAttachmentMetadata.Single(tam => tam.TopicAttachmentId == attachmentId);
+                DbContext.TopicAttachmentMetadata.Remove(existing);
             }
             catch (InvalidOperationException)
             {
-                return EntityResult.Error("Unknown Attachment");
+                // Does not exists.
             }
-            // TODO already exitst´s
-            try
-            {
-                Legal legal = new Legal(attachmentId, legalModel);
+            // Add new
+            var newMetadata = new TopicAttachmentMetadata(attachmentId, metadata);
 
-                DbContext.Add(legal);
-                DbContext.SaveChanges();
-
-                return EntityResult.Successfull();
-            }
-            catch (Exception e)
-            {
-                return EntityResult.Error(e.Message);
-            }
+            DbContext.Add(newMetadata);
+            DbContext.SaveChanges();
         }
-
-        public bool DeleteLegal(int topicId, int attachmentId)
-        {
-            try
-            {
-                var legal = GetLegalById(attachmentId);
-                DbContext.Remove(legal);
-                DbContext.SaveChanges();
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
-        }
-
         #endregion
     }
 }
