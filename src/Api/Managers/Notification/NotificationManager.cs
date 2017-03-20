@@ -13,9 +13,9 @@ namespace Api.Managers
     {
         public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userIdentity, bool onlyUnread)
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string identity, bool onlyUnread)
         {
-            var userId = GetUserByIdentity(userIdentity).Id;
+            var userId = GetUserByIdentity(identity).Id;
             var query = DbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUnread)
                 query = query.Where(n => !n.IsRead);
@@ -67,15 +67,15 @@ namespace Api.Managers
             }
         }
 
-        internal int GetNotificationCount(string userIdentity)
+        internal int GetNotificationCount(string identity)
         {
-            var userId = GetUserByIdentity(userIdentity).Id;
+            var userId = GetUserByIdentity(identity).Id;
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
-        public bool SetSubscription(string userIdentity, NotificationType type, bool subscribe)
+        public bool SetSubscription(string identity, NotificationType type, bool subscribe)
         {
-            var userId = GetUserByIdentity(userIdentity).Id;
+            var userId = GetUserByIdentity(identity).Id;
             User user = DbContext.Users.Single(u => u.Id == userId);
             Subscription sub = new Subscription
             {
@@ -85,9 +85,9 @@ namespace Api.Managers
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<string> GetSubscriptions(string userIdentity)
+        public IEnumerable<string> GetSubscriptions(string identity)
         {
-            var userId = GetUserByIdentity(userIdentity).Id;
+            var userId = GetUserByIdentity(identity).Id;
             return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
             ).ToList().Select(

@@ -32,11 +32,11 @@ namespace Api.Managers
             return result;
         }
 
-        public bool ChangeReviewStatus(string userIdentity, int topicId, TopicReviewStatus status)
+        public bool ChangeReviewStatus(string identity, int topicId, TopicReviewStatus status)
         {
             try
             {
-                var user = GetUserByIdentity(userIdentity);
+                var user = GetUserByIdentity(identity);
                 if (!DbContext.TopicReviews.Any(rs => rs.TopicId == topicId && rs.ReviewerId == user.Id))
                 {
                     var review = new TopicReview()

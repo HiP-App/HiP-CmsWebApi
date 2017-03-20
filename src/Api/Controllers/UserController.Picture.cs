@@ -15,18 +15,18 @@ namespace Api.Controllers
         /// <summary>
         /// Get the profile picture 
         /// </summary>       
-        /// <param name="userIdentity">Specify the identity</param>    
+        /// <param name="identity">Specify the identity</param>    
         /// <response code="200">Returns profile picture of the current user</response>        
         /// <response code="404">Resource not found</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("Picture/")]
         [ProducesResponseType(typeof(Base64Image), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetPictureByIdentity([FromQuery]string userIdentity)
+        public IActionResult GetPictureByIdentity([FromQuery]string identity)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(userIdentity ?? User.Identity.GetUserIdentity());
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                 var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);

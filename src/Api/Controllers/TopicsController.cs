@@ -54,16 +54,16 @@ namespace Api.Controllers
         /// <summary>
         /// All topics of the current user
         /// </summary>
-        /// <param name="userIdentity">Represents the user Identity of the user</param>
+        /// <param name="identity">Represents the user Identity of the user</param>
         /// <param name="page">Represents the page</param>
         /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("OfUser")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromQuery]string userIdentity, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
+        public IActionResult GetTopicsForUser([FromQuery]string identity, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            var topics = _topicManager.GetTopicsForUser(userIdentity ?? User.Identity.GetUserIdentity(), page, pageSize);
+            var topics = _topicManager.GetTopicsForUser(identity ?? User.Identity.GetUserIdentity(), page, pageSize);
             return Ok(topics);
         }
 

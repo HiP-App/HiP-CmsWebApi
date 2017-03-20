@@ -19,11 +19,11 @@ namespace Api.Permission
         }
 
 
-        public bool IsAllowedToEdit(string userIdentity, int topicId)
+        public bool IsAllowedToEdit(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(userIdentity);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -37,11 +37,11 @@ namespace Api.Permission
             return false;
         }
 
-        public bool IsAssociatedTo(string userIdentity, int topicId)
+        public bool IsAssociatedTo(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(userIdentity);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -55,11 +55,11 @@ namespace Api.Permission
             return false;
         }
 
-        public bool IsAllowedToCreate(string userIdentity)
+        public bool IsAllowedToCreate(string identity)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(userIdentity);
+                var user = _userManager.GetUserByIdentity(identity);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
@@ -68,11 +68,11 @@ namespace Api.Permission
             }
         }
 
-        public bool IsReviewer(string userIdentity, int topicId)
+        public bool IsReviewer(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(userIdentity);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
                     return true;
             }

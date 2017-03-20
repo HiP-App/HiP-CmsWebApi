@@ -27,14 +27,14 @@ namespace Api.Managers
             return DbContext.TopicAttatchments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Legal).ToList().Select(at => new TopicAttachmentResult(at));
         }
 
-        public EntityResult CreateAttachment(int topicId, string userIdentity, AttatchmentFormModel model)
+        public EntityResult CreateAttachment(int topicId, string identity, AttatchmentFormModel model)
         {
             if (!DbContext.Topics.Include(t => t.TopicUsers).Any(t => t.Id == topicId))
                 return EntityResult.Error("Unknown Topic");
 
             try
             {
-                var user = GetUserByIdentity(userIdentity);
+                var user = GetUserByIdentity(identity);
                 var attatchment = new TopicAttatchment(model)
                 {
                     UserId = user.Id,
@@ -52,7 +52,7 @@ namespace Api.Managers
                 return EntityResult.Error(e.Message);
             }
         }
-        public EntityResult PutAttachment(int attachmentId, string userIdentity, IFormFile file)
+        public EntityResult PutAttachment(int attachmentId, string identity, IFormFile file)
         {
             TopicAttatchment attachment;
             try
@@ -81,7 +81,7 @@ namespace Api.Managers
                 DbContext.Update(attachment);
                 DbContext.SaveChanges();
 
-                new NotificationProcessor(DbContext, attachment.Topic, userIdentity).OnAttachmetAdded(attachment.Name);
+                new NotificationProcessor(DbContext, attachment.Topic, identity).OnAttachmetAdded(attachment.Name);
 
                 return EntityResult.Successfull(attachment.Id);
             }
@@ -119,7 +119,7 @@ namespace Api.Managers
             return DbContext.Legals.Single(l => (l.TopicAttatchmentId == attachmentId));
         }
 
-        internal EntityResult CreateLegal(int topicId, int attachmentId, string userIdentity, LegalFormModel legalModel)
+        internal EntityResult CreateLegal(int topicId, int attachmentId, string identity, LegalFormModel legalModel)
         {
             try
             {
