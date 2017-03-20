@@ -25,7 +25,7 @@ namespace Api.Models.Entity
 
         public string ProfilePicture { get; set; }
 
-        public List<TopicAttatchment> Attatchments { get; set; }
+        public List<TopicAttachment> Attachments { get; set; }
 
         public List<TopicUser> TopicUsers { get; set; }
 

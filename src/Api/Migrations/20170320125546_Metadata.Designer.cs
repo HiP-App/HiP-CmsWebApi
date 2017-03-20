@@ -8,9 +8,10 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170320125546_Metadata")]
+    partial class Metadata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
