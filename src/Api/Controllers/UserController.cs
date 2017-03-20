@@ -28,18 +28,18 @@ namespace Api.Controllers
         /// <summary>
         /// Get the user
         /// </summary>   
-        /// <param name="identy">The identy of the user </param>       
+        /// <param name="identity">The identity of the user </param>       
         /// <response code="200">Returns the user</response>        
         /// <response code="404">User not found</response>
         /// <response code="401">User is denied</response>
         [HttpGet]
         [ProducesResponseType(typeof(UserResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Get([FromQuery] string identy)
+        public IActionResult Get([FromQuery] string identity)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identy ?? User.Identity.GetUserIdentity());
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                 return Ok(new UserResult(user));
             }
             catch (InvalidOperationException)
@@ -57,7 +57,7 @@ namespace Api.Controllers
         /// <summary>
         /// Edit the user 
         /// </summary> 
-        /// <param name="identy">The identy of the user to be edited (For admins)</param>          
+        /// <param name="identity">The identity of the user to be edited (For admins)</param>          
         /// <param name="model">Contains details of the user to be edited</param>        
         /// <response code="200">User edited successfully</response>        
         /// <response code="400">Request incorrect</response>        
@@ -69,12 +69,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put([FromQuery]string identy, [FromBody]UserFormModel model)
+        public IActionResult Put([FromQuery]string identity, [FromBody]UserFormModel model)
         {
-            if (identy != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
                 return Forbidden();
 
-            if (identy != null && model.Role != null && !Role.IsRoleValid(model.Role))
+            if (identity != null && model.Role != null && !Role.IsRoleValid(model.Role))
                 ModelState.AddModelError("Role", "Invalid Role");
 
             if (!ModelState.IsValid)
@@ -82,8 +82,8 @@ namespace Api.Controllers
 
             try
             {
-                var user = _userManager.GetUserByIdentity(identy ?? User.Identity.GetUserIdentity());
-                _userManager.UpdateUser(user, model, (identy != null && model.Role != null));
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
+                _userManager.UpdateUser(user, model, (identity != null && model.Role != null));
                 Logger.LogInformation(5, "User with ID: " + user.Id + " updated.");
                 return Ok();
             }
