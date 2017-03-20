@@ -3,17 +3,16 @@ using Api.Controllers;
 using Api.Models;
 using Api.Models.Entity;
 using MyTested.AspNetCore.Mvc;
-using NUnit.Framework;
+using Xunit;
 
 namespace Api.Tests.ControllerTests
 {
-    [TestFixture]
     public class UsersControllerTest
     {
         /// <summary>
         /// Tests response from Get action of UsersController.
         /// </summary>
-        [Test]
+        [Fact]
         public void GetUserListTest()
         {
             MyMvc
@@ -26,7 +25,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Tests response code 403 from Put(Id,AdminUserFormModel) action of UsersController
         /// </summary>
-        [Test]
+        [Fact]
         public void UpdateUserTestResponseCode403()
         {
             MyMvc
@@ -45,7 +44,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Tests response from Put(Id,AdminUserFormModel) action of UsersController
         /// </summary>
-        [Test]
+        [Fact]
         public void UpdateUserTest()
         {
             MyMvc

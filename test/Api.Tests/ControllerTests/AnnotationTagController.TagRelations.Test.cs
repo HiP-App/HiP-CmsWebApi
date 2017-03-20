@@ -5,7 +5,7 @@ using Api.Models.Entity;
 using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
-using NUnit.Framework;
+using Xunit;
 using System.Security.Claims;
 // TODO fix ReSharper
 // ReSharper disable AccessToModifiedClosure
@@ -14,7 +14,6 @@ using System.Security.Claims;
 
 namespace Api.Tests.ControllerTests
 {
-    [TestFixture]
     public class AnnotationTagRelationsControllerTest
     {
         private User _admin;
@@ -30,8 +29,7 @@ namespace Api.Tests.ControllerTests
         private Layer _layer1;
         private LayerRelationRule _layerRelationRule;
 
-        [SetUp]
-        public void BeforeTest()
+		public AnnotationTagRelationsControllerTest()
         {
             // create some User, Tag and TagRelation objects for mocking the database
             _admin = new User
@@ -92,7 +90,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and a list of all layer relation rules if called properly.
         /// Layer Relations can have a title, description, color and arrow-style.
         /// </summary>
-        [Test]
+        [Fact]
         public void GetLayerRelationRulesTest()
         {
             var myRelation = new LayerRelationRule()
@@ -128,7 +126,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and create the layer relation rule if called properly
         /// </summary>
-        [Test]
+        [Fact]
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
@@ -143,7 +141,6 @@ namespace Api.Tests.ControllerTests
                 .Controller<AnnotationController>()
                 .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_supervisor))
                     .WithSet<Layer>(db => db.AddRange(_layerRelationRule.SourceLayer, _layerRelationRule.TargetLayer))
                 )
                 .Calling(c => c.PostLayerRelationRule(model))
@@ -165,7 +162,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 403 if a student tries to create layer relation rules
         /// </summary>
-        [Test]
+        [Fact]
         public void PostLayerRelationRuleTest403()
         {
             var expected = _layerRelationRule;
@@ -200,7 +197,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly
         /// </summary>
-      // TODO  [Test]
+      // TODO  [Fact]
         public void GetRelationsTest()
         {
             var expected = new List<AnnotationTagRelation>() { _relation12 };
@@ -218,7 +215,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for negative maxDepth values
         /// </summary>
-       // TODO [Test]
+       // TODO [Fact]
         public void GetRelationsTest400()
         {
             MyMvc
@@ -236,7 +233,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if called for an existing tag that has no relations
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdWithNoExistingRelationsTest()
         {
             // ReSharper disable once CollectionNeverUpdated.Local
@@ -258,7 +255,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly for an existing tag with relations
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdWithOneExistingRelationTest()
         {
             var expected = new List<AnnotationTagRelation>() { _relation12 };
@@ -280,7 +277,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Relations are uni-directional i.e. tag2 (the tag with the INCOMING relation, but no outgoing relations) should have no relations
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdUniDirectionalTest()
         {
             // ReSharper disable once CollectionNeverUpdated.Local
@@ -303,7 +300,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for negative maxDepth values
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdTest400()
         {
             MyMvc
@@ -322,7 +319,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly.
         /// Duplicate relations are also allowed --> tag2 is also expected to be in the returned list
         /// </summary>
-        [Test]
+        [Fact]
         public void GetAllowedRelationRulesForTagTest()
         {
             var expected = new List<AnnotationTag>() { _tag2, _tag4 };
@@ -346,7 +343,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and an empty list tags if there are no relations possible because
         /// the top-level tags do not have a layer relation rule defined
         /// </summary>
-        [Test]
+        [Fact]
         public void GetAllowedRelationRulesForTagTest_NoToplevelRelation()
         {
             MyMvc
@@ -369,7 +366,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-       [Test]
+       [Fact]
         public void GetAllowedRelationRulesForTagTest400()
         {
             MyMvc
@@ -387,7 +384,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations that are available for the given tag instance
         /// </summary>
-      // TODO  [Test]
+      // TODO  [Fact]
         public void GetAvailableRelationsForIdTest()
         {
             var tag5 = new AnnotationTag() { Id = 5 };
@@ -421,7 +418,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
         /// </summary>
-       // TODO [Test]
+       // TODO [Fact]
         public void GetAvailableRelationsForIdTest_NoRelations()
         {
             var expected = new List<AnnotationTagRelation>();
@@ -452,7 +449,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-      // TODO  [Test]
+      // TODO  [Fact]
         public void GetAvailableRelationsForIdTest400()
         {
             MyMvc
@@ -470,7 +467,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
         /// </summary>
-       // TODO [Test]
+       // TODO [Fact]
         public void PostTagRelationTest()
         {
             var expected = new AnnotationTagRelationFormModel()
@@ -507,7 +504,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that are not allowed (child tag to top-level tag)
         /// </summary>
-       // TODO [Test]
+       // TODO [Fact]
         public void PostTagRelationTest_NoChildToFirstLevelRelation()
         {
             var expected = new AnnotationTagRelationFormModel()
@@ -567,7 +564,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for duplicate tag relations
         /// </summary>
-     // TODO   [Test]
+     // TODO   [Fact]
         public void PostTagRelationTest_NoDuplicateRelations()
         {
             var expected = new AnnotationTagRelationFormModel()
@@ -601,7 +598,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationTest400()
         {
             var expected = new AnnotationTagRelationFormModel()
@@ -632,7 +629,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationTest403()
         {
             var expected = new AnnotationTagRelationFormModel()
@@ -666,7 +663,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that have a relation
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void PutTagRelationTest()
         {
             var expected = new AnnotationTagRelationFormModel()
@@ -703,7 +700,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that do not exist
         /// </summary>
-       // TODO [Test]
+       // TODO [Fact]
         public void PutTagRelationTest400()
         {
             var model = new AnnotationTagRelationFormModel()
@@ -727,7 +724,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void PutTagRelationTest403()
         {
             var model = new AnnotationTagRelationFormModel()
@@ -753,7 +750,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called for an existing TagRelation
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationTest()
         {
             MyMvc
@@ -777,7 +774,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that do not exist
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationTest400()
         {
             var model = new AnnotationTagRelationFormModel()
@@ -801,7 +798,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationTest403()
         {
             MyMvc
