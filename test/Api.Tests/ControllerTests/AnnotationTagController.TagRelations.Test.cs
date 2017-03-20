@@ -468,7 +468,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
         /// </summary>
-       // TODO [Test]
+        [Test]
         public void PostTagRelationTest()
         {
             var expected = new RelationFormModel()
@@ -479,11 +479,8 @@ namespace Api.Tests.ControllerTests
                 Color = "schwarzgelb",
                 ArrowStyle = "dotted"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
                 )
                 .Calling(c => c.PostTagRelation(expected))
@@ -505,7 +502,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that are not allowed (child tag to top-level tag)
         /// </summary>
-       // TODO [Test]
+        [Test]
         public void PostTagRelationTest_NoChildToFirstLevelRelation()
         {
             var expected = new RelationFormModel()
@@ -514,11 +511,8 @@ namespace Api.Tests.ControllerTests
                 TargetId = _tag2.Id,
                 Title = "child-to-toplevel-relation"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2, _tag3))
                 )
                 .Calling(c => c.PostTagRelation(expected))
@@ -541,11 +535,8 @@ namespace Api.Tests.ControllerTests
                 TargetId = _tag3.Id,
                 Title = "toplevel-to-child-relation"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2, _tag3))
                 )
                 .Calling(c => c.PostTagRelation(expected))
@@ -565,7 +556,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for duplicate tag relations
         /// </summary>
-     // TODO   [Test]
+      [Test]
         public void PostTagRelationTest_NoDuplicateRelations()
         {
             var expected = new RelationFormModel()
@@ -574,11 +565,8 @@ namespace Api.Tests.ControllerTests
                 TargetId = _relation12.TargetTag.Id,
                 Title = "duplcate-relation"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<TagRelation>(db => db.Add(_relation12))
                 )
@@ -608,10 +596,7 @@ namespace Api.Tests.ControllerTests
                 TargetId = _tag2.Id,
                 Title = "relation-with-nonexisting-tags"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_admin)))
+            _tester.TestController()
                 // --> tags 1 and 2 were NOT added to the database
                 .Calling(c => c.PostTagRelation(expected))
                 .ShouldHave()
@@ -639,20 +624,8 @@ namespace Api.Tests.ControllerTests
                 TargetId = _tag2.Id,
                 Title = "relation-with-nonexisting-tags"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
+            _tester.TestController("2") // id = 2 --> student
                 .Calling(c => c.PostTagRelation(expected))
-                .ShouldHave()
-                .DbContext(db => db.WithSet<TagRelation>(relations =>
-                    !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.SourceTagId == expected.SourceId &&
-                        actual.TargetTagId == expected.TargetId &&
-                        actual.Title == expected.Title
-                    )
-                ))
-                .AndAlso()
                 .ShouldReturn()
                 .Forbid();
         }
