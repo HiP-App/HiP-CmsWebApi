@@ -272,6 +272,21 @@ namespace Api.Managers
             return true;
         }
 
+        public bool ChangeTagRelation(RelationFormModel original, RelationFormModel changed)
+        {
+            if (!(DbContext.AnnotationTagInstances.Any(l => l.Id == original.SourceId) &&
+                    DbContext.AnnotationTagInstances.Any(l => l.Id == original.TargetId)))
+                return false;
+
+            var rule = DbContext.AnnotationTagRelations.Single(rel => true);
+            rule.Title = changed.Title;
+            rule.Description = changed.Description;
+            rule.ArrowStyle = changed.ArrowStyle;
+            rule.Color = changed.Color;
+            DbContext.SaveChanges();
+            return true;
+        }
+
         #endregion
 
         #region delete / remove

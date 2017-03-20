@@ -181,7 +181,19 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutTagRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
-            return ServiceUnavailable();
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+                return Forbid();
+
+            try
+            {
+                if (_tagManager.ChangeTagRelation(original, changed))
+                    return Ok();
+                return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest();
+            }
         }
 
         /// <summary>

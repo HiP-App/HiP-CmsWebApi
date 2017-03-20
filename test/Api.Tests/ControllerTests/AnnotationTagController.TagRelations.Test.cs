@@ -677,7 +677,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that have a relation
         /// </summary>
-        // TODO [Test]
+        [Test]
         public void PutTagRelationTest()
         {
             var original = RelationFormModelFromRelation(_relation12);
@@ -689,11 +689,8 @@ namespace Api.Tests.ControllerTests
             };
             var expectedColor = "oldColor";
             _relation12.ArrowStyle = expectedColor;
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
                     .WithSet<TagRelation>(db => db.Add(_relation12))
                 )
@@ -715,15 +712,12 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that do not exist
         /// </summary>
-       // TODO [Test]
+        [Test]
         public void PutTagRelationTest400()
         {
             var model = RelationFormModelFromRelation(_relation12);
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
                 )
                 .Calling(c => c.PutTagRelation(model, model))
@@ -734,14 +728,11 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        // TODO [Test]
+        [Test]
         public void PutTagRelationTest403()
         {
             var model = RelationFormModelFromRelation(_relation12);
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
+            _tester.TestController("2") // --> log in as student
                 .Calling(c => c.PutTagRelation(model, model))
                 .ShouldReturn()
                 .Forbid();
