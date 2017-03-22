@@ -13,9 +13,9 @@ namespace Api.Utility
 
         public static string ProfilePicturePath => AbsolutePath(ProfilePictureFolder);
 
-        public const string AttatchmentFolder = "attatchments";
+        public const string AttachmentFolder = "attatchments";
 
-        public static string AttatchmentPath => AbsolutePath(AttatchmentFolder);
+        public static string AttachmentPath => AbsolutePath(AttachmentFolder);
 
 
         private static string AbsolutePath(string item)

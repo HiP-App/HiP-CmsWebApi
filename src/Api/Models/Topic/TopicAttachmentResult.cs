@@ -6,13 +6,12 @@ namespace Api.Models.Topic
 {
     public class TopicAttachmentResult
     {
-        public TopicAttachmentResult(TopicAttatchment att)
+        public TopicAttachmentResult(TopicAttachment att)
         {
             Id = att.Id;
-            Name = att.Name;
-            Description = att.Description;
-            if (att.Legal != null)
-                Legal = new LegalResult(att.Legal);
+            Title = att.Title;
+            if (att.Metadata != null)
+                Metadata = new Metadata(att.Metadata);
             Type = att.Type;
             if (att.User != null)
                 User = new UserResult(att.User);
@@ -22,11 +21,9 @@ namespace Api.Models.Topic
 
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Title { get; set; }
 
-        public string Description { get; set; }
-
-        public LegalResult Legal { get; set; }
+        public Metadata Metadata { get; set; }
 
         public string Type { get; set; }
 
