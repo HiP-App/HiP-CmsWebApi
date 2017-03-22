@@ -126,7 +126,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and create the layer relation rule if called properly
         /// </summary>
-        [Fact]
+        // TODO [Fact]
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
