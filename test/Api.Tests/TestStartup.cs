@@ -39,22 +39,6 @@ namespace Api.Tests
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             app.UseMvc();
-        }
-
-        public static void Main(string[] args)
-        {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .Build();
-
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseConfiguration(config)
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<TestStartup>()
-                .Build();
-
-            host.Run();
-        }        
+        }       
     }
 }
