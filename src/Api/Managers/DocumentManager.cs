@@ -64,8 +64,8 @@ namespace Api.Managers
                 {
                     if (xmlReader.NodeType != XmlNodeType.Element) continue;
                     if (!xmlReader.HasAttributes) continue;
-                    if (null == xmlReader.GetAttribute("data-tag-model-id")) continue;
-                    if (null == xmlReader.GetAttribute("data-tag-id")) continue;
+                    if (xmlReader.GetAttribute("data-tag-model-id") == null) continue;
+                    if (xmlReader.GetAttribute("data-tag-id") == null) continue;
 
                     var tagModelId = int.Parse(xmlReader.GetAttribute("data-tag-model-id"));
                     var tagInstanceId = int.Parse(xmlReader.GetAttribute("data-tag-id"));
