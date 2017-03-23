@@ -624,7 +624,7 @@ namespace Api.Tests.ControllerTests
                 TargetId = _tag2.Id,
                 Title = "relation-with-nonexisting-tags"
             };
-            _tester.TestController("2") // id = 2 --> student
+            _tester.TestController("student@hipapp.de") // id = 2 --> student
                 .Calling(c => c.PostTagRelation(expected))
                 .ShouldReturn()
                 .Forbid();
@@ -732,7 +732,7 @@ namespace Api.Tests.ControllerTests
         public void PutTagRelationTest403()
         {
             var model = RelationFormModelFromRelation(_relation12);
-            _tester.TestController("2") // --> log in as student
+            _tester.TestController("student@hipapp.de") // --> log in as student
                 .Calling(c => c.PutTagRelation(model, model))
                 .ShouldReturn()
                 .Forbid();

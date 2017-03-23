@@ -1,4 +1,5 @@
-﻿using Api.Models.Entity;
+﻿using System.Security.Claims;
+using Api.Models.Entity;
 using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 
@@ -35,15 +36,15 @@ namespace Api.Tests
 
         /// <summary>
         /// Use this for bootstrapping your tests.
-        /// Adds an admin, student and supervisor user to the database (with IDs 1, 2 and 3 respectively).
+        /// Adds an admin, student and supervisor user to the database.
         /// </summary>
-        /// <param name="userId">The user as whom you want to make the call. Defaults to 1=admin.</param>
+        /// <param name="userIdentity">The identity (i.e. the email address) of the user as whom you want to make the call. Defaults to admin.</param>
         /// <returns>An instance of IAndControllerBuilder, i.e. you can chain MyTested test method calls to the return value.</returns>
-        public IAndControllerBuilder<T> TestController(string userId = "1")
+        public IAndControllerBuilder<T> TestController(string userIdentity = "admin@hipapp.de")
         {
             return MyMvc
                 .Controller<T>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", userId))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.AddRange(_admin, _student, _supervisor))
                 );
