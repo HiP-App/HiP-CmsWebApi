@@ -125,7 +125,7 @@ namespace Api.Controllers
                     return Ok();
                 return BadRequest();
             }
-            catch (InvalidOperationException exc)
+            catch (InvalidOperationException)
             {
                 return BadRequest();
             }

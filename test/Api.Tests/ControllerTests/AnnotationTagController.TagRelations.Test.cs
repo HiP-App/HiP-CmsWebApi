@@ -144,7 +144,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and create the layer relation rule if called properly
         /// </summary>
-        // TODO [Fact]
+       [Fact]
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
@@ -261,10 +261,10 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly for an existing tag with relations
         /// </summary>
-        // TODO [Fact]
+       [Fact]
         public void GetRelationsForIdWithOneExistingRelationTest()
         {
-            var expected = new List<AnnotationTagInstanceRelation>() { _relation12 };
+            var expected = new List<RelationResult>() { new RelationResult(_relation12) };
             _tester.TestController()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -273,18 +273,18 @@ namespace Api.Tests.ControllerTests
                 .Calling(c => c.GetRelationsForId(_tag1.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagInstanceRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         /// <summary>
         /// Relations are uni-directional i.e. tag2 (the tag with the INCOMING relation, but no outgoing relations) should have no relations
         /// </summary>
-        // TODO [Fact]
+       [Fact]
         public void GetRelationsForIdUniDirectionalTest()
         {
             // ReSharper disable once CollectionNeverUpdated.Local
-            var expected = new List<AnnotationTagInstanceRelation>();
+            var expected = new List<RelationResult>();
             _tester.TestController()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
@@ -293,20 +293,8 @@ namespace Api.Tests.ControllerTests
                 .Calling(c => c.GetRelationsForId(_tag2.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagInstanceRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
-        }
-
-        /// <summary>
-        /// Should return 400 for negative maxDepth values
-        /// </summary>
-        // TODO [Fact]
-        public void GetRelationsForIdTest400()
-        {
-            _tester.TestController()
-                .Calling(c => c.GetRelationsForId(1))
-                .ShouldReturn()
-                .BadRequest();
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         #endregion
@@ -398,7 +386,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
         /// </summary>
-        // TODO [Fact]
+       // TODO [Fact]
         public void GetAvailableRelationsForIdTest_NoRelations()
         {
             var expected = new List<AnnotationTagInstanceRelation>() { };
@@ -426,7 +414,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-        // TODO  [Fact]
+        [Fact]
         public void GetAvailableRelationsForIdTest400()
         {
             _tester.TestController()
