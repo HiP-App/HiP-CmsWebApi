@@ -120,6 +120,7 @@ namespace Api.Managers
             {
                 var existing = DbContext.TopicAttachmentMetadata.Single(tam => tam.TopicAttachmentId == attachmentId);
                 DbContext.TopicAttachmentMetadata.Remove(existing);
+                DbContext.SaveChanges();
             }
             catch (InvalidOperationException)
             {
@@ -127,6 +128,8 @@ namespace Api.Managers
             }
             // Add new
             var newMetadata = new TopicAttachmentMetadata(attachmentId, metadata);
+            var attachment = DbContext.TopicAttachments.Single(t => t.Id == attachmentId);
+            attachment.Title = metadata.Title;
 
             DbContext.Add(newMetadata);
             DbContext.SaveChanges();

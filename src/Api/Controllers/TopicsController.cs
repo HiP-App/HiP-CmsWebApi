@@ -74,13 +74,15 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="topicId">Represents the user Id of the user</param>        
         /// <response code="200">Returns the topic {topicId}</response>        
-        /// <response code="401">User is denied</response>
+        /// <response code="404">Topic not Found</response>
+        [ProducesResponseType(typeof(TopicResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         [HttpGet("{topicId}")]
         public IActionResult Get([FromRoute]int topicId)
         {
             try
             {
-                return Ok(_topicManager.GetTopicById(topicId));
+                return Ok(new TopicResult(_topicManager.GetTopicById(topicId)));
             }
             catch (InvalidOperationException)
             {

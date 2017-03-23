@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Api.Models.Entity;
 
 namespace Api.Models.Topic
@@ -32,6 +33,9 @@ namespace Api.Models.Topic
             DetailedPosition = metadata.DetailedPosition;
         }
         public Metadata() { }
+
+        [Required]
+        public string Title { get; set; }
 
         public string Details { get; set; }
         public string Type { get; set; }

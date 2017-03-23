@@ -99,7 +99,8 @@ namespace Api
             });
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("../v1/swagger.json", "HiPCMS API V1");
+                // Only a hack, if HiP-Swagger is running, SwaggerUI can be disabled for Production
+                c.SwaggerEndpoint((env.IsDevelopment() ? "/swagger" : "..") + "/v1/swagger.json", "HiPCMS API V1");
             });
 
             // Run all pending Migrations and Seed DB with initial data
