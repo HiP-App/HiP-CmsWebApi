@@ -4,7 +4,7 @@ using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using Api.Utility;
 using Microsoft.AspNetCore.Mvc;
-using Layer = Api.Models.Entity.Annotation.Layer;
+(??)
 
 namespace Api.Controllers
 {
@@ -49,7 +49,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult PostLayerRelationRule([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
@@ -80,7 +80,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PutLayerRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
@@ -109,7 +109,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try

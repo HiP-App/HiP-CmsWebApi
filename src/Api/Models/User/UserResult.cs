@@ -4,14 +4,14 @@
     {
         public UserResult(Entity.User user)
         {
-            Id = user.Id;
+            Identity = user.Email; // TODO replace with 'identity'
             Email = user.Email;
             FirstName = user.FirstName;
             LastName = user.LastName;
             Role = user.Role;
             if (user.StudentDetails != null)
             {
-                StudentDetails = new StudentDetails()
+                StudentDetails = new StudentDetailsResult()
                 {
                     Discipline = user.StudentDetails.Discipline,
                     CurrentDegree = user.StudentDetails.CurrentDegree,
@@ -20,7 +20,7 @@
             }
         }
 
-        public int Id { get; set; }
+        public string Identity { get; set; }
         
         public string Email { get; set; }
 
@@ -30,7 +30,7 @@
 
         public string Role { get; set; }
 
-        public StudentDetails StudentDetails { get; set; }
+        public StudentDetailsResult StudentDetails { get; set; }
 
     public string FullName
         {
@@ -38,7 +38,7 @@
         }
     }
 
-    public class StudentDetails
+    public class StudentDetailsResult
     {
         public string Discipline { get; set; }
 

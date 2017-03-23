@@ -20,8 +20,6 @@ namespace Api.Controllers
             _attachmentsManager = new AttachmentsManager(DbContext);
         }
 
-        #region Attachments
-
         // GET api/topics/:id/attachments
 
         /// <summary>
@@ -38,7 +36,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachments([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             var attachments = _attachmentsManager.GetAttachments(topicId);
@@ -64,13 +62,13 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             try
             {
                 var attachment = _attachmentsManager.GetAttachmentById(attachmentId);
-                string fileName = Path.Combine(Constants.AttatchmentFolder, topicId.ToString(), attachment.Path);
+                string fileName = Path.Combine(Constants.AttachmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
                 return Ok(new StringWrapper() { Value = hash });
             }
@@ -95,15 +93,15 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttatchmentFormModel model)
+        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttachmentFormModel model)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserId(), model);
+            var result = _attachmentsManager.CreateAttachment(topicId, User.Identity.GetUserIdentity(), model);
 
             if (result.Success)
                 return Ok(result);
@@ -131,7 +129,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 500)]
         public IActionResult PutAttachment([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (file == null)
@@ -140,7 +138,7 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserId(), file);
+            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserIdentity(), file);
 
             if (result.Success)
                 return Ok(result);
@@ -164,72 +162,12 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (_attachmentsManager.DeleteAttachment(topicId, attachmentId))
                 return Ok();
             return NotFound();
         }
-
-        #endregion
-
-        #region Legal
-
-        /// <summary>
-        /// Add an attachment to the topic {topicId}
-        /// </summary>        
-        /// <param name="topicId">the Id of the Topic {topicId}</param>                
-        /// <param name="attachmentId">The Id of the attachment</param>                  
-        /// <param name="legalModel">The Legal</param>                
-        /// <response code="200">Added Legal successfully</response>        
-        /// <response code="403">User not allowed to add topic attachment</response>             
-        /// <response code="401">User is denied</response>
-        /// <response code="500">Internal server error</response>    
-        [HttpPost("{topicId}/Attachments/{attachmentId}/Legal")]
-        [ProducesResponseType(typeof(EntityResult), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostLegal([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]LegalFormModel legalModel)
-        {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Forbidden();
-
-            if (ModelState.IsValid)
-            {
-                var result = _attachmentsManager.CreateLegal(topicId, attachmentId, User.Identity.GetUserId(), legalModel);
-                if (result.Success)
-                    return Ok(result);
-                return InternalServerError(result);
-            }
-
-            return BadRequest(ModelState);
-        }
-
-        /// <summary>
-        /// Delete the Legal {attachmentId} in the attachment {topicId}
-        /// </summary>        
-        /// <param name="topicId">the Id of the Topic {topicId}</param>                
-        /// <param name="attachmentId">The Id of the attachment</param>                
-        /// <response code="200">Attachment {attachmentId} deleted successfully</response>           
-        /// <response code="403">User not allowed to delete topic attachment</response>                
-        /// <response code="401">User is denied</response>
-        [HttpDelete("{topicId}/Attachments/{attachmentId}/Legal")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteLegal([FromRoute]int topicId, [FromRoute]int attachmentId)
-        {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
-                return Forbidden();
-
-            if (_attachmentsManager.DeleteLegal(topicId, attachmentId))
-                return Ok();
-            return NotFound();
-        }
-
-        #endregion
-
     }
 }

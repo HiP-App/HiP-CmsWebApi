@@ -8,8 +8,8 @@ using Api.Data;
 namespace Api.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    [Migration("20161219171047_subscribe-notifications")]
-    partial class subscribenotifications
+    [Migration("20170310205705_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -17,7 +17,7 @@ namespace Api.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
 
-            modelBuilder.Entity("Api.Models.Entity.AnnotationTag", b =>
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -41,13 +41,100 @@ namespace Api.Migrations
 
                     b.Property<string>("Style");
 
-                    b.Property<int>("UsageCounter");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ParentTagId");
 
                     b.ToTable("AnnotationTags");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("DocumentId");
+
+                    b.Property<int>("IdInDocument");
+
+                    b.Property<int>("PositionInDocument");
+
+                    b.Property<int>("TagModelId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId");
+
+                    b.HasIndex("TagModelId");
+
+                    b.ToTable("AnnotationTagInstances");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
+                {
+                    b.Property<int>("FirstTagId");
+
+                    b.Property<int>("SecondTagId");
+
+                    b.Property<string>("ArrowStyle");
+
+                    b.Property<string>("Color");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("Id");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("FirstTagId", "SecondTagId");
+
+                    b.HasAlternateKey("Id");
+
+                    b.HasIndex("SecondTagId");
+
+                    b.ToTable("AnnotationTagRelations");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.Layer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Layers");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ArrowStyle");
+
+                    b.Property<string>("Color");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("SourceLayerId");
+
+                    b.Property<int>("TargetLayerId");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceLayerId");
+
+                    b.HasIndex("TargetLayerId");
+
+                    b.ToTable("LayerRelationRules");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
@@ -61,6 +148,51 @@ namespace Api.Migrations
                     b.HasIndex("ChildTopicId");
 
                     b.ToTable("AssociatedTopics");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Document", b =>
+                {
+                    b.Property<int>("TopicId");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(65536);
+
+                    b.Property<DateTime>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("UpdaterId");
+
+                    b.HasKey("TopicId");
+
+                    b.HasIndex("UpdaterId");
+
+                    b.ToTable("Documents");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Legal", b =>
+                {
+                    b.Property<int>("TopicAttatchmentId");
+
+                    b.Property<string>("Author");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("PublicationType");
+
+                    b.Property<string>("PublishedDate");
+
+                    b.Property<string>("Source");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("TopicAttatchmentId");
+
+                    b.ToTable("Legals");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Notification", b =>
@@ -95,6 +227,21 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<string>("CurrentDegree");
+
+                    b.Property<short>("CurrentSemester");
+
+                    b.Property<string>("Discipline");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("StudentDetails");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
@@ -154,8 +301,6 @@ namespace Api.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Legal");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -178,6 +323,25 @@ namespace Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("TopicAttatchments");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.TopicReview", b =>
+                {
+                    b.Property<int>("TopicId");
+
+                    b.Property<int>("ReviewerId");
+
+                    b.Property<string>("Status");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("TopicId", "ReviewerId");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.ToTable("TopicReviews");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
@@ -220,12 +384,51 @@ namespace Api.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.AnnotationTag", b =>
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTag", b =>
                 {
-                    b.HasOne("Api.Models.Entity.AnnotationTag", "ParentTag")
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "ParentTag")
                         .WithMany("ChildTags")
                         .HasForeignKey("ParentTagId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Document", "Document")
+                        .WithMany("TagsInstances")
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TagModel")
+                        .WithMany("TagInstances")
+                        .HasForeignKey("TagModelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "FirstTag")
+                        .WithMany("TagRelations")
+                        .HasForeignKey("FirstTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "SecondTag")
+                        .WithMany("IncomingRelations")
+                        .HasForeignKey("SecondTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Annotation.Layer", "SourceLayer")
+                        .WithMany("Relations")
+                        .HasForeignKey("SourceLayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Annotation.Layer", "TargetLayer")
+                        .WithMany("IncomingRelations")
+                        .HasForeignKey("TargetLayerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
@@ -238,6 +441,27 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.Topic", "ParentTopic")
                         .WithMany("AssociatedTopics")
                         .HasForeignKey("ParentTopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Document", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                        .WithOne("Document")
+                        .HasForeignKey("Api.Models.Entity.Document", "TopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.User", "Updater")
+                        .WithMany("Documents")
+                        .HasForeignKey("UpdaterId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Legal", b =>
+                {
+                    b.HasOne("Api.Models.Entity.TopicAttatchment", "TopicAttatchment")
+                        .WithOne("Legal")
+                        .HasForeignKey("Api.Models.Entity.Legal", "TopicAttatchmentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -256,6 +480,14 @@ namespace Api.Migrations
                     b.HasOne("Api.Models.Entity.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+                {
+                    b.HasOne("Api.Models.Entity.User", "User")
+                        .WithOne("StudentDetails")
+                        .HasForeignKey("Api.Models.Entity.StudentDetails", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -286,6 +518,19 @@ namespace Api.Migrations
                         .WithMany("Attatchments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.TopicReview", b =>
+                {
+                    b.HasOne("Api.Models.Entity.User", "Reviewer")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                        .WithMany("Reviews")
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>

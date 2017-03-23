@@ -2,9 +2,10 @@
 
 namespace Api.Models
 {
-    public class AdminUserFormModel : UserFormModel
+    public class AttachmentFormModel
     {
         [Required]
-        public string Role { get; set; }
+        public string Title { get; set; }
+
     }
 }

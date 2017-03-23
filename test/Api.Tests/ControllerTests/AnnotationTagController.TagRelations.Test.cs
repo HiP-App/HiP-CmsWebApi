@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Api.Controllers;
 using Api.Models.Entity;
 using Api.Models.AnnotationTag;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
-using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
-using NUnit.Framework;
-using Layer = Api.Models.Entity.Annotation.Layer;
+using Xunit;
+using System.Security.Claims;
+// TODO fix ReSharper
+// ReSharper disable AccessToModifiedClosure
+// ReSharper disable UnusedVariable
+// ReSharper disable CollectionNeverUpdated.Local
 
 namespace Api.Tests.ControllerTests
 {
-    [TestFixture]
     public class AnnotationTagRelationsControllerTest
     {
         private ControllerTester<AnnotationController> _tester;
@@ -37,8 +38,7 @@ namespace Api.Tests.ControllerTests
         private Layer _layer1;
         private LayerRelationRule _layerRelationRule;
 
-        [SetUp]
-        public void BeforeTest()
+		public AnnotationTagRelationsControllerTest()
         {
             _tester = new ControllerTester<AnnotationController>();
             // create some User, Tag and TagRelation objects for mocking the database
@@ -109,7 +109,7 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and a list of all layer relation rules if called properly.
         /// Layer Relations can have a title, description, color and arrow-style.
         /// </summary>
-        [Test]
+        [Fact]
         public void GetLayerRelationRulesTest()
         {
             var myRelation = new LayerRelationRule()
@@ -143,7 +143,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and create the layer relation rule if called properly
         /// </summary>
-        [Test]
+        // TODO [Fact]
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
@@ -156,9 +156,8 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", _supervisor.Id.ToString()))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_supervisor))
                     .WithSet<Layer>(db => db.AddRange(_layerRelationRule.SourceLayer, _layerRelationRule.TargetLayer))
                 )
                 .Calling(c => c.PostLayerRelationRule(model))
@@ -180,7 +179,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 403 if a student tries to create layer relation rules
         /// </summary>
-        [Test]
+        [Fact]
         public void PostLayerRelationRuleTest403()
         {
             var expected = _layerRelationRule;
@@ -193,7 +192,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", _student.Id.ToString()))
+                  .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _student.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_student))
                     .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
@@ -215,7 +214,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly
         /// </summary>
-        [Test]
+        [Fact]
         public void GetRelationsTest()
         {
             var expected = new List<RelationResult>() { new RelationResult(_relation12) };
@@ -231,7 +230,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list if no relations are present
         /// </summary>
-        [Test]
+        [Fact]
         public void GetRelationsTest_EmptyList()
         {
             _tester.TestController()
@@ -249,7 +248,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if called for an existing tag that has no relations
         /// </summary>
-        [Test]
+        [Fact]
         public void GetRelationsForIdWithNoExistingRelationsTest()
         {
             _tester.TestController()
@@ -266,13 +265,13 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly for an existing tag with relations
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdWithOneExistingRelationTest()
         {
             var expected = new List<TagRelation>() { _relation12 };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
@@ -288,14 +287,14 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Relations are uni-directional i.e. tag2 (the tag with the INCOMING relation, but no outgoing relations) should have no relations
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdUniDirectionalTest()
         {
             // ReSharper disable once CollectionNeverUpdated.Local
             var expected = new List<TagRelation>();
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
@@ -311,12 +310,12 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for negative maxDepth values
         /// </summary>
-        // TODO [Test]
+        // TODO [Fact]
         public void GetRelationsForIdTest400()
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetRelationsForId(1))
                 .ShouldReturn()
                 .BadRequest();
@@ -330,13 +329,13 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly.
         /// Duplicate relations are also allowed --> tag2 is also expected to be in the returned list
         /// </summary>
-        [Test]
+        [Fact]
         public void GetAllowedRelationRulesForTagTest()
         {
             var expected = new List<Tag>() { _tag2, _tag4 };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -354,13 +353,13 @@ namespace Api.Tests.ControllerTests
         /// Should return code 200 and an empty list tags if there are no relations possible because
         /// the top-level tags do not have a layer relation rule defined
         /// </summary>
-        [Test]
+        [Fact]
         public void GetAllowedRelationRulesForTagTest_NoToplevelRelation()
         {
             var expected = new List<Tag>();
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -378,12 +377,12 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-       [Test]
+       [Fact]
         public void GetAllowedRelationRulesForTagTest400()
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag1.Id))
                 .ShouldReturn()
                 .BadRequest();
@@ -396,7 +395,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations that are available for the given tag instance
         /// </summary>
-        [Test]
+        [Fact]
         public void GetAvailableRelationsForIdTest()
         {
             var tagInstance5 = new TagInstance(new Tag() { Id = 5 }) {Id = 5};
@@ -419,7 +418,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
         /// </summary>
-       // TODO [Test]
+        // TODO [Fact]
         public void GetAvailableRelationsForIdTest_NoRelations()
         {
             var expected = new List<TagRelation>() { };
@@ -433,7 +432,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
@@ -450,12 +449,12 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-      // TODO  [Test]
+        // TODO  [Fact]
         public void GetAvailableRelationsForIdTest400()
         {
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .Calling(c => c.GetAllowedRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
                 .BadRequest();
@@ -468,7 +467,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationTest()
         {
             var expected = new RelationFormModel()
@@ -502,7 +501,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that are not allowed (child tag to top-level tag)
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationTest_NoChildToFirstLevelRelation()
         {
             var expected = new RelationFormModel()
@@ -556,7 +555,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for duplicate tag relations
         /// </summary>
-      [Test]
+        [Fact]
         public void PostTagRelationTest_NoDuplicateRelations()
         {
             var expected = new RelationFormModel()
@@ -587,7 +586,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for tags that do not exist
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationTest400()
         {
             var expected = new RelationFormModel()
@@ -615,7 +614,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationTest403()
         {
             var expected = new RelationFormModel()
@@ -637,7 +636,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
         /// </summary>
-        [Test]
+        [Fact]
         public void PostTagRelationRuleTest()
         {
             var expected = new RelationFormModel()
@@ -677,7 +676,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that have a relation
         /// </summary>
-        [Test]
+        [Fact]
         public void PutTagRelationTest()
         {
             var original = RelationFormModelFromRelation(_relation12);
@@ -712,7 +711,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that do not exist
         /// </summary>
-        [Test]
+        [Fact]
         public void PutTagRelationTest400()
         {
             var model = RelationFormModelFromRelation(_relation12);
@@ -728,7 +727,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        [Test]
+        [Fact]
         public void PutTagRelationTest403()
         {
             var model = RelationFormModelFromRelation(_relation12);
@@ -745,7 +744,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with a RelationFormModel describing an existing TagRelationRule
         /// </summary>
-        [Test]
+        [Fact]
         public void PutTagRelationRuleTest()
         {
             var original = RelationFormModelFromRelationRule(_relationRule12);
@@ -783,7 +782,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called for an existing TagRelation
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationTest()
         {
             var model = new RelationFormModel()
@@ -793,7 +792,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
@@ -812,7 +811,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that do not exist
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationTest400()
         {
             var model = new RelationFormModel()
@@ -822,7 +821,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(_admin))
                     .WithSet<Tag>(db => db.AddRange(_tag1, _tag2))
@@ -836,7 +835,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationTest403()
         {
             var model = new RelationFormModel()
@@ -846,7 +845,7 @@ namespace Api.Tests.ControllerTests
             };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "2"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
                 .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
                 .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
@@ -861,7 +860,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with the RelationFormModel describing an existing TagRelationRule
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteTagRelationRuleTest()
         {
             var original = RelationFormModelFromRelationRule(_relationRule12);

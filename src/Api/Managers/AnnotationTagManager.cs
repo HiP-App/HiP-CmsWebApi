@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+(??)
 using Api.Models.Entity.Annotation;
-using Layer = Api.Models.Entity.Annotation.Layer;
+(??)
 
 namespace Api.Managers
 {
@@ -28,6 +28,7 @@ namespace Api.Managers
         {
             return DbContext
                 .AnnotationTags
+                .Include(t => t.TagInstances)
                 .Where(t => !includeOnlyRoot || t.ParentTag == null)
                 .Where(t => includeDeleted || !t.IsDeleted)
                 .ToList()
@@ -55,11 +56,11 @@ namespace Api.Managers
             return DbContext.LayerRelationRules.ToList();
         }
 
-        public IEnumerable<Tag> GetAllowedRelationRuleTargetsForTag(int tagId)
+        public IEnumerable<AnnotationTag> GetAllowedRelationRulesForTag(int tagId)
         {
             var tag = DbContext.AnnotationTags.Single(t => t.Id == tagId);
             var rules = DbContext.LayerRelationRules.Where(r => r.SourceLayer.Name == tag.Layer);
-            var tags = new List<Tag>();
+            var tags = new List<AnnotationTag>();
             // add all tags that rules are allowed to
             foreach (var relationRule in rules)
             {

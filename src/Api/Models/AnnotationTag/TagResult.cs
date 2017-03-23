@@ -11,7 +11,7 @@
             Style = tag.Style;
             Description = tag.Description;
             IsDeleted = tag.IsDeleted;
-            UsageCount = tag.UsageCounter;
+            UsageCount = tag.UsageCounter();
 
         }
 

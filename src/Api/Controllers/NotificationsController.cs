@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Api.Managers;
 using System.Collections.Generic;
+using System.Linq;
 using Api.Models.Notifications;
 
 namespace Api.Controllers
@@ -54,7 +55,7 @@ namespace Api.Controllers
 
         private IActionResult GetNotifications([FromQuery]bool onlyUnread)
         {
-            var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserId(), onlyUnread);
+            var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserIdentity(), onlyUnread);
 
             if (notifications != null)
                 return Ok(notifications);
@@ -73,7 +74,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(int), 200)]
         public IActionResult GetNotificationCount()
         {
-            return Ok(_notificationManager.GetNotificationCount(User.Identity.GetUserId()));
+            return Ok(_notificationManager.GetNotificationCount(User.Identity.GetUserIdentity()));
         }
 
         // GET api/Notifications/Subscriptions
@@ -84,10 +85,24 @@ namespace Api.Controllers
         /// <response code="200">Returns a list of subscriptions for the current user</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("Subscriptions")]
-        [ProducesResponseType(typeof(IEnumerable<NotificationResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetSubscriptions()
         {
-            return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserId()));
+            return Ok(_notificationManager.GetSubscriptions(User.Identity.GetUserIdentity()));
+        }
+
+        // GET api/Notifications/Types
+
+        /// <summary>
+        /// Get all Notification Types
+        /// </summary>
+        /// <response code="200">Returns a list of subscriptions types</response>  
+        [HttpGet("Types")]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
+        public IActionResult GetNotificationsTypes()
+        {
+            var result = (from object type in Enum.GetValues(typeof(NotificationType)) select Enum.GetName(typeof(NotificationType), type)).ToList();
+            return Ok(result);
         }
 
         #endregion
@@ -151,7 +166,7 @@ namespace Api.Controllers
             NotificationType type;
             if (Enum.TryParse(notificationType, out type))
             {
-                if (_notificationManager.SetSubscription(User.Identity.GetUserId(), type, subscribe))
+                if (_notificationManager.SetSubscription(User.Identity.GetUserIdentity(), type, subscribe))
                 {
                     return Ok();
                 }

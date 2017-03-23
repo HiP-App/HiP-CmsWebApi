@@ -80,6 +80,7 @@ namespace Api.Controllers
         /// Get all tag relations that are available for the tag instance identified by the given id.
         /// These depend on the configured tag relation rules.
         /// The relations are ordered descending by relevance.
+(??)
         /// </summary>
         /// <param name="tagInstanceId">The Id of the tag instance that you want the allowed relations for</param>
         /// <response code="200">Returns a list of tag instances</response>
@@ -117,7 +118,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult PostTagRelation([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
@@ -244,9 +245,8 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult DeleteTagRelation([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
-
             try
             {
                 if (_tagManager.RemoveTagRelation(model)) return Ok();

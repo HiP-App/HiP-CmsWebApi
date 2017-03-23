@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using Api.Controllers;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
-using NUnit.Framework;
+using Xunit;
 
 namespace Api.Tests.ControllerTests
 {
-    [TestFixture]
     public class AnnotationTagControllerTest
     {
         #region GetLayers
@@ -14,14 +14,14 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag layers if called properly
         /// </summary>
-        [Test]
+        [Fact]
         public void GetLayersTest()
         {
             var layer = new Layer() { Name = "Time" };
             var expected = new HashSet<Layer>() { layer };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1"))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de"))
                 .WithDbContext(dbContext => dbContext.WithSet<Layer>(db => db.Add(layer)))
                 .Calling(c => c.GetAllLayers())
                 .ShouldReturn()

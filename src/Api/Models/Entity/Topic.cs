@@ -41,9 +41,11 @@ namespace Api.Models.Entity
 
         public List<AssociatedTopic> ParentTopics { get; set; }
 
-        public List<TopicAttatchment> Attatchments { get; set; }
+        public List<TopicAttachment> Attachments { get; set; }
 
         public virtual Document Document { get; set; }
+
+        public List<TopicReview> Reviews { get; set; }
 
         public Topic(TopicFormModel model)
         {

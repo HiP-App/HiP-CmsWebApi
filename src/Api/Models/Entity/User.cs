@@ -25,7 +25,7 @@ namespace Api.Models.Entity
 
         public string ProfilePicture { get; set; }
 
-        public List<TopicAttatchment> Attatchments { get; set; }
+        public List<TopicAttachment> Attachments { get; set; }
 
         public List<TopicUser> TopicUsers { get; set; }
 
@@ -38,6 +38,8 @@ namespace Api.Models.Entity
         public List<Subscription> Subscriptions { get; set; }
 
         public virtual StudentDetails StudentDetails { get; set; }
+
+        public List<TopicReview> Reviews { get; set; }
 
         #region Utility Methods
 

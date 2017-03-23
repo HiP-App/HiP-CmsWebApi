@@ -6,25 +6,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Api.Models.Entity
 {
-    public class TopicAttatchment
+    public class TopicAttachment
     {
-        public TopicAttatchment(AttatchmentFormModel model)
+        public TopicAttachment(AttachmentFormModel model)
         {
-            Name = model.AttatchmentName;
-            Description = model.Description;
+            Title = model.Title;
         }
+
+        public TopicAttachment() { }
 
         [Key]
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; }
+        public string Title { get; set; }
 
         public string Path { get; set; }
 
-        public string Description { get; set; }
-
-        public Legal Legal { get; set; }
+        public TopicAttachmentMetadata Metadata { get; set; }
 
         public string Type { get; set; }
 
@@ -38,18 +37,16 @@ namespace Api.Models.Entity
 
         public DateTime UpdatedAt { get; set; }
 
-        public TopicAttatchment() { }
-
     }
 
-    public class TopicAttatchmentMap
+    public class TopicAttachmentMap
     {
-        public TopicAttatchmentMap(EntityTypeBuilder<TopicAttatchment> entityBuilder)
+        public TopicAttachmentMap(EntityTypeBuilder<TopicAttachment> entityBuilder)
         {
             entityBuilder.Property(t => t.UpdatedAt).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            entityBuilder.HasOne(ta => ta.Topic).WithMany(t => t.Attatchments).HasForeignKey(at => at.TopicId);
-            entityBuilder.HasOne(ta => ta.User).WithMany(u => u.Attatchments).HasForeignKey(at => at.UserId).OnDelete(DeleteBehavior.SetNull);
+            entityBuilder.HasOne(ta => ta.Topic).WithMany(t => t.Attachments).HasForeignKey(at => at.TopicId);
+            entityBuilder.HasOne(ta => ta.User).WithMany(u => u.Attachments).HasForeignKey(at => at.UserId).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

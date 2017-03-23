@@ -15,12 +15,12 @@ namespace Api.Permission
             _userManager = new UserManager(dbContext);
         }
 
-        private bool IsAdminOrSupervisor(int userId)
+        private bool IsAdminOrSupervisor(string identity)
         {
             bool allowed;
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity);
                 allowed = user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
@@ -30,19 +30,19 @@ namespace Api.Permission
             return allowed;
         }
 
-        public bool IsAllowedToEditTags(int userId)
+        public bool IsAllowedToEditTags(string identity)
         {
-            return IsAdminOrSupervisor(userId);
+            return IsAdminOrSupervisor(identity);
         }
 
-        public bool IsAllowedToCreateTags(int userId)
+        public bool IsAllowedToCreateTags(string identity)
         {
-            return IsAdminOrSupervisor(userId);
+            return IsAdminOrSupervisor(identity);
         }
 
-        public bool IsAllowedToCreateRelationRules(int userId)
+        public bool IsAllowedToCreateRelationRules(string identity)
         {
-            return IsAdminOrSupervisor(userId);
+            return IsAdminOrSupervisor(identity);
         }
 
     }

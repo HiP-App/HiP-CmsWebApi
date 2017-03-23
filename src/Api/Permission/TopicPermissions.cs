@@ -3,11 +3,13 @@ using Api.Managers;
 using Api.Models;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Permission
 {
     public class TopicPermissions : BaseManager
     {
+        // TODO change User.Email to the Identity if changed!
         private readonly UserManager _userManager;
 
 
@@ -17,47 +19,47 @@ namespace Api.Permission
         }
 
 
-        public bool IsAllowedToEdit(int userId, int topicId)
+        public bool IsAllowedToEdit(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
-                if (DbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
+                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
                     return true;
                 // Supervisor?
-                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId && tu.Role == Role.Supervisor)))
+                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Supervisor)))
                     return true;
             }
             catch (InvalidOperationException) { }
             return false;
         }
 
-        public bool IsAssociatedTo(int userId, int topicId)
+        public bool IsAssociatedTo(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
-                if (DbContext.Topics.Any(t => (t.Id == topicId && t.CreatedById == userId)))
+                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
                     return true;
                 // Is associated
-                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == userId)))
+                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id)))
                     return true;
             }
             catch (InvalidOperationException) { }
             return false;
         }
 
-        public bool IsAllowedToCreate(int userId)
+        public bool IsAllowedToCreate(string identity)
         {
             try
             {
-                var user = _userManager.GetUserById(userId);
+                var user = _userManager.GetUserByIdentity(identity);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
@@ -66,5 +68,16 @@ namespace Api.Permission
             }
         }
 
+        public bool IsReviewer(string identity, int topicId)
+        {
+            try
+            {
+                var user = _userManager.GetUserByIdentity(identity);
+                if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
+                    return true;
+            }
+            catch (InvalidOperationException) { }
+            return false;
+        }
     }
 }

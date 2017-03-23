@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Api.Utility;
@@ -22,6 +23,7 @@ namespace Api.Controllers
             _topicPermissions = new TopicPermissions(dbContext);
             TopicsAttachmentsController();
             TopicsDocumentController();
+            TopicsAnalyticsController();
         }
 
         #region GET topics
@@ -47,37 +49,21 @@ namespace Api.Controllers
             return Ok(topics);
         }
 
-        // GET api/topics/OfUser/Current
+        // GET api/topics/OfUser
 
         /// <summary>
         /// All topics of the current user
         /// </summary>
+        /// <param name="identity">Represents the user Identity of the user</param>
         /// <param name="page">Represents the page</param>
         /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
         /// <response code="401">User is denied</response>
-        [HttpGet("OfUser/Current")]
+        [HttpGet("OfUser")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
+        public IActionResult GetTopicsForUser([FromQuery]string identity, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
-            return GetTopicsForUser(User.Identity.GetUserId(), page, pageSize);
-        }
-
-        // GET api/topics/OfUser/:userId
-
-        /// <summary>
-        /// All topics of the user {userId}
-        /// </summary>
-        /// <param name="userId">Represents the user Id of the user</param>
-        /// <param name="page">Represents the page</param>
-        /// <param name="pageSize">Size of the requested page</param>
-        /// <response code="200">Returns PagedResults of TopicResults</response>        
-        /// <response code="401">User is denied</response>
-        [HttpGet("OfUser/{userId}")]
-        [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromRoute]int userId, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
-        {
-            var topics = _topicManager.GetTopicsForUser(userId, page, pageSize);
+            var topics = _topicManager.GetTopicsForUser(identity ?? User.Identity.GetUserIdentity(), page, pageSize);
             return Ok(topics);
         }
 
@@ -88,13 +74,15 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="topicId">Represents the user Id of the user</param>        
         /// <response code="200">Returns the topic {topicId}</response>        
-        /// <response code="401">User is denied</response>
+        /// <response code="404">Topic not Found</response>
+        [ProducesResponseType(typeof(TopicResult), 200)]
+        [ProducesResponseType(typeof(void), 404)]
         [HttpGet("{topicId}")]
         public IActionResult Get([FromRoute]int topicId)
         {
             try
             {
-                return Ok(_topicManager.GetTopicById(topicId));
+                return Ok(new TopicResult(_topicManager.GetTopicById(topicId)));
             }
             catch (InvalidOperationException)
             {
@@ -121,7 +109,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Post([FromBody]TopicFormModel model)
         {
-            if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserId()))
+            if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdentity()))
                 return Forbidden();
 
             if (ModelState.IsValid)
@@ -132,7 +120,7 @@ namespace Api.Controllers
                 }
                 else
                 {
-                    var result = _topicManager.AddTopic(User.Identity.GetUserId(), model);
+                    var result = _topicManager.AddTopic(User.Identity.GetUserIdentity(), model);
                     if (result.Success)
                         return Ok(result);
                 }
@@ -158,14 +146,14 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Put([FromRoute]int topicId, [FromBody] TopicFormModel model)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (!ModelState.IsValid)
-                return BadRequest(ModelState); 
-            
+                return BadRequest(ModelState);
+
             // TODO createUser is Supervisor!
-            if (_topicManager.UpdateTopic(User.Identity.GetUserId(), topicId, model))
+            if (_topicManager.UpdateTopic(User.Identity.GetUserIdentity(), topicId, model))
                 return Ok();
             return BadRequest(ModelState);
         }
@@ -181,20 +169,30 @@ namespace Api.Controllers
         /// <response code="404">Resource not found</response>        
         /// <response code="403">User not allowed to change topic status</response>        
         /// <response code="401">User is denied</response>
+        /// <response code="409">If some reviews are unfinnished</response>
         [HttpPut("{topicId}/Status")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult ChangeStatus([FromRoute]int topicId, [FromBody]TopicStatus topicStatus)
+        [ProducesResponseType(typeof(void), 409)]
+        public IActionResult ChangeStatus([FromRoute] int topicId, [FromBody] TopicStatus topicStatus)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
-            if (!topicStatus.IsStatusValid())
-                ModelState.AddModelError("status", "Invalid Status");
-            else if (_topicManager.ChangeTopicStatus(User.Identity.GetUserId(), topicId, topicStatus.Status))
-                return Ok();
+            if (!_topicManager.IsValidTopicId(topicId))
+                return NotFound();
 
+            if (!topicStatus.IsStatusValid())
+            {
+                ModelState.AddModelError("status", "Invalid Status");
+                return BadRequest(ModelState);
+            }
+            if (topicStatus.IsDone() &&_topicManager.GetReviews(topicId).Any(r => !r.Status.IsReviewed()))
+                    return Conflict();
+
+            if (_topicManager.ChangeTopicStatus(User.Identity.GetUserIdentity(), topicId, topicStatus.Status))
+                return Ok();
             return NotFound();
         }
 
@@ -215,9 +213,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
-            if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserId()))
+            if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserIdentity()))
                 return Ok();
 
             return NotFound();

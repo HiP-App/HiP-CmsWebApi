@@ -19,9 +19,9 @@ namespace Api.Data
 
         public DbSet<AssociatedTopic> AssociatedTopics { get; set; }
 
-        public DbSet<TopicAttatchment> TopicAttatchments { get; set; }
+        public DbSet<TopicAttachment> TopicAttachments { get; set; }
 
-        public DbSet<Legal> Legals { get; set; }
+        public DbSet<TopicAttachmentMetadata> TopicAttachmentMetadata { get; set; }
 
         public DbSet<Document> Documents { get; set; }
 
@@ -43,6 +43,8 @@ namespace Api.Data
 
         public DbSet<StudentDetails> StudentDetails { get; set; }
 
+        public DbSet<TopicReview> TopicReviews { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
@@ -50,17 +52,20 @@ namespace Api.Data
             new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
             new TopicMap(modelBuilder.Entity<Topic>());
             new TopicUserMap(modelBuilder.Entity<TopicUser>());
-            new TopicAttatchmentMap(modelBuilder.Entity<TopicAttatchment>());
+            new TopicAttachmentMap(modelBuilder.Entity<TopicAttachment>());
             new DocumentMap(modelBuilder.Entity<Document>());
             new NotificationMap(modelBuilder.Entity<Notification>());
             new TagRelationMap(modelBuilder.Entity<TagRelation>());
             new Tag.AnnotationTagMap(modelBuilder.Entity<Tag>());
             new SubscriptionMap(modelBuilder.Entity<Subscription>());
             new TagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<TagInstance>());
-            new LegalMap(modelBuilder.Entity<Legal>());
+            new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
+            new TopicAttachmentMetadataMap(modelBuilder.Entity<TopicAttachmentMetadata>());
+            new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
             new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
             new TagRelationRule.TagRelationRuleMap(modelBuilder.Entity<TagRelationRule>());
             new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
+            new TopicReviewMap(modelBuilder.Entity<TopicReview>());
         }
     }
 }

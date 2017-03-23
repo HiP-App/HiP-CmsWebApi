@@ -5,6 +5,6 @@ namespace Api.Models.User
     public class UsersFormModel
     {
         [Required]
-        public int[] Users { get; set; }
+        public string[] Users { get; set; }
     }
 }
