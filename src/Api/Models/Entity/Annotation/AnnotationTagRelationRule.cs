@@ -4,21 +4,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Api.Models.Entity.Annotation
 {
-    public class TagRelationRule: RelationRule
+    public class AnnotationTagRelationRule: RelationRule
     {
         [Required]
         public int SourceTagId { get; set; }
 
-        public Tag SourceTag { get; set; }
+        public AnnotationTag SourceTag { get; set; }
 
         [Required]
         public int TargetTagId { get; set; }
 
-        public Tag TargetTag { get; set; }
+        public AnnotationTag TargetTag { get; set; }
 
         public class TagRelationRuleMap
         {
-            public TagRelationRuleMap(EntityTypeBuilder<TagRelationRule> entityBuilder)
+            public TagRelationRuleMap(EntityTypeBuilder<AnnotationTagRelationRule> entityBuilder)
             {
                 entityBuilder
                     .HasOne(r => r.SourceTag)

@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-(??)
+using System.Linq.Expressions;
 using Api.Models.Entity.Annotation;
-(??)
 
 namespace Api.Managers
 {
@@ -15,7 +14,7 @@ namespace Api.Managers
     {
         public AnnotationTagManager(CmsDbContext dbContext) : base(dbContext) { }
 
-        private bool TagRelationExists(Tag tag1, Tag tag2)
+        private bool TagRelationExists(AnnotationTag tag1, AnnotationTag tag2)
         {
             return tag1 != null &&
                 tag2 != null &&
@@ -98,7 +97,7 @@ namespace Api.Managers
 
         public EntityResult AddTag(TagFormModel tagModel)
         {
-            var tag = new Tag(tagModel);
+            var tag = new AnnotationTag(tagModel);
 
             DbContext.AnnotationTags.Add(tag);
             DbContext.SaveChanges();
@@ -128,7 +127,7 @@ namespace Api.Managers
             return false;
         }
 
-        private bool HasDuplicateParent(Tag original, Tag check)
+        private bool HasDuplicateParent(AnnotationTag original, AnnotationTag check)
         {
             var duplicate = original.Id == check.Id;
             if (duplicate)
@@ -147,7 +146,7 @@ namespace Api.Managers
             var tag2 = DbContext.AnnotationTagInstances.Single(tag => tag.Id == model.TargetId);
             if (tag1 != null && tag2 != null)
             {
-                var forwardRelation = new TagRelation(tag1, tag2, model.Title, model.ArrowStyle, model.Color);
+                var forwardRelation = new AnnotationTagInstanceRelation(tag1, tag2, model.Title, model.ArrowStyle, model.Color);
                 DbContext.AnnotationTagRelations.Add(forwardRelation);
                 DbContext.SaveChanges();
                 return true;
@@ -159,8 +158,8 @@ namespace Api.Managers
 
         internal bool AddTagInstance(int tagModelId)
         {
-            Tag model = DbContext.AnnotationTags.Single(m => m.Id == tagModelId);
-            TagInstance instance = new TagInstance(model);
+            AnnotationTag model = DbContext.AnnotationTags.Single(m => m.Id == tagModelId);
+            AnnotationTagInstance instance = new AnnotationTagInstance(model);
             DbContext.AnnotationTagInstances.Add(instance);
             DbContext.SaveChanges();
             return true;
@@ -192,7 +191,7 @@ namespace Api.Managers
             {
                 return false;
             }
-            var rule = new TagRelationRule()
+            var rule = new AnnotationTagRelationRule()
             {
                 SourceTagId = model.SourceId,
                 TargetTagId = model.TargetId,
@@ -297,7 +296,7 @@ namespace Api.Managers
             try
             {
                 var tag = DbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
-                if (tag.UsageCounter == 0)
+                if (tag.UsageCounter() == 0)
                 {
                     DbContext.AnnotationTags.Remove(tag);
                 }
@@ -342,7 +341,7 @@ namespace Api.Managers
             }
         }
 
-        private void RemoveRelationFor(Tag source, Tag target)
+        private void RemoveRelationFor(AnnotationTag source, AnnotationTag target)
         {
             var relation = DbContext.AnnotationTagRelations.Single(rel => rel.SourceTagId == source.Id && rel.TargetTagId == target.Id);
             DbContext.AnnotationTagRelations.Remove(relation);
@@ -374,7 +373,7 @@ namespace Api.Managers
 
         #endregion
 
-        private static Expression<Func<TagRelationRule, bool>> EqualsTagRelationRule(RelationFormModel original)
+        private static Expression<Func<AnnotationTagRelationRule, bool>> EqualsTagRelationRule(RelationFormModel original)
         {
             return r => r.SourceTagId == original.SourceId &&
                         r.TargetTagId == original.TargetId &&

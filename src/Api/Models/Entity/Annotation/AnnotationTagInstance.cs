@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,6 +14,10 @@ namespace Api.Models.Entity.Annotation
         public int TagModelId { get; set; }
 
         public AnnotationTag TagModel { get; set; }
+
+        public List<AnnotationTagInstanceRelation> TagRelations { get; set; }
+
+        public List<AnnotationTagInstanceRelation> IncomingRelations { get; set; }
 
         public string Value { get; set; }
 

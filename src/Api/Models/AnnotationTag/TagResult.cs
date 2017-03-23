@@ -2,7 +2,7 @@
 {
     public class TagResult
     {
-        public TagResult(Entity.Annotation.Tag tag)
+        public TagResult(Entity.Annotation.AnnotationTag tag)
         {
             TagId = tag.Id;
             Name = tag.Name;

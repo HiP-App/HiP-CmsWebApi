@@ -33,11 +33,11 @@ namespace Api.Controllers
         // Get api/Annotation/Tags/:id
 
         /// <summary>
-        /// A specific Tag save in the system
+        /// A specific AnnotationTag save in the system
         /// </summary>
         /// <param name="id">The id of the Tag</param>
         /// <response code="200">A TagResult</response>
-        /// <response code="404">There is no Tag {id} in the system</response>
+        /// <response code="404">There is no AnnotationTag {id} in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}")]
         [ProducesResponseType(typeof(TagResult), 200)]
@@ -63,7 +63,7 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="id">The id of the parent tag</param>
         /// <response code="200">A List of AnnotationTagResults</response>
-        /// <response code="204">The parent Tag {id} has no Children</response>
+        /// <response code="204">The parent AnnotationTag {id} has no Children</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}/ChildTags")]
         [ProducesResponseType(typeof(List<TagResult>), 200)]
@@ -109,7 +109,7 @@ namespace Api.Controllers
         // Post api/Annotation/Tags/:parentId/ChildTags/:childId
 
         /// <summary>
-        /// Add Tag {childId} as Child to Tag {parentId} 
+        /// Add AnnotationTag {childId} as Child to AnnotationTag {parentId} 
         /// </summary>
         /// <param name="parentId">Tag to add Child to</param>
         /// <param name="childId">Tag to be added as Child</param>
@@ -138,7 +138,7 @@ namespace Api.Controllers
         // Put api/Annotation/Tags/:Id
 
         /// <summary>
-        /// Edit Tag {Id} 
+        /// Edit AnnotationTag {Id} 
         /// </summary>
         /// <param name="id">Tag to be edited</param>
         /// <param name="model">Date to be changed</param>
@@ -167,7 +167,7 @@ namespace Api.Controllers
         // Delete api/Annotation/Tags/:Id
 
         /// <summary>
-        /// Delete Tag {Id} 
+        /// Delete AnnotationTag {Id} 
         /// </summary>
         /// <param name="id">Tag to be delete</param>
         /// <response code="200">Tag ddeleted successful</response>
@@ -189,9 +189,9 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// remove Child {childId} from Tag {parentId} 
+        /// remove Child {childId} from AnnotationTag {parentId} 
         /// </summary>
-        /// <param name="parentId">Parent Tag to remove child from</param>
+        /// <param name="parentId">Parent AnnotationTag to remove child from</param>
         /// <param name="childId">Child to be removed</param>
         /// <response code="200">Child removed successful</response>
         /// <response code="403">User not allowed to edit Tags</response>

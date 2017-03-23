@@ -7,24 +7,24 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Api.Models.Entity.Annotation
 {
     /// <summary>
-    /// Represents a *directed* relation between two tag instances (i.e. AnnotationTag).
+    /// Represents a *directed* relation between two tag instances (i.e. AnnotationTagInstance).
     /// If you want an undirected tag relation between A and B, add two relations A->B and B->A.
     /// </summary>
-    public class TagRelation : RelationRule
+    public class AnnotationTagInstanceRelation : RelationRule
     {
         [Required]
         public int SourceTagId { get; set; }
 
-        public virtual TagInstance SourceTag { get; set; }
+        public virtual AnnotationTagInstance SourceTag { get; set; }
 
         [Required]
         public int TargetTagId { get; set; }
 
-        public virtual TagInstance TargetTag { get; set; }
-        
+        public virtual AnnotationTagInstance TargetTag { get; set; }
+
 
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")] // Not good but otherwise tests don't work.
-        public TagRelation(TagInstance sourceTag, TagInstance targetTag, string title = "", string arrowStyle = "", string color = "")
+        public AnnotationTagInstanceRelation(AnnotationTagInstance sourceTag, AnnotationTagInstance targetTag, string title = "", string arrowStyle = "", string color = "")
         {
             SourceTag = sourceTag;
             SourceTagId = sourceTag.Id;
@@ -35,9 +35,9 @@ namespace Api.Models.Entity.Annotation
             Color = color;
         }
 
-        public TagRelation() { }
+        public AnnotationTagInstanceRelation() { }
 
-        public TagRelation(RelationFormModel model)
+        public AnnotationTagInstanceRelation(RelationFormModel model)
         {
             SourceTagId = model.SourceId;
             TargetTagId = model.TargetId;
@@ -47,9 +47,9 @@ namespace Api.Models.Entity.Annotation
         }
     }
 
-    public class TagRelationMap
+    public class AnnotationTagRelationMap
     {
-        public TagRelationMap(EntityTypeBuilder<TagRelation> entityBuilder)
+        public AnnotationTagRelationMap(EntityTypeBuilder<AnnotationTagInstanceRelation> entityBuilder)
         {
             entityBuilder.HasKey(r => new { FirstTagId = r.SourceTagId, SecondTagId = r.TargetTagId });
             entityBuilder.HasOne(r => r.SourceTag).WithMany(t => t.TagRelations).HasForeignKey(r => r.SourceTagId).OnDelete(DeleteBehavior.Cascade);

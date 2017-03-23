@@ -9,14 +9,14 @@ namespace Api.Models.AnnotationTag
     /// </summary>
     public class RelationResult: RelationFormModel
     {
-        public RelationResult(TagRelation rel)
+        public RelationResult(AnnotationTagInstanceRelation rel)
             : base(rel.SourceTagId, rel.TargetTagId, rel)
         {
             SourceName = rel.SourceTag.TagModel.Name;
             TargetName = rel.TargetTag.TagModel.Name;
         }
 
-        public RelationResult(TagRelationRule rule)
+        public RelationResult(AnnotationTagRelationRule rule)
             : base(rule.SourceTagId, rule.TargetTagId, rule)
         {
             SourceName = rule.SourceTag.Name;

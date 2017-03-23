@@ -16,7 +16,7 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// gets the Tag Frequency Analytics of {topicId}
+        /// gets the AnnotationTag Frequency Analytics of {topicId}
         /// </summary>
         /// <param name="topicId">the Id of the Topic {topicId}</param>
         /// <response code="200">The Analytics of</response>

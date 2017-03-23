@@ -38,15 +38,15 @@ namespace Api.Models.Entity.Annotation
 
         public List<AnnotationTagInstance> TagInstances { get; set; }
 
-        public List<AnnotationTagRelation> TagRelations { get; set; }
+        public List<AnnotationTagRelationRule> TagRelationRules { get; set; }
 
-        public List<AnnotationTagRelation> IncomingRelations { get; set; }
+        public List<AnnotationTagRelationRule> IncomingTagRelationRules { get; set; }
 
         public AnnotationTag()
         {
         }
 
-        public AnnotationTag(AnnotationTagFormModel model)
+        public AnnotationTag(TagFormModel model)
         {
             Name = model.Name;
             ShortName = model.ShortName;
