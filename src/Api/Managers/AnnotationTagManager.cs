@@ -279,10 +279,10 @@ namespace Api.Managers
                 return false;
 
             var rule = DbContext.AnnotationTagRelations.Single(rel => true);
-            rule.Title = changed.Title;
-            rule.Description = changed.Description;
-            rule.ArrowStyle = changed.ArrowStyle;
-            rule.Color = changed.Color;
+            if (changed.Title != null) rule.Title = changed.Title;
+            if (changed.Description != null) rule.Description = changed.Description;
+            if (changed.ArrowStyle != null) rule.ArrowStyle = changed.ArrowStyle;
+            if (changed.Color != null) rule.Color = changed.Color;
             DbContext.SaveChanges();
             return true;
         }

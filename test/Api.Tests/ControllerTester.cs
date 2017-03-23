@@ -44,7 +44,7 @@ namespace Api.Tests
         {
             return MyMvc
                 .Controller<T>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, userIdentity))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.AddRange(_admin, _student, _supervisor))
                 );

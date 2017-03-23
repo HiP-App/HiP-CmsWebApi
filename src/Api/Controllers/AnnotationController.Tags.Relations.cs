@@ -114,7 +114,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PostTagRelation([FromBody] RelationFormModel model)
+        public IActionResult PostTagInstanceRelation([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
@@ -125,7 +125,7 @@ namespace Api.Controllers
                     return Ok();
                 return BadRequest();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException exc)
             {
                 return BadRequest();
             }
@@ -178,7 +178,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutTagRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutTagInstanceRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
