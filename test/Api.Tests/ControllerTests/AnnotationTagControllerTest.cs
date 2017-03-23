@@ -3,11 +3,10 @@ using System.Security.Claims;
 using Api.Controllers;
 using Api.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
-using NUnit.Framework;
+using Xunit;
 
 namespace Api.Tests.ControllerTests
 {
-    [TestFixture]
     public class AnnotationTagControllerTest
     {
         #region GetLayers
@@ -15,7 +14,7 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag layers if called properly
         /// </summary>
-        [Test]
+        [Fact]
         public void GetLayersTest()
         {
             var layer = new Layer() { Name = "Time" };
