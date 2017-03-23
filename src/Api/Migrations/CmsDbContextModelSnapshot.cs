@@ -71,11 +71,11 @@ namespace Api.Migrations
                     b.ToTable("AnnotationTagInstances");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstanceRelation", b =>
                 {
-                    b.Property<int>("FirstTagId");
+                    b.Property<int>("SourceTagId");
 
-                    b.Property<int>("SecondTagId");
+                    b.Property<int>("TargetTagId");
 
                     b.Property<string>("ArrowStyle");
 
@@ -85,17 +85,41 @@ namespace Api.Migrations
 
                     b.Property<int>("Id");
 
-                    b.Property<string>("Name");
-
                     b.Property<string>("Title");
 
-                    b.HasKey("FirstTagId", "SecondTagId");
+                    b.HasKey("SourceTagId", "TargetTagId");
 
                     b.HasAlternateKey("Id");
 
-                    b.HasIndex("SecondTagId");
+                    b.HasIndex("TargetTagId");
 
                     b.ToTable("AnnotationTagRelations");
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelationRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ArrowStyle");
+
+                    b.Property<string>("Color");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("SourceTagId");
+
+                    b.Property<int>("TargetTagId");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceTagId");
+
+                    b.HasIndex("TargetTagId");
+
+                    b.ToTable("TagRelationRules");
                 });
 
             modelBuilder.Entity("Api.Models.Entity.Annotation.Layer", b =>
@@ -430,16 +454,29 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelation", b =>
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstanceRelation", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "FirstTag")
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTagInstance", "SourceTag")
                         .WithMany("TagRelations")
-                        .HasForeignKey("FirstTagId")
+                        .HasForeignKey("SourceTagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "SecondTag")
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTagInstance", "TargetTag")
                         .WithMany("IncomingRelations")
-                        .HasForeignKey("SecondTagId")
+                        .HasForeignKey("TargetTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelationRule", b =>
+                {
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "SourceTag")
+                        .WithMany("TagRelationRules")
+                        .HasForeignKey("SourceTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TargetTag")
+                        .WithMany("IncomingTagRelationRules")
+                        .HasForeignKey("TargetTagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

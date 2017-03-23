@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Api.Migrations
 {
-    public partial class TagRelationRules : Migration
+    public partial class TagRelations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,25 +17,24 @@ namespace Api.Migrations
                 name: "FK_AnnotationTagRelations_AnnotationTags_SecondTagId",
                 table: "AnnotationTagRelations");
 
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
                 name: "Name",
+                table: "AnnotationTagRelations");
+
+            migrationBuilder.RenameColumn(
+                name: "SecondTagId",
                 table: "AnnotationTagRelations",
-                newName: "Title");
+                newName: "TargetTagId");
 
-            migrationBuilder.AddColumn<string>(
-                name: "Description",
-                table: "LayerRelationRules",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Title",
-                table: "LayerRelationRules",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Description",
+            migrationBuilder.RenameColumn(
+                name: "FirstTagId",
                 table: "AnnotationTagRelations",
-                nullable: true);
+                newName: "SourceTagId");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_AnnotationTagRelations_SecondTagId",
+                table: "AnnotationTagRelations",
+                newName: "IX_AnnotationTagRelations_TargetTagId");
 
             migrationBuilder.CreateTable(
                 name: "TagRelationRules",
@@ -78,17 +77,17 @@ namespace Api.Migrations
                 column: "TargetTagId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AnnotationTagRelations_AnnotationTagInstances_FirstTagId",
+                name: "FK_AnnotationTagRelations_AnnotationTagInstances_SourceTagId",
                 table: "AnnotationTagRelations",
-                column: "FirstTagId",
+                column: "SourceTagId",
                 principalTable: "AnnotationTagInstances",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_AnnotationTagRelations_AnnotationTagInstances_SecondTagId",
+                name: "FK_AnnotationTagRelations_AnnotationTagInstances_TargetTagId",
                 table: "AnnotationTagRelations",
-                column: "SecondTagId",
+                column: "TargetTagId",
                 principalTable: "AnnotationTagInstances",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -97,32 +96,35 @@ namespace Api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_AnnotationTagRelations_AnnotationTagInstances_FirstTagId",
+                name: "FK_AnnotationTagRelations_AnnotationTagInstances_SourceTagId",
                 table: "AnnotationTagRelations");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_AnnotationTagRelations_AnnotationTagInstances_SecondTagId",
+                name: "FK_AnnotationTagRelations_AnnotationTagInstances_TargetTagId",
                 table: "AnnotationTagRelations");
 
             migrationBuilder.DropTable(
                 name: "TagRelationRules");
 
-            migrationBuilder.DropColumn(
-                name: "Description",
-                table: "LayerRelationRules");
-
-            migrationBuilder.DropColumn(
-                name: "Title",
-                table: "LayerRelationRules");
-
-            migrationBuilder.DropColumn(
-                name: "Description",
-                table: "AnnotationTagRelations");
+            migrationBuilder.RenameColumn(
+                name: "TargetTagId",
+                table: "AnnotationTagRelations",
+                newName: "SecondTagId");
 
             migrationBuilder.RenameColumn(
-                name: "Title",
+                name: "SourceTagId",
                 table: "AnnotationTagRelations",
-                newName: "Name");
+                newName: "FirstTagId");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_AnnotationTagRelations_TargetTagId",
+                table: "AnnotationTagRelations",
+                newName: "IX_AnnotationTagRelations_SecondTagId");
+
+            migrationBuilder.AddColumn<string>(
+                name: "Name",
+                table: "AnnotationTagRelations",
+                nullable: true);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AnnotationTagRelations_AnnotationTags_FirstTagId",
