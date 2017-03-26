@@ -57,13 +57,14 @@ namespace Api.Controllers
         /// <param name="identity">Represents the user Identity of the user</param>
         /// <param name="page">Represents the page</param>
         /// <param name="pageSize">Size of the requested page</param>
+        /// <param name="query">String to search for in topic title or description</param>
         /// <response code="200">Returns PagedResults of TopicResults</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("OfUser")]
         [ProducesResponseType(typeof(PagedResult<TopicResult>), 200)]
-        public IActionResult GetTopicsForUser([FromQuery]string identity, [FromQuery]int page = 0, [FromQuery] int pageSize = Constants.PageSize)
+        public IActionResult GetTopicsForUser([FromQuery]string identity, [FromQuery]int page = 0, [FromQuery]int pageSize = Constants.PageSize, [FromQuery]string query = "")
         {
-            var topics = _topicManager.GetTopicsForUser(identity ?? User.Identity.GetUserIdentity(), page, pageSize);
+            var topics = _topicManager.GetTopicsForUser(identity ?? User.Identity.GetUserIdentity(), page, pageSize, query);
             return Ok(topics);
         }
 
