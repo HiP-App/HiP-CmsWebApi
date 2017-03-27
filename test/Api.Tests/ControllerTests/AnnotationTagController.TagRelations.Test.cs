@@ -488,7 +488,7 @@ namespace Api.Tests.ControllerTests
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
 
             // other way around is also not allowed:
             expected = new RelationFormModel()
@@ -512,7 +512,7 @@ namespace Api.Tests.ControllerTests
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace Api.Tests.ControllerTests
                 )
                 .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
