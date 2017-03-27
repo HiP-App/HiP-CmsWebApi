@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Api.Controllers;
 using Api.Models.Entity;
@@ -16,6 +17,7 @@ namespace Api.Tests.ControllerTests
 {
     public class AnnotationTagRelationsControllerTest
     {
+        private ControllerTester<AnnotationController> _tester;
         private User _admin;
         private User _student;
         private User _supervisor;
@@ -23,15 +25,24 @@ namespace Api.Tests.ControllerTests
         private AnnotationTag _tag2;
         private AnnotationTag _tag3;
         private AnnotationTag _tag4;
-        private AnnotationTagRelation _relation12;
-        private AnnotationTagRelation _relation34;
+        private AnnotationTagInstance _tagInstance1;
+        private AnnotationTagInstance _tagInstance2;
+        private AnnotationTagInstance _tagInstance3;
+        private AnnotationTagInstance _tagInstance4;
+        private AnnotationTagRelationRule _relationRule12;
+        private AnnotationTagRelationRule _relationRule32;
+        private AnnotationTagRelationRule _relationRule34;
+        private AnnotationTagInstanceRelation _relation12;
+        private AnnotationTagInstanceRelation _relation32;
+        private AnnotationTagInstanceRelation _relation34;
         private Layer _layer2;
         private Layer _layer1;
         private LayerRelationRule _layerRelationRule;
 
 		public AnnotationTagRelationsControllerTest()
         {
-            // create some User, Tag and TagRelation objects for mocking the database
+            _tester = new ControllerTester<AnnotationController>();
+            // create some User, AnnotationTag and AnnotationTagRelation objects for mocking the database
             _admin = new User
             {
                 Id = 1,
@@ -58,7 +69,7 @@ namespace Api.Tests.ControllerTests
              * Layer Relation Rules:
              * Layer1 -> Layer2
              * 
-             * Annotation Tag Relations:
+             * Annotation AnnotationTag Relations:
              * tag1 -> tag2
              * tag3 -> tag2
              * tag3 -> tag4
@@ -71,10 +82,19 @@ namespace Api.Tests.ControllerTests
             _tag4 = new AnnotationTag() { Id = 4, Layer = _layer2.Name };
             _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
             _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
-            _relation12 = new AnnotationTagRelation(_tag1, _tag2);
-            _relation34 = new AnnotationTagRelation(_tag3, _tag4);
+            _relationRule12 = new AnnotationTagRelationRule() { Id = 3, SourceTagId = _tag1.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 1->2" };
+            _relationRule32 = new AnnotationTagRelationRule() { Id = 5, SourceTagId = _tag3.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 3->2" };
+            _relationRule34 = new AnnotationTagRelationRule() { Id = 7, SourceTagId = _tag3.Id, TargetTagId = _tag4.Id, Title = "Tag Relation Rule 3->4" };
+            _tagInstance1 = new AnnotationTagInstance(_tag1) {Id = 1};
+            _tagInstance2 = new AnnotationTagInstance(_tag2) {Id = 2};
+            _tagInstance3 = new AnnotationTagInstance(_tag3) {Id = 3};
+            _tagInstance4 = new AnnotationTagInstance(_tag4) {Id = 4};
+            _relation12 = new AnnotationTagInstanceRelation(_tagInstance1, _tagInstance2) { Id = 3 };
+            _relation32 = new AnnotationTagInstanceRelation(_tagInstance3, _tagInstance2) { Id = 5 };
+            _relation34 = new AnnotationTagInstanceRelation(_tagInstance3, _tagInstance4) { Id = 7 };
             _layerRelationRule = new LayerRelationRule()
             {
+                Id = 3,
                 SourceLayer = _layer1,
                 SourceLayerId = _layer1.Id,
                 TargetLayer = _layer2,
@@ -105,9 +125,7 @@ namespace Api.Tests.ControllerTests
                 Description= "my-description"
             };
             var expected = new List<LayerRelationRule>() { myRelation };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(myRelation))
@@ -126,20 +144,18 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and create the layer relation rule if called properly
         /// </summary>
-        // TODO [Fact]
+       [Fact]
         public void PostLayerRelationRuleTest()
         {
             var expected = _layerRelationRule;
-            var model = new LayerRelationRuleFormModel()
+            var model = new RelationFormModel()
             {
-                SourceLayerId = expected.SourceLayerId,
-                TargetLayerId = expected.TargetLayerId,
+                SourceId = expected.SourceLayerId,
+                TargetId = expected.TargetLayerId,
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
+            _tester.TestController("supervisor@hipapp.de")
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(_layerRelationRule.SourceLayer, _layerRelationRule.TargetLayer))
                 )
@@ -166,18 +182,15 @@ namespace Api.Tests.ControllerTests
         public void PostLayerRelationRuleTest403()
         {
             var expected = _layerRelationRule;
-            var model = new LayerRelationRuleFormModel()
+            var model = new RelationFormModel()
             {
-                SourceLayerId = expected.SourceLayerId,
-                TargetLayerId = expected.TargetLayerId,
+                SourceId = expected.SourceLayerId,
+                TargetId = expected.TargetLayerId,
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                  .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _student.Email))
+            _tester.TestController("student@hipapp.de")
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_student))
                     .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
                 )
                 .Calling(c => c.PostLayerRelationRule(model))
@@ -197,33 +210,31 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly
         /// </summary>
-      // TODO  [Fact]
+        [Fact]
         public void GetRelationsTest()
         {
-            var expected = new List<AnnotationTagRelation>() { _relation12 };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
-                .WithDbContext(dbContext => dbContext.WithSet<AnnotationTagRelation>(db => db.Add(_relation12)))
-                .Calling(c => c.GetRelations(0))
+            var expected = new List<RelationResult>() { new RelationResult(_relation12) };
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext.WithSet<AnnotationTagInstanceRelation>(db => db.Add(_relation12)))
+                .Calling(c => c.GetRelations())
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         /// <summary>
-        /// Should return 400 for negative maxDepth values
+        /// Should return code 200 and an empty list if no relations are present
         /// </summary>
-       // TODO [Fact]
-        public void GetRelationsTest400()
+        [Fact]
+        public void GetRelationsTest_EmptyList()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
-                .Calling(c => c.GetRelations(-1))
+            _tester.TestController()
+                .Calling(c => c.GetRelations())
                 .ShouldReturn()
-                .BadRequest();
+                .Ok()
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(actual => actual.Count == 0);
         }
 
         #endregion
@@ -233,87 +244,62 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if called for an existing tag that has no relations
         /// </summary>
-        // TODO [Fact]
+        [Fact]
         public void GetRelationsForIdWithNoExistingRelationsTest()
         {
-            // ReSharper disable once CollectionNeverUpdated.Local
-            var expected = new List<AnnotationTagRelation>();
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2))
                 )
-                .Calling(c => c.GetRelationsForId(_tag1.Id))
+                .Calling(c => c.GetRelationsForId(_tagInstance1.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(actual => actual.Count == 0);
         }
 
         /// <summary>
         /// Should return code 200 and a list of all tag relations if called properly for an existing tag with relations
         /// </summary>
-        // TODO [Fact]
+       [Fact]
         public void GetRelationsForIdWithOneExistingRelationTest()
         {
-            var expected = new List<AnnotationTagRelation>() { _relation12 };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            var expected = new List<RelationResult>() { new RelationResult(_relation12) };
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
+                    .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_relation12))
                 )
                 .Calling(c => c.GetRelationsForId(_tag1.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         /// <summary>
         /// Relations are uni-directional i.e. tag2 (the tag with the INCOMING relation, but no outgoing relations) should have no relations
         /// </summary>
-        // TODO [Fact]
+       [Fact]
         public void GetRelationsForIdUniDirectionalTest()
         {
             // ReSharper disable once CollectionNeverUpdated.Local
-            var expected = new List<AnnotationTagRelation>();
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            var expected = new List<RelationResult>();
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
+                    .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_relation12))
                 )
                 .Calling(c => c.GetRelationsForId(_tag2.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
-        }
-
-        /// <summary>
-        /// Should return 400 for negative maxDepth values
-        /// </summary>
-        // TODO [Fact]
-        public void GetRelationsForIdTest400()
-        {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
-                .Calling(c => c.GetRelationsForId(1))
-                .ShouldReturn()
-                .BadRequest();
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         #endregion
 
-        #region GetAllowedRelationRulesForTag
+        #region GetAllowedRelationRuleTargetsForTag
 
         /// <summary>
         /// Should return code 200 and a list of all tags that relation rules are allowed to if called properly.
@@ -323,16 +309,13 @@ namespace Api.Tests.ControllerTests
         public void GetAllowedRelationRulesForTagTest()
         {
             var expected = new List<AnnotationTag>() { _tag2, _tag4 };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
+                .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag1.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
@@ -346,73 +329,58 @@ namespace Api.Tests.ControllerTests
         [Fact]
         public void GetAllowedRelationRulesForTagTest_NoToplevelRelation()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            var expected = new List<AnnotationTag>();
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
                     .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
                 )
                 // no layer relation rules exist from layer2 to layer1 --> no relations from tag2 to tag1 / tag3 allowed
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag2.Id))
+                .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag2.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<AnnotationTag>>()
-                .Passing(actual => !actual.Any());
+                .Passing(actual => expected.SequenceEqual(actual));
         }
 
         /// <summary>
-        /// Should return 400 for tags that do not exist
+        /// Should return 404 for tags that do not exist
         /// </summary>
        [Fact]
-        public void GetAllowedRelationRulesForTagTest400()
+        public void GetAllowedRelationRulesForTagTest404()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
-                .Calling(c => c.GetAllowedRelationRulesForTag(_tag1.Id))
+            _tester.TestController()
+                .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag1.Id))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         #endregion
 
-        #region GetAllowedRelationRulesForTag
+        #region GetAllowedRelationRuleTargetsForTag
 
         /// <summary>
         /// Should return code 200 and a list of all tag relations that are available for the given tag instance
         /// </summary>
-      // TODO  [Fact]
+        [Fact]
         public void GetAvailableRelationsForIdTest()
         {
-            var tag5 = new AnnotationTag() { Id = 5 };
-            var relation35 = new AnnotationTagRelation(_tag3, tag5);
-            var expected = new List<AnnotationTagRelation>() { _relation34, relation35 };
-            var instance3 = new AnnotationTagInstance(_tag3);
-            var instances = new List<AnnotationTagInstance>()
-            {
-                new AnnotationTagInstance(_tag1),
-                new AnnotationTagInstance(_tag2),
-                instance3,
-                new AnnotationTagInstance(_tag4),
-                new AnnotationTagInstance(tag5)
-            };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            var tagInstance5 = new AnnotationTagInstance(new AnnotationTag() { Id = 5 }) {Id = 5};
+            var relation35 = new AnnotationTagInstanceRelation(_tagInstance3, tagInstance5) {Id = 5};
+            var expected = new List<RelationResult>() { new RelationResult(_relation34), new RelationResult(relation35) };
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<AnnotationTagRelation>(db => db.AddRange(_relation12, _relation34, relation35))
-                // TODO How to model that the tag instances are part of the same document?
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2, _tagInstance3, _tagInstance4, tagInstance5))
+                    .WithSet<AnnotationTagRelationRule>(db => db.AddRange(_relationRule12, _relationRule32, _relationRule34))
+                    .WithSet<AnnotationTagInstanceRelation>(db => db.AddRange(_relation12, _relation34, relation35))
                 )
-                .Calling(c => c.GetAvailableRelationsForInstance(instance3.Id))
+                .Calling(c => c.GetAllowedRelationsForInstance(_tagInstance3.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
+                .WithModelOfType<List<RelationResult>>()
+                .Passing(RelationsEqualPredicate(expected));
         }
 
         /// <summary>
@@ -421,7 +389,7 @@ namespace Api.Tests.ControllerTests
        // TODO [Fact]
         public void GetAvailableRelationsForIdTest_NoRelations()
         {
-            var expected = new List<AnnotationTagRelation>();
+            var expected = new List<AnnotationTagInstanceRelation>() { };
             var instance3 = new AnnotationTagInstance(_tag3);
             var instances = new List<AnnotationTagInstance>()
             {
@@ -430,34 +398,29 @@ namespace Api.Tests.ControllerTests
                 instance3,
                 new AnnotationTagInstance(_tag4)
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
                 // no relations exist between the tags
                 // TODO How to model that the tag instances are part of the same document?
                 )
-                .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
+                .Calling(c => c.GetAllowedRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<List<AnnotationTagRelation>>()
+                .WithModelOfType<List<AnnotationTagInstanceRelation>>()
                 .Passing(actual => expected.SequenceEqual(actual));
         }
 
         /// <summary>
-        /// Should return 400 for tags that do not exist
+        /// Should return 404 for tags that do not exist
         /// </summary>
-      // TODO  [Fact]
-        public void GetAvailableRelationsForIdTest400()
+        [Fact]
+        public void GetAvailableRelationsForIdTest404()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
-                .Calling(c => c.GetAvailableRelationsForInstance(_tag3.Id))
+            _tester.TestController()
+                .Calling(c => c.GetAllowedRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         #endregion
@@ -467,31 +430,28 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
         /// </summary>
-       // TODO [Fact]
-        public void PostTagRelationTest()
+        [Fact]
+        public void PostTagInstanceRelationTest()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
-                FirstTagId = _tag1.Id,
-                SecondTagId = _tag2.Id,
-                Name = "relationName",
+                SourceId = _tagInstance1.Id,
+                TargetId = _tagInstance2.Id,
+                Title = "relationName",
                 Color = "schwarzgelb",
                 ArrowStyle = "dotted"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2))
                 )
-                .Calling(c => c.PostTagRelation(expected))
+                .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     relations.Any(actual =>
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title &&
                         actual.Color == expected.Color &&
                         actual.ArrowStyle == expected.ArrowStyle
                     )
@@ -504,126 +464,105 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return 400 for relations that are not allowed (child tag to top-level tag)
         /// </summary>
-       // TODO [Fact]
+        [Fact]
         public void PostTagRelationTest_NoChildToFirstLevelRelation()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
-                FirstTagId = _tag3.Id,
-                SecondTagId = _tag2.Id,
-                Name = "child-to-toplevel-relation"
+                SourceId = _tag3.Id,
+                TargetId = _tag2.Id,
+                Title = "child-to-toplevel-relation"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
                 )
-                .Calling(c => c.PostTagRelation(expected))
+                .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
 
             // other way around is also not allowed:
-            expected = new AnnotationTagRelationFormModel()
+            expected = new RelationFormModel()
             {
-                FirstTagId = _tag2.Id,
-                SecondTagId = _tag3.Id,
-                Name = "toplevel-to-child-relation"
+                SourceId = _tag2.Id,
+                TargetId = _tag3.Id,
+                Title = "toplevel-to-child-relation"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3))
                 )
-                .Calling(c => c.PostTagRelation(expected))
+                .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
         /// Should return 400 for duplicate tag relations
         /// </summary>
-     // TODO   [Fact]
-        public void PostTagRelationTest_NoDuplicateRelations()
+        [Fact]
+        public void PostTagInstanceRelationTest_NoDuplicateRelations()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id,
-                Name = "duplcate-relation"
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id,
+                Title = "duplicate-relation"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2))
+                    .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.PostTagRelation(expected))
-                .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
-                    relations.Count(actual =>
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name
-                    ) == 1 // should only contain 1 entry, not two
-                ))
-                .AndAlso()
+                .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
-        /// Should return 400 for tags that do not exist
+        /// Should return 404 for tags that do not exist
         /// </summary>
         [Fact]
-        public void PostTagRelationTest400()
+        public void PostTagRelationTest404()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
-                FirstTagId = _tag1.Id,
-                SecondTagId = _tag2.Id,
-                Name = "relation-with-nonexisting-tags"
+                SourceId = _tag1.Id,
+                TargetId = _tag2.Id,
+                Title = "relation-with-nonexisting-tags"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_admin)))
+            _tester.TestController()
                 // --> tags 1 and 2 were NOT added to the database
-                .Calling(c => c.PostTagRelation(expected))
+                .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title
                     )
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
@@ -632,28 +571,56 @@ namespace Api.Tests.ControllerTests
         [Fact]
         public void PostTagRelationTest403()
         {
-            var expected = new AnnotationTagRelationFormModel()
+            var expected = new RelationFormModel()
             {
-                FirstTagId = _tag1.Id,
-                SecondTagId = _tag2.Id,
-                Name = "relation-with-nonexisting-tags"
+                SourceId = _tag1.Id,
+                TargetId = _tag2.Id,
+                Title = "relation-with-nonexisting-tags"
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.PostTagRelation(expected))
+            _tester.TestController("student@hipapp.de") // id = 2 --> student
+                .Calling(c => c.PostTagInstanceRelation(expected))
+                .ShouldReturn()
+                .Forbid();
+        }
+
+        #endregion
+
+        #region PostTagRelationRule
+
+        /// <summary>
+        /// Should return code 200 if called with ids of two existing tags that do not have a relation yet
+        /// </summary>
+        [Fact]
+        public void PostTagRelationRuleTest()
+        {
+            var expected = new RelationFormModel()
+            {
+                SourceId = _tag1.Id,
+                TargetId = _tag2.Id,
+                Title = "relationName",
+                Color = "schwarzgelb",
+                ArrowStyle = "dotted"
+            };
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
+                )
+                .Calling(c => c.PostTagRelationRule(expected))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
-                    !relations.Any(actual => // negated --> NO relation like this exists
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name
+                .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
+                    relations.Any(actual =>
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title &&
+                        actual.Color == expected.Color &&
+                        actual.ArrowStyle == expected.ArrowStyle
                     )
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .Forbid();
+                .Ok();
         }
 
         #endregion
@@ -663,32 +630,30 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 if called with ids of two existing tags that have a relation
         /// </summary>
-        // TODO [Fact]
+        [Fact]
         public void PutTagRelationTest()
         {
-            var expected = new AnnotationTagRelationFormModel()
-            {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id,
-                Name = "changedName"
-            };
             var expectedColor = "oldColor";
-            _relation12.ArrowStyle = expectedColor;
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _relation12.Color = expectedColor;
+            var original = RelationFormModelFromRelation(_relation12);
+            var expected = new RelationFormModel()
+            {
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id,
+                Title = "changedName"
+            };
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2))
+                    .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, expected))
+                .Calling(c => c.PutTagInstanceRelation(original, expected))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(relations =>
+                .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     relations.Any(actual =>
-                        actual.FirstTagId == expected.FirstTagId &&
-                        actual.SecondTagId == expected.SecondTagId &&
-                        actual.Name == expected.Name &&
+                        actual.SourceTagId == expected.SourceId &&
+                        actual.TargetTagId == expected.TargetId &&
+                        actual.Title == expected.Title &&
                         actual.Color == expectedColor // color should not change as it was not set in the model
                     )
                 ))
@@ -698,48 +663,69 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for relations that do not exist
+        /// Should return 404 for relations that do not exist
         /// </summary>
-       // TODO [Fact]
-        public void PutTagRelationTest400()
+        [Fact]
+        public void PutTagRelationTest404()
         {
-            var model = new AnnotationTagRelationFormModel()
-            {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id,
-                Name = "changedName"
-            };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            var model = RelationFormModelFromRelation(_relation12);
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
+                .Calling(c => c.PutTagInstanceRelation(model, model))
                 .ShouldReturn()
-                .BadRequest();
+		       	.NotFound();
         }
 
         /// <summary>
         /// Should return 403 for users with the student role
         /// </summary>
-        // TODO [Fact]
+        [Fact]
         public void PutTagRelationTest403()
         {
-            var model = new AnnotationTagRelationFormModel()
-            {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id,
-                Name = "changedName"
-            };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.PutTagRelation(_relation12.FirstTagId, _relation12.SecondTagId, model))
+            var model = RelationFormModelFromRelation(_relation12);
+            _tester.TestController("student@hipapp.de") // --> log in as student
+                .Calling(c => c.PutTagInstanceRelation(model, model))
                 .ShouldReturn()
                 .Forbid();
+        }
+
+        #endregion
+
+        #region PutTagRelationRule
+
+        /// <summary>
+        /// Should return code 200 if called with a RelationFormModel describing an existing TagRelationRule
+        /// </summary>
+        [Fact]
+        public void PutTagRelationRuleTest()
+        {
+            var original = RelationFormModelFromRelationRule(_relationRule12);
+            var expected = new RelationFormModel()
+            {
+                SourceId = _relationRule12.SourceTagId,
+                TargetId = _relationRule12.TargetTagId,
+                Title = "relationName",
+                Description = "my relation",
+                Color = "schwarzgelb",
+                ArrowStyle = "dotted"
+            };
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
+                    .WithSet<AnnotationTagRelationRule>(db => db.Add(_relationRule12))
+                )
+                .Calling(c => c.PutTagRelationRule(original, expected))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
+                    relations.Any(actual => TagRulesEqual(actual, expected))
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Ok();
         }
 
         #endregion
@@ -753,18 +739,20 @@ namespace Api.Tests.ControllerTests
         [Fact]
         public void DeleteTagRelationTest()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            var model = new RelationFormModel()
+            {
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id
+            };
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
-                    .WithSet<AnnotationTagRelation>(db => db.Add(_relation12))
+                    .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_relation12))
                 )
-                .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
+                .Calling(c => c.DeleteTagRelation(model))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<AnnotationTagRelation>(rels =>
-                    !rels.Any(rel => rel.FirstTagId == _relation12.FirstTag.Id && rel.SecondTagId == _relation12.SecondTag.Id))
+                .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(rels =>
+                    !rels.Any(rel => rel.SourceTagId == model.SourceId && rel.TargetTagId == model.TargetId))
                 )
                 .AndAlso()
                 .ShouldReturn()
@@ -772,27 +760,24 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for relations that do not exist
+        /// Should return 404 for relations that do not exist
         /// </summary>
         [Fact]
-        public void DeleteTagRelationTest400()
+        public void DeleteTagRelationTest404()
         {
-            var model = new AnnotationTagRelationFormModel()
+            var model = new RelationFormModel()
             {
-                FirstTagId = _relation12.FirstTag.Id,
-                SecondTagId = _relation12.SecondTag.Id
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id
             };
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _admin.Email))
+            _tester.TestController()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(_admin))
                     .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
                 )
-                // --> no TagRelation objects were added to the database
-                .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
+                // --> no AnnotationTagRelation objects were added to the database
+                .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
@@ -801,16 +786,84 @@ namespace Api.Tests.ControllerTests
         [Fact]
         public void DeleteTagRelationTest403()
         {
-            MyMvc
-                .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, _supervisor.Email))
-                .WithDbContext(dbContext => dbContext.WithSet<User>(db => db.Add(_student)))
-                .Calling(c => c.DeleteTagRelation(_relation12.FirstTag.Id, _relation12.SecondTag.Id))
+            var model = new RelationFormModel()
+            {
+                SourceId = _relation12.SourceTag.Id,
+                TargetId = _relation12.TargetTag.Id
+            };
+            _tester.TestController("student@hipapp.de")
+                .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
                 .Forbid();
         }
 
         #endregion
 
+        #region DeleteTagRelationRule
+
+
+        /// <summary>
+        /// Should return code 200 if called with the RelationFormModel describing an existing TagRelationRule
+        /// </summary>
+        [Fact]
+        public void DeleteTagRelationRuleTest()
+        {
+            var original = RelationFormModelFromRelationRule(_relationRule12);
+            _tester.TestController()
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2))
+                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
+                    .WithSet<AnnotationTagRelationRule>(db => db.Add(_relationRule12))
+                )
+                .Calling(c => c.DeleteTagRelationRule(original))
+                .ShouldHave()
+                .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
+                    !(relations.Any(actual => TagRulesEqual(actual, original)))
+                ))
+                .AndAlso()
+                .ShouldReturn()
+                .Ok();
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private RelationFormModel RelationFormModelFromRelation(AnnotationTagInstanceRelation rel)
+        {
+            return new RelationFormModel(rel.SourceTagId, rel.TargetTagId, rel);
+        }
+        private RelationFormModel RelationFormModelFromRelationRule(AnnotationTagRelationRule rel)
+        {
+            return new RelationFormModel(rel.SourceTagId, rel.TargetTagId, rel);
+        }
+
+        private static bool TagRulesEqual(AnnotationTagRelationRule actual, RelationFormModel expected)
+        {
+            return actual.SourceTagId == expected.SourceId &&
+                   actual.TargetTagId == expected.TargetId &&
+                   actual.Title == expected.Title &&
+                   actual.Description == expected.Description &&
+                   actual.Color == expected.Color &&
+                   actual.ArrowStyle == expected.ArrowStyle;
+        }
+
+        private static Func<IEnumerable<RelationResult>, bool> RelationsEqualPredicate(IEnumerable<RelationResult> expected)
+        {
+            return actual =>
+            {
+                for (var i = 0; i < actual.Count(); i++)
+                {
+                    if (actual.ElementAt(i).SourceId != expected.ElementAt(i).SourceId
+                        || actual.ElementAt(i).TargetId != expected.ElementAt(i).TargetId)
+                        return false;
+                }
+                return true;
+            };
+        }
+
+
+        #endregion
     }
 }

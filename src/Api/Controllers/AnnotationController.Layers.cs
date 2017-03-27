@@ -46,7 +46,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PostLayerRelationRule([FromBody] LayerRelationRuleFormModel model)
+        public IActionResult PostLayerRelationRule([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();
@@ -55,7 +55,7 @@ namespace Api.Controllers
             {
                 if (_tagManager.AddLayerRelationRule(model))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
@@ -68,9 +68,8 @@ namespace Api.Controllers
         /// The new relation must be given in the body of the call.
         /// Source and target layers of the relations may *not* be changed for now.
         /// </summary>
-        /// <param name="sourceId">ID of the source layer of the relation</param>
-        /// <param name="targetId">ID of the target layer of the relation</param>
-        /// <param name="model">The changed LayerRelationRuleFormModel</param>
+        /// <param name="original">The layer relation rule that you want to modify</param>
+        /// <param name="changed">The changed layer relation rule</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="400">Request was misformed</response>
@@ -78,20 +77,20 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromQuery] int sourceId, [FromQuery] int targetId, [FromBody] LayerRelationRuleFormModel model)
+        public IActionResult PutLayerRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
             {
-                if (_tagManager.ChangeLayerRelationRule(sourceId, targetId, model))
+                if (_tagManager.ChangeLayerRelationRule(original, changed))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -107,7 +106,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteLayerRelationRule([FromQuery] int sourceId, [FromQuery] int targetId)
+        public IActionResult DeleteLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();
@@ -116,11 +115,11 @@ namespace Api.Controllers
             {
                 if (_tagManager.RemoveLayerRelationRule(sourceId, targetId))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
     }

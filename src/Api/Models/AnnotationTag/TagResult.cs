@@ -1,8 +1,8 @@
 ﻿namespace Api.Models.AnnotationTag
 {
-    public class AnnotationTagResult
+    public class TagResult
     {
-        public AnnotationTagResult(Entity.Annotation.AnnotationTag tag)
+        public TagResult(Entity.Annotation.AnnotationTag tag)
         {
             TagId = tag.Id;
             Name = tag.Name;
