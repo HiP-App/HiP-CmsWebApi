@@ -525,7 +525,7 @@ namespace Api.Tests.ControllerTests
             {
                 SourceId = _relation12.SourceTag.Id,
                 TargetId = _relation12.TargetTag.Id,
-                Title = "duplcate-relation"
+                Title = "duplicate-relation"
             };
             _tester.TestController()
                 .WithDbContext(dbContext => dbContext

@@ -55,7 +55,7 @@ namespace Api.Controllers
             {
                 if (_tagManager.AddLayerRelationRule(model))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
@@ -86,7 +86,7 @@ namespace Api.Controllers
             {
                 if (_tagManager.ChangeLayerRelationRule(original, changed))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
@@ -115,7 +115,7 @@ namespace Api.Controllers
             {
                 if (_tagManager.RemoveLayerRelationRule(sourceId, targetId))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
