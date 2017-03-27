@@ -15,10 +15,10 @@ namespace Api.Controllers
         /// Get all existing tag instance relations.
         /// </summary>
         /// <response code="200">Returns a list of tag relations</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpGet("Tags/Relations")]
         [ProducesResponseType(typeof(IEnumerable<RelationResult>), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetRelations()
         {
             try
@@ -27,7 +27,7 @@ namespace Api.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -37,10 +37,10 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="tagId">The Id of the tag that you want the relations for</param>
         /// <response code="200">Returns a list of tag relations</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpGet("Tags/{tagId}/Relations")]
         [ProducesResponseType(typeof(IEnumerable<RelationResult>), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetRelationsForId([FromRoute] int tagId)
         {
             try
@@ -49,7 +49,7 @@ namespace Api.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -59,10 +59,10 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="tagId">The Id of the tag that you want the allowed relation rules for</param>
         /// <response code="200">Returns a list of tags that the user may create a relation rule to</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpGet("Tags/{tagId}/AllowedRelationRuleTargets")]
         [ProducesResponseType(typeof(IEnumerable<TagResult>), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAllowedRelationRuleTargetsForTag([FromRoute] int tagId)
         {
             try
@@ -71,7 +71,7 @@ namespace Api.Controllers
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -82,10 +82,10 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="tagInstanceId">The Id of the tag instance that you want the allowed relations for</param>
         /// <response code="200">Returns a list of tag instances</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpGet("Tags/Instance/{id}/AllowedRelations")]
         [ProducesResponseType(typeof(IEnumerable<RelationResult>), 200)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetAllowedRelationsForInstance([FromRoute] int tagInstanceId)
         {
             try
@@ -95,7 +95,7 @@ namespace Api.Controllers
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -109,11 +109,11 @@ namespace Api.Controllers
         /// <param name="model">The relation that should be created</param>
         /// <response code="200">Relation added</response>
         /// <response code="403">User not allowed to add a relation</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpPost("Tags/Relation")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult PostTagInstanceRelation([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
@@ -123,11 +123,11 @@ namespace Api.Controllers
             {
                 if (_tagManager.AddTagRelation(model))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -137,11 +137,11 @@ namespace Api.Controllers
         /// <param name="model">The relation rule that should be created</param>
         /// <response code="200">Relation rule added</response>
         /// <response code="403">User not allowed to add a relation rule</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpPost("Tags/RelationRule")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult PostTagRelationRule([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
@@ -151,11 +151,11 @@ namespace Api.Controllers
             {
                 if (_tagManager.AddTagRelationRule(model))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -173,11 +173,11 @@ namespace Api.Controllers
         /// <param name="changed">The model describing the changed relation</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpPut("Tags/Relation")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult PutTagInstanceRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
@@ -187,11 +187,11 @@ namespace Api.Controllers
             {
                 if (_tagManager.ChangeTagRelation(original, changed))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -204,11 +204,11 @@ namespace Api.Controllers
         /// <param name="changed">The model describing the changed relation rule</param>
         /// <response code="200">Relation rule modified</response>
         /// <response code="403">User not allowed to modify a relation rule</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpPut("Tags/RelationRule")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult PutTagRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
@@ -218,11 +218,11 @@ namespace Api.Controllers
             {
                 if (_tagManager.ChangeTagRelationRule(original, changed))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -236,11 +236,11 @@ namespace Api.Controllers
         /// <param name="model">The relation to remove</param>
         /// <response code="200">Relation removed</response>
         /// <response code="403">User not allowed to remove a relation</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpDelete("Tags/Relation")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteTagRelation([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
@@ -248,11 +248,11 @@ namespace Api.Controllers
             try
             {
                 if (_tagManager.RemoveTagRelation(model)) return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -262,11 +262,11 @@ namespace Api.Controllers
         /// <param name="model">The relation rule to remove</param>
         /// <response code="200">Relation rule removed</response>
         /// <response code="403">User not allowed to remove a relation rule</response>
-        /// <response code="400">Request was misformed</response>
+        /// <response code="404">Request was misformed</response>
         [HttpDelete("Tags/RelationRule")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 400)]
+        [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteTagRelationRule([FromBody] RelationFormModel model)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
@@ -276,11 +276,11 @@ namespace Api.Controllers
             {
                 if (_tagManager.RemoveTagRelationRule(model))
                     return Ok();
-                return BadRequest();
+                return NotFound();
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 

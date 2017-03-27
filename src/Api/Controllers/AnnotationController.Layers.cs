@@ -90,7 +90,7 @@ namespace Api.Controllers
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
 
@@ -119,7 +119,7 @@ namespace Api.Controllers
             }
             catch (InvalidOperationException)
             {
-                return BadRequest();
+                return NotFound();
             }
         }
     }

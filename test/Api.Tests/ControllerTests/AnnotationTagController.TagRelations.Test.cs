@@ -345,15 +345,15 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for tags that do not exist
+        /// Should return 404 for tags that do not exist
         /// </summary>
        [Fact]
-        public void GetAllowedRelationRulesForTagTest400()
+        public void GetAllowedRelationRulesForTagTest404()
         {
             _tester.TestController()
                 .Calling(c => c.GetAllowedRelationRuleTargetsForTag(_tag1.Id))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         #endregion
@@ -412,15 +412,15 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for tags that do not exist
+        /// Should return 404 for tags that do not exist
         /// </summary>
         [Fact]
-        public void GetAvailableRelationsForIdTest400()
+        public void GetAvailableRelationsForIdTest404()
         {
             _tester.TestController()
                 .Calling(c => c.GetAllowedRelationsForInstance(_tag3.Id))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         #endregion
@@ -538,10 +538,10 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for tags that do not exist
+        /// Should return 404 for tags that do not exist
         /// </summary>
         [Fact]
-        public void PostTagRelationTest400()
+        public void PostTagRelationTest404()
         {
             var expected = new RelationFormModel()
             {
@@ -562,7 +562,7 @@ namespace Api.Tests.ControllerTests
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
@@ -663,10 +663,10 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for relations that do not exist
+        /// Should return 404 for relations that do not exist
         /// </summary>
         [Fact]
-        public void PutTagRelationTest400()
+        public void PutTagRelationTest404()
         {
             var model = RelationFormModelFromRelation(_relation12);
             _tester.TestController()
@@ -675,7 +675,7 @@ namespace Api.Tests.ControllerTests
                 )
                 .Calling(c => c.PutTagInstanceRelation(model, model))
                 .ShouldReturn()
-                .BadRequest();
+		       	.NotFound();
         }
 
         /// <summary>
@@ -760,10 +760,10 @@ namespace Api.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 400 for relations that do not exist
+        /// Should return 404 for relations that do not exist
         /// </summary>
         [Fact]
-        public void DeleteTagRelationTest400()
+        public void DeleteTagRelationTest404()
         {
             var model = new RelationFormModel()
             {
@@ -777,7 +777,7 @@ namespace Api.Tests.ControllerTests
                 // --> no AnnotationTagRelation objects were added to the database
                 .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
-                .BadRequest();
+                .NotFound();
         }
 
         /// <summary>
