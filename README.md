@@ -32,7 +32,6 @@ HiP-CmsWebApi is a REST API built on .NET Core 1.0 with C# 6.0. Below are the re
 
  * Clone the repository.
  * Create a new file `appsettings.Development.json` at `scr/Api`. (See `src/Api/appsettings.Development.json.example`).
-   * The settings can be found on [this page in our internal wiki](https://atlassian-hip.cs.uni-paderborn.de/confluence/pages/viewpage.action?pageId=10326660)
  * Update the new `appsettings.Development.json` file to match your needs.
  * To run using Visual Studio, just start the app with/without debugging.
  * To run through terminal,
@@ -63,10 +62,7 @@ If you are experiencing issues with your .NET installation on Linux or macOS, yo
 
  * You can [fork](https://help.github.com/articles/fork-a-repo/) or [clone](https://help.github.com/articles/cloning-a-repository/) our repo.
    * To submit patches you should fork and then [create a Pull Request](https://help.github.com/articles/using-pull-requests/)
-   * If you are part of the project group, you can create new branches on the main repo as described [in our internal
-     Confluence](http://atlassian-hip.cs.upb.de:8090/display/DCS/Conventions+for+git)
-
-
+  
 ## How to test
 
  * Create a new file `testconfig.json` at `test/Api.Tests`. (See `test/Api.Tests/testconfig.json.example`).
@@ -80,8 +76,7 @@ Please write an email to [hip-app@campus.upb.de](mailto:hip-app@campus.upb.de).
 
 ## Documentation
 
-Documentation is currently collected in our [internal Confluence](http://atlassian-hip.cs.upb.de:8090/confluence/). If something is missing in 
-this README, just [send an email](mailto:hip-app@campus.upb.de).
+If something is missing in  this README, just [send an email](mailto:hip-app@campus.upb.de).
 
 
 ## Contact
