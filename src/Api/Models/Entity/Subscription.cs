@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Api.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using System.ComponentModel.DataAnnotations.Schema;
 using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class Subscription
     {

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Api.Data;
-using Api.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
-using Api.Models.Entity;
-using Api.Models.User;
-using Api.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using Microsoft.EntityFrameworkCore;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class UserManager : BaseManager
     {

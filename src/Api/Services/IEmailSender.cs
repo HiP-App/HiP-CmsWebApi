@@ -1,7 +1,7 @@
-﻿using Api.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System.Threading.Tasks;
 
-namespace Api.Services
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Services
 {
     public interface IEmailSender
     {

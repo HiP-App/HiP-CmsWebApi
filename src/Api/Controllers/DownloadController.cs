@@ -1,10 +1,10 @@
-﻿using Api.Managers;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using Microsoft.AspNetCore.StaticFiles;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     [Produces("application/json")]
     [Route("Download")]

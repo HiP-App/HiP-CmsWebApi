@@ -1,11 +1,11 @@
-﻿using Api.Data;
-using Api.Managers;
-using Api.Models;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Permission
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class TopicPermissions : BaseManager
     {

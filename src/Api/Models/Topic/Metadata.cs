@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Api.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 
-namespace Api.Models.Topic
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 {
     public class Metadata
     {

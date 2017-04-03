@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Api.Clients;
-using Api.Clients.Models;
-using Api.Models.Entity;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Clients;
+using PaderbornUniversity.SILab.Hip.CmsApi.Clients.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
-namespace Api.Services
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Services
 {
     public class EmailSender : IEmailSender
     {

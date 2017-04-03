@@ -1,13 +1,13 @@
-﻿using Api.Data;
-using Api.Models.Entity;
-using Api.Models.Notifications;
-using Api.Models.User;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationManager : BaseManager
     {

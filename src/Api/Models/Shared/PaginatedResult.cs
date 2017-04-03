@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Api.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 {
     public class PagedResult<TEntity>
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.User
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.User
 {
     public class UsersFormModel
     {

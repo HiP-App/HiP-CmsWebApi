@@ -1,5 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
-namespace Api.Models.Notifications
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications
 {
     public enum NotificationType
     {

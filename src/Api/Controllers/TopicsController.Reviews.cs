@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Api.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {

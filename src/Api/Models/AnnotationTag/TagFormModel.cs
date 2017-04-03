@@ -1,4 +1,4 @@
-﻿namespace Api.Managers
+﻿namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class TagFormModel
     {

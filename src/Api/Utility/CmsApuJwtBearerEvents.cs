@@ -3,7 +3,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Api.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 {
     public class CmsApuJwtBearerEvents : JwtBearerEvents
     {

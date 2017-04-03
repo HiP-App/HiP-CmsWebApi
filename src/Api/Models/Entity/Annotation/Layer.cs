@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity.Annotation
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     public class Layer
     {

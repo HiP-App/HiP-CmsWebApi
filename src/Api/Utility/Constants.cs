@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Api.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 {
     public static class Constants
     {

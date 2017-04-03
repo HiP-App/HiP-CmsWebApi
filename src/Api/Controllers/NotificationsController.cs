@@ -1,14 +1,14 @@
 ﻿using System;
-using Api.Utility;
-using Api.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Api.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public class NotificationsController : ApiController
     {

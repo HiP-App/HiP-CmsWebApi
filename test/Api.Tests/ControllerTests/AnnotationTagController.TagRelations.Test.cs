@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Controllers;
-using Api.Models.Entity;
-using Api.Models.AnnotationTag;
-using Api.Models.Entity.Annotation;
+using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using Xunit;
 using System.Security.Claims;
@@ -13,7 +13,7 @@ using System.Security.Claims;
 // ReSharper disable UnusedVariable
 // ReSharper disable CollectionNeverUpdated.Local
 
-namespace Api.Tests.ControllerTests
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class AnnotationTagRelationsControllerTest
     {

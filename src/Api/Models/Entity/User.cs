@@ -1,11 +1,11 @@
-﻿using Api.Utility;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class User
     {

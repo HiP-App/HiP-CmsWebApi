@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Api.Data;
-using Api.Models.Entity;
-using Api.Models;
-using Api.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using System.Linq;
-using Api.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 // ReSharper disable InconsistentNaming
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationProcessor : BaseManager
     {

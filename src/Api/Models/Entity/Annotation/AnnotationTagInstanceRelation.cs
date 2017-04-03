@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using Api.Models.AnnotationTag;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Models.Entity.Annotation
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     /// <summary>
     /// Represents a *directed* relation between two tag instances (i.e. AnnotationTagInstance).

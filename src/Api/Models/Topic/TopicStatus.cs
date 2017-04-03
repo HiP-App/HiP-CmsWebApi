@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models
 {
     public class TopicStatus
     {
