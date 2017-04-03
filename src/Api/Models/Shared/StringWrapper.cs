@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.Shared
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Shared
 {
     public class StringWrapper
     {

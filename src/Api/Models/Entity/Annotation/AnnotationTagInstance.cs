@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Models.Entity.Annotation
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     public class AnnotationTagInstance
     {

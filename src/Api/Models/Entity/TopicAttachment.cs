@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class TopicAttachment
     {

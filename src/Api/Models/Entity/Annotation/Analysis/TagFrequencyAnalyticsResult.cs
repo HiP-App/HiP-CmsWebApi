@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Api.Models.AnnotationAnalytics
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics
 {
     public class TagFrequencyAnalyticsResult
     {

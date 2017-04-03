@@ -1,15 +1,15 @@
-using Api.Data;
-using Api.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Api.Models.Entity;
-using Api.Models.User;
-using Api.Models.Topic;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public partial class TopicManager : BaseManager
     {

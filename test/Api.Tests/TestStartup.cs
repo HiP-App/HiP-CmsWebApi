@@ -1,14 +1,14 @@
-﻿using Api.Data;
-using Api.Tests.Utility;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Api.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 
-namespace Api.Tests
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
     public class TestStartup
     {

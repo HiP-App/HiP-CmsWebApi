@@ -1,6 +1,6 @@
-﻿using Api.Models.Entity.Annotation;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 
-namespace Api.Models.AnnotationTag
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag
 {
     /// <summary>
     /// Generic result type for all relations, i.e. TagRelationRule, LayerRelationRule, and TagRelation

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Api.Data;
-using Api.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class BaseManager
     {

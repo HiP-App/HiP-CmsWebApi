@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
-using Api.Models;
-using Api.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Collections.Generic;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {

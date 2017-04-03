@@ -1,4 +1,4 @@
-﻿namespace Api.Models.User
+﻿namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.User
 {
     public class Base64Image
     {

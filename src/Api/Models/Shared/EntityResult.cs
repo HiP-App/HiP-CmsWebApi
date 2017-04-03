@@ -1,4 +1,4 @@
-namespace Api.Models
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models
 {
     public class EntityResult
     {

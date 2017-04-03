@@ -1,5 +1,5 @@
-﻿using Api.Data;
-using Api.Utility;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using System;
 using System.IO;
-using Api.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace Api
+namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup

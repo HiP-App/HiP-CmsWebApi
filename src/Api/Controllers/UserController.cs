@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Api.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using Microsoft.Extensions.Logging;
-using Api.Data;
-using Api.Models;
-using Api.Models.User;
-using Api.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using System;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class UserController : ApiController
     {

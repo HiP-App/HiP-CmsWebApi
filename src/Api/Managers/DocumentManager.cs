@@ -1,15 +1,15 @@
-﻿using Api.Data;
-using Api.Models;
-using Api.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Api.Models.Entity.Annotation;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class DocumentManager : BaseManager
     {

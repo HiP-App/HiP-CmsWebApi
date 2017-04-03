@@ -1,10 +1,10 @@
-﻿using Api.Data;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     /// <summary>
     /// A base controller for handling user requests

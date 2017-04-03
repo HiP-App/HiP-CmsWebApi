@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class Topic
     {

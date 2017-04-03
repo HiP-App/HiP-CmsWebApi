@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Api.Models.AnnotationTag;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class AnnotationController
     {

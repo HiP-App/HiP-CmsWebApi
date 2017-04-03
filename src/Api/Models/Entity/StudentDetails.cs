@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Api.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class StudentDetails
     {

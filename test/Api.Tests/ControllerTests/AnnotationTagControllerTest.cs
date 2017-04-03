@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
-using Api.Controllers;
-using Api.Models.Entity.Annotation;
+using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using Xunit;
 
-namespace Api.Tests.ControllerTests
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class AnnotationTagControllerTest
     {

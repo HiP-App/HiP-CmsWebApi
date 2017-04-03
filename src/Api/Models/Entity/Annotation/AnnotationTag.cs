@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Api.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity.Annotation
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     public class AnnotationTag
     {

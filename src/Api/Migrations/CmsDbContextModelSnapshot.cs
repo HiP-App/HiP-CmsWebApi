@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Api.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 
-namespace Api.Migrations
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
     partial class CmsDbContextModelSnapshot : ModelSnapshot

@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
-using Api.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 
-namespace Api.Tests
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
     public class ControllerTester<T>
         where T: class

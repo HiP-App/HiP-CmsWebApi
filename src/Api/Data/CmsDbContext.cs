@@ -1,10 +1,10 @@
-﻿using Api.Models.Entity;
-using Api.Models.Entity.Annotation;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ObjectCreationAsStatement
 
-namespace Api.Data
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
 {
     public class CmsDbContext : DbContext
     {

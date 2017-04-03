@@ -1,11 +1,11 @@
-﻿using Api.Utility;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using Api.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class UserController
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Api.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class TopicAttachmentMetadata
     {

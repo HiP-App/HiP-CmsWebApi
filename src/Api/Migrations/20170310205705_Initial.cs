@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Api.Migrations
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     public partial class Initial : Migration
     {

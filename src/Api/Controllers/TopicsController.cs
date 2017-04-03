@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
-using Api.Managers;
-using Api.Models;
-using Api.Data;
-using Api.Permission;
-using Api.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController : ApiController
     {

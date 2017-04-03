@@ -1,10 +1,10 @@
-﻿using Api.Data;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using Microsoft.Extensions.Logging;
-using Api.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     /// <summary>
     /// Decides the permission for the user

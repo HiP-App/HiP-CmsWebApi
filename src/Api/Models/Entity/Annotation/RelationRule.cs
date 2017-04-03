@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.Entity.Annotation
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     public class RelationRule
     {

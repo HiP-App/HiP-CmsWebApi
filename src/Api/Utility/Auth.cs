@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Security.Principal;
 
-namespace Api.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 {
     public static class Auth
     {

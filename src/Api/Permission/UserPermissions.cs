@@ -1,9 +1,9 @@
-﻿using Api.Data;
-using Api.Managers;
-using Api.Models;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
 
-namespace Api.Permission
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class UserPermissions : BaseManager
     {
