@@ -1,6 +1,5 @@
 HiPCMS
 ======
-Develop: [![Build Status](https://travis-ci.org/HiP-App/HiP-CmsWebApi.svg?branch=develop)](https://travis-ci.org/HiP-App/HiP-CmsWebApi/)
 
 HiP-CmsWebApi is a content management system which is developed by the project group [History in 
 Paderborn](http://is.uni-paderborn.de/fachgebiete/fg-engels/lehre/ss15/hip-app/pg-hip-app.html).
@@ -73,11 +72,6 @@ If you are experiencing issues with your .NET installation on Linux or macOS, yo
 ## How to submit Defects and Feature Proposals
 
 Please write an email to [hip-app@campus.upb.de](mailto:hip-app@campus.upb.de).
-
-## Documentation
-
-If something is missing in  this README, just [send an email](mailto:hip-app@campus.upb.de).
-
 
 ## Contact
 
