@@ -172,5 +172,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
             DbContext.SaveChanges();
         }
+        
+        public string[] GetDisciplines()
+        {
+            // TODO: This should be stored in the DB once we have the full list.
+            string[] disciplines = {
+                                        "History",
+                                        "Computer Science",
+                                        "Medieval Studies",
+                                        "History and Arts",
+                                        "Arts",
+                                        "Linguistics"
+                                    };
+            Array.Sort(disciplines);
+            return disciplines;
+        }
     }
 }

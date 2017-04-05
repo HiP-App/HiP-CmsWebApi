@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
@@ -42,6 +43,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             {
                 return NotFound();
             }
+        }
+
+        /// <summary>
+        /// Get the list of disciplines a student can study.
+        /// </summary>
+        /// <response code="200">Returns a list of all known disciplines</response>        
+        [HttpGet("Disciplines")]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
+        public IActionResult GetDisciplines()
+        {
+            return Ok(_userManager.GetDisciplines());
         }
     }
 }
