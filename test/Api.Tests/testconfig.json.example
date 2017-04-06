@@ -1,3 +1,6 @@
 ﻿{
-  "License": "XXX",
+  "General": {
+    "StartupType": "PaderbornUniversity.SILab.Hip.CmsApi.Tests.TestStartup"
+  },
+  "License": "XXX"
 }
