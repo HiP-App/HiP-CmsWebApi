@@ -10,42 +10,42 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
     public class ControllerTester<T>
         where T: class
     {
-        private readonly User _admin;
-        private readonly User _student;
-        private readonly User _supervisor;
-        private AnnotationTag _tag1;
-        private AnnotationTag _tag2;
-        private AnnotationTag _tag3;
-        private AnnotationTag _tag4;
-        private AnnotationTagInstance _tagInstance1;
-        private AnnotationTagInstance _tagInstance2;
-        private AnnotationTagInstance _tagInstance3;
-        private AnnotationTagInstance _tagInstance4;
-        private AnnotationTagRelationRule _relationRule12;
-        private AnnotationTagRelationRule _relationRule32;
-        private AnnotationTagRelationRule _relationRule34;
-        private AnnotationTagInstanceRelation _relation12;
-        private AnnotationTagInstanceRelation _relation32;
-        private AnnotationTagInstanceRelation _relation34;
-        private Layer _layer2;
-        private Layer _layer1;
-        private LayerRelationRule _layerRelationRule;
+        private readonly User Admin;
+        private readonly User Student;
+        private readonly User Supervisor;
+        public AnnotationTag Tag1 { get; set; }
+        public AnnotationTag Tag2 { get; set; }
+        public AnnotationTag Tag3 { get; set; }
+        public AnnotationTag Tag4 { get; set; }
+        public AnnotationTagInstance TagInstance1 { get; set; }
+        public AnnotationTagInstance TagInstance2 { get; set; }
+        public AnnotationTagInstance TagInstance3 { get; set; }
+        public AnnotationTagInstance TagInstance4 { get; set; }
+        public AnnotationTagRelationRule RelationRule12 { get; set; }
+        public AnnotationTagRelationRule RelationRule32 { get; set; }
+        public AnnotationTagRelationRule RelationRule34 { get; set; }
+        public AnnotationTagInstanceRelation Relation12 { get; set; }
+        public AnnotationTagInstanceRelation Relation32 { get; set; }
+        public AnnotationTagInstanceRelation Relation34 { get; set; }
+        public Layer Layer2 { get; set; }
+        public Layer Layer1 { get; set; }
+        public LayerRelationRule LayerRelationRule { get; set; }
 
         public ControllerTester()
         {
-            _admin = new User
+            Admin = new User
             {
                 Id = 1,
                 Email = "admin@hipapp.de",
                 Role = "Administrator"
             };
-            _student = new User
+            Student = new User
             {
                 Id = 2,
                 Email = "student@hipapp.de",
                 Role = "Student"
             };
-            _supervisor = new User
+            Supervisor = new User
             {
                 Id = 3,
                 Email = "supervisor@hipapp.de",
@@ -64,31 +64,31 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
              * tag3 -> tag2
              * tag3 -> tag4
              */
-            _layer1 = new Layer() { Id = 1, Name = "Time" };
-            _layer2 = new Layer() { Id = 2, Name = "Perspective" };
-            _tag1 = new AnnotationTag() { Id = 1, Layer = _layer1.Name };
-            _tag2 = new AnnotationTag() { Id = 2, Layer = _layer2.Name };
-            _tag3 = new AnnotationTag() { Id = 3, Layer = _layer1.Name };
-            _tag4 = new AnnotationTag() { Id = 4, Layer = _layer2.Name };
-            _tag1.ChildTags = new List<AnnotationTag>() { _tag3 };
-            _tag2.ChildTags = new List<AnnotationTag>() { _tag4 };
-            _relationRule12 = new AnnotationTagRelationRule() { Id = 3, SourceTagId = _tag1.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 1->2" };
-            _relationRule32 = new AnnotationTagRelationRule() { Id = 5, SourceTagId = _tag3.Id, TargetTagId = _tag2.Id, Title = "Tag Relation Rule 3->2" };
-            _relationRule34 = new AnnotationTagRelationRule() { Id = 7, SourceTagId = _tag3.Id, TargetTagId = _tag4.Id, Title = "Tag Relation Rule 3->4" };
-            _tagInstance1 = new AnnotationTagInstance(_tag1) { Id = 1 };
-            _tagInstance2 = new AnnotationTagInstance(_tag2) { Id = 2 };
-            _tagInstance3 = new AnnotationTagInstance(_tag3) { Id = 3 };
-            _tagInstance4 = new AnnotationTagInstance(_tag4) { Id = 4 };
-            _relation12 = new AnnotationTagInstanceRelation(_tagInstance1, _tagInstance2) { Id = 3 };
-            _relation32 = new AnnotationTagInstanceRelation(_tagInstance3, _tagInstance2) { Id = 5 };
-            _relation34 = new AnnotationTagInstanceRelation(_tagInstance3, _tagInstance4) { Id = 7 };
-            _layerRelationRule = new LayerRelationRule()
+            Layer1 = new Layer() { Id = 1, Name = "Time" };
+            Layer2 = new Layer() { Id = 2, Name = "Perspective" };
+            Tag1 = new AnnotationTag() { Id = 1, Layer = Layer1.Name };
+            Tag2 = new AnnotationTag() { Id = 2, Layer = Layer2.Name };
+            Tag3 = new AnnotationTag() { Id = 3, Layer = Layer1.Name };
+            Tag4 = new AnnotationTag() { Id = 4, Layer = Layer2.Name };
+            Tag1.ChildTags = new List<AnnotationTag>() { Tag3 };
+            Tag2.ChildTags = new List<AnnotationTag>() { Tag4 };
+            RelationRule12 = new AnnotationTagRelationRule() { Id = 3, SourceTagId = Tag1.Id, TargetTagId = Tag2.Id, Title = "Tag Relation Rule 1->2" };
+            RelationRule32 = new AnnotationTagRelationRule() { Id = 5, SourceTagId = Tag3.Id, TargetTagId = Tag2.Id, Title = "Tag Relation Rule 3->2" };
+            RelationRule34 = new AnnotationTagRelationRule() { Id = 7, SourceTagId = Tag3.Id, TargetTagId = Tag4.Id, Title = "Tag Relation Rule 3->4" };
+            TagInstance1 = new AnnotationTagInstance(Tag1) { Id = 1 };
+            TagInstance2 = new AnnotationTagInstance(Tag2) { Id = 2 };
+            TagInstance3 = new AnnotationTagInstance(Tag3) { Id = 3 };
+            TagInstance4 = new AnnotationTagInstance(Tag4) { Id = 4 };
+            Relation12 = new AnnotationTagInstanceRelation(TagInstance1, TagInstance2) { Id = 3 };
+            Relation32 = new AnnotationTagInstanceRelation(TagInstance3, TagInstance2) { Id = 5 };
+            Relation34 = new AnnotationTagInstanceRelation(TagInstance3, TagInstance4) { Id = 7 };
+            LayerRelationRule = new LayerRelationRule()
             {
                 Id = 3,
-                SourceLayer = _layer1,
-                SourceLayerId = _layer1.Id,
-                TargetLayer = _layer2,
-                TargetLayerId = _layer2.Id,
+                SourceLayer = Layer1,
+                SourceLayerId = Layer1.Id,
+                TargetLayer = Layer2,
+                TargetLayerId = Layer2.Id,
                 Color = "test-color",
                 ArrowStyle = "test-style"
             };
@@ -106,7 +106,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 .Controller<T>()
                 .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, userIdentity))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.AddRange(_admin, _student, _supervisor))
+                    .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor))
                 );
         }
 
@@ -114,11 +114,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         {
             return TestController(userIdentity)
                 .WithDbContext(dbContext => dbContext                    
-                    .WithSet<AnnotationTag>(db => db.AddRange(_tag1, _tag2, _tag3, _tag4))
-                    .WithSet<Layer>(db => db.AddRange(_layer1, _layer2))
-                    .WithSet<LayerRelationRule>(db => db.Add(_layerRelationRule))
-                    .WithSet<AnnotationTagRelationRule>(db => db.AddRange(_relationRule12, _relationRule32, _relationRule34))
-                    .WithSet<AnnotationTagInstance>(db => db.AddRange(_tagInstance1, _tagInstance2, _tagInstance3, _tagInstance4))                        
+                    .WithSet<AnnotationTag>(db => db.AddRange(Tag1, Tag2, Tag3, Tag4))
+                    .WithSet<Layer>(db => db.AddRange(Layer1, Layer2))
+                    .WithSet<LayerRelationRule>(db => db.Add(LayerRelationRule))
+                    .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))                        
                 );
         }
     }
