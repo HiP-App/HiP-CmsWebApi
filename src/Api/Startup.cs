@@ -80,14 +80,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                        .AllowAnyOrigin()
             );
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
-                Audience = appConfig.AuthConfig.ClientId,
                 Authority = appConfig.AuthConfig.Domain,
-                AutomaticChallenge = true,
-                AutomaticAuthenticate = true,
-                RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents()
+                AllowedScopes = { appConfig.ApiName }, // "CMS-AngularApp"?
+                ApiName = appConfig.ApiName,
+                ApiSecret = appConfig.AuthConfig.Secret,
+
+                RequireHttpsMetadata = appConfig.RequireHttpsMetadata
             });
 
             app.UseMvc();

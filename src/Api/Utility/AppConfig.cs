@@ -15,6 +15,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 
         public string AdminEmail { get; }
 
+        public string ApiName { get; }
+
         public AppConfig(IConfiguration configuration)
         {
             DatabaseConfig = new DatabaseConfig
@@ -28,13 +30,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
             AuthConfig = new AuthConfig
             {
                 ClientId = configuration.GetValue<string>("CLIENT_ID"),
-                Domain = configuration.GetValue<string>("DOMAIN")
+                Domain = configuration.GetValue<string>("DOMAIN"),
+                Secret = configuration.GetValue<string>("SECRET")
             };
 
             EmailService = configuration.GetValue<string>("EMAIL_SERVICE");
 
             RequireHttpsMetadata = !configuration.GetValue<bool>("ALLOW_HTTP");
             AdminEmail = configuration.GetValue<string>("ADMIN_EMAIL");
+
+            ApiName = configuration.GetValue<string>("API_NAME");
         }
     }
 
@@ -71,5 +76,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
         public string ClientId { get; set; }
 
         public string Domain { get; set; }
+
+        public string Secret { get; set; }
     }
 }
