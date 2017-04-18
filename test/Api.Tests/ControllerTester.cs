@@ -10,9 +10,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
     public class ControllerTester<T>
         where T: class
     {
-        private readonly User Admin;
-        private readonly User Student;
-        private readonly User Supervisor;
+        public readonly User Admin;
+        public readonly User Student;
+        public readonly User Supervisor;
         public AnnotationTag Tag1 { get; set; }
         public AnnotationTag Tag2 { get; set; }
         public AnnotationTag Tag3 { get; set; }
