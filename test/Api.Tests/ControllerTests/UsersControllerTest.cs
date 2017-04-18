@@ -12,10 +12,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
     public class UsersControllerTest
     {
         private ControllerTester<UsersController> _tester;
+        public InviteFormModel InviteFormModel { get; set; }
 
         public UsersControllerTest()
         {
-            _tester = new ControllerTester<UsersController>();            
+            _tester = new ControllerTester<UsersController>();
+            InviteFormModel = new InviteFormModel()
+            {
+                Emails = new string[]
+                        {
+                            "abc@xyz.com", "lmn@xyz.com"
+                        }
+            };
         }
 
         #region InviteUsers
@@ -27,18 +35,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         // Refer: https://github.com/xunit/xunit/issues/687
         public void InviteUsersTest202()
         {
-            var model = new InviteFormModel()
-            {
-                Emails = new string[]
-                        {
-                            "abc@xyz.com", "lmn@xyz.com"
-                        }
-            };
-
-            _tester.TestController("admin@hipapp.de") // --> log in as admin
-                .Calling(c => c.InviteUsers(model, null))
+            _tester.TestController()
+                .Calling(c => c.InviteUsers(InviteFormModel, null))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Equals(model))))
+                .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Equals(InviteFormModel))))
                 .AndAlso()
                 .ShouldReturn()
                 .StatusCode(202);
@@ -50,32 +50,23 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void InviteUsersTest409()
         {
-
-            var model = new InviteFormModel()
-            {
-                Emails = new string[]
-                        {
-                            "abc@xyz.com", "lmn@xyz.com"
-                        }
-            };
-
             var _student1 = new User
             {
                 Id = 4,
-                Email = model.Emails[0],
+                Email = InviteFormModel.Emails[0],
                 Role = "Student"
             };
 
             var _student2 = new User
             {
                 Id = 5,
-                Email = model.Emails[1],
+                Email = InviteFormModel.Emails[1],
                 Role = "Student"
             };
 
             _tester.TestController()
                 .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.AddRange(_student1, _student2)))
-                .Calling(c => c.InviteUsers(model, null)) //Since dependency injection isn't working, EmailSender is null
+                .Calling(c => c.InviteUsers(InviteFormModel, null)) //Since dependency injection isn't working, EmailSender is null
                 .ShouldHave()
                 .DbContext(db => db.WithSet<User>(existinguser => existinguser.Any(actual => actual.Equals(_student1))))
                 .AndAlso()
@@ -89,18 +80,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void InviteUsersTest403()
         {
-            var model = new InviteFormModel()
-            {
-                Emails = new string[]
-                        {
-                            "abc@xyz.com", "lmn@xyz.com"
-                        }
-            };
-
-            _tester.TestController("student@hipapp.de") // --> log in as student
-                .Calling(c => c.InviteUsers(model, null)) //Since dependency injection isn't working, EmailSender is null
+            _tester.TestController(_tester.Student.Email) // --> log in as student
+                .Calling(c => c.InviteUsers(InviteFormModel, null)) //Since dependency injection isn't working, EmailSender is null
                 .ShouldHave()
-                .DbContext(db => db.WithSet<User>(nouser => !nouser.Any(actual => actual.Equals(model))))
+                .DbContext(db => db.WithSet<User>(nouser => !nouser.Any(actual => actual.Equals(InviteFormModel))))
                 .AndAlso()
                 .ShouldReturn()
                 .StatusCode(403);
