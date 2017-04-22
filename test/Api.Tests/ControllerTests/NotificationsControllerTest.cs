@@ -115,7 +115,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .WithDbContext(dbContext => dbContext                    
-                    .WithSet<Subscription>(db => db.Add(subscriptions)))
+                    .WithSet<Subscription>(db => db.Add(subscriptions))
+                 )
                 .Calling(c => c.GetSubscriptions())
                 .ShouldReturn()
                 .Ok()
