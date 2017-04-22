@@ -4,6 +4,8 @@ using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using System.Collections.Generic;
+using System;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
@@ -30,6 +32,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public Layer Layer2 { get; set; }
         public Layer Layer1 { get; set; }
         public LayerRelationRule LayerRelationRule { get; set; }
+        public Topic TopicOne { get; set; }
+        public Topic TopicTwo { get; set; }
+        public Notification notificationOne { get; set; }
+        public Notification notificationTwo { get; set; }
 
         public ControllerTester()
         {
@@ -92,6 +98,40 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Color = "test-color",
                 ArrowStyle = "test-style"
             };
+            TopicOne = new Topic
+            {
+                Id = 1,
+                Title = "Paderborner Dom",
+                Status = "InReview",
+                Deadline = new DateTime(2017, 4, 18),
+                CreatedById = Supervisor.Id,
+            };
+            TopicTwo = new Topic
+            {
+                Id = 2,
+                Title = "Paderborner Dom",
+                Status = "InReview",
+                Deadline = new DateTime(2017, 4, 18),
+                CreatedById = Supervisor.Id,
+            };
+            notificationOne = new Notification
+            {
+                NotificationId = 1,
+                UserId = Student.Id,
+                UpdaterId = Supervisor.Id,
+                Type = NotificationType.TOPIC_ASSIGNED_TO,
+                TopicId = TopicOne.Id,
+                IsRead = false
+            };
+            notificationTwo = new Notification
+            {
+                NotificationId = 2,
+                UserId = Student.Id,
+                UpdaterId = Supervisor.Id,
+                Type = NotificationType.TOPIC_ASSIGNED_TO,
+                TopicId = TopicTwo.Id,
+                IsRead = true
+            };
         }
 
         /// <summary>
@@ -118,7 +158,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                     .WithSet<Layer>(db => db.AddRange(Layer1, Layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(LayerRelationRule))
                     .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
-                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))                        
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))
+                    .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
+                    .WithSet<Notification>(db => db.AddRange(notificationOne, notificationTwo))
                 );
         }
     }

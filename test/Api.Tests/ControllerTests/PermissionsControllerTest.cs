@@ -9,30 +9,22 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
     public class PermissionControllerTest
     {
         private ControllerTester<PermissionsController> _tester;        
-        public Topic Topic { get; set; }
+        //public Topic Topic { get; set; }
         public TopicUser SupervisorUser { get; set; }
         public TopicUser StudentUser { get; set; }        
 
         public PermissionControllerTest()
         {
-            _tester = new ControllerTester<PermissionsController>();            
-            Topic = new Topic
-            {
-                Id = 1,
-                Title = "Paderborner Dom",
-                Status = "InReview",
-                Deadline = new DateTime(2017, 4, 18),
-                CreatedById = _tester.Supervisor.Id
-            };
+            _tester = new ControllerTester<PermissionsController>();                        
             SupervisorUser = new TopicUser
             {
-                TopicId = Topic.Id,
+                TopicId = _tester.TopicOne.Id,
                 UserId = _tester.Supervisor.Id,
                 Role = _tester.Supervisor.Role
             };
             StudentUser = new TopicUser
             {
-                TopicId = Topic.Id,
+                TopicId = _tester.TopicOne.Id,
                 UserId = _tester.Student.Id,
                 Role = _tester.Student.Role
             };            
@@ -146,9 +138,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestOk()
         {
-            _tester.TestController()
-                .WithDbContext(dbContext => dbContext.WithSet<Topic>(db => db.Add(Topic)))
-                .Calling(c => c.IsAssociatedTo(Topic.Id))
+            _tester.TestControllerWithMockData()                
+                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -159,11 +150,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestForSupervisor()
         {
-            _tester.TestController(_tester.Supervisor.Email)
+            _tester.TestControllerWithMockData(_tester.Supervisor.Email)
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<Topic>(db => db.Add(Topic))
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
-                .Calling(c => c.IsAssociatedTo(Topic.Id))
+                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -174,11 +164,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestForStudent()
         {
-            _tester.TestController(_tester.Student.Email)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<Topic>(db => db.Add(Topic))
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
-                .Calling(c => c.IsAssociatedTo(Topic.Id))
+                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -196,12 +185,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Role = "Student"
             };
 
-            _tester.TestController(newStudent.Email)
+            _tester.TestControllerWithMockData(newStudent.Email)
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<Topic>(db => db.Add(Topic))
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser))
                     .WithSet<User>(db => db.Add(newStudent)))
-                .Calling(c => c.IsAssociatedTo(Topic.Id))
+                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -221,17 +209,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 
             var ReviewerUser = new TopicUser
             {
-                TopicId = Topic.Id,
+                TopicId = _tester.TopicOne.Id,
                 UserId = reviewer.Id,
                 Role = reviewer.Role
             };
 
-            _tester.TestController(reviewer.Email)
+            _tester.TestControllerWithMockData(reviewer.Email)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(reviewer))
-                    .WithSet<Topic>(db => db.Add(Topic))
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser,ReviewerUser)))
-                .Calling(c => c.IsAllowedToReview(Topic.Id))
+                .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -242,11 +229,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToReviewTest403ForAdmin()
         {
-            _tester.TestController()
-                .WithDbContext(dbContext => dbContext                    
-                    .WithSet<Topic>(db => db.Add(Topic))
+            _tester.TestControllerWithMockData()
+                .WithDbContext(dbContext => dbContext   
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
-                .Calling(c => c.IsAllowedToReview(Topic.Id))
+                .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -257,11 +243,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToReviewTest403ForStudent()
         {
-            _tester.TestController(_tester.Student.Email)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<Topic>(db => db.Add(Topic))
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
-                .Calling(c => c.IsAllowedToReview(Topic.Id))
+                .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
