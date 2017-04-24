@@ -1,4 +1,4 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -61,7 +61,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             {
                 c.SwaggerDoc("v1", new Info() { Title = "HiPCMS API", Version = "v1", Description = "A REST api to serve History in Paderborn CMS System" });
 
-                //c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
+                c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
                 c.OperationFilter<SwaggerOperationFilter>();
             });
         }
