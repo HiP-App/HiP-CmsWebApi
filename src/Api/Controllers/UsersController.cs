@@ -1,22 +1,21 @@
-﻿using Api.Utility;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
-using Api.Managers;
 using Microsoft.Extensions.Logging;
-using Api.Data;
-using Api.Models;
-using Api.Models.User;
-using Api.Permission;
-using Api.Services;
-using System;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
-    public partial class UsersController : ApiController
+    public class UsersController : ApiController
     {
         private readonly UserManager _userManager;
         private readonly UserPermissions _userPermissions;
 
-        public UsersController(CmsDbContext dbContext, ILoggerFactory logger) : base(dbContext, logger)
+        public UsersController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
         {
             _userManager = new UserManager(dbContext);
             _userPermissions = new UserPermissions(dbContext);
@@ -44,7 +43,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 503)]
         public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
-            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserId()))
+            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdentity()))
                 return Forbidden();
 
             if (!ModelState.IsValid)
@@ -60,10 +59,6 @@ namespace Api.Controllers
             return Accepted(result);
         }
 
-        #endregion
-
-        #region GET user
-
         // GET api/users
 
         /// <summary>
@@ -75,124 +70,13 @@ namespace Api.Controllers
         /// <param name="pageSize">Size of the requested page</param>
         /// <response code="200">Returns PagedResults of UserResults</response>        
         /// <response code="401">User is denied</response>
-        [HttpGet]
+        [HttpGet("/Api/Users/")]
         [ProducesResponseType(typeof(PagedResult<UserResult>), 200)]
         public IActionResult Get([FromQuery]string role, [FromQuery]string query, [FromQuery] int page = 0, [FromQuery] int pageSize = Constants.PageSize)
         {
             return Ok(_userManager.GetAllUsers(query, role, page, pageSize));
         }
 
-
-        // GET api/users/:id
-
-        /// <summary>
-        /// Get the user {id}
-        /// </summary>   
-        /// <param name="id">The Id of the user</param>        
-        /// <response code="200">Returns the user</response>        
-        /// <response code="404">User not found</response>
-        /// <response code="401">User is denied</response>
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(UserResult), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Get([FromRoute]int id)
-        {
-            try
-            {
-                var user = _userManager.GetUserById(id);
-                return Ok(new UserResult(user));
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
-        }
-
-
-        // GET api/users/current
-
-        /// <summary>
-        /// Get the current user
-        /// </summary>           
-        /// <response code="200">Returns the current user</response>        
-        /// <response code="404">User not found</response>
-        /// <response code="401">User is denied</response>
-        [HttpGet("Current")]
-        [ProducesResponseType(typeof(UserResult), 200)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult CurrentUser()
-        {
-            return Get(User.Identity.GetUserId());
-        }
-        #endregion
-
-        #region PUT user
-        // PUT api/users/current
-
-        /// <summary>
-        /// Edit the current user
-        /// </summary>   
-        /// <param name="model">Contains details of the user to be edited</param>        
-        /// <response code="200">User edited successfully</response>        
-        /// <response code="400">Request incorrect</response>        
-        /// <response code="404">User not found</response>        
-        /// <response code="401">User is denied</response>
-        [HttpPut("Current")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put([FromBody]UserFormModel model)
-        {
-            return PutUser(User.Identity.GetUserId(), model);
-        }
-
-        // PUT api/users/:id
-
-        /// <summary>
-        /// Edit the user {id}
-        /// </summary>   
-        /// <param name="id">The Id of the user to be edited</param>        
-        /// <param name="model">Contains details of the user to be edited</param>        
-        /// <response code="200">User edited successfully</response>        
-        /// <response code="400">Request incorrect</response>        
-        /// <response code="403">User not allowed to edit</response>        
-        /// <response code="404">User not found</response>
-        /// <response code="401">User is denied</response>
-        [HttpPut("{id}")]
-        [ProducesResponseType(typeof(void), 200)]
-        [ProducesResponseType(typeof(void), 400)]
-        [ProducesResponseType(typeof(void), 403)]
-        [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Put([FromRoute]int id, [FromBody]AdminUserFormModel model)
-        {
-            if (!_userPermissions.IsAllowedToAdminister(User.Identity.GetUserId()))
-                return Forbidden();
-
-            return PutUser(id, model);
-        }
-
-        private IActionResult PutUser([FromRoute]int id, [FromBody]UserFormModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                if (model is AdminUserFormModel && !Role.IsRoleValid(((AdminUserFormModel)model).Role))
-                {
-                    ModelState.AddModelError("Role", "Invalid Role");
-                }
-                else
-                {
-                    if (!_userManager.UpdateUser(id, model))
-                        return NotFound();
-
-                    Logger.LogInformation(5, "User with ID: " + id + " updated.");
-                    return Ok();
-                }
-            }
-
-            return BadRequest(ModelState);
-        }
-
         #endregion
     }
-
 }

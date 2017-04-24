@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Api.Models.User
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.User
 {
     public class UsersFormModel
     {
         [Required]
-        public int[] Users { get; set; }
+        public string[] Users { get; set; }
     }
 }

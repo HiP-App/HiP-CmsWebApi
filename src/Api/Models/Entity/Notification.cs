@@ -1,4 +1,4 @@
-﻿using Api.Models.Notifications;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -6,7 +6,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class Notification
     {

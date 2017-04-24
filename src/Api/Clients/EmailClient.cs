@@ -2,7 +2,7 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Api.Clients
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Clients
 {
     using System;
     using System.Collections.Generic;
@@ -441,7 +441,7 @@ namespace Api.Clients
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Api.Clients
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Clients
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -527,7 +527,7 @@ namespace Api.Clients
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Api.Clients
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Clients
 {
     using System;
     using System.Collections.Generic;
@@ -594,7 +594,7 @@ namespace Api.Clients
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Api.Clients.Models
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Clients.Models
 {
     using Newtonsoft.Json;
     using Microsoft.Rest;
@@ -655,7 +655,7 @@ namespace Api.Clients.Models
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Api.Clients.Models
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Clients.Models
 {
     using System;
     using Newtonsoft.Json;
@@ -743,7 +743,7 @@ namespace Api.Clients.Models
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Api.Clients.Models
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Clients.Models
 {
     using Newtonsoft.Json;
     using Microsoft.Rest;

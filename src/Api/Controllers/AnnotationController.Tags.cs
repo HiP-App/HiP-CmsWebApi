@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using Api.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using Microsoft.AspNetCore.Mvc;
-using Api.Models.AnnotationTag;
-using Api.Utility;
-using Api.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class AnnotationController
     {
@@ -23,7 +23,7 @@ namespace Api.Controllers
         /// <response code="204">There are no Tags in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags")]
-        [ProducesResponseType(typeof(IEnumerable<AnnotationTagResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<TagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetAllTags([FromQuery]bool includeDeleted = false, [FromQuery]bool includeOnlyRoot = false)
         {
@@ -33,14 +33,14 @@ namespace Api.Controllers
         // Get api/Annotation/Tags/:id
 
         /// <summary>
-        /// A specific Tag save in the system
+        /// A specific AnnotationTag save in the system
         /// </summary>
         /// <param name="id">The id of the Tag</param>
-        /// <response code="200">A AnnotationTagResult</response>
-        /// <response code="404">There is no Tag {id} in the system</response>
+        /// <response code="200">A TagResult</response>
+        /// <response code="404">There is no AnnotationTag {id} in the system</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}")]
-        [ProducesResponseType(typeof(AnnotationTagResult), 200)]
+        [ProducesResponseType(typeof(TagResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetTag([FromRoute]int id)
         {
@@ -63,10 +63,10 @@ namespace Api.Controllers
         /// </summary>
         /// <param name="id">The id of the parent tag</param>
         /// <response code="200">A List of AnnotationTagResults</response>
-        /// <response code="204">The parent Tag {id} has no Children</response>
+        /// <response code="204">The parent AnnotationTag {id} has no Children</response>
         /// <response code="401">User is denied</response>
         [HttpGet("Tags/{id}/ChildTags")]
-        [ProducesResponseType(typeof(List<AnnotationTagResult>), 200)]
+        [ProducesResponseType(typeof(List<TagResult>), 200)]
         [ProducesResponseType(typeof(void), 204)]
         public IActionResult GetChildTagsOf([FromRoute]int id)
         {
@@ -92,9 +92,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post([FromBody]AnnotationTagFormModel tag)
+        public IActionResult Post([FromBody]TagFormModel tag)
         {
-            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -109,7 +109,7 @@ namespace Api.Controllers
         // Post api/Annotation/Tags/:parentId/ChildTags/:childId
 
         /// <summary>
-        /// Add Tag {childId} as Child to Tag {parentId} 
+        /// Add AnnotationTag {childId} as Child to AnnotationTag {parentId} 
         /// </summary>
         /// <param name="parentId">Tag to add Child to</param>
         /// <param name="childId">Tag to be added as Child</param>
@@ -123,7 +123,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 400)]
         public IActionResult Post([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.AddChildTag(parentId, childId))
@@ -138,7 +138,7 @@ namespace Api.Controllers
         // Put api/Annotation/Tags/:Id
 
         /// <summary>
-        /// Edit Tag {Id} 
+        /// Edit AnnotationTag {Id} 
         /// </summary>
         /// <param name="id">Tag to be edited</param>
         /// <param name="model">Date to be changed</param>
@@ -150,9 +150,9 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTag([FromRoute]int id, [FromBody]AnnotationTagFormModel model)
+        public IActionResult PutTag([FromRoute]int id, [FromBody]TagFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.EditTag(model, id))
@@ -167,7 +167,7 @@ namespace Api.Controllers
         // Delete api/Annotation/Tags/:Id
 
         /// <summary>
-        /// Delete Tag {Id} 
+        /// Delete AnnotationTag {Id} 
         /// </summary>
         /// <param name="id">Tag to be delete</param>
         /// <response code="200">Tag ddeleted successful</response>
@@ -180,7 +180,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Delete([FromRoute]int id)
         {
-            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.DeleteTag(id))
@@ -189,9 +189,9 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// remove Child {childId} from Tag {parentId} 
+        /// remove Child {childId} from AnnotationTag {parentId} 
         /// </summary>
-        /// <param name="parentId">Parent Tag to remove child from</param>
+        /// <param name="parentId">Parent AnnotationTag to remove child from</param>
         /// <param name="childId">Child to be removed</param>
         /// <response code="200">Child removed successful</response>
         /// <response code="403">User not allowed to edit Tags</response>
@@ -203,7 +203,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteChildOf([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserId()))
+            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             if (_tagManager.RemoveChildTag(parentId, childId))

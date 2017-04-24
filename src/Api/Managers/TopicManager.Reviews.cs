@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Api.Models;
-using Api.Models.Entity;
-using Api.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public partial class TopicManager
     {
@@ -21,7 +21,7 @@ namespace Api.Managers
             {
                 try
                 {
-                    var review = reviews.Single(r => r.ReviewerId == reviewer.Id);
+                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Identity);
                     result.Add(new TopicReviewResult(review));
                 }
                 catch (InvalidOperationException)
@@ -32,16 +32,17 @@ namespace Api.Managers
             return result;
         }
 
-        public bool ChangeReviewStatus(int userId, int topicId, TopicReviewStatus status)
+        public bool ChangeReviewStatus(string identity, int topicId, TopicReviewStatus status)
         {
             try
             {
-                if (!DbContext.TopicReviews.Any(rs => rs.TopicId == topicId && rs.ReviewerId == userId))
+                var user = GetUserByIdentity(identity);
+                if (!DbContext.TopicReviews.Any(rs => rs.TopicId == topicId && rs.ReviewerId == user.Id))
                 {
                     var review = new TopicReview()
                     {
                         TopicId = topicId,
-                        ReviewerId = userId,
+                        ReviewerId = user.Id,
                         Status = status.Status
                     };
                     DbContext.TopicReviews.Add(review);
@@ -50,7 +51,7 @@ namespace Api.Managers
                 {
                     var review =
                         DbContext.TopicReviews.Include(r => r.Reviewer)
-                            .Single(rs => rs.TopicId == topicId && rs.ReviewerId == userId);
+                            .Single(rs => rs.TopicId == topicId && rs.ReviewerId == user.Id);
                     review.Status = status.Status;
                     DbContext.Update(review);
                 }

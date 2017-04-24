@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Api.Models.Entity.Annotation;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class Document
     {

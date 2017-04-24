@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public abstract class DownloadManager
     {

@@ -1,9 +1,9 @@
-﻿using Api.Data;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using Microsoft.Extensions.Logging;
-using Api.Managers;
-using Api.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class AnnotationController : ApiController
     {

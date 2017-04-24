@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Api.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System;
-using Api.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 
-namespace Api.Tests.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility
 {
     public class TestEmailSender : IEmailSender
     {

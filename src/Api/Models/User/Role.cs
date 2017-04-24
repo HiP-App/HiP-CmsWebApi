@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Api.Models
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models
 {
     public static class Role
     {

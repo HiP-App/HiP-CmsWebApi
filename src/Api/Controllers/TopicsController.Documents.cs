@@ -1,10 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
-using Api.Managers;
-using Api.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
@@ -29,7 +29,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult GetDocument([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             try
@@ -57,13 +57,13 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult PostDocument([FromRoute]int topicId, [FromBody]HtmlContentModel htmlContent)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _documentManager.UpdateDocument(topicId, User.Identity.GetUserId(), htmlContent.HtmlContent);
+            var result = _documentManager.UpdateDocument(topicId, User.Identity.GetUserIdentity(), htmlContent.HtmlContent);
             if (result.Success)
                 return Ok(result);
 
@@ -83,7 +83,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult DeleteDocument([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             if (_documentManager.DeleteDocument(topicId))

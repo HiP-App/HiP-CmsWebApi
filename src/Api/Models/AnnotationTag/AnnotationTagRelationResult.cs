@@ -1,21 +1,21 @@
-﻿using Api.Models.Entity.Annotation;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 
-namespace Api.Models.AnnotationTag
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag
 {
     public class AnnotationTagRelationResult
     {
-        public AnnotationTagRelationResult(AnnotationTagRelation relation)
+        public AnnotationTagRelationResult(AnnotationTagRelationRule relation)
         {
-            Name = relation.Name;
-            FirstTag = new AnnotationTagResult(relation.FirstTag);
-            SecondTag = new AnnotationTagResult(relation.SecondTag);
+            Title = relation.Title;
+            FirstTag = new TagResult(relation.SourceTag);
+            SecondTag = new TagResult(relation.TargetTag);
         }
 
-        public string Name { get; set; }
+        public string Title { get; set; }
 
-        public AnnotationTagResult FirstTag { get; set; }
+        public TagResult FirstTag { get; set; }
 
-        public AnnotationTagResult SecondTag { get; set; }
+        public TagResult SecondTag { get; set; }
     
     }
 }

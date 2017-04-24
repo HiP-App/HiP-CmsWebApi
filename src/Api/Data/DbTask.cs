@@ -1,13 +1,13 @@
-﻿using Api.Utility;
-using Api.Managers;
-using Api.Models;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Api.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System;
 
-namespace Api.Data
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
 {
     public static class DbTask
     {

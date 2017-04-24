@@ -1,8 +1,8 @@
 ﻿using System;
-using Api.Models.Entity;
-using Api.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 
-namespace Api.Models.Topic
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 {
     public class TopicReviewResult
     {

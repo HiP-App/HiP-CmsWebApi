@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace Api.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class SwaggerOperationFilter : IOperationFilter

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Configuration;
 
-namespace Api.Utility
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 {
     public class AppConfig
     {

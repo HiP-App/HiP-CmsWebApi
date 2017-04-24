@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
-using Api.Models;
-using Api.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Collections.Generic;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
@@ -127,11 +127,11 @@ namespace Api.Controllers
 
         private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserId(), topicId, role, users.Users))
+            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdentity(), topicId, role, users))
                 return Ok();
             return BadRequest();
         }

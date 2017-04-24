@@ -1,5 +1,5 @@
-﻿using Api.Data;
-using Api.Utility;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using System;
 using System.IO;
-using Api.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace Api
+namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
@@ -61,7 +61,7 @@ namespace Api
             {
                 c.SwaggerDoc("v1", new Info() { Title = "HiPCMS API", Version = "v1", Description = "A REST api to serve History in Paderborn CMS System" });
 
-                c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
+                //c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
                 c.OperationFilter<SwaggerOperationFilter>();
             });
         }
@@ -87,7 +87,7 @@ namespace Api
                 AutomaticChallenge = true,
                 AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents(app.ApplicationServices.GetRequiredService<CmsDbContext>())
+                Events = new CmsApuJwtBearerEvents()
             });
 
             app.UseMvc();
@@ -97,9 +97,10 @@ namespace Api
             {
                 c.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Host = httpReq.Host.Value);
             });
-            app.UseSwaggerUi(c =>
+            app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("../v1/swagger.json", "HiPCMS API V1");
+                // Only a hack, if HiP-Swagger is running, SwaggerUI can be disabled for Production
+                c.SwaggerEndpoint((env.IsDevelopment() ? "/swagger" : "..") + "/v1/swagger.json", "HiPCMS API V1");
             });
 
             // Run all pending Migrations and Seed DB with initial data

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
     public class Topic
     {
@@ -41,7 +41,7 @@ namespace Api.Models.Entity
 
         public List<AssociatedTopic> ParentTopics { get; set; }
 
-        public List<TopicAttatchment> Attatchments { get; set; }
+        public List<TopicAttachment> Attachments { get; set; }
 
         public virtual Document Document { get; set; }
 

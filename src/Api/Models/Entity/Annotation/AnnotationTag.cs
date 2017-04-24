@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Api.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 // ReSharper disable CollectionNeverUpdated.Global
 
-namespace Api.Models.Entity.Annotation
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     public class AnnotationTag
     {
@@ -38,15 +38,15 @@ namespace Api.Models.Entity.Annotation
 
         public List<AnnotationTagInstance> TagInstances { get; set; }
 
-        public List<AnnotationTagRelation> TagRelations { get; set; }
+        public List<AnnotationTagRelationRule> TagRelationRules { get; set; }
 
-        public List<AnnotationTagRelation> IncomingRelations { get; set; }
+        public List<AnnotationTagRelationRule> IncomingTagRelationRules { get; set; }
 
         public AnnotationTag()
         {
         }
 
-        public AnnotationTag(AnnotationTagFormModel model)
+        public AnnotationTag(TagFormModel model)
         {
             Name = model.Name;
             ShortName = model.ShortName;

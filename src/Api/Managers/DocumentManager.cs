@@ -1,15 +1,15 @@
-﻿using Api.Data;
-using Api.Models;
-using Api.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Api.Models.Entity.Annotation;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class DocumentManager : BaseManager
     {
@@ -24,7 +24,7 @@ namespace Api.Managers
             return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
         }
 
-        internal EntityResult UpdateDocument(int topicId, int userId, string htmlContent)
+        internal EntityResult UpdateDocument(int topicId, string identity, string htmlContent)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Api.Managers
             }
             // already exitsts
 
-
+            var userId = GetUserByIdentity(identity).Id;
             Document document;
             try
             {
@@ -50,6 +50,9 @@ namespace Api.Managers
                 DbContext.Add(document);
             }
 
+            // Angular app trims img-tags to non-valid xml, let us repair it
+            htmlContent = Regex.Replace(htmlContent, "<img ([^>]*)?>", "<img $1 />");
+
             // document is saved, so now we can parse it
             var stream = new System.IO.StringReader("<pseudo-root>" + htmlContent + "</pseudo-root>");
             var xmlReader = XmlReader.Create(stream);
@@ -61,6 +64,8 @@ namespace Api.Managers
                 {
                     if (xmlReader.NodeType != XmlNodeType.Element) continue;
                     if (!xmlReader.HasAttributes) continue;
+                    if (xmlReader.GetAttribute("data-tag-model-id") == null) continue;
+                    if (xmlReader.GetAttribute("data-tag-id") == null) continue;
 
                     var tagModelId = int.Parse(xmlReader.GetAttribute("data-tag-model-id"));
                     var tagInstanceId = int.Parse(xmlReader.GetAttribute("data-tag-id"));
@@ -90,7 +95,7 @@ namespace Api.Managers
             {
                 return EntityResult.Error("Parsing Error");
             }
-
+            
             try
             {
                 DbContext.SaveChanges();

@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using Api.Utility;
-using Api.Managers;
-using Api.Models.AnnotationAnalytics;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics;
 
-namespace Api.Controllers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
@@ -16,7 +16,7 @@ namespace Api.Controllers
         }
 
         /// <summary>
-        /// gets the Tag Frequency Analytics of {topicId}
+        /// gets the AnnotationTag Frequency Analytics of {topicId}
         /// </summary>
         /// <param name="topicId">the Id of the Topic {topicId}</param>
         /// <response code="200">The Analytics of</response>
@@ -29,7 +29,7 @@ namespace Api.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult GetTagFrequencyAnalytics([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserId(), topicId))
+            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Forbidden();
 
             try

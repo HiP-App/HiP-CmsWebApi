@@ -1,4 +1,4 @@
-﻿namespace Api.Models.AnnotationTag
+﻿namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag
 {
     public class AnnotationTagRelationFormModel
     {

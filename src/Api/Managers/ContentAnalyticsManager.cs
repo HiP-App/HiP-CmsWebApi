@@ -1,9 +1,9 @@
-﻿using Api.Data;
-using Api.Models.AnnotationAnalytics;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Api.Managers
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class ContentAnalyticsManager : BaseManager
     {

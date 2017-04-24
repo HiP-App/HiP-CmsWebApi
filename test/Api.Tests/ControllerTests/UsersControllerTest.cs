@@ -1,18 +1,18 @@
-﻿using Api.Controllers;
-using Api.Models;
-using Api.Models.Entity;
+﻿using System.Security.Claims;
+using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using MyTested.AspNetCore.Mvc;
-using NUnit.Framework;
+using Xunit;
 
-namespace Api.Tests.ControllerTests
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
-    [TestFixture]
     public class UsersControllerTest
     {
         /// <summary>
         /// Tests response from Get action of UsersController.
         /// </summary>
-        [Test]
+        [Fact]
         public void GetUserListTest()
         {
             MyMvc
@@ -25,13 +25,13 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Tests response code 403 from Put(Id,AdminUserFormModel) action of UsersController
         /// </summary>
-        [Test]
+        [Fact]
         public void UpdateUserTestResponseCode403()
         {
             MyMvc
-                .Controller<UsersController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1")) // add claim with custom name and value of 1 (Internal mock by the framework)                             
-                .Calling(c => c.Put(4, new AdminUserFormModel
+                .Controller<UserController>()
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de")) // add claim with custom name and value of 1 (Internal mock by the framework)                             
+                .Calling(c => c.Put("admin@hipapp.de", new UserFormModel
                 {
                     FirstName = "First Name",
                     LastName = "Last Name",
@@ -44,12 +44,12 @@ namespace Api.Tests.ControllerTests
         /// <summary>
         /// Tests response from Put(Id,AdminUserFormModel) action of UsersController
         /// </summary>
-        [Test]
+        [Fact]
         public void UpdateUserTest()
         {
             MyMvc
-                .Controller<UsersController>()
-                .WithAuthenticatedUser(user => user.WithClaim("Id", "1")) // add claim with custom name and value of 1                                                
+                .Controller<UserController>()
+                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de")) // add claim with custom name and value of 1                                                
                 .WithDbContext(dbContext => //This will make the framework mock the actual DbCall and uses InMemoryDatabase internally.
                     dbContext.WithSet<User>(o => o.Add(new User
                     {
@@ -57,7 +57,7 @@ namespace Api.Tests.ControllerTests
                         Email = "admin@hipapp.de",
                         Role = "Administrator"
                     })))
-                .Calling(c => c.Put(4, new AdminUserFormModel
+                .Calling(c => c.Put("admin@hipapp.de", new UserFormModel
                 {
                     FirstName = "First Name",
                     LastName = "Last Name",
