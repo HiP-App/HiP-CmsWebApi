@@ -50,14 +50,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void InviteUsersTest409()
         {
-            var _student1 = new User
+            var student1 = new User
             {
                 Id = 4,
                 Email = InviteFormModel.Emails[0],
                 Role = "Student"
             };
 
-            var _student2 = new User
+            var student2 = new User
             {
                 Id = 5,
                 Email = InviteFormModel.Emails[1],
@@ -65,10 +65,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
 
             _tester.TestController()
-                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.AddRange(_student1, _student2)))
+                .WithDbContext(dbContext => dbContext.WithSet<User>(o => o.AddRange(student1, student2)))
                 .Calling(c => c.InviteUsers(InviteFormModel, null)) //Since dependency injection isn't working, EmailSender is null
                 .ShouldHave()
-                .DbContext(db => db.WithSet<User>(existinguser => existinguser.Any(actual => actual.Equals(_student1))))
+                .DbContext(db => db.WithSet<User>(existinguser => existinguser.Any(actual => actual.Equals(student1))))
                 .AndAlso()
                 .ShouldReturn()
                 .StatusCode(409); //user already exists in Database
