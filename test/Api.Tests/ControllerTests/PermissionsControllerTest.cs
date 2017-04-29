@@ -1,7 +1,6 @@
 ﻿using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using System;
 using Xunit;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
@@ -187,7 +186,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Role = "Reviewer"
             };
 
-            var ReviewerUser = new TopicUser
+            var reviewerUser = new TopicUser
             {
                 TopicId = _tester.TopicOne.Id,
                 UserId = reviewer.Id,
@@ -197,7 +196,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestControllerWithMockData(reviewer.Email)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(reviewer))
-                    .WithSet<TopicUser>(db => db.AddRange(ReviewerUser)))
+                    .WithSet<TopicUser>(db => db.AddRange(reviewerUser)))
                 .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();

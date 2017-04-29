@@ -38,7 +38,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController()
                 .Calling(c => c.InviteUsers(InviteFormModel, null))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Equals(InviteFormModel))))
+                .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Email.Equals(InviteFormModel.Emails[0]))))
                 .AndAlso()
                 .ShouldReturn()
                 .StatusCode(202);
@@ -83,7 +83,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController(_tester.Student.Email) // --> log in as student
                 .Calling(c => c.InviteUsers(InviteFormModel, null)) //Since dependency injection isn't working, EmailSender is null
                 .ShouldHave()
-                .DbContext(db => db.WithSet<User>(nouser => !nouser.Any(actual => actual.Equals(InviteFormModel))))
+                .DbContext(db => db.WithSet<User>(nouser => !nouser.Any(actual => actual.Email.Equals(InviteFormModel.Emails[0]))))
                 .AndAlso()
                 .ShouldReturn()
                 .StatusCode(403);
