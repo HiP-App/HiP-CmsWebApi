@@ -8,26 +8,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class PermissionControllerTest
     {
-        private ControllerTester<PermissionsController> _tester;        
-        //public Topic Topic { get; set; }
-        public TopicUser SupervisorUser { get; set; }
-        public TopicUser StudentUser { get; set; }        
+        private ControllerTester<PermissionsController> _tester;                      
 
         public PermissionControllerTest()
         {
-            _tester = new ControllerTester<PermissionsController>();                        
-            SupervisorUser = new TopicUser
-            {
-                TopicId = _tester.TopicOne.Id,
-                UserId = _tester.Supervisor.Id,
-                Role = _tester.Supervisor.Role
-            };
-            StudentUser = new TopicUser
-            {
-                TopicId = _tester.TopicOne.Id,
-                UserId = _tester.Student.Id,
-                Role = _tester.Student.Role
-            };            
+            _tester = new ControllerTester<PermissionsController>();                                    
         }
 
         #region Annotations test
@@ -105,7 +90,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController(_tester.Student.Email)
                 .Calling(c => c.IsAllowedToCreate())
                 .ShouldReturn()
-                .StatusCode(403);
+                .StatusCode(403); // Not able to use Forbidden() as the original method returns the status code only but not Forbid()
         }
 
         /// <summary>
@@ -115,7 +100,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToEditTestOk()
         {
             _tester.TestController()
-                .Calling(c => c.IsAllowedToCreate())
+                .Calling(c => c.IsAllowedToEdit(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -127,7 +112,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToEditTestForbidden()
         {
             _tester.TestController(_tester.Student.Email)
-                .Calling(c => c.IsAllowedToCreate())
+                .Calling(c => c.IsAllowedToEdit(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -151,8 +136,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAssociatedToTestForSupervisor()
         {
             _tester.TestControllerWithMockData(_tester.Supervisor.Email)
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
                 .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
@@ -165,8 +148,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAssociatedToTestForStudent()
         {
             _tester.TestControllerWithMockData(_tester.Student.Email)
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
                 .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
@@ -186,8 +167,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
 
             _tester.TestControllerWithMockData(newStudent.Email)
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser))
+                .WithDbContext(dbContext => dbContext                    
                     .WithSet<User>(db => db.Add(newStudent)))
                 .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
                 .ShouldReturn()
@@ -217,7 +197,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestControllerWithMockData(reviewer.Email)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(reviewer))
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser,ReviewerUser)))
+                    .WithSet<TopicUser>(db => db.AddRange(ReviewerUser)))
                 .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
@@ -230,8 +210,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToReviewTest403ForAdmin()
         {
             _tester.TestControllerWithMockData()
-                .WithDbContext(dbContext => dbContext   
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
                 .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
@@ -244,8 +222,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToReviewTest403ForStudent()
         {
             _tester.TestControllerWithMockData(_tester.Student.Email)
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser)))
                 .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);

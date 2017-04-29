@@ -17,7 +17,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return ok when admin tries to download the file
+        /// Should return 404 for invalid download hashes
         /// </summary>
         [Fact]
         public void GetTest404()

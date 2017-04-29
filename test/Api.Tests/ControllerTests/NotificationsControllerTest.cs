@@ -28,8 +28,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var expected = new List<NotificationResult>()
             {
-                new NotificationResult(_tester.notificationOne), // unread
-                new NotificationResult(_tester.notificationTwo)  // read (as we are expecting all notifications)
+                new NotificationResult(_tester.NotificationOne), // unread
+                new NotificationResult(_tester.NotificationTwo)  // read (as we are expecting all notifications)
             };
             _tester.TestControllerWithMockData(_tester.Student.Email)                
                 .Calling(c => c.GetAllNotifications())
@@ -48,7 +48,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController(_tester.Supervisor.Email)
                 .Calling(c => c.GetAllNotifications())
                 .ShouldReturn()
-                .NotFound(); // Bug in original method
+                .NotFound(); // Bug in original method is solved
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var expected = new List<NotificationResult>()
             {
-                new NotificationResult(_tester.notificationOne) // we expect only unread notification
+                new NotificationResult(_tester.NotificationOne) // we expect only unread notification
             };
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.GetUnreadNotifications())
@@ -78,7 +78,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController(_tester.Supervisor.Email)
                 .Calling(c => c.GetUnreadNotifications())
                 .ShouldReturn()
-                .NotFound(); // Bug in original method
+                .NotFound(); // Bug in original method is solved
         }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var expected = new List<NotificationResult>()
             {
-                new NotificationResult(_tester.notificationOne), // we expect the count(2) of this expected only
-                new NotificationResult(_tester.notificationTwo)
+                new NotificationResult(_tester.NotificationOne), // we expect the count(2) of this expected only
+                new NotificationResult(_tester.NotificationTwo)
             };
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.GetNotificationCount())
@@ -105,18 +105,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetSubscriptionsTest200()
         {
-            var subscriptions = new Subscription // Adding a new subscription
-            {
-                SubscriptionId = 1,
-                SubscriberId = _tester.Student.Id,
-                Subscriber = _tester.Student,
-                Type = NotificationType.TOPIC_ASSIGNED_TO
-            };
-
             _tester.TestControllerWithMockData(_tester.Student.Email)
-                .WithDbContext(dbContext => dbContext                    
-                    .WithSet<Subscription>(db => db.Add(subscriptions))
-                 )
                 .Calling(c => c.GetSubscriptions())
                 .ShouldReturn()
                 .Ok()
@@ -147,13 +136,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         /// Should return ok notification is marked as read
         /// </summary>
         [Fact]
-        public void PostTest200()
+        public void PostNotificationAsReadTest200()
         {
             _tester.TestControllerWithMockData()                
-                .Calling(c => c.Post(_tester.notificationOne.NotificationId))
+                .Calling(c => c.Post(_tester.NotificationOne.NotificationId))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Notification>
-                    (n => n.Single(not => not.NotificationId == _tester.notificationOne.NotificationId).IsRead == true))
+                    (n => n.Single(not => not.NotificationId == _tester.NotificationOne.NotificationId).IsRead == true))
                 .AndAlso() //Checking if notification is marked true
                 .ShouldReturn()
                 .Ok();
@@ -166,7 +155,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PostTest404ForAlreadymarkedNotification()
         {
             _tester.TestController()                
-                .Calling(c => c.Post(_tester.notificationTwo.NotificationId))
+                .Calling(c => c.Post(_tester.NotificationTwo.NotificationId))
                 .ShouldReturn()
                 .NotFound(); //Returns 404
         }
@@ -181,17 +170,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubscribeTest200ForUpdating()
         {
-            var subscriptions = new Subscription // Adding a new subscription
-            {
-                SubscriptionId = 1,
-                SubscriberId = _tester.Student.Id,
-                Subscriber = _tester.Student,
-                Type = NotificationType.TOPIC_ASSIGNED_TO
-            };
-
-            _tester.TestControllerWithMockData(_tester.Student.Email) // Student is already subscribed to this notification
-                .WithDbContext(dbContext => dbContext                    
-                    .WithSet<Subscription>(db => db.Add(subscriptions)))
+            _tester.TestControllerWithMockData(_tester.Student.Email) // Student is already subscribed to this notification                
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString()))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Subscription>
@@ -207,7 +186,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubscribeTest200ForAdding()
         {
-            _tester.TestControllerWithMockData(_tester.Supervisor.Email) // Supervisor wants to get subscribed to notification one                
+            _tester.TestController(_tester.Supervisor.Email) // Supervisor wants to get subscribed to notification one                
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString())) //This test will add the subscription to the user
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Subscription>
@@ -218,37 +197,27 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 403 when giving bad notification type
+        /// Should return 404 when the user does not have rights
         /// </summary>
         [Fact]
-        public void PutSubscribeTest403()
+        public void PutSubscribeTest404()
         {
-            _tester.TestController()
+            _tester.TestController(_tester.Student.Email)
                 .Calling(c => c.PutSubscribe("BadSubscription"))
                 .ShouldReturn()
-                .BadRequest(); //Returns 403
+                .BadRequest(); //Returns 404
         }
 
         /// <summary>
-        /// Should return 403 when notification is not available
+        /// Should return 404 when the user does not have rights
         /// </summary>
         [Fact]
-        public void PutSubscribeTest403WhenTryingToChangeSubscription()
+        public void PutSubscribeTest404WhenTryingToChangeSubscription()
         {
-            var subscriptions = new Subscription 
-            {
-                SubscriptionId = 1,                
-                SubscriberId = _tester.Student.Id, //Student is already subscribed to this notification
-                Subscriber = _tester.Student,
-                Type = NotificationType.TOPIC_ASSIGNED_TO
-            };
-
             _tester.TestControllerWithMockData(_tester.Student.Email)
-                .WithDbContext(dbContext => dbContext                    
-                    .WithSet<Subscription>(db => db.Add(subscriptions))) // Adding the subscription to in-memory database
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_CREATED.ToString())) //When trying to change the subscription
                 .ShouldReturn()
-                .BadRequest(); //Returns 403
+                .BadRequest(); //Returns 404
         }
 
         /// <summary>
@@ -257,17 +226,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutUnsubscribeTest200()
         {
-            var subscriptions = new Subscription // Adding a new subscription
-            {
-                SubscriptionId = 1,
-                SubscriberId = _tester.Student.Id,
-                Subscriber = _tester.Student,
-                Type = NotificationType.TOPIC_ASSIGNED_TO
-            };
-
-            _tester.TestControllerWithMockData(_tester.Student.Email) // Student is already subscribed to this notification
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<Subscription>(db => db.Add(subscriptions)))
+            _tester.TestControllerWithMockData(_tester.Student.Email) // Student is already subscribed to this notification                
                 .Calling(c => c.PutUnsubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString()))
                 .ShouldHave()                
                 .DbContext(db => db.WithSet<User>(s => s.Any(actual => actual.Subscriptions.Count == 0)))
@@ -277,37 +236,27 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }        
 
         /// <summary>
-        /// Should return 403 when giving bad notification type
+        /// Should return 404 when the user is not allowed
         /// </summary>
         [Fact]
-        public void PutUnsubscribeTest403()
+        public void PutUnsubscribeTest404()
         {
             _tester.TestController()                                    
                 .Calling(c => c.PutUnsubscribe("BadSubscription"))
                 .ShouldReturn()
-                .BadRequest(); //Returns 403
+                .BadRequest(); //Returns 404
         }
 
         /// <summary>
-        /// Should return 403 when notification is not available
+        /// Should return 404 when notification is not available
         /// </summary>
         [Fact]
-        public void PutUnsubscribeTest403WhenTryingToUnsubscribeWithWrongType()
+        public void PutUnsubscribeTest404WhenTryingToUnsubscribeWithWrongType()
         {
-            var subscriptions = new Subscription
-            {
-                SubscriptionId = 1,
-                SubscriberId = _tester.Student.Id, //Student is already subscribed to this notification
-                Subscriber = _tester.Student,
-                Type = NotificationType.TOPIC_ASSIGNED_TO
-            };
-
             _tester.TestControllerWithMockData(_tester.Student.Email)
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<Subscription>(db => db.Add(subscriptions))) // Adding the subscription to in-memory database
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_CREATED.ToString())) //When trying to unsubscribe with the wrong type
                 .ShouldReturn()
-                .BadRequest(); //Returns 403
+                .BadRequest(); //Returns 404
         }
 
         #endregion

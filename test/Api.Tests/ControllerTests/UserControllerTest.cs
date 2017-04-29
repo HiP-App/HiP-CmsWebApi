@@ -33,29 +33,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController()
                 .Calling(c => c.Get(_tester.Admin.Email))
                 .ShouldReturn()
-                .Ok()
-                .WithStatusCode(200)
+                .Ok()                
                 .WithModelOfType<UserResult>()
                 .Passing(m => m.Email == _tester.Admin.Email);                
         }
 
         /// <summary>
-        /// Should return 200 when trying to get user details
-        /// </summary>
-        [Fact]
-        public void GetUserTest200ForStudent()
-        {
-            _tester.TestController()
-                .Calling(c => c.Get(_tester.Student.Email))
-                .ShouldReturn()
-                .Ok()
-                .WithStatusCode(200)
-                .WithModelOfType<UserResult>()
-                .Passing(m => m.Email == _tester.Student.Email);
-        }
-
-        /// <summary>
-        /// Should return 404 when trying to get user details
+        /// Should return 404 when trying to get a non-existing user
         /// </summary>
         [Fact]
         public void GetUserTest404()
@@ -85,8 +69,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 ))
                 .AndAlso()
                 .ShouldReturn()
-                .Ok()
-                .WithStatusCode(200);
+                .Ok();
         }
 
         /// <summary>
@@ -95,10 +78,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutUserTest400()
         {
-            UserFormModel.Role = "InvalidRole";
+            var userFormModel = new UserFormModel
+            {
+                FirstName = "First Name",
+                LastName = "Last Name",
+                Role = "InvalidRole"
+            };
 
             _tester.TestController()
-                .Calling(c => c.Put(_tester.Admin.Email, UserFormModel))
+                .Calling(c => c.Put(_tester.Admin.Email, userFormModel))
                 .ShouldReturn()
                 .BadRequest()
                 .WithStatusCode(400);
@@ -123,7 +111,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUserTest404()
         {
             _tester.TestController()
-                .Calling(c => c.Put("user@hipapp.de", UserFormModel))
+                .Calling(c => c.Put("nonexistinguser@hipapp.de", UserFormModel))
                 .ShouldReturn()
                 .NotFound()
                 .WithStatusCode(404);

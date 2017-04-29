@@ -34,8 +34,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public LayerRelationRule LayerRelationRule { get; set; }
         public Topic TopicOne { get; set; }
         public Topic TopicTwo { get; set; }
-        public Notification notificationOne { get; set; }
-        public Notification notificationTwo { get; set; }
+        public Notification NotificationOne { get; set; }
+        public Notification NotificationTwo { get; set; }
+        public Subscription Subscription { get; set; }
+        public TopicUser SupervisorUser { get; set; }
+        public TopicUser StudentUser { get; set; }
 
         public ControllerTester()
         {
@@ -114,7 +117,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Deadline = new DateTime(2017, 4, 18),
                 CreatedById = Supervisor.Id,
             };
-            notificationOne = new Notification
+            NotificationOne = new Notification
             {
                 NotificationId = 1,
                 UserId = Student.Id,
@@ -123,7 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 TopicId = TopicOne.Id,
                 IsRead = false
             };
-            notificationTwo = new Notification
+            NotificationTwo = new Notification
             {
                 NotificationId = 2,
                 UserId = Student.Id,
@@ -131,6 +134,25 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Type = NotificationType.TOPIC_ASSIGNED_TO,
                 TopicId = TopicTwo.Id,
                 IsRead = true
+            };
+            Subscription = new Subscription // Adding a new subscription
+            {
+                SubscriptionId = 1,
+                SubscriberId = Student.Id,
+                Subscriber = Student,
+                Type = NotificationType.TOPIC_ASSIGNED_TO
+            };
+            SupervisorUser = new TopicUser
+            {
+                TopicId = TopicOne.Id,
+                UserId = Supervisor.Id,
+                Role = Supervisor.Role
+            };
+            StudentUser = new TopicUser
+            {
+                TopicId = TopicOne.Id,
+                UserId = Student.Id,
+                Role = Student.Role
             };
         }
 
@@ -160,7 +182,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                     .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
                     .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))
                     .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
-                    .WithSet<Notification>(db => db.AddRange(notificationOne, notificationTwo))
+                    .WithSet<Notification>(db => db.AddRange(NotificationOne, NotificationTwo))
+                    .WithSet<Subscription>(db => db.Add(Subscription))
+                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser))
                 );
         }
     }
