@@ -113,7 +113,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void InviteUsersTest400WhenEmailParameterIsNotThere()
         {
-            var model = new InviteFormModel() { };
+            var model = new InviteFormModel();
 
             _tester.TestController()
                 .Calling(c => c.InviteUsers(model, null)) //Since dependency injection isn't working, EmailSender is null                                
@@ -140,7 +140,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Passing(m => m.Metadata.ItemsCount == 3);
         }
 
-        // <summary>
+        /// <summary>
         /// Tests response from Get action of UsersController
         /// </summary>
         [Fact]

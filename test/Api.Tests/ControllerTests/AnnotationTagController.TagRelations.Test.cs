@@ -287,7 +287,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
        // TODO [Fact]
         public void GetAvailableRelationsForIdTest_NoRelations()
         {
-            var expected = new List<AnnotationTagInstanceRelation>() { };
+            var expected = new List<AnnotationTagInstanceRelation>();
             var instance3 = new AnnotationTagInstance(_tester.Tag3);
             var instances = new List<AnnotationTagInstance>()
             {
