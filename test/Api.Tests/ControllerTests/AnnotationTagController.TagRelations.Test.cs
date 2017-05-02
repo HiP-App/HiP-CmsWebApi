@@ -722,10 +722,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             return actual =>
             {
-                for (var i = 0; i < actual.Count(); i++)
+                var actualArray = actual as RelationResult[] ?? actual.ToArray();
+                var expectedArray = expected as RelationResult[] ?? expected.ToArray();
+                for (var i = 0; i < actualArray.Count(); i++)
                 {
-                    if (actual.ElementAt(i).SourceId != expected.ElementAt(i).SourceId
-                        || actual.ElementAt(i).TargetId != expected.ElementAt(i).TargetId)
+                    var relationResults = expected as RelationResult[] ?? expectedArray.ToArray();
+                    if (actualArray.ElementAt(i).SourceId != relationResults.ElementAt(i).SourceId
+                        || actualArray.ElementAt(i).TargetId != relationResults.ElementAt(i).TargetId)
                         return false;
                 }
                 return true;

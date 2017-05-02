@@ -91,11 +91,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 new NotificationResult(_tester.NotificationOne), // we expect the count(2) of this expected only
                 new NotificationResult(_tester.NotificationTwo)
             };
+
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.GetNotificationCount())
                 .ShouldReturn()
                 .Ok()
-                .Equals(expected.Count); // we get 2 as expected
+                .Equals(expected.Count);
         }
 
         /// <summary>
@@ -141,7 +142,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.Post(_tester.NotificationOne.NotificationId))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Notification>
-                    (n => n.Single(not => not.NotificationId == _tester.NotificationOne.NotificationId).IsRead == true))
+                    (n => n.Single(not => not.NotificationId == _tester.NotificationOne.NotificationId).IsRead))
                 .AndAlso() //Checking if notification is marked true
                 .ShouldReturn()
                 .Ok();

@@ -19,7 +19,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester = new ControllerTester<UsersController>();
             InviteFormModel = new InviteFormModel()
             {
-                Emails = new string[]
+                Emails = new[]
                         {
                             "abc@xyz.com", "lmn@xyz.com"
                         }
