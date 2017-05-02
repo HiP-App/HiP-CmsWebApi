@@ -7,6 +7,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
     public class AnnotationTagInstance
     {
+        private List<AnnotationTagInstanceRelation> _incomingRelations;
+        private List<AnnotationTagInstanceRelation> _tagRelations;
+
         [Key]
         public int Id { get; set; }
 
@@ -15,9 +18,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 
         public AnnotationTag TagModel { get; set; }
 
-        public List<AnnotationTagInstanceRelation> TagRelations { get; set; }
+        public List<AnnotationTagInstanceRelation> TagRelations
+        {
+            get { return _tagRelations; }
+            set { _tagRelations = value; }
+        }
 
-        public List<AnnotationTagInstanceRelation> IncomingRelations { get; set; }
+        public List<AnnotationTagInstanceRelation> IncomingRelations
+        {
+            get { return _incomingRelations; }
+            set { _incomingRelations = value; }
+        }
 
         public string Value { get; set; }
 

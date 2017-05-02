@@ -10,11 +10,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class NotificationsControllerTest
     {
-        private ControllerTester<NotificationsController> _tester;        
+        private ControllerTester<NotificationsController> _tester;      
+        public List<NotificationResult> ExpectedListOfNotifications { get; set; }
 
         public NotificationsControllerTest()
         {
             _tester = new ControllerTester<NotificationsController>();
+            ExpectedListOfNotifications = new List<NotificationResult>()
+            {
+                new NotificationResult(_tester.NotificationOne), // unread
+                new NotificationResult(_tester.NotificationTwo)  // read (as we are expecting all notifications)
+            };
         }
 
         #region GET
@@ -25,17 +31,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetAllNotificationsTest200()
         {
-            var expected = new List<NotificationResult>()
-            {
-                new NotificationResult(_tester.NotificationOne), // unread
-                new NotificationResult(_tester.NotificationTwo)  // read (as we are expecting all notifications)
-            };
             _tester.TestControllerWithMockData(_tester.Student.Email)                
                 .Calling(c => c.GetAllNotifications())
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<List<NotificationResult>>()
-                .Passing(actual => actual.Count == expected.Count); // we have 2 notifications i.e. 2 == 2
+                .Passing(actual => actual.Count == ExpectedListOfNotifications.Count); // we have 2 notifications i.e. 2 == 2
         }
 
         /// <summary>
@@ -86,17 +87,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetNotificationCountTest200()
         {
-            var expected = new List<NotificationResult>()
-            {
-                new NotificationResult(_tester.NotificationOne), // we expect the count(2) of this expected only
-                new NotificationResult(_tester.NotificationTwo)
-            };
-
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.GetNotificationCount())
                 .ShouldReturn()
                 .Ok()
-                .Equals(expected.Count);
+                .WithModelOfType<int>()
+                .AndAlso()
+                .Equals(ExpectedListOfNotifications.Count); // We are able to get the expected notification count
         }
 
         /// <summary>
