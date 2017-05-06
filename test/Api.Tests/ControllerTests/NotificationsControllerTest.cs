@@ -18,8 +18,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester = new ControllerTester<NotificationsController>();
             ExpectedListOfNotifications = new List<NotificationResult>()
             {
-                new NotificationResult(_tester.NotificationOne), // unread
-                new NotificationResult(_tester.NotificationTwo)  // read (as we are expecting all notifications)
+                new NotificationResult(_tester.UnreadNotification), // unread
+                new NotificationResult(_tester.ReadNotification)  // read (as we are expecting all notifications)
             };
         }
 
@@ -48,7 +48,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController(_tester.Supervisor.Email)
                 .Calling(c => c.GetAllNotifications())
                 .ShouldReturn()
-                .NotFound(); // Bug in original method is solved
+                .NotFound();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var expected = new List<NotificationResult>()
             {
-                new NotificationResult(_tester.NotificationOne) // we expect only unread notification
+                new NotificationResult(_tester.UnreadNotification) // we expect only unread notification
             };
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.GetUnreadNotifications())
@@ -78,7 +78,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestController(_tester.Supervisor.Email)
                 .Calling(c => c.GetUnreadNotifications())
                 .ShouldReturn()
-                .NotFound(); // Bug in original method is solved
+                .NotFound();
         }
 
         /// <summary>
@@ -87,16 +87,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetNotificationCountTest200()
         {
+            // ReSharper disable once SuspiciousTypeConversion.Global
             _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.GetNotificationCount())
                 .ShouldReturn()
-                .Ok();
-            //Resharper constantly gives this warning "R# Suspicious comparison: there is no type in the solution which is inherited from both
-            //'MyTested.AspNetCore.Mvc.Builders.Contracts.Models.IModelDetailsTestBuilder<int>' and 'int'"
-            
-            //.WithModelOfType<int>()
-            //.AndAlso()
-            //.Equals(ExpectedListOfNotifications.Count); // We are able to get the expected notification count
+                .Ok()
+            .WithModelOfType<int>()
+            .AndAlso()
+            .Equals(ExpectedListOfNotifications.Count); // We are able to get the expected notification count
         }
 
         /// <summary>
@@ -139,10 +137,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PostNotificationAsReadTest200()
         {
             _tester.TestControllerWithMockData()                
-                .Calling(c => c.Post(_tester.NotificationOne.NotificationId))
+                .Calling(c => c.Post(_tester.UnreadNotification.NotificationId))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Notification>
-                    (n => n.Single(not => not.NotificationId == _tester.NotificationOne.NotificationId).IsRead))
+                    (n => n.Single(not => not.NotificationId == _tester.UnreadNotification.NotificationId).IsRead))
                 .AndAlso() //Checking if notification is marked true
                 .ShouldReturn()
                 .Ok();
@@ -155,7 +153,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PostTest404ForAlreadymarkedNotification()
         {
             _tester.TestController()                
-                .Calling(c => c.Post(_tester.NotificationTwo.NotificationId))
+                .Calling(c => c.Post(_tester.ReadNotification.NotificationId))
                 .ShouldReturn()
                 .NotFound(); //Returns 404
         }
@@ -197,7 +195,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 404 when the user does not have rights
+        /// Should return 404 when an invalid subscription is given
         /// </summary>
         [Fact]
         public void PutSubscribeTest404()
@@ -236,12 +234,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }        
 
         /// <summary>
-        /// Should return 404 when the user is not allowed
+        /// Should return 404 when an invalid subscription is given
         /// </summary>
         [Fact]
         public void PutUnsubscribeTest404()
         {
-            _tester.TestController()                                    
+            _tester.TestController(_tester.Student.Email)                                    
                 .Calling(c => c.PutUnsubscribe("BadSubscription"))
                 .ShouldReturn()
                 .BadRequest(); //Returns 404

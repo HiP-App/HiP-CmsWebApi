@@ -34,8 +34,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public LayerRelationRule LayerRelationRule { get; set; }
         public Topic TopicOne { get; set; }
         public Topic TopicTwo { get; set; }
-        public Notification NotificationOne { get; set; }
-        public Notification NotificationTwo { get; set; }
+        public Notification UnreadNotification { get; set; }
+        public Notification ReadNotification { get; set; }
         public Subscription Subscription { get; set; }
         public TopicUser SupervisorUser { get; set; }
         public TopicUser StudentUser { get; set; }
@@ -117,7 +117,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Deadline = new DateTime(2017, 4, 18),
                 CreatedById = Supervisor.Id,
             };
-            NotificationOne = new Notification
+            UnreadNotification = new Notification
             {
                 NotificationId = 1,
                 UserId = Student.Id,
@@ -126,7 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 TopicId = TopicOne.Id,
                 IsRead = false
             };
-            NotificationTwo = new Notification
+            ReadNotification = new Notification
             {
                 NotificationId = 2,
                 UserId = Student.Id,
@@ -182,7 +182,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                     .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
                     .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))
                     .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
-                    .WithSet<Notification>(db => db.AddRange(NotificationOne, NotificationTwo))
+                    .WithSet<Notification>(db => db.AddRange(UnreadNotification, ReadNotification))
                     .WithSet<Subscription>(db => db.Add(Subscription))
                     .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser))
                 );
