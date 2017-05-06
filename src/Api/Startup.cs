@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using Microsoft.Extensions.PlatformAbstractions;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
