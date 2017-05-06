@@ -245,18 +245,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .BadRequest(); //Returns 404
         }
 
-        /// <summary>
-        /// Should return 404 when notification is not available
-        /// </summary>
-        [Fact]
-        public void PutUnsubscribeTest404WhenTryingToUnsubscribeWithWrongType()
-        {
-            _tester.TestControllerWithMockData(_tester.Student.Email)
-                .Calling(c => c.PutSubscribe(NotificationType.TOPIC_CREATED.ToString())) //When trying to unsubscribe with the wrong type
-                .ShouldReturn()
-                .BadRequest(); //Returns 404
-        }
-
         #endregion
     }
 }
