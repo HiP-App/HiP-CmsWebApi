@@ -4,15 +4,17 @@ using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using System.Collections.Generic;
+using System;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
     public class ControllerTester<T>
         where T: class
     {
-        private readonly User Admin;
-        private readonly User Student;
-        private readonly User Supervisor;
+        public User Admin { get; }
+        public User Student { get; }
+        public User Supervisor { get; }
         public AnnotationTag Tag1 { get; set; }
         public AnnotationTag Tag2 { get; set; }
         public AnnotationTag Tag3 { get; set; }
@@ -30,6 +32,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public Layer Layer2 { get; set; }
         public Layer Layer1 { get; set; }
         public LayerRelationRule LayerRelationRule { get; set; }
+        public Topic TopicOne { get; set; }
+        public Topic TopicTwo { get; set; }
+        public Notification UnreadNotification { get; set; }
+        public Notification ReadNotification { get; set; }
+        public Subscription Subscription { get; set; }
+        public TopicUser SupervisorUser { get; set; }
+        public TopicUser StudentUser { get; set; }
 
         public ControllerTester()
         {
@@ -92,6 +101,59 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Color = "test-color",
                 ArrowStyle = "test-style"
             };
+            TopicOne = new Topic
+            {
+                Id = 1,
+                Title = "Paderborner Dom",
+                Status = "InReview",
+                Deadline = new DateTime(2017, 4, 18),
+                CreatedById = Supervisor.Id,
+            };
+            TopicTwo = new Topic
+            {
+                Id = 2,
+                Title = "Paderborner Dom",
+                Status = "InReview",
+                Deadline = new DateTime(2017, 4, 18),
+                CreatedById = Supervisor.Id,
+            };
+            UnreadNotification = new Notification
+            {
+                NotificationId = 1,
+                UserId = Student.Id,
+                UpdaterId = Supervisor.Id,
+                Type = NotificationType.TOPIC_ASSIGNED_TO,
+                TopicId = TopicOne.Id,
+                IsRead = false
+            };
+            ReadNotification = new Notification
+            {
+                NotificationId = 2,
+                UserId = Student.Id,
+                UpdaterId = Supervisor.Id,
+                Type = NotificationType.TOPIC_ASSIGNED_TO,
+                TopicId = TopicTwo.Id,
+                IsRead = true
+            };
+            Subscription = new Subscription // Adding a new subscription
+            {
+                SubscriptionId = 1,
+                SubscriberId = Student.Id,
+                Subscriber = Student,
+                Type = NotificationType.TOPIC_ASSIGNED_TO
+            };
+            SupervisorUser = new TopicUser
+            {
+                TopicId = TopicOne.Id,
+                UserId = Supervisor.Id,
+                Role = Supervisor.Role
+            };
+            StudentUser = new TopicUser
+            {
+                TopicId = TopicOne.Id,
+                UserId = Student.Id,
+                Role = Student.Role
+            };
         }
 
         /// <summary>
@@ -118,7 +180,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                     .WithSet<Layer>(db => db.AddRange(Layer1, Layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(LayerRelationRule))
                     .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
-                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))                        
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))
+                    .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
+                    .WithSet<Notification>(db => db.AddRange(UnreadNotification, ReadNotification))
+                    .WithSet<Subscription>(db => db.Add(Subscription))
+                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser))
                 );
         }
     }
