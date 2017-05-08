@@ -13,13 +13,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
     public class UsersControllerTest : IClassFixture<TestEmailSender>
     {
         private ControllerTester<UsersController> _tester;
-        public TestEmailSender TestEmailSender { get; }
+        TestEmailSender _testEmailSender;
         public InviteFormModel InviteFormModel { get; }
 
         public UsersControllerTest(TestEmailSender testEmailSender)
         {
             _tester = new ControllerTester<UsersController>();
-            TestEmailSender = testEmailSender;
+            _testEmailSender = testEmailSender;
             InviteFormModel = new InviteFormModel
             {
                 Emails = new[]
@@ -38,7 +38,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void InviteUsersTest202()
         {
             _tester.TestController()
-                .Calling(c => c.InviteUsers(InviteFormModel, TestEmailSender))
+                .Calling(c => c.InviteUsers(InviteFormModel, _testEmailSender))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Email.Equals(InviteFormModel.Emails[0]))))
                 .AndAlso()
