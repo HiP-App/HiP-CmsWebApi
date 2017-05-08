@@ -106,16 +106,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Id = 1,
                 Title = "Paderborner Dom",
                 Status = "InReview",
-                Deadline = new DateTime(2017, 4, 18),
+                Deadline = new DateTime(2017, 5, 04),
                 CreatedById = Supervisor.Id,
+                Description = "Church"
             };
             TopicTwo = new Topic
             {
                 Id = 2,
-                Title = "Paderborner Dom",
-                Status = "InReview",
+                Title = "Westerntor",
+                Status = "InProgress",
                 Deadline = new DateTime(2017, 4, 18),
                 CreatedById = Supervisor.Id,
+                Description = "Shopping"
             };
             UnreadNotification = new Notification
             {

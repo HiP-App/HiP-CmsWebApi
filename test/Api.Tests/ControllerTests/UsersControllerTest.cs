@@ -6,18 +6,21 @@ using Xunit;
 using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
-    public class UsersControllerTest
+    public class UsersControllerTest : IClassFixture<TestEmailSender>
     {
         private ControllerTester<UsersController> _tester;
-        public InviteFormModel InviteFormModel { get; set; }
+        public TestEmailSender TestEmailSender { get; }
+        public InviteFormModel InviteFormModel { get; }
 
-        public UsersControllerTest()
+        public UsersControllerTest(TestEmailSender testEmailSender)
         {
             _tester = new ControllerTester<UsersController>();
-            InviteFormModel = new InviteFormModel()
+            TestEmailSender = testEmailSender;
+            InviteFormModel = new InviteFormModel
             {
                 Emails = new[]
                         {
@@ -31,12 +34,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         /// <summary>
         /// Should return code 202 when an admin is trying to invite new users with new Emails
         /// </summary>
-        //[Fact] - Dependency Injection is not working with XUnit and the issue is still open
-        // Refer: https://github.com/xunit/xunit/issues/687
+        //[Fact] - Dependency Injection is not working with XUnit //https://xunit.github.io/docs/shared-context.html#class-fixture
         public void InviteUsersTest202()
         {
             _tester.TestController()
-                .Calling(c => c.InviteUsers(InviteFormModel, null))
+                .Calling(c => c.InviteUsers(InviteFormModel, TestEmailSender))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Email.Equals(InviteFormModel.Emails[0]))))
                 .AndAlso()
