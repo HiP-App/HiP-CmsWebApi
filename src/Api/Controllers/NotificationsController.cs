@@ -57,7 +57,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             var notifications = _notificationManager.GetNotificationsForTheUser(User.Identity.GetUserIdentity(), onlyUnread);
 
-            if (notifications.Count() > 0)
+            if (notifications != null)
                 return Ok(notifications);
             else
                 return NotFound();
