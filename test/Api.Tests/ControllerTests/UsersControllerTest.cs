@@ -6,20 +6,17 @@ using Xunit;
 using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
-    public class UsersControllerTest : IClassFixture<TestEmailSender>
+    public class UsersControllerTest
     {
         private ControllerTester<UsersController> _tester;
-        TestEmailSender _testEmailSender;
-        public InviteFormModel InviteFormModel { get; }
+        public InviteFormModel InviteFormModel { get; set; }
 
-        public UsersControllerTest(TestEmailSender testEmailSender)
+        public UsersControllerTest()
         {
             _tester = new ControllerTester<UsersController>();
-            _testEmailSender = testEmailSender;
             InviteFormModel = new InviteFormModel
             {
                 Emails = new[]
@@ -38,7 +35,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void InviteUsersTest202()
         {
             _tester.TestController()
-                .Calling(c => c.InviteUsers(InviteFormModel, _testEmailSender))
+                .Calling(c => c.InviteUsers(InviteFormModel, null))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<User>(newuser => newuser.Any(actual => actual.Email.Equals(InviteFormModel.Emails[0]))))
                 .AndAlso()

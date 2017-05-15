@@ -5,11 +5,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class DownloadControllerTest
     {
-        private ControllerTester<DownloadController> _tester;        
+        private ControllerTester<DownloadController> _tester;
 
         public DownloadControllerTest()
         {
-            _tester = new ControllerTester<DownloadController>();            
+            _tester = new ControllerTester<DownloadController>();
         }
 
         /// <summary>

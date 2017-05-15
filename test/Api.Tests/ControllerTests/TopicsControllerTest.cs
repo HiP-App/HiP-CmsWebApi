@@ -5,18 +5,15 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
-using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
-    public class TopicsControllerTest : IClassFixture<TestEmailSender>
+    public class TopicsControllerTest
     {
-        public TestEmailSender TestEmailSender { get; }
         private ControllerTester<TopicsController> _tester;
 
-        public TopicsControllerTest(TestEmailSender testEmailSender)
+        public TopicsControllerTest()
         {
-            TestEmailSender = testEmailSender;
             _tester = new ControllerTester<TopicsController>();
         }
 
@@ -132,7 +129,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok();
         }
-        
+
         #endregion
+
     }
 }
