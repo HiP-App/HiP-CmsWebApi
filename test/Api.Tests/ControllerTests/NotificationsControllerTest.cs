@@ -72,15 +72,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Should return 404 if no unread notifications are found
+        /// Should return 200 and an empty array of notifactions if no unread notifications are found
         /// </summary>
         [Fact]
-        public void GetUnreadNotificationsTest404()
+        public void GetUnreadNotificationsTest200_Empty()
         {
             _tester.TestController(_tester.Supervisor.Email)
                 .Calling(c => c.GetUnreadNotifications())
                 .ShouldReturn()
-                .NotFound();
+                .Ok()
+                .WithModelOfType<List<NotificationResult>>()
+                .Passing(actual => actual.Count == 0); 
         }
 
         /// <summary>
