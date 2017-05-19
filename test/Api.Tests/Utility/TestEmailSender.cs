@@ -5,7 +5,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility
 {
-    public class TestEmailSender : IEmailSender //https://github.com/xunit/xunit/issues/762. It allows only with IDisposable but not with custom service.
+    public class TestEmailSender : IEmailSender
     {
         public Task InviteAsync(string email)
         {

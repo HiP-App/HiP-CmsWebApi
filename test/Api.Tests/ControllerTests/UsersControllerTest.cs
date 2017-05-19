@@ -31,7 +31,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         /// <summary>
         /// Should return code 202 when an admin is trying to invite new users with new Emails
         /// </summary>
-        //[Fact] - Dependency Injection is not working with XUnit //https://xunit.github.io/docs/shared-context.html#class-fixture
+        //[Fact] - Dependency Injection is not working with XUnit as expected
         public void InviteUsersTest202()
         {
             _tester.TestController()
