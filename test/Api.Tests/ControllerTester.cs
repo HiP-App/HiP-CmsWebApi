@@ -39,6 +39,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public Subscription Subscription { get; set; }
         public TopicUser SupervisorUser { get; set; }
         public TopicUser StudentUser { get; set; }
+        public Document FirstDocument { get; set; }
+        public AnnotationTagInstance TagInstanceForDocument { get; set; }
 
         public ControllerTester()
         {
@@ -156,6 +158,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 UserId = Student.Id,
                 Role = Student.Role
             };
+            FirstDocument = new Document
+            {
+                TopicId = TopicOne.Id,
+                UpdaterId = Admin.Id,
+                Content = "Hello"
+            };
+            TagInstanceForDocument = new AnnotationTagInstance
+            {
+                Id = 5,
+                TagModelId = Tag1.Id,
+                Document = FirstDocument
+            };
         }
 
         /// <summary>
@@ -177,7 +191,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de")
         {
             return TestController(userIdentity)
-                .WithDbContext(dbContext => dbContext                    
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<Document>(db => db.Add(FirstDocument))
                     .WithSet<AnnotationTag>(db => db.AddRange(Tag1, Tag2, Tag3, Tag4))
                     .WithSet<Layer>(db => db.AddRange(Layer1, Layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(LayerRelationRule))

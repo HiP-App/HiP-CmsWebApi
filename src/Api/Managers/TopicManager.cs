@@ -83,43 +83,46 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public bool ChangeAssociatedUsersByRole(string updaterIdentity, int topicId, string role, UsersFormModel users)
         {
-            Topic topic;
             try
             {
-                topic = DbContext.Topics.Include(t => t.TopicUsers).ThenInclude(tu => tu.User).Single(t => t.Id == topicId);
+                Topic topic;
+                try
+                {
+                    topic = DbContext.Topics.Include(t => t.TopicUsers).ThenInclude(tu => tu.User).Single(t => t.Id == topicId);
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
+                var newUsers = new List<TopicUser>();
+                var removedUsers = new List<TopicUser>();
+                if (users.Users != null)
+                {
+                    // new user?
+                    foreach (var identity in users.Users)
+                    {
+                        if (!existingUsers.Any(tu => (tu.User.Email == identity && tu.Role == role)))
+                            newUsers.Add(new TopicUser() { UserId = GetUserByIdentity(identity).Id, Role = role });
+                    }
+                    // removed user?
+                    removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
+                }
+                topic.TopicUsers.AddRange(newUsers);
+                topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
+                // Updated // TODO add user
+                topic.UpdatedAt = DateTime.Now;
+
+                DbContext.Update(topic);
+                DbContext.SaveChanges();
+                // Notifications
+                new NotificationProcessor(DbContext, topic, updaterIdentity).OnUsersChanged(newUsers, removedUsers, role);
+                return true;
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 return false;
             }
-
-            var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
-
-            var newUsers = new List<TopicUser>();
-            var removedUsers = new List<TopicUser>();
-
-            if (users.Users != null)
-            {
-                // new user?
-                foreach (var identity in users.Users)
-                {
-                    if (!existingUsers.Any(tu => (tu.User.Email == identity && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = GetUserByIdentity(identity).Id, Role = role });
-                }
-                // removed user?
-                removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
-            }
-
-            topic.TopicUsers.AddRange(newUsers);
-            topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
-            // Updated // TODO add user
-            topic.UpdatedAt = DateTime.Now;
-            // Notifications
-            new NotificationProcessor(DbContext, topic, updaterIdentity).OnUsersChanged(newUsers, removedUsers, role);
-
-            DbContext.Update(topic);
-            DbContext.SaveChanges();
-            return true;
         }
 
         public IEnumerable<Topic> GetSubTopics(int topicId)
@@ -196,7 +199,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 new NotificationProcessor(DbContext, topic, identity).OnStateChanged(status);
                 return true;
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 return false;
             }
@@ -207,12 +210,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 var topic = DbContext.Topics.Include(t => t.TopicUsers).Single(u => u.Id == topicId);
-                new NotificationProcessor(DbContext, topic, identity).OnDeleteTopic();
                 DbContext.Remove(topic);
                 DbContext.SaveChanges();
+                new NotificationProcessor(DbContext, topic, identity).OnDeleteTopic();
                 return true;
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 return false;
             }
