@@ -197,7 +197,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                     .WithSet<Layer>(db => db.AddRange(Layer1, Layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(LayerRelationRule))
                     .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
-                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4, TagInstanceForDocument))
                     .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
                     .WithSet<Notification>(db => db.AddRange(UnreadNotification, ReadNotification))
                     .WithSet<Subscription>(db => db.Add(Subscription))

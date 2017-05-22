@@ -2,8 +2,9 @@
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class TopicsControllerAnalyticsTest
@@ -33,7 +34,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<TagFrequencyAnalyticsResult>()
-                .Equals(result);
+                .Passing(actual => actual.TagFrequency.Count() == result.TagFrequency.Count());
         }
         /// <summary>
         /// Returns 404 if frequency analytics are not found

@@ -5,7 +5,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class TopicsControllerUsersTest
@@ -79,13 +79,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTopicStudentsTest()
         {
-            var model = new UserResult(_tester.Student) { Identity = _tester.Student.Email };
             _tester.TestControllerWithMockData()
                 .Calling(c => c.GetTopicStudents(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
-                .Equals(model);
+                .Passing(actual => actual.Any(u => u.Email == _tester.Student.Email));
         }
         /// <summary>
         /// Returns ok if topic supervisors are retrieved
@@ -93,14 +92,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTopicSupervisorsTest()
         {
-            var model = new UserResult(_tester.Supervisor) { Identity = _tester.Supervisor.Email };
             _tester.TestControllerWithMockData()
                 .Calling(c => c.GetTopicSupervisors(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-                .Equals(model);
+                .Passing(actual => actual.Any(u => u.Email == _tester.Supervisor.Email));
         }
         /// <summary>
         /// Returns ok if topic supervisors are retrieved
@@ -120,7 +117,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 UserId = reviewer.Id,
                 Role = reviewer.Role
             };
-            var model = new UserResult(_tester.Supervisor) { Identity = reviewer.Email };
+            
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.Add(reviewer))
@@ -129,8 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-                .Equals(model);
+                .Passing(actual => actual.Any(u => u.Email == reviewer.Email));
         }
         #endregion
         #region PUT users
