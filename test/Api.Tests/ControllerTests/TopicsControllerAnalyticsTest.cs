@@ -14,7 +14,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             _tester = new ControllerTester<TopicsController>();
         }
+        
         #region GET Analytics
+        
         /// <summary>
         /// Returns ok if tag frequency analytics are retrieved
         /// </summary>
@@ -36,6 +38,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<TagFrequencyAnalyticsResult>()
                 .Passing(actual => actual.TagFrequency.Count() == result.TagFrequency.Count());
         }
+        
         /// <summary>
         /// Returns 404 if frequency analytics are not found
         /// </summary>
@@ -47,6 +50,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
+        
         /// <summary>
         /// Returns 404 if frequency analytics are not found
         /// </summary>
@@ -58,6 +62,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
+        
         /// <summary>
         /// Returns 403 if a student tries to get the analytics
         /// </summary>
@@ -69,6 +74,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+     
         #endregion
     }
 }

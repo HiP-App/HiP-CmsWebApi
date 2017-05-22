@@ -29,7 +29,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Status = "InProgress"
             };
         }
+
         #region GET topics
+
         /// <summary>
         /// Returns ok if all topics are retrieved
         /// </summary>
@@ -43,6 +45,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<PagedResult<TopicResult>>()
                 .Passing(topic => topic.Metadata.ItemsCount == 2);
         }
+
         /// <summary>
         /// Returns ok if all topics are retrieved matching query, status and deadline
         /// </summary>
@@ -56,8 +59,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<PagedResult<TopicResult>>()
                 .Passing(topic => topic.Metadata.ItemsCount == 1);
         }
+
         #endregion
+
         #region GET topics of user
+        
         /// <summary>
         /// Returns ok if all topics are retrieved for the user
         /// </summary>
@@ -71,6 +77,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<PagedResult<TopicResult>>()
                 .Passing(topic => topic.Metadata.ItemsCount == 1);
         }
+        
         /// <summary>
         /// Returns ok if all topics are retrieved for the user matching query
         /// </summary>
@@ -84,8 +91,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<PagedResult<TopicResult>>()
                 .Passing(topic => topic.Metadata.ItemsCount == 1);
         }
+        
         #endregion
+        
         #region GET topic based on topicId
+        
         /// <summary>
         /// Returns ok if the topic is retrieved given topicId
         /// </summary>
@@ -99,6 +109,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<TopicResult>()
                 .Passing(actual => actual.Id == _tester.TopicOne.Id);
         }
+        
         /// <summary>
         /// Returns ok if the topic is retrieved given topicId
         /// </summary>
@@ -110,8 +121,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
+        
         #endregion
+        
         #region Edit Topics
+        
         /// <summary>
         /// Passes if topic is added successfully
         /// </summary>
@@ -124,6 +138,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Title == TopicFormModel.Title)));
             // As we have problem with DI, when EmailService is invoked it returns BadRequest. Hence only a part of the positive test case is tested.
         }
+        
         /// <summary>
         /// returns BadRequest when model is incorrect
         /// </summary>
@@ -136,6 +151,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         /// <summary>
         /// returns BadRequest when topic status is incorrect
         /// </summary>
@@ -148,6 +164,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         /// <summary>
         /// returns status code 403 when student tries to add a topic
         /// </summary>
@@ -159,6 +176,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         /// <summary>
         /// Passes if topic is added successfully
         /// </summary>
@@ -174,6 +192,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Title == TopicFormModel.Title)));
             // As we have problem with DI, when EmailService is invoked it returns BadRequest. Hence only a part of the positive test case is tested.
         }
+        
         /// <summary>
         /// returns BadRequest when model is incorrect
         /// </summary>
@@ -186,6 +205,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         /// <summary>
         /// returns status code 403 when student tries to update a topic
         /// </summary>
@@ -197,6 +217,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         /// <summary>
         /// Passes if topic staus is changed successfully
         /// </summary>
@@ -209,6 +230,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Status == TopicStatus.Status)));
             // As we have problem with DI, when EmailService is invoked it returns NotFound. Hence only a part of the positive test case is tested.
         }
+        
         /// <summary>
         /// returns 404 in case of exception occured
         /// </summary>
@@ -220,6 +242,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
+        
         /// <summary>
         /// returns 403 when a different user tries to change topic status
         /// </summary>
@@ -231,6 +254,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         /// <summary>
         /// returns 404 when topic is not found
         /// </summary>
@@ -242,6 +266,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
+        
         /// <summary>
         /// returns BadRequest when model is incorrect
         /// </summary>
@@ -254,6 +279,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         /// <summary>
         /// returns status code 409 when topic status is done and also reviewed
         /// </summary>
@@ -287,6 +313,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(409);
         }
+        
         /// <summary>
         /// Returns ok if topic is deleted
         /// </summary>
@@ -299,6 +326,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .DbContext(db => db.WithSet<Topic>(topic => !topic.Any(actual => actual == _tester.TopicOne)));
             // As we have problem with DI, when EmailService is invoked it returns NotFound. Hence only a part of the positive test case is tested.
         }
+        
         /// <summary>
         /// returns 404 when topic is not found
         /// </summary>
@@ -310,6 +338,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
+        
         /// <summary>
         /// returns 403 when a student tries to delete topic
         /// </summary>
@@ -321,6 +350,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         #endregion
     }
 }

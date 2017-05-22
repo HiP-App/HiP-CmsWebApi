@@ -72,7 +72,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Users = new[] { Reviewer1.Email, Reviewer2.Email }
             };
         }
+
+        
         #region Get Users test
+        
         /// <summary>
         /// Returns ok if topic students are retrieved
         /// </summary>
@@ -86,6 +89,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<IEnumerable<UserResult>>()
                 .Passing(actual => actual.Any(u => u.Email == _tester.Student.Email));
         }
+        
         /// <summary>
         /// Returns ok if topic supervisors are retrieved
         /// </summary>
@@ -99,6 +103,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<IEnumerable<UserResult>>()
                 .Passing(actual => actual.Any(u => u.Email == _tester.Supervisor.Email));
         }
+        
         /// <summary>
         /// Returns ok if topic supervisors are retrieved
         /// </summary>
@@ -128,8 +133,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<IEnumerable<UserResult>>()
                 .Passing(actual => actual.Any(u => u.Email == reviewer.Email));
         }
+        
         #endregion
+        
         #region PUT users
+        
         /// <summary>
         /// Asserts if topic students are updated
         /// </summary>
@@ -147,6 +155,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                         actual.TopicUsers.Count == 2)));
             //As we have problems with DI, it does not check for any return
         }
+        
         /// <summary>
         /// Returns 403 if s student is trying to update topic users
         /// </summary>
@@ -158,6 +167,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         /// <summary>
         /// Returns 400 if the model is incorrect
         /// </summary>
@@ -170,6 +180,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         /// <summary>
         /// Asserts if topic supervisors are updated
         /// </summary>
@@ -187,6 +198,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                         actual.TopicUsers.Count == 2)));
             //As we have problems with DI, it does not check for any return
         }
+        
         /// <summary>
         /// Returns 403 if s student is trying to update topic users
         /// </summary>
@@ -198,6 +210,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         /// <summary>
         /// Returns 400 if the model is incorrect
         /// </summary>
@@ -210,6 +223,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         /// <summary>
         /// Asserts if topic supervisors are updated
         /// </summary>
@@ -227,6 +241,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                         actual.TopicUsers.Count == 2)));
             //As we have problems with DI, it does not check for any return
         }
+        
         /// <summary>
         /// Returns 403 if s student is trying to update topic users
         /// </summary>
@@ -238,6 +253,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
+        
         /// <summary>
         /// Returns 400 if the model is incorrect
         /// </summary>
@@ -250,6 +266,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
+        
         #endregion
     }
 }

@@ -56,6 +56,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Passing(actual => actual.Single(t => t.Id == _tester.TopicOne.Id));
         }
 
+        #endregion
+
+        #region Put topics
+
         /// <summary>
         /// Returns ok if associates the topic {topicId} with parent topic {parentId}
         /// </summary>
