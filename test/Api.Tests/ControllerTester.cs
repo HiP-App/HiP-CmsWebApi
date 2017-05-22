@@ -39,6 +39,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public Subscription Subscription { get; set; }
         public TopicUser SupervisorUser { get; set; }
         public TopicUser StudentUser { get; set; }
+        public Document FirstDocument { get; set; }
+        public AnnotationTagInstance TagInstanceForDocument { get; set; }
 
         public ControllerTester()
         {
@@ -106,16 +108,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Id = 1,
                 Title = "Paderborner Dom",
                 Status = "InReview",
-                Deadline = new DateTime(2017, 4, 18),
+                Deadline = new DateTime(2017, 5, 04),
                 CreatedById = Supervisor.Id,
+                Description = "Church"
             };
             TopicTwo = new Topic
             {
                 Id = 2,
-                Title = "Paderborner Dom",
-                Status = "InReview",
+                Title = "Westerntor",
+                Status = "InProgress",
                 Deadline = new DateTime(2017, 4, 18),
                 CreatedById = Supervisor.Id,
+                Description = "Shopping"
             };
             UnreadNotification = new Notification
             {
@@ -154,6 +158,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 UserId = Student.Id,
                 Role = Student.Role
             };
+            FirstDocument = new Document
+            {
+                TopicId = TopicOne.Id,
+                UpdaterId = Admin.Id,
+                Content = "Hello"
+            };
+            TagInstanceForDocument = new AnnotationTagInstance
+            {
+                Id = 5,
+                TagModelId = Tag1.Id,
+                Document = FirstDocument
+            };
         }
 
         /// <summary>
@@ -175,12 +191,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de")
         {
             return TestController(userIdentity)
-                .WithDbContext(dbContext => dbContext                    
+                .WithDbContext(dbContext => dbContext
+                    .WithSet<Document>(db => db.Add(FirstDocument))
                     .WithSet<AnnotationTag>(db => db.AddRange(Tag1, Tag2, Tag3, Tag4))
                     .WithSet<Layer>(db => db.AddRange(Layer1, Layer2))
                     .WithSet<LayerRelationRule>(db => db.Add(LayerRelationRule))
                     .WithSet<AnnotationTagRelationRule>(db => db.AddRange(RelationRule12, RelationRule32, RelationRule34))
-                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4))
+                    .WithSet<AnnotationTagInstance>(db => db.AddRange(TagInstance1, TagInstance2, TagInstance3, TagInstance4, TagInstanceForDocument))
                     .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
                     .WithSet<Notification>(db => db.AddRange(UnreadNotification, ReadNotification))
                     .WithSet<Subscription>(db => db.Add(Subscription))
