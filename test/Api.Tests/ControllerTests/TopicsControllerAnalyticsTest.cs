@@ -32,6 +32,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<TagFrequencyAnalyticsResult>()
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(result);
         }
         /// <summary>
