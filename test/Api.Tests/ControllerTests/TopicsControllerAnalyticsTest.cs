@@ -3,6 +3,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics;
 using System.Collections.Generic;
 using Xunit;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class TopicsControllerAnalyticsTest
@@ -32,7 +33,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<TagFrequencyAnalyticsResult>()
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(result);
         }
         /// <summary>

@@ -5,6 +5,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class TopicsControllerUsersTest
@@ -84,7 +85,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(model);
         }
         /// <summary>

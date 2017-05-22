@@ -7,6 +7,7 @@ using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System.Linq;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class TopicsControllerTest
@@ -95,7 +96,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.Get(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(_tester.TopicOne);
         }
         /// <summary>
