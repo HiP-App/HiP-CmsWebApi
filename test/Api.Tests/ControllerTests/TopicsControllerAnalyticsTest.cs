@@ -26,6 +26,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             {
                 TagFrequency = expectedTagFrequencyList
             };
+
             _tester.TestControllerWithMockData()
                 .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicOne.Id))
                 .ShouldReturn()
