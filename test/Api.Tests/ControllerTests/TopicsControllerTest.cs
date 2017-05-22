@@ -95,6 +95,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.Get(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(_tester.TopicOne);
         }
         /// <summary>

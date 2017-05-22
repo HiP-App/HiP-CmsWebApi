@@ -84,6 +84,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(model);
         }
         /// <summary>
@@ -98,6 +99,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(model);
         }
         /// <summary>
@@ -127,6 +129,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<UserResult>>()
+                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .Equals(model);
         }
         #endregion
