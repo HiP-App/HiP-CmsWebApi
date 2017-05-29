@@ -139,7 +139,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Returns unknown error if some problem occurs while adding an attachment
+        /// Returns statuscode 500 when trying to post attachment for the topic that does not exist
         /// </summary>
         [Fact]
         public void PostAttachmentTest500()
@@ -209,7 +209,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         #region Delete attachments
 
         /// <summary>
-        /// Returns 403 if some other user tries to update an attachment
+        /// Returns 403 if some other user tries to delete an attachment
         /// </summary>
         [Fact]
         public void DeleteAttachmentTestForbidden()
@@ -221,7 +221,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Returns bad request if there is no file attached
+        /// Returns not found when trying to delete an attachment that does not exist
         /// </summary>
         [Fact]
         public void DeleteAttachmentTest404()
