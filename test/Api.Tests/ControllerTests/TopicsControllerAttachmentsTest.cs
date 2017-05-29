@@ -139,15 +139,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         /// <summary>
-        /// Returns statuscode 500 when trying to post attachment for the topic that does not exist
+        /// Returns statuscode 404 when trying to add an attachment for the topic that does not exist
         /// </summary>
         [Fact]
-        public void PostAttachmentTest500()
+        public void PostAttachmentTest404()
         {
             _tester.TestController()
                 .Calling(c => c.PostAttachment(_tester.TopicOne.Id, AttachmentFormModel))
                 .ShouldReturn()
-                .StatusCode(500);
+                .StatusCode(404);
         }
 
         /// <summary>

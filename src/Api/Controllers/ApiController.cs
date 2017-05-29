@@ -34,7 +34,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         protected static StatusCodeResult Conflict() { return new StatusCodeResult(409); }
         public static StatusCodeResult Gone() { return new StatusCodeResult(410); }
         protected static StatusCodeResult ServiceUnavailable() { return new StatusCodeResult(503); }
-        protected static ObjectResult InternalServerError(object error) { return new ObjectResult(error) { StatusCode = 500 }; }
+        protected static ObjectResult NotFoundError(object error) { return new ObjectResult(error) { StatusCode = 404 }; }
 
 
     }
