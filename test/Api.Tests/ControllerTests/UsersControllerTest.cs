@@ -17,7 +17,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public UsersControllerTest()
         {
             _tester = new ControllerTester<UsersController>();
-            InviteFormModel = new InviteFormModel()
+            InviteFormModel = new InviteFormModel
             {
                 Emails = new[]
                         {
@@ -31,8 +31,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         /// <summary>
         /// Should return code 202 when an admin is trying to invite new users with new Emails
         /// </summary>
-        //[Fact] - Dependency Injection is not working with XUnit and the issue is still open
-        // Refer: https://github.com/xunit/xunit/issues/687
+        //[Fact] - Dependency Injection is not working with XUnit as expected
         public void InviteUsersTest202()
         {
             _tester.TestController()

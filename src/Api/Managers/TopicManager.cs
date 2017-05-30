@@ -92,12 +92,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             {
                 return false;
             }
-
             var existingUsers = topic.TopicUsers.Where(tu => tu.Role == role).ToList();
-
             var newUsers = new List<TopicUser>();
             var removedUsers = new List<TopicUser>();
-
             if (users.Users != null)
             {
                 // new user?
@@ -109,16 +106,24 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 // removed user?
                 removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
             }
-
             topic.TopicUsers.AddRange(newUsers);
             topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
             // Updated // TODO add user
             topic.UpdatedAt = DateTime.Now;
-            // Notifications
-            new NotificationProcessor(DbContext, topic, updaterIdentity).OnUsersChanged(newUsers, removedUsers, role);
 
             DbContext.Update(topic);
             DbContext.SaveChanges();
+
+            try
+            {
+                // Notifications
+                new NotificationProcessor(DbContext, topic, updaterIdentity).OnUsersChanged(newUsers, removedUsers, role);
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
+            
             return true;
         }
 
@@ -193,7 +198,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 topic.Status = status;
                 DbContext.Update(topic);
                 DbContext.SaveChanges();
-                new NotificationProcessor(DbContext, topic, identity).OnStateChanged(status);
+
+                try
+                {
+                    // Notifications
+                    new NotificationProcessor(DbContext, topic, identity).OnStateChanged(status);
+                }
+                catch (NullReferenceException)
+                {
+                    return false;
+                }
+                
                 return true;
             }
             catch (InvalidOperationException)
@@ -207,9 +222,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 var topic = DbContext.Topics.Include(t => t.TopicUsers).Single(u => u.Id == topicId);
-                new NotificationProcessor(DbContext, topic, identity).OnDeleteTopic();
                 DbContext.Remove(topic);
                 DbContext.SaveChanges();
+
+                try
+                {
+                    // Notifications
+                    new NotificationProcessor(DbContext, topic, identity).OnDeleteTopic();
+                }
+                catch (NullReferenceException)
+                {
+                    return false;
+                }
+                
                 return true;
             }
             catch (InvalidOperationException)
