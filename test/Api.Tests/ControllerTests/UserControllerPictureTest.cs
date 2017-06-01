@@ -14,20 +14,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
         
         #region Get Picture
-        
-        /// <summary>
-        /// Should return 200 when trying to get user details
-        /// </summary>
-        [Fact]
-        public void GetPictureByIdentityTest()
-        {
-            _tester.TestControllerWithMockData()
-                .Calling(c => c.GetPictureByIdentity(_tester.Admin.Email))
-                .ShouldReturn()
-                .Ok()
-                .WithModelOfType<Base64Image>()
-                .Passing(m => m.Base64 != null );
-        }
 
         /// <summary>
         /// Should return 404 when the user is not found to retrieve the profile picture
