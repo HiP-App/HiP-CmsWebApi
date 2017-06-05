@@ -15,6 +15,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
             if (claimsIdentity == null) throw new InvalidOperationException("identity not found");
 
             var email = claimsIdentity.FindFirst("email");
+            if (email == null) throw new InvalidOperationException("email claim not found");
+
             return email.Value;
         }
 
