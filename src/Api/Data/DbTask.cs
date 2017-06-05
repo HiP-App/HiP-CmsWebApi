@@ -4,6 +4,8 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using Microsoft.AspNetCore.Builder;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System;
+// ReSharper disable once RedundantUsingDirective
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
 {
