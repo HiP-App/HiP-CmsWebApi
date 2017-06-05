@@ -2,8 +2,6 @@
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System;
 
