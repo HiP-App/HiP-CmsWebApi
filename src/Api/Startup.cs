@@ -80,14 +80,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                        .AllowAnyOrigin()
             );
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
-                Audience = appConfig.AuthConfig.ClientId,
-                Authority = appConfig.AuthConfig.Domain,
-                AutomaticChallenge = true,
-                AutomaticAuthenticate = true,
-                RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents()
+                Authority = "http://localhost:5001",
+                RequireHttpsMetadata = false,
+
+                ApiName = "HiP-CmsWebApi"
             });
 
             app.UseMvc();

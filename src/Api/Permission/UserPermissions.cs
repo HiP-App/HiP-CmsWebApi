@@ -2,6 +2,9 @@
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
+using System.Linq;
+using System.Security.Principal;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
@@ -15,12 +18,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
             _userManager = new UserManager(dbContext);
         }
 
-        public bool IsAllowedToAdminister(string identity)
+        public bool IsAllowedToAdminister(IIdentity identity)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
-                return user.Role.Equals(Role.Administrator);
+                var roles = identity.GetUserRoles();
+                return roles.Any(r => r.Value.Equals(Role.Administrator));
             }
             catch (InvalidOperationException)
             {
@@ -28,12 +31,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
             }
         }
 
-        public bool IsAllowedToInvite(string identity)
+        public bool IsAllowedToInvite(IIdentity identity)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
-                return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+                var roles = identity.GetUserRoles();
+                return roles.Any(role => role.Value.Equals(Role.Administrator) || role.Value.Equals(Role.Supervisor));
             }
             catch (InvalidOperationException)
             {
