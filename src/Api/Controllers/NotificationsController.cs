@@ -163,8 +163,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
         private IActionResult SetSubscription(string notificationType, bool subscribe)
         {
-            NotificationType type;
-            if (Enum.TryParse(notificationType, out type))
+            if (Enum.TryParse(notificationType, out NotificationType type))
             {
                 if (_notificationManager.SetSubscription(User.Identity.GetUserIdentity(), type, subscribe))
                 {

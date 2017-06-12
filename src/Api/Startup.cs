@@ -17,7 +17,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-        internal static IServiceProvider ServiceProvider { get; private set; }
+    private readonly string ApiName = "HiP-CmsWebApi";
+
+    internal static IServiceProvider ServiceProvider { get; private set; }
 
         private IConfigurationRoot Configuration { get; }
 
@@ -80,14 +82,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                        .AllowAnyOrigin()
             );
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
-                Audience = appConfig.AuthConfig.ClientId,
                 Authority = appConfig.AuthConfig.Domain,
-                AutomaticChallenge = true,
-                AutomaticAuthenticate = true,
                 RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents()
+                ApiName = ApiName
             });
 
             app.UseMvc();
