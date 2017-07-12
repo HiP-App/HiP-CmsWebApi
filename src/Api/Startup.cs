@@ -82,12 +82,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                        .AllowAnyOrigin()
             );
 
-            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            var options = new JwtBearerOptions
             {
-                Authority = appConfig.AuthConfig.Domain,
-                RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                ApiName = ApiName
-            });
+                Audience = "https://hip.cs.upb.de/cms-api",
+                Authority = "https://janiskra.eu.auth0.com/"
+            };
+            app.UseJwtBearerAuthentication(options);
 
             app.UseMvc();
 
