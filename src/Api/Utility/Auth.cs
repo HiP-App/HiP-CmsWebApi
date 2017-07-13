@@ -13,11 +13,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
         {
             var claimsIdentity = identity as ClaimsIdentity;
             if (claimsIdentity == null) throw new InvalidOperationException("identity not found");
+            // var hipScope = claimsIdentity.FindFirst("https://hip.cs.upb.de/roles");
+            var sub = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "https://hip.cs.upb.de/sub");
+            if (sub == null) throw new InvalidOperationException("sub claim not found");
 
-            var email = claimsIdentity.FindFirst("email");
-            if (email == null) throw new InvalidOperationException("email claim not found");
-
-            return email.Value;
+            return sub.Value;
         }
 
         public static List<Claim> GetUserRoles(this IIdentity identity)
@@ -25,8 +25,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
             var claimsIdentity = identity as ClaimsIdentity;
             if (claimsIdentity == null) throw new InvalidOperationException("identity not found");
 
-            var role = claimsIdentity.FindAll("role");
-            return role.ToList();
+            var roles = claimsIdentity.FindAll(c => c.Type == "https://hip.cs.upb.de/roles");
+            return roles.ToList();
         }
     }
 }
