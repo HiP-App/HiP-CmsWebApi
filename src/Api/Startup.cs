@@ -84,8 +84,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
 
             var options = new JwtBearerOptions
             {
-                Audience = "https://hip.cs.upb.de/cms-api",
-                Authority = "https://janiskra.eu.auth0.com/"
+                Audience = appConfig.AuthConfig.Audience,
+                Authority = appConfig.AuthConfig.Authority
             };
             app.UseJwtBearerAuthentication(options);
 

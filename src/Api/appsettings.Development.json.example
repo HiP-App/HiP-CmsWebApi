@@ -6,8 +6,8 @@
   "DB_NAME": "hipcmsdb",
 
   // Auth Configurations
-  "CLIENT_ID": "HiP-CmsWebApiClientId",
-  "DOMAIN": "http://localhost:5001/",
+  "AUDIENCE": "https://hip.cs.upb.de/WebAPI",
+  "AUTHORITY": "https://hip.eu.auth0.com/",
 
   // Admin Details
   "ADMIN_EMAIL": "admin@hipapp.de",

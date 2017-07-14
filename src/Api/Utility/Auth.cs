@@ -13,7 +13,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
         {
             var claimsIdentity = identity as ClaimsIdentity;
             if (claimsIdentity == null) throw new InvalidOperationException("identity not found");
-            // var hipScope = claimsIdentity.FindFirst("https://hip.cs.upb.de/roles");
+
             var sub = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "https://hip.cs.upb.de/sub");
             if (sub == null) throw new InvalidOperationException("sub claim not found");
 

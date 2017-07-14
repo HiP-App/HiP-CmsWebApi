@@ -27,8 +27,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 
             AuthConfig = new AuthConfig
             {
-                ClientId = configuration.GetValue<string>("CLIENT_ID"),
-                Domain = configuration.GetValue<string>("DOMAIN")
+                Audience = configuration.GetValue<string>("AUDIENCE"),
+                Authority = configuration.GetValue<string>("AUTHORITY")
             };
 
             EmailService = configuration.GetValue<string>("EMAIL_SERVICE");
@@ -68,8 +68,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 
     public class AuthConfig
     {
-        public string ClientId { get; set; }
+        public string Audience { get; set; }
 
-        public string Domain { get; set; }
+        public string Authority { get; set; }
     }
 }
