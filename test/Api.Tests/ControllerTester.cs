@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;

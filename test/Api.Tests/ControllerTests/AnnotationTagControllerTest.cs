@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
