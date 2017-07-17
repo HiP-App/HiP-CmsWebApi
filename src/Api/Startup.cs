@@ -17,8 +17,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-    private readonly string ApiName = "HiP-CmsWebApi";
-
     internal static IServiceProvider ServiceProvider { get; private set; }
 
         private IConfigurationRoot Configuration { get; }
