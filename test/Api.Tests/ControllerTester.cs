@@ -6,6 +6,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using System.Collections.Generic;
 using System;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
@@ -182,7 +183,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         {
             return MyMvc
                 .Controller<T>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, userIdentity))
+                .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, userIdentity))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor))
                 );

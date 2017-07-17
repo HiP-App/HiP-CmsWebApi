@@ -4,6 +4,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using MyTested.AspNetCore.Mvc;
 using Xunit;
+using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
@@ -21,7 +22,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             var expected = new HashSet<Layer>() { layer };
             MyMvc
                 .Controller<AnnotationController>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, "admin@hipapp.de"))
+                .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, "admin@hipapp.de"))
                 .WithDbContext(dbContext => dbContext.WithSet<Layer>(db => db.Add(layer)))
                 .Calling(c => c.GetAllLayers())
                 .ShouldReturn()
