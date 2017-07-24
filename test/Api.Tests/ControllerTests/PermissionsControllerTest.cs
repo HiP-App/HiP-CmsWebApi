@@ -248,7 +248,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToAdministerTestForbiddenForStudent()
         {
-            _tester.TestController(_tester.Student.Email)
+            _tester.TestController(_tester.Student.Email, "Student")
                 .Calling(c => c.IsAllowedToAdminister())
                 .ShouldReturn()
                 .StatusCode(403);
@@ -260,7 +260,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToAdministerTestForbiddenForSupervisor()
         {
-            _tester.TestController(_tester.Supervisor.Email)
+            _tester.TestController(_tester.Supervisor.Email, "Supervisor")
                 .Calling(c => c.IsAllowedToAdminister())
                 .ShouldReturn()
                 .StatusCode(403);
@@ -285,7 +285,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToInviteForbiddenForStudent()
         {
-            _tester.TestController(_tester.Student.Email)
+            _tester.TestController(_tester.Student.Email, "Student")
                 .Calling(c => c.IsAllowedToInvite())
                 .ShouldReturn()
                 .StatusCode(403);
