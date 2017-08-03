@@ -177,20 +177,21 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         /// Adds an admin, student and supervisor user to the database.
         /// </summary>
         /// <param name="userIdentity">The identity (i.e. the email address) of the user as whom you want to make the call. Defaults to admin.</param>
+        /// <param name="role">The role of the user as whom you want to make the call. Defaults to Administrator.</param>
         /// <returns>An instance of IAndControllerBuilder, i.e. you can chain MyTested test method calls to the return value.</returns>
-        public IAndControllerBuilder<T> TestController(string userIdentity = "admin@hipapp.de")
+        public IAndControllerBuilder<T> TestController(string userIdentity = "admin@hipapp.de", string role = "Administrator")
         {
             return MyMvc
                 .Controller<T>()
-                .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, userIdentity))
+                .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, userIdentity).WithClaim(CustomClaims.Role, role))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor))
                 );
         }
 
-        public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de")
+        public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de", string role = "Administrator")
         {
-            return TestController(userIdentity)
+            return TestController(userIdentity, role)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Document>(db => db.Add(FirstDocument))
                     .WithSet<AnnotationTag>(db => db.AddRange(Tag1, Tag2, Tag3, Tag4))
