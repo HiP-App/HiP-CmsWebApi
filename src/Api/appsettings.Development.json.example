@@ -6,7 +6,7 @@
   "DB_NAME": "hipcmsdb",
 
   // Auth Configurations
-  "AUDIENCE": "https://hip.cs.upb.de/WebAPI",
+  "AUDIENCE": "https://hip.cs.upb.de/API",
   "AUTHORITY": "https://hip.eu.auth0.com/",
 
   // Admin Details
