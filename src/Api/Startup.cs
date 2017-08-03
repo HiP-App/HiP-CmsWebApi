@@ -11,6 +11,7 @@ using System.IO;
 using Microsoft.Extensions.PlatformAbstractions;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
+using PaderbornUniversity.SILab.Hip.Webservice;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
@@ -41,11 +42,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Read configurations from json
-            var appConfig = new AppConfig(Configuration);
+            var appConfig = new Utility.AppConfig(Configuration);
 
             // Register AppConfig in Services 
             services.AddSingleton(appConfig);
             services.AddTransient<IEmailSender, EmailSender>();
+
+            string domain = appConfig.AuthConfig.Authority;
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("read:webapi",
+                    policy => policy.Requirements.Add(new HasScopeRequirement("read:webapi", domain)));
+                options.AddPolicy("write:webapi",
+                    policy => policy.Requirements.Add(new HasScopeRequirement("write:webapi", domain)));
+            });
 
             // Adding Cross Orign Requests 
             services.AddCors();
@@ -67,7 +77,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, Utility.AppConfig appConfig)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             if (env.IsDevelopment())

@@ -12,6 +12,9 @@
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
+  <PropertyGroup>
+    <RestoreConfigFile>../../Nuget.Config</RestoreConfigFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Update="Views">
@@ -20,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HiP-WebserviceLib" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
