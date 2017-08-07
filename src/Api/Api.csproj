@@ -12,9 +12,6 @@
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
-  <PropertyGroup>
-    <RestoreConfigFile>../../NuGet.Config</RestoreConfigFile>
-  </PropertyGroup>
 
   <ItemGroup>
     <None Update="Views">

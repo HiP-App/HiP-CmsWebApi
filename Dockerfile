@@ -10,7 +10,7 @@ EXPOSE 5000
 VOLUME ["/dotnetapp/Api/wwwroot"]
 
 WORKDIR /dotnetapp/Api
-RUN dotnet restore
+RUN dotnet restore --no-cache --configfile ./NuGet.Config
 ENTRYPOINT ["dotnet", "run"]
 
 #RUN dotnet publish -c Release -o out
