@@ -1,5 +1,4 @@
 ﻿﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
