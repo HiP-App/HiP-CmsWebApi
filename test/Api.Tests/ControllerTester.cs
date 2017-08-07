@@ -15,6 +15,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public User Admin { get; }
         public User Student { get; }
         public User Supervisor { get; }
+        public User Reviewer { get; }
         public AnnotationTag Tag1 { get; set; }
         public AnnotationTag Tag2 { get; set; }
         public AnnotationTag Tag3 { get; set; }
@@ -39,6 +40,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public Subscription Subscription { get; set; }
         public TopicUser SupervisorUser { get; set; }
         public TopicUser StudentUser { get; set; }
+        public TopicUser ReviewerUser { get; set; }
         public Document FirstDocument { get; set; }
         public AnnotationTagInstance TagInstanceForDocument { get; set; }
 
@@ -61,6 +63,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 Id = 3,
                 Email = "supervisor@hipapp.de",
                 Role = "Supervisor"
+            };
+            Reviewer = new User
+            {
+                Id = 6,
+                Email = "reviewer@hipapp.de",
+                Role = "Reviewer"
             };
             /*
              * Layer1   Layer2
@@ -158,6 +166,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 UserId = Student.Id,
                 Role = Student.Role
             };
+            ReviewerUser = new TopicUser
+            {
+                TopicId = TopicOne.Id,
+                UserId = Reviewer.Id,
+                Role = Reviewer.Role
+            };
             FirstDocument = new Document
             {
                 TopicId = TopicOne.Id,
@@ -185,7 +199,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 .Controller<T>()
                 .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, userIdentity).WithClaim(CustomClaims.Role, role))
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor))
+                    .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor, Reviewer))
                 );
         }
 
@@ -202,7 +216,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                     .WithSet<Topic>(db => db.AddRange(TopicOne, TopicTwo))
                     .WithSet<Notification>(db => db.AddRange(UnreadNotification, ReadNotification))
                     .WithSet<Subscription>(db => db.Add(Subscription))
-                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser))
+                    .WithSet<TopicUser>(db => db.AddRange(SupervisorUser, StudentUser, ReviewerUser))
                 );
         }
     }

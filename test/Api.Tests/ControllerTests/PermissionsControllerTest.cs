@@ -179,24 +179,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToReviewTest()
         {
-            var reviewer = new User
-            {
-                Id = 4,
-                Email = "reviewer@hipapp.de",
-                Role = "Reviewer"
-            };
-
-            var reviewerUser = new TopicUser
-            {
-                TopicId = _tester.TopicOne.Id,
-                UserId = reviewer.Id,
-                Role = reviewer.Role
-            };
-
-            _tester.TestControllerWithMockData(reviewer.Email)
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(reviewer))
-                    .WithSet<TopicUser>(db => db.AddRange(reviewerUser)))
+            _tester.TestControllerWithMockData(_tester.Reviewer.Email)
                 .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();

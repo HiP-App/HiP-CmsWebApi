@@ -136,7 +136,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<UserResult>>()
-                .Passing(m => m.Metadata.ItemsCount == 3);
+                .Passing(m => m.Metadata.ItemsCount == 4);
         }
 
         /// <summary>

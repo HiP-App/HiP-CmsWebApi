@@ -25,37 +25,37 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester = new ControllerTester<TopicsController>();
             Student1 = new User
             {
-                Id = 5,
+                Id = 7,
                 Email = "student1@hipapp.de",
                 Role = "Student"
             };
             Student2 = new User
             {
-                Id = 6,
+                Id = 8,
                 Email = "student2@hipapp.de",
                 Role = "Student"
             };
             Supervisor1 = new User
             {
-                Id = 5,
+                Id = 7,
                 Email = "supervisor1@hipapp.de",
                 Role = "Supervisor"
             };
             Supervisor2 = new User
             {
-                Id = 6,
+                Id = 8,
                 Email = "supervisor2@hipapp.de",
                 Role = "Supervisor"
             };
             Reviewer1 = new User
             {
-                Id = 5,
+                Id = 7,
                 Email = "reviewer1@hipapp.de",
                 Role = "Reviewer"
             };
             Reviewer2 = new User
             {
-                Id = 6,
+                Id = 8,
                 Email = "reviewer2@hipapp.de",
                 Role = "Reviewer"
             };
