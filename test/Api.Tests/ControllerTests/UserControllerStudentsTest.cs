@@ -62,7 +62,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutStudentTest403()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
+            _tester.TestControllerWithMockData("newuser@hipapp.de", "Student")
                 .Calling(c => c.PutStudent(StudentFormModel, _tester.Student.Email))
                 .ShouldReturn()
                 .StatusCode(403);
