@@ -22,7 +22,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
                 Host = configuration.GetValue<string>("DB_HOST"),
                 Username = configuration.GetValue<string>("DB_USERNAME"),
                 Password = configuration.GetValue<string>("DB_PASSWORD"),
-                Name = configuration.GetValue<string>("DB_NAME")
+                Name = configuration.GetValue<string>("DB_NAME"),
+                Port = configuration.GetValue<string>("DB_PORT")
             };
 
             AuthConfig = new AuthConfig
@@ -49,6 +50,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
 
         public string Password { get; set; }
 
+        public string Port { get; set; }
+
         public string ConnectionString
         {
             get
@@ -60,6 +63,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
                 connectionString.Append($"Password={Password};");
                 connectionString.Append($"Database={Name};");
                 connectionString.Append($"Pooling=true;");
+                connectionString.Append($"Port={Port};");
 
                 return connectionString.ToString();
             }
