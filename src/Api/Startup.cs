@@ -1,5 +1,4 @@
 ﻿﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +10,14 @@ using System.IO;
 using Microsoft.Extensions.PlatformAbstractions;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
+using PaderbornUniversity.SILab.Hip.Webservice;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-        internal static IServiceProvider ServiceProvider { get; private set; }
+    internal static IServiceProvider ServiceProvider { get; private set; }
 
         private IConfigurationRoot Configuration { get; }
 
@@ -41,11 +41,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         public void ConfigureServices(IServiceCollection services)
         {
             // Read configurations from json
-            var appConfig = new AppConfig(Configuration);
+            var appConfig = new Utility.AppConfig(Configuration);
 
             // Register AppConfig in Services 
             services.AddSingleton(appConfig);
             services.AddTransient<IEmailSender, EmailSender>();
+
+            string domain = appConfig.AuthConfig.Authority;
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("read:webapi",
+                    policy => policy.Requirements.Add(new HasScopeRequirement("read:webapi", domain)));
+                options.AddPolicy("write:webapi",
+                    policy => policy.Requirements.Add(new HasScopeRequirement("write:webapi", domain)));
+            });
 
             // Adding Cross Orign Requests 
             services.AddCors();
@@ -67,7 +76,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, Utility.AppConfig appConfig)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             if (env.IsDevelopment())
@@ -80,15 +89,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                        .AllowAnyOrigin()
             );
 
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            var options = new JwtBearerOptions
             {
-                Audience = appConfig.AuthConfig.ClientId,
-                Authority = appConfig.AuthConfig.Domain,
-                AutomaticChallenge = true,
-                AutomaticAuthenticate = true,
-                RequireHttpsMetadata = appConfig.RequireHttpsMetadata,
-                Events = new CmsApuJwtBearerEvents()
-            });
+                Audience = appConfig.AuthConfig.Audience,
+                Authority = appConfig.AuthConfig.Authority
+            };
+            app.UseJwtBearerAuthentication(options);
 
             app.UseMvc();
 

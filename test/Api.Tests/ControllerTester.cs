@@ -1,11 +1,11 @@
-﻿using System.Security.Claims;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Builders.Contracts.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using System.Collections.Generic;
 using System;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
@@ -191,20 +191,21 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         /// Adds an admin, student and supervisor user to the database.
         /// </summary>
         /// <param name="userIdentity">The identity (i.e. the email address) of the user as whom you want to make the call. Defaults to admin.</param>
+        /// <param name="role">The role of the user as whom you want to make the call. Defaults to Administrator.</param>
         /// <returns>An instance of IAndControllerBuilder, i.e. you can chain MyTested test method calls to the return value.</returns>
-        public IAndControllerBuilder<T> TestController(string userIdentity = "admin@hipapp.de")
+        public IAndControllerBuilder<T> TestController(string userIdentity = "admin@hipapp.de", string role = "Administrator")
         {
             return MyMvc
                 .Controller<T>()
-                .WithAuthenticatedUser(user => user.WithClaim(ClaimTypes.Name, userIdentity))
+                .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, userIdentity).WithClaim(CustomClaims.Role, role))
                 .WithDbContext(dbContext => dbContext
                     .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor, Reviewer))
                 );
         }
 
-        public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de")
+        public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de", string role = "Administrator")
         {
-            return TestController(userIdentity)
+            return TestController(userIdentity, role)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Document>(db => db.Add(FirstDocument))
                     .WithSet<AnnotationTag>(db => db.AddRange(Tag1, Tag2, Tag3, Tag4))

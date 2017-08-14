@@ -20,9 +20,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             _userManager = new UserManager(dbContext);
             _userPermissions = new UserPermissions(dbContext);
         }
-
-
-
+        
         #region GET user
 
         /// <summary>
@@ -71,7 +69,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put([FromQuery]string identity, [FromBody]UserFormModel model)
         {
-            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Forbidden();
 
             if (identity != null && model.Role != null && !Role.IsRoleValid(model.Role))

@@ -79,7 +79,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void InviteUsersTest403()
         {
-            _tester.TestController(_tester.Student.Email) // --> log in as student
+            _tester.TestController(_tester.Student.Email, "Student") // --> log in as student
                 .Calling(c => c.InviteUsers(InviteFormModel, null)) //Since dependency injection isn't working, EmailSender is null
                 .ShouldHave()
                 .DbContext(db => db.WithSet<User>(nouser => !nouser.Any(actual => actual.Email.Equals(InviteFormModel.Emails[0]))))

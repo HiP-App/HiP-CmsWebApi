@@ -47,7 +47,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutPictureTest403()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
+            _tester.TestControllerWithMockData("newuser@hipapp.de", "Student")
                 .Calling(c => c.PutPicture(_tester.Admin.Email, null)) // Since file cannot be attached, it is kept null
                 .ShouldReturn()
                 .StatusCode(403);
@@ -75,7 +75,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void DeleteTest403()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
+            _tester.TestControllerWithMockData("newuser@hipapp.de", "Student")
                 .Calling(c => c.Delete(_tester.Admin.Email)) 
                 .ShouldReturn()
                 .StatusCode(403);
