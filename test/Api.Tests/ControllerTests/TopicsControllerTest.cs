@@ -242,19 +242,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
-        
-        /// <summary>
-        /// returns 403 when a different user tries to change topic status
-        /// </summary>
-        [Fact]
-        public void ChangeTopicStatusTest403()
-        {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
-                .ShouldReturn()
-                .StatusCode(403);
-        }
-        
+
         /// <summary>
         /// returns 404 when topic is not found
         /// </summary>
@@ -345,7 +333,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void DeleteTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.Email)
+            _tester.TestControllerWithMockData(_tester.Student.UId)
                 .Calling(c => c.Delete(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);

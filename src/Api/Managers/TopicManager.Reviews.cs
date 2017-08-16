@@ -21,7 +21,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             {
                 try
                 {
-                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Identity);
+                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Email);
                     result.Add(new TopicReviewResult(review));
                 }
                 catch (InvalidOperationException)
@@ -36,7 +36,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             try
             {
-                var user = GetUserByEmail(identity);
+                var user = GetUserByIdentity(identity);
                 if (!DbContext.TopicReviews.Any(rs => rs.TopicId == topicId && rs.ReviewerId == user.Id))
                 {
                     var review = new TopicReview()

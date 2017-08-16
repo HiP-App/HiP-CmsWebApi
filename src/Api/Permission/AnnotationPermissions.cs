@@ -20,7 +20,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
             bool allowed;
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
+                var user = _userManager.GetUserByIdentity(identity);
                 allowed = user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)

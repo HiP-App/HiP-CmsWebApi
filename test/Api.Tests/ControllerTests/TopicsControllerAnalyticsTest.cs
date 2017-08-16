@@ -64,13 +64,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
         
         /// <summary>
-        /// Returns 403 if a student tries to get the analytics
+        /// Returns 403 if a non-attached user tries to get the analytics
         /// </summary>
         [Fact]
         public void GetTagFrequencyAnalyticsTest403()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
+                .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }

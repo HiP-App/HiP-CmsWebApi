@@ -15,7 +15,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public IEnumerable<NotificationResult> GetNotificationsForTheUser(string identity, bool onlyUnread)
         {
-            var userId = GetUserByEmail(identity).Id;
+            var userId = GetIdByIdentity(identity);
             var query = DbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUnread)
                 query = query.Where(n => !n.IsRead);
@@ -69,13 +69,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         internal int GetNotificationCount(string identity)
         {
-            var userId = GetUserByEmail(identity).Id;
+            var userId = GetIdByIdentity(identity);
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
         public bool SetSubscription(string identity, NotificationType type, bool subscribe)
         {
-            var userId = GetUserByEmail(identity).Id;
+            var userId = GetIdByIdentity(identity);
             User user = DbContext.Users.Single(u => u.Id == userId);
             Subscription sub = new Subscription
             {
@@ -87,7 +87,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public IEnumerable<string> GetSubscriptions(string identity)
         {
-            var userId = GetUserByEmail(identity).Id;
+            var userId = GetIdByIdentity(identity);
             return DbContext.Subscriptions.Where(
                 subscription => subscription.SubscriberId == userId
             ).ToList().Select(

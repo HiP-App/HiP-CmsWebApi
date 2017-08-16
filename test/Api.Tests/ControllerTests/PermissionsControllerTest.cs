@@ -160,12 +160,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var newStudent = new User
             {
-                Id = 4,
+                Id = 13,
+                UId = "test-auth:student13",
                 Email = "student1@hipapp.de",
                 Role = "Student"
             };
 
-            _tester.TestControllerWithMockData(newStudent.Email)
+            _tester.TestControllerWithMockData(newStudent.UId)
                 .WithDbContext(dbContext => dbContext                    
                     .WithSet<User>(db => db.Add(newStudent)))
                 .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))

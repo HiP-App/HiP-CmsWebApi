@@ -9,7 +9,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class TopicPermissions : BaseManager
     {
-        // TODO change User.Email to the Identity if changed!
         private readonly UserManager _userManager;
 
 
@@ -23,7 +22,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -41,7 +40,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -59,7 +58,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
+                var user = _userManager.GetUserByIdentity(identity);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
@@ -72,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
+                var user = _userManager.GetUserByIdentity(identity);
                 if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
                     return true;
             }
