@@ -40,12 +40,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
-        public virtual User GetUserByEmail(string email)
-        {
-            return DbContext.Users.Single(u => u.Email == email);
-        }
-
-        /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public virtual User GetStudentById(string identity)
         {
             return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == identity && string.Equals(u.Role, Role.Student));

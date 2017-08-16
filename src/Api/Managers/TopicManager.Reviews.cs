@@ -36,7 +36,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             try
             {
-                var user = GetUserByIdentity(identity);
+                var user = GetUserByEmail(identity);
                 if (!DbContext.TopicReviews.Any(rs => rs.TopicId == topicId && rs.ReviewerId == user.Id))
                 {
                     var review = new TopicReview()

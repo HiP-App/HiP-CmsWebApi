@@ -34,7 +34,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
             try
             {
-                var user = GetUserByIdentity(identity);
+                var user = GetUserByEmail(identity);
                 var attatchment = new TopicAttachment(model)
                 {
                     UserId = user.Id,

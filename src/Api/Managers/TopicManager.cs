@@ -43,7 +43,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public PagedResult<TopicResult> GetTopicsForUser(string identity, int page, int pageSize, string queryString)
         {
-            var userId = GetUserByIdentity(identity).Id;
+            var userId = GetUserByEmail(identity).Id;
             var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
@@ -101,7 +101,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 foreach (var identity in users.Users)
                 {
                     if (!existingUsers.Any(tu => (tu.User.Email == identity && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = GetUserByIdentity(identity).Id, Role = role });
+                        newUsers.Add(new TopicUser() { UserId = GetUserByEmail(identity).Id, Role = role });
                 }
                 // removed user?
                 removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
@@ -141,7 +141,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             try
             {
-                var user = GetUserByIdentity(updaterIdentity);
+                var user = GetUserByEmail(updaterIdentity);
                 var topic = new Topic(model) { CreatedById = user.Id };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();

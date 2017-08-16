@@ -23,7 +23,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
+                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -41,7 +41,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
+                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
                 if (user.Role.Equals(Role.Administrator))
                     return true;
                 // Created?
@@ -59,7 +59,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
+                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
                 return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
             }
             catch (InvalidOperationException)
@@ -72,7 +72,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
+                var user = ((BaseManager) _userManager).GetUserByEmail(identity);
                 if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
                     return true;
             }
