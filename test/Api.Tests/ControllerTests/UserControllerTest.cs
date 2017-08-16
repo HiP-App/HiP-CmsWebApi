@@ -98,7 +98,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutUserTest403()
         {
-            _tester.TestController(_tester.Student.Email, "Student")
+            _tester.TestController(_tester.Student.UId, "Student")
                 .Calling(c => c.Put(_tester.Admin.Email, UserFormModel))
                 .ShouldReturn()
                 .StatusCode(403);

@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutReviewStatusTest200()
         {
-            _tester.TestControllerWithMockData(_tester.Reviewer.Email)
+            _tester.TestControllerWithMockData(_tester.Reviewer.UId)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicReview>(db => db.Add(TopicReview)))
                 .Calling(c => c.PutReviewStatus(_tester.TopicOne.Id, TopicReviewStatus))
