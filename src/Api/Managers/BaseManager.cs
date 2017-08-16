@@ -29,5 +29,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == email);
         }
+
+        public string GetIdentityByEmail(string email)
+        {
+            return DbContext.Users.Where(u => u.Email == email).Single().UId;
+        }
     }
 }
