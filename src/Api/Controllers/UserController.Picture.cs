@@ -1,10 +1,10 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -27,7 +27,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
                 var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
@@ -76,7 +76,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             {
                 try
                 {
-                    var user = ((BaseManager) _userManager).GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                    var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
                     var fileName = user.Id + Path.GetExtension(file.FileName);
                     DeleteFile(Path.Combine(uploads, fileName));
 
@@ -98,7 +98,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
         private static bool IsImage(IFormFile file)
         {
-            return ((file != null) && System.Text.RegularExpressions.Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
+            return ((file != null) && Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
         }
 
         #endregion
@@ -126,7 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             // Fetch user
             try
             {
-                var user = ((BaseManager) _userManager).GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
                 // Has A Picture?
                 if (string.IsNullOrEmpty(user.ProfilePicture) || Constants.DefaultPircture.Equals(user.ProfilePicture))
                     return BadRequest("No picture set");
