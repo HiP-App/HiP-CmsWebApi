@@ -39,6 +39,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <summary>
         /// Create a new layer relation rule.
         /// </summary>
+        /// <param name="model"> Contains annotation tag relations, rules and layer relation rules.</param>
         /// <response code="200">Rule created</response>
         /// <response code="403">User not allowed to create a layer relation rule</response>
         /// <response code="404">Layers not found</response>
@@ -97,8 +98,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <summary>
         /// Remove the layer relation rule for the layer represented by {sourceId} to the layer represented by {targetId}.
         /// </summary>
-        /// <param name="sourceId">ID of the source layer of the relation</param>
-        /// <param name="targetId">ID of the target layer of the relation</param>
+        /// <param name="sourceId">ID of the source layer of the relation.</param>
+        /// <param name="targetId">ID of the target layer of the relation.</param>
         /// <response code="200">Relation removed</response>
         /// <response code="403">User not allowed to delete a relation</response>
         /// <response code="400">Request was misformed</response>

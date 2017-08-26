@@ -77,6 +77,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <summary>
         /// Is the current user allowed to see and edit the content of the topic.
         /// </summary>
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAssociatedTo")]
@@ -92,6 +93,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <summary>
         /// Is the current user allowed to edit the topic.
         /// </summary>
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAllowedToEdit")]
@@ -105,6 +107,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <summary>
         /// Is the current user allowed to review the topic.
         /// </summary>
+        /// <param name="topicId">the Id of the Topic {topicId}</param>                
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsReviewer")]
