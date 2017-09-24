@@ -43,7 +43,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public PagedResult<TopicResult> GetTopicsForUser(string identity, int page, int pageSize, string queryString)
         {
-            var userId = GetUserByEmail(identity).Id;
+            var userId = GetUserByIdentity(identity).Id;
             var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
