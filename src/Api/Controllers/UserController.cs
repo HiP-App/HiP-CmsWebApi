@@ -38,7 +38,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             try
             {
-                var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                var uid = identity ?? User.Identity.GetUserIdentity();
+                var user = _userManager.GetUserByIdentity(uid);
                 return Ok(new UserResult(user));
             }
             catch (InvalidOperationException)
@@ -88,7 +89,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
                 }
                 else
                 {
-                    user = _userManager.GetUserByEmail(identity);
+                    user = _userManager.GetUserByIdentity(identity);
                 }
                 _userManager.UpdateUser(user, model, (identity != null && model.Role != null));
                 Logger.LogInformation(5, "User with ID: " + user.Id + " updated.");
