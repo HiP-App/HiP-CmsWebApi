@@ -10,8 +10,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>Api</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;dnxcore50;portable-net45+win8</PackageTargetFallback>
-  </PropertyGroup>
+   </PropertyGroup>
 
   <ItemGroup>
     <None Update="Views">
