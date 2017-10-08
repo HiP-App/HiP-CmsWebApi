@@ -27,7 +27,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             try
             {
-                var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                 var path = Path.Combine(Constants.ProfilePicturePath, user.Picture);
                 if (!System.IO.File.Exists(path))
                     path = Path.Combine(Constants.ProfilePicturePath, Constants.DefaultPircture);
@@ -76,7 +76,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             {
                 try
                 {
-                    var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                    var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                     var fileName = user.Id + Path.GetExtension(file.FileName);
                     DeleteFile(Path.Combine(uploads, fileName));
 
@@ -126,7 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             // Fetch user
             try
             {
-                var user = _userManager.GetUserByEmail(identity ?? User.Identity.GetUserIdentity());
+                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
                 // Has A Picture?
                 if (string.IsNullOrEmpty(user.ProfilePicture) || Constants.DefaultPircture.Equals(user.ProfilePicture))
                     return BadRequest("No picture set");
