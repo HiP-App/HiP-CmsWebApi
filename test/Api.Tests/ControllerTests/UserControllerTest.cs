@@ -61,11 +61,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUserTest200()
         {
             _tester.TestController()
-                .Calling(c => c.Put(_tester.Admin.Email, UserFormModel))
+                .Calling(c => c.Put(_tester.Admin.UId, UserFormModel))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<User>(user =>
                     user.Find(_tester.Admin.Id).FirstName.Equals(UserFormModel.FirstName) &&
-                    user.Find(_tester.Admin.Id).FirstName.Equals(UserFormModel.FirstName)
+                    user.Find(_tester.Admin.Id).LastName.Equals(UserFormModel.LastName)
                 ))
                 .AndAlso()
                 .ShouldReturn()
@@ -86,7 +86,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
 
             _tester.TestController()
-                .Calling(c => c.Put(_tester.Admin.Email, userFormModel))
+                .Calling(c => c.Put(_tester.Admin.UId, userFormModel))
                 .ShouldReturn()
                 .BadRequest()
                 .WithStatusCode(400);
@@ -99,7 +99,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUserTest403()
         {
             _tester.TestController(_tester.Student.UId, "Student")
-                .Calling(c => c.Put(_tester.Admin.Email, UserFormModel))
+                .Calling(c => c.Put(_tester.Admin.UId, UserFormModel))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -111,7 +111,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUserTest404()
         {
             _tester.TestController()
-                .Calling(c => c.Put("nonexistinguser@hipapp.de", UserFormModel))
+                .Calling(c => c.Put(_tester.Reviewer.UId, UserFormModel))
                 .ShouldReturn()
                 .NotFound()
                 .WithStatusCode(404);
