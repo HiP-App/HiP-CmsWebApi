@@ -78,7 +78,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutParentTopicsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.PutParentTopics(_tester.TopicTwo.Id, _tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403); 
@@ -116,8 +116,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubTopicsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutSubTopics(_tester.TopicTwo.Id, _tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Email)
+                .Calling(c => c.PutSubTopics(_tester.TopicOne.Id, _tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }

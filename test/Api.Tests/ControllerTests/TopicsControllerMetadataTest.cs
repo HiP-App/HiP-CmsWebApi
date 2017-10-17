@@ -65,13 +65,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
         
         /// <summary>
-        /// Returns 403 if the user is not allowed to post data for the topic
+        /// Returns ok if a metadata is added to the attachment {topicId}
         /// </summary>
         [Fact]
         public void PostMetaDataTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PostMetaData(_tester.TopicTwo.Id, TopicAttachment.Id, Metadata))
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.PostMetaData(_tester.TopicOne.Id, TopicAttachment.Id, Metadata))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -125,8 +125,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutMetaDataTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutMetaData(_tester.TopicTwo.Id, TopicAttachment.Id, Metadata))
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.PutMetaData(_tester.TopicOne.Id, TopicAttachment.Id, Metadata))
                 .ShouldReturn()
                 .StatusCode(403);
         }

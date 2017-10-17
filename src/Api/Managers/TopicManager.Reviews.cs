@@ -21,7 +21,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             {
                 try
                 {
-                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Email);
+                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Identity);
                     result.Add(new TopicReviewResult(review));
                 }
                 catch (InvalidOperationException)

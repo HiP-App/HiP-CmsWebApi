@@ -13,9 +13,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public int Id { get; set; }
 
         [Required]
-        public string UId { get; set; }
-
-        [Required]
         [EmailAddress]
         public string Email { get; set; }
 

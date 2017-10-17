@@ -52,7 +52,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTopicsWithQueryTest()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.Get("Paderborner", "InReview", new DateTime(2017, 5, 04), false, 0, 0))
                 .ShouldReturn()
                 .Ok()
@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTopicsForUserTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTopicsForUser(_tester.Student.UId, 0, 0, null))
+                .Calling(c => c.GetTopicsForUser(_tester.Student.Email, 0, 0, null))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<TopicResult>>()
@@ -85,7 +85,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTopicsForUserWithQueryTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTopicsForUser(_tester.Student.UId, 0, 0, "Paderborner"))
+                .Calling(c => c.GetTopicsForUser(_tester.Student.Email, 0, 0, "Paderborner"))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<TopicResult>>()
@@ -171,7 +171,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PostTopicTest403()
         {
-            _tester.TestController(_tester.Student.UId)
+            _tester.TestController(_tester.Student.Email)
                 .Calling(c => c.Post(TopicFormModel))
                 .ShouldReturn()
                 .StatusCode(403);
@@ -212,7 +212,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicTest403()
         {
-            _tester.TestController(_tester.Student.UId)
+            _tester.TestController(_tester.Student.Email)
                 .Calling(c => c.Post(TopicFormModel))
                 .ShouldReturn()
                 .StatusCode(403);
@@ -237,12 +237,24 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void ChangeTopicStatusTest404Forexception()
         {
-            _tester.TestControllerWithMockData(_tester.Supervisor.UId)
+            _tester.TestControllerWithMockData(_tester.Supervisor.Email)
                 .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
                 .ShouldReturn()
                 .NotFound();
         }
-
+        
+        /// <summary>
+        /// returns 403 when a different user tries to change topic status
+        /// </summary>
+        [Fact]
+        public void ChangeTopicStatusTest403()
+        {
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
+                .ShouldReturn()
+                .StatusCode(403);
+        }
+        
         /// <summary>
         /// returns 404 when topic is not found
         /// </summary>
@@ -333,7 +345,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void DeleteTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.Delete(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);

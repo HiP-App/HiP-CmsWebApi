@@ -31,6 +31,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             return Ok(_topicManager.GetReviews(topicId));
         }
 
+
         /// <summary>
         /// Change the Status of the review {topicId}
         /// </summary>

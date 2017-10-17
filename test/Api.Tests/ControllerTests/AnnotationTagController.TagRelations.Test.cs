@@ -73,7 +73,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
-            _tester.TestControllerWithMockData(_tester.Supervisor.UId)
+            _tester.TestControllerWithMockData(_tester.Supervisor.Email)
                 .Calling(c => c.PostLayerRelationRule(model))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<LayerRelationRule>(relations =>
@@ -104,7 +104,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
-            _tester.TestController(_tester.Student.UId)
+            _tester.TestController(_tester.Student.Email)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
                 )
@@ -469,7 +469,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 TargetId = _tester.Tag2.Id,
                 Title = "relation-with-nonexisting-tags"
             };
-            _tester.TestController(_tester.Student.UId) // id = 2 --> student
+            _tester.TestController(_tester.Student.Email) // id = 2 --> student
                 .Calling(c => c.PostTagInstanceRelation(expected))
                 .ShouldReturn()
                 .Forbid();
@@ -569,7 +569,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTagRelationTest403()
         {
             var model = RelationFormModelFromRelation(_tester.Relation12);
-            _tester.TestController(_tester.Student.UId) // --> log in as student
+            _tester.TestController(_tester.Student.Email) // --> log in as student
                 .Calling(c => c.PutTagInstanceRelation(model, model))
                 .ShouldReturn()
                 .Forbid();
@@ -666,7 +666,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 SourceId = _tester.Relation12.SourceTag.Id,
                 TargetId = _tester.Relation12.TargetTag.Id
             };
-            _tester.TestController(_tester.Student.UId)
+            _tester.TestController(_tester.Student.Email)
                 .Calling(c => c.DeleteTagRelation(model))
                 .ShouldReturn()
                 .Forbid();

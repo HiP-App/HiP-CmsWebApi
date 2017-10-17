@@ -55,8 +55,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetDocumentTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
-                .Calling(c => c.GetDocument(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.GetDocument(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -103,8 +103,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PostDocumentTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PostDocument(_tester.TopicTwo.Id, HtmlContentModel))
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.PostDocument(_tester.TopicOne.Id, HtmlContentModel))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -158,8 +158,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void DeleteDocumentTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
-                .Calling(c => c.DeleteDocument(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.DeleteDocument(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }

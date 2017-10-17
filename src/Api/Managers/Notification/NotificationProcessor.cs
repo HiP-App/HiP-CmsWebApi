@@ -25,7 +25,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         ) : base(dbContext)
         {
             topic = currentTopic;
-            currentUser = GetIdByIdentity(identity);
+            currentUser = GetUserByIdentity(identity).Id;
             emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(IEmailSender)); // TODO: This is probably not such a good idea...
             // Do not notify yourself
             notifiedUsers.Add(currentUser);

@@ -47,8 +47,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetReviewStatusTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.GetReviewStatus(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
+                .Calling(c => c.GetReviewStatus(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutReviewStatusTest200()
         {
-            _tester.TestControllerWithMockData(_tester.Reviewer.UId)
+            _tester.TestControllerWithMockData(_tester.Reviewer.Email)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicReview>(db => db.Add(TopicReview)))
                 .Calling(c => c.PutReviewStatus(_tester.TopicOne.Id, TopicReviewStatus))
@@ -82,14 +82,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .Ok();
         }
-
         /// <summary>
         /// Returns 403 if the user trying to update is not a reviewer
         /// </summary>
         [Fact]
         public void PutReviewStatusTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData("newuser@hipapp.de")
                 .Calling(c => c.PutReviewStatus(_tester.TopicOne.Id, TopicReviewStatus))
                 .ShouldReturn()
                 .StatusCode(403);

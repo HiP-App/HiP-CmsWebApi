@@ -36,7 +36,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
             // already exitsts
 
-            var userId = GetIdByIdentity(identity);
+            var userId = GetUserByIdentity(identity).Id;
             Document document;
             try
             {

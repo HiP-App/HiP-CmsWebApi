@@ -26,42 +26,36 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             Student1 = new User
             {
                 Id = 7,
-                UId = "test-auth:student7",
                 Email = "student1@hipapp.de",
                 Role = "Student"
             };
             Student2 = new User
             {
                 Id = 8,
-                UId = "test-auth:student8",
                 Email = "student2@hipapp.de",
                 Role = "Student"
             };
             Supervisor1 = new User
             {
-                Id = 9,
-                UId = "test-auth:supervisor9",
+                Id = 7,
                 Email = "supervisor1@hipapp.de",
                 Role = "Supervisor"
             };
             Supervisor2 = new User
             {
-                Id = 10,
-                UId = "test-auth:supervisor10",
+                Id = 8,
                 Email = "supervisor2@hipapp.de",
                 Role = "Supervisor"
             };
             Reviewer1 = new User
             {
-                Id = 11,
-                UId = "test-auth:reviewer11",
+                Id = 7,
                 Email = "reviewer1@hipapp.de",
                 Role = "Reviewer"
             };
             Reviewer2 = new User
             {
-                Id = 12,
-                UId = "test-auth:reviewer12",
+                Id = 8,
                 Email = "reviewer2@hipapp.de",
                 Role = "Reviewer"
             };
@@ -168,7 +162,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicStudentsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.PutTopicStudents(_tester.TopicTwo.Id, UsersFormModelForStudent))
                 .ShouldReturn()
                 .StatusCode(403);
@@ -211,7 +205,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicSupervisorsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.PutTopicSupervisors(_tester.TopicTwo.Id, UsersFormModelForSupervisor))
                 .ShouldReturn()
                 .StatusCode(403);
@@ -254,7 +248,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicReviewersTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Email)
                 .Calling(c => c.PutTopicReviewers(_tester.TopicTwo.Id, UsersFormModelForReviewer))
                 .ShouldReturn()
                 .StatusCode(403);

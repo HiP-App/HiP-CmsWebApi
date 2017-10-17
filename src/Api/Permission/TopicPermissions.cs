@@ -9,6 +9,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class TopicPermissions : BaseManager
     {
+        // TODO change User.Email to the Identity if changed!
         private readonly UserManager _userManager;
 
 

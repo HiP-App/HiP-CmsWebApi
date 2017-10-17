@@ -15,7 +15,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public TestStartup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
+                .SetBasePath(env.ContentRootPath)           
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
@@ -38,6 +38,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             app.UseMvc();
-        }
+        }       
     }
 }

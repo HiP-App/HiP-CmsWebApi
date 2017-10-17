@@ -1,10 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -98,7 +97,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
         private static bool IsImage(IFormFile file)
         {
-            return ((file != null) && Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
+            return ((file != null) && System.Text.RegularExpressions.Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
         }
 
         #endregion
