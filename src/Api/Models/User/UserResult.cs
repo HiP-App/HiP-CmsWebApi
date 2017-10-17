@@ -4,7 +4,7 @@
     {
         public UserResult(Entity.User user)
         {
-            Identity = user.Email; // TODO replace with 'identity'
+            Identity = user.UId;
             Email = user.Email;
             FirstName = user.FirstName;
             LastName = user.LastName;

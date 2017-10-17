@@ -98,10 +98,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             if (users.Users != null)
             {
                 // new user?
-                foreach (var identity in users.Users)
+                foreach (var email in users.Users)
                 {
-                    if (!existingUsers.Any(tu => (tu.User.Email == identity && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = GetUserByIdentity(identity).Id, Role = role });
+                    if (!existingUsers.Any(tu => (tu.User.Email == email && tu.Role == role)))
+                        newUsers.Add(new TopicUser() { UserId = GetUserByEmail(email).Id, Role = role });
                 }
                 // removed user?
                 removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));

@@ -10,8 +10,12 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
     public class ControllerTester<T>
-        where T: class
+        where T : class
     {
+        private const string StudentUId = "test-auth:student2";
+        private const string SupervisorUId = "test-auth:supervisor3";
+        private const string ReviewerUId = "test-auth:reviewer4";
+        private const string AdminUId = "test-auth:admin1";
         public User Admin { get; }
         public User Student { get; }
         public User Supervisor { get; }
@@ -49,24 +53,28 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
             Admin = new User
             {
                 Id = 1,
+                UId = AdminUId,
                 Email = "admin@hipapp.de",
                 Role = "Administrator"
             };
             Student = new User
             {
                 Id = 2,
+                UId = StudentUId,
                 Email = "student@hipapp.de",
                 Role = "Student"
             };
             Supervisor = new User
             {
                 Id = 3,
+                UId = SupervisorUId,
                 Email = "supervisor@hipapp.de",
                 Role = "Supervisor"
             };
             Reviewer = new User
             {
                 Id = 6,
+                UId = ReviewerUId,
                 Email = "reviewer@hipapp.de",
                 Role = "Reviewer"
             };
@@ -193,7 +201,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         /// <param name="userIdentity">The identity (i.e. the email address) of the user as whom you want to make the call. Defaults to admin.</param>
         /// <param name="role">The role of the user as whom you want to make the call. Defaults to Administrator.</param>
         /// <returns>An instance of IAndControllerBuilder, i.e. you can chain MyTested test method calls to the return value.</returns>
-        public IAndControllerBuilder<T> TestController(string userIdentity = "admin@hipapp.de", string role = "Administrator")
+        public IAndControllerBuilder<T> TestController(string userIdentity = AdminUId, string role = "Administrator")
         {
             return MyMvc
                 .Controller<T>()
@@ -203,7 +211,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
                 );
         }
 
-        public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = "admin@hipapp.de", string role = "Administrator")
+        public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = AdminUId, string role = "Administrator")
         {
             return TestController(userIdentity, role)
                 .WithDbContext(dbContext => dbContext

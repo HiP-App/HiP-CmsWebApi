@@ -8,9 +8,10 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170824115518_authv3-add-uid")]
+    partial class authv3adduid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)

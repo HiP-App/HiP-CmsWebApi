@@ -71,8 +71,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetAttachmentsTest403()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.GetAttachments(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
+                .Calling(c => c.GetAttachments(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -111,8 +111,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetAttachmetTest403()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.GetAttachmet(_tester.TopicOne.Id,TopicAttachment.Id))
+            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
+                .Calling(c => c.GetAttachmet(_tester.TopicTwo.Id,TopicAttachment.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -156,8 +156,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PostAttachmentTestForbidden()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.PostAttachment(_tester.TopicOne.Id, AttachmentFormModel))
+            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
+                .Calling(c => c.PostAttachment(_tester.TopicTwo.Id, AttachmentFormModel))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -186,8 +186,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutAttachmentTestForbidden()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.PutAttachment(_tester.TopicOne.Id, TopicAttachment.Id,null))
+            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
+                .Calling(c => c.PutAttachment(_tester.TopicTwo.Id, TopicAttachment.Id,null))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -214,8 +214,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void DeleteAttachmentTestForbidden()
         {
-            _tester.TestControllerWithMockData("newuser@hipapp.de")
-                .Calling(c => c.DeleteAttachment(_tester.TopicOne.Id, TopicAttachment.Id))
+            _tester.TestControllerWithMockData(_tester.Student.UId)
+                .Calling(c => c.DeleteAttachment(_tester.TopicTwo.Id, TopicAttachment.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
