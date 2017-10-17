@@ -31,7 +31,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetUserTest200()
         {
             _tester.TestController()
-                .Calling(c => c.Get(_tester.Admin.Email))
+                .Calling(c => c.Get(_tester.Admin.UId))
                 .ShouldReturn()
                 .Ok()                
                 .WithModelOfType<UserResult>()
@@ -111,7 +111,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUserTest404()
         {
             _tester.TestController()
-                .Calling(c => c.Put(_tester.Reviewer.UId, UserFormModel))
+                .Calling(c => c.Put("test-auth:nonexistinguser", UserFormModel))
                 .ShouldReturn()
                 .NotFound()
                 .WithStatusCode(404);

@@ -52,7 +52,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTopicsWithQueryTest()
         {
-            _tester.TestControllerWithMockData(_tester.Student.Email)
+            _tester.TestControllerWithMockData(_tester.Student.UId)
                 .Calling(c => c.Get("Paderborner", "InReview", new DateTime(2017, 5, 04), false, 0, 0))
                 .ShouldReturn()
                 .Ok()
@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTopicsForUserTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTopicsForUser(_tester.Student.Email, 0, 0, null))
+                .Calling(c => c.GetTopicsForUser(_tester.Student.UId, 0, 0, null))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<TopicResult>>()
@@ -85,7 +85,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTopicsForUserWithQueryTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTopicsForUser(_tester.Student.Email, 0, 0, "Paderborner"))
+                .Calling(c => c.GetTopicsForUser(_tester.Student.UId, 0, 0, "Paderborner"))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<TopicResult>>()

@@ -10,7 +10,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
     public class ControllerTester<T>
-        where T: class
+        where T : class
     {
         private const string StudentUId = "test-auth:student2";
         private const string SupervisorUId = "test-auth:supervisor3";
