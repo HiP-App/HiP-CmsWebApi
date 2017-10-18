@@ -30,7 +30,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult GetDocument([FromRoute]int topicId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             try
             {
@@ -58,7 +58,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PostDocument([FromRoute]int topicId, [FromBody]HtmlContentModel htmlContent)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -84,7 +84,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult DeleteDocument([FromRoute]int topicId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (_documentManager.DeleteDocument(topicId))
                 return Ok();

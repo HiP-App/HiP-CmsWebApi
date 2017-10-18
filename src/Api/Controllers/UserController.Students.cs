@@ -27,7 +27,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PutStudent([FromBody] StudentFormModel model, [FromQuery] string identity)
         {
             if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
-                return Forbidden();
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

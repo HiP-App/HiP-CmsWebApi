@@ -37,7 +37,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult GetAttachments([FromRoute]int topicId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             var attachments = _attachmentsManager.GetAttachments(topicId);
             if (attachments != null)
@@ -63,7 +63,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             try
             {
@@ -96,7 +96,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttachmentFormModel model)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -105,7 +105,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             if (result.Success)
                 return Ok(result);
-            return NotFoundError(result);
+            return NotFound(result);
         }
 
 
@@ -130,7 +130,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PutAttachment([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
@@ -142,7 +142,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             if (result.Success)
                 return Ok(result);
-            return NotFoundError(result);
+            return NotFound(result);
         }
 
         // DELETE api/topics/:id/attachments
@@ -163,7 +163,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (_attachmentsManager.DeleteAttachment(topicId, attachmentId))
                 return Ok();

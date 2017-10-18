@@ -30,7 +30,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult GetTagFrequencyAnalytics([FromRoute]int topicId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             try
             {

@@ -57,7 +57,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PutParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
         {
             if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             var result = _topicManager.AssociateTopic(parentId, topicId);
             if (result.Success)
@@ -83,7 +83,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PutSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
             if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             var result = _topicManager.AssociateTopic(topicId, childId);
             if (result.Success)
@@ -136,7 +136,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult DeleteSubTopics([FromRoute]int topicId, [FromRoute]int childId)
         {
             if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
             if (_topicManager.DeleteAssociated(topicId, childId))
                 return Ok();
 

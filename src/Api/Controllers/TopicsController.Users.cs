@@ -128,7 +128,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdentity(), topicId, role, users))

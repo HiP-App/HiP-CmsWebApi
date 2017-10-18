@@ -24,7 +24,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult GetReviewStatus([FromRoute]int topicId)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
             if (!_topicManager.IsValidTopicId(topicId))
                 return NotFound();
 
@@ -49,7 +49,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PutReviewStatus([FromRoute] int topicId, [FromBody] TopicReviewStatus status)
         {
             if (!_topicPermissions.IsReviewer(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
             if (!ModelState.IsValid || !status.IsStatusValid())
                 return BadRequest();
             if(!_topicManager.IsValidTopicId(topicId))

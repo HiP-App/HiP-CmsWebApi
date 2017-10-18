@@ -47,7 +47,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         private IActionResult UpdateMetaData(int topicId, int attachmentId, Metadata metadata)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

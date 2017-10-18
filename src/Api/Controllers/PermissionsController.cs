@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdentity()))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_topicPermissions.IsReviewer(User.Identity.GetUserIdentity(), topicId))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         #endregion
@@ -129,7 +129,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_userPermissions.IsAllowedToInvite(User.Identity))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         #endregion

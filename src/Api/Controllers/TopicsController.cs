@@ -111,7 +111,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult Post([FromBody]TopicFormModel model)
         {
             if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdentity()))
-                return Forbidden();
+                return Forbid();
 
             if (ModelState.IsValid)
             {
@@ -148,7 +148,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult Put([FromRoute]int topicId, [FromBody] TopicFormModel model)
         {
             if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -179,7 +179,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult ChangeStatus([FromRoute] int topicId, [FromBody] TopicStatus topicStatus)
         {
             if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
 
             if (!_topicManager.IsValidTopicId(topicId))
                 return NotFound();
@@ -215,7 +215,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult Delete([FromRoute]int topicId)
         {
             if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+                return Forbid();
             if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserIdentity()))
                 return Ok();
 

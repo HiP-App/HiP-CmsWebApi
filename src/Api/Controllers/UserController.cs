@@ -72,7 +72,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult Put([FromQuery]string identity, [FromBody]UserFormModel model)
         {
             if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
-                return Forbidden();
+                return Forbid();
 
             if (identity != null && model.Role != null && !Role.IsRoleValid(model.Role))
                 ModelState.AddModelError("Role", "Invalid Role");

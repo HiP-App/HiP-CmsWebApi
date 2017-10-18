@@ -63,7 +63,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult PutPicture([FromQuery] string identity, [FromForm] IFormFile file)
         {
             if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
-                return Forbidden();
+                return Forbid();
 
             var uploads = Path.Combine(Constants.ProfilePicturePath);
             if (file == null)
@@ -122,7 +122,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         public IActionResult Delete([FromQuery] string identity)
         {
             if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
-                return Forbidden();
+                return Forbid();
             // Fetch user
             try
             {

@@ -62,6 +62,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Utility
                 connectionString.Append($"Username={Username};");
                 connectionString.Append($"Password={Password};");
                 connectionString.Append($"Database={Name};");
+                connectionString.Append($"Port=5632;");
                 connectionString.Append($"Pooling=true;");
                 connectionString.Append($"Port={Port};");
 
