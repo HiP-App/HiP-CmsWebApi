@@ -3,6 +3,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -80,9 +81,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicStudents([FromRoute]int topicId, [FromBody]UsersFormModel users)
+        public async Task<IActionResult> PutTopicStudentsAsync([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
-            return PutTopicUsers(topicId, Role.Student, users);
+            return await PutTopicUsersAsync(topicId, Role.Student, users);
         }
 
         // PUT api/topics/:topicId/Supervisors
@@ -100,9 +101,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicSupervisors([FromRoute]int topicId, [FromBody]UsersFormModel users)
+        public async Task<IActionResult> PutTopicSupervisorsAsync([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
-            return PutTopicUsers(topicId, Role.Supervisor, users);
+            return await PutTopicUsersAsync(topicId, Role.Supervisor, users);
         }
 
         // PUT api/topics/:topicId/Reviewers
@@ -120,14 +121,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicReviewers([FromRoute]int topicId, [FromBody]UsersFormModel users)
+        public async Task<IActionResult> PutTopicReviewersAsync([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
-            return PutTopicUsers(topicId, Role.Reviewer, users);
+            return await PutTopicUsersAsync(topicId, Role.Reviewer, users);
         }
 
-        private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
+        private async Task<IActionResult> PutTopicUsersAsync(int topicId, string role, UsersFormModel users)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

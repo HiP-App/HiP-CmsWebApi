@@ -8,6 +8,7 @@ using System.IO;
 using System.Collections.Generic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Shared;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -34,9 +35,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAttachments([FromRoute]int topicId)
+        public async Task<IActionResult> GetAttachmentsAsync([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             var attachments = _attachmentsManager.GetAttachments(topicId);
@@ -60,9 +61,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(StringWrapper), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
+        public async Task<IActionResult> GetAttachmentAsync([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             try
@@ -93,9 +94,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttachmentFormModel model)
+        public async Task<IActionResult> PostAttachmentAsync([FromRoute]int topicId, [FromBody]AttachmentFormModel model)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -127,9 +128,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PutAttachment([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
+        public async Task<IActionResult> PutAttachmentAsync([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             if (file == null)
@@ -160,9 +161,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
+        public async Task<IActionResult> DeleteAttachmentAsync([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             if (_attachmentsManager.DeleteAttachment(topicId, attachmentId))

@@ -1,16 +1,17 @@
-﻿﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
+using PaderbornUniversity.SILab.Hip.Webservice;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
-using Microsoft.Extensions.PlatformAbstractions;
-using PaderbornUniversity.SILab.Hip.CmsApi.Services;
-using Swashbuckle.AspNetCore.Swagger;
-using PaderbornUniversity.SILab.Hip.Webservice;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
@@ -47,7 +48,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             services.AddSingleton(appConfig);
             services.AddTransient<IEmailSender, EmailSender>();
 
-            string domain = appConfig.AuthConfig.Authority;
+            // Configure authentication
+            services
+                .AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Audience = appConfig.AuthConfig.Audience;
+                    options.Authority = appConfig.AuthConfig.Authority;
+                });
+
+            // Configure authorization
+            var domain = appConfig.AuthConfig.Authority;
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("read:webapi",
@@ -89,13 +101,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                        .AllowAnyOrigin()
             );
 
-            var options = new JwtBearerOptions
-            {
-                Audience = appConfig.AuthConfig.Audience,
-                Authority = appConfig.AuthConfig.Authority
-            };
-            app.UseJwtBearerAuthentication(options);
-
+            app.UseAuthentication();
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint

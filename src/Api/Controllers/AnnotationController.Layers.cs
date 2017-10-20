@@ -4,6 +4,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -46,9 +47,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PostLayerRelationRule([FromBody] RelationFormModel model)
+        public async Task<IActionResult> PostLayerRelationRuleAsync([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToCreateRelationRulesAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
@@ -77,9 +78,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public async Task<IActionResult> PutLayerRelationRuleAsync([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToCreateRelationRulesAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
@@ -106,9 +107,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult DeleteLayerRelationRule([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId)
+        public async Task<IActionResult> DeleteLayerRelationRuleAsync([FromQueryAttribute] int sourceId, [FromQueryAttribute] int targetId)
         {
-            if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToCreateRelationRulesAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try

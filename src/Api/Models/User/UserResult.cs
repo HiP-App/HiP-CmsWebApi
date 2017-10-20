@@ -24,7 +24,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.User
         public string ProfilePicture { get; set; }
     }
 
-    [Obsolete("Use UserResult instead", error: true)]
+    [Obsolete("Use UserResult instead", error: false)]
     public class UserResultLegacy
     {
         public UserResultLegacy(Entity.User user)

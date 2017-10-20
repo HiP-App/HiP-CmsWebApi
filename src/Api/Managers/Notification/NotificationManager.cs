@@ -75,14 +75,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public bool SetSubscription(string identity, NotificationType type, bool subscribe)
         {
-            var userId = GetIdByIdentity(identity);
-            User user = DbContext.Users.Single(u => u.Id == userId);
-            Subscription sub = new Subscription
-            {
-                Subscriber = user,
-                Type = type
-            };
-            return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
+            throw new NotImplementedException();
+            //var userId = GetIdByIdentity(identity);
+            //User user = DbContext.Users.Single(u => u.Id == userId);
+            //Subscription sub = new Subscription
+            //{
+            //    Subscriber = user,
+            //    Type = type
+            //};
+            //return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
         public IEnumerable<string> GetSubscriptions(string identity)

@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
@@ -51,9 +51,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
     {
         public AnnotationTagRelationMap(EntityTypeBuilder<AnnotationTagInstanceRelation> entityBuilder)
         {
-            entityBuilder.HasKey(r => new { FirstTagId = r.SourceTagId, SecondTagId = r.TargetTagId });
-            entityBuilder.HasOne(r => r.SourceTag).WithMany(t => t.TagRelations).HasForeignKey(r => r.SourceTagId).OnDelete(DeleteBehavior.Cascade);
-            entityBuilder.HasOne(r => r.TargetTag).WithMany(t => t.IncomingRelations).HasForeignKey(r => r.TargetTagId).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder
+                .HasKey(r => new { FirstTagId = r.SourceTagId, SecondTagId = r.TargetTagId });
+
+            entityBuilder
+                .HasOne(r => r.SourceTag)
+                .WithMany(t => t.TagRelations)
+                .HasForeignKey(r => r.SourceTagId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entityBuilder
+                .HasOne(r => r.TargetTag)
+                .WithMany(t => t.IncomingRelations)
+                .HasForeignKey(r => r.TargetTagId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

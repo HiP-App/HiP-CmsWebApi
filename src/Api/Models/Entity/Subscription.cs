@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
-using System.ComponentModel.DataAnnotations.Schema;
-using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
@@ -41,7 +41,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
     {
         public SubscriptionMap(EntityTypeBuilder<Subscription> entityBuilder)
         {
-            entityBuilder.HasOne(sub => sub.Subscriber).WithMany(user => user.Subscriptions).HasForeignKey(u => u.SubscriberId).OnDelete(DeleteBehavior.Cascade);
+            entityBuilder
+                .HasOne(sub => sub.Subscriber)
+                .WithMany(user => user.Subscriptions)
+                .HasForeignKey(u => u.SubscriberId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

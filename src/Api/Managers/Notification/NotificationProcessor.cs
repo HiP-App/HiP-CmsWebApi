@@ -34,30 +34,30 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         public void OnNewTopic()
         {
             NotifyAll(NotificationType.TOPIC_CREATED);
-            finnish();
+            Finish();
         }
 
         public void OnDeleteTopic()
         {
             NotifyAll(NotificationType.TOPIC_DELETED, topic.Title);
-            finnish();
+            Finish();
         }
 
         public void OnStateChanged(string state)
         {
             NotifyAll(NotificationType.TOPIC_STATE_CHANGED, state);
-            finnish();
+            Finish();
         }
 
         public void OnAttachmetAdded(string name)
         {
             NotifyAll(NotificationType.TOPIC_ATTACHMENT_ADDED, name);
-            finnish();
+            Finish();
         }
 
         private void NotifyAll(NotificationType type, string data = null)
         {
-            topic.TopicUsers.ForEach(tu => createNotification(tu, type, data));
+            topic.TopicUsers.ForEach(tu => CreateNotification(tu, type, data));
         }
 
         #region OnUpdate
@@ -72,7 +72,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             else
                 NotifyAll(NotificationType.TOPIC_UPDATED);
 
-            finnish();
+            Finish();
         }
 
         #endregion
@@ -83,31 +83,31 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             foreach (TopicUser user in newUser)
             {
-                createNotification(user, NotificationType.TOPIC_ASSIGNED_TO, role);
+                CreateNotification(user, NotificationType.TOPIC_ASSIGNED_TO, role);
             }
             foreach (TopicUser user in deletedUser)
             {
-                createNotification(user, NotificationType.TOPIC_REMOVED_FROM, role);
+                CreateNotification(user, NotificationType.TOPIC_REMOVED_FROM, role);
             }
 
-            finnish();
+            Finish();
         }
 
         #endregion
 
         #region createNotification
 
-        private void createNotification(TopicUser topicUser, NotificationType type, string data = null)
+        private void CreateNotification(TopicUser topicUser, NotificationType type, string data = null)
         {
             var userId = topicUser.UserId;
             if (!notifiedUsers.Contains(userId))
             {
-                var not = createAppNotification(type, data, userId);
-                createMailNotification(topicUser, type, userId, not);
+                var not = CreateAppNotification(type, data, userId);
+                CreateMailNotification(topicUser, type, userId, not);
             }
         }
 
-        private Notification createAppNotification(NotificationType type, string data, int userId)
+        private Notification CreateAppNotification(NotificationType type, string data, int userId)
         {
             Notification not = new Notification() { UpdaterId = currentUser, Type = type, UserId = userId };
             if (topic != null)
@@ -120,35 +120,36 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return not;
         }
 
-        private void createMailNotification(TopicUser topicUser, NotificationType type, int userId, Notification not)
+        private void CreateMailNotification(TopicUser topicUser, NotificationType type, int userId, Notification not)
         {
-            var email = fetchUserEmail(topicUser);
-            var subscribed = isSubsccribed(type, userId);
+            var email = FetchUserEmail(topicUser);
+            var subscribed = IsSubscribed(type, userId);
             if (email != null && subscribed)
                 emailSender.NotifyAsync(email, not);
         }
 
-        private string fetchUserEmail(TopicUser topicUser)
+        private string FetchUserEmail(TopicUser topicUser)
         {
-            try
-            {
-                var user = DbContext.Users.First(candidate => candidate.Id == topicUser.UserId);
-                return user.Email;
-            }
-            catch (InvalidOperationException)
-            {
-                return null;
-            }
+            throw new NotImplementedException();
+            //try
+            //{
+            //    var user = DbContext.Users.First(candidate => candidate.Id == topicUser.UserId);
+            //    return user.Email;
+            //}
+            //catch (InvalidOperationException)
+            //{
+            //    return null;
+            //}
         }
 
-        private bool isSubsccribed(NotificationType type, int userId)
+        private bool IsSubscribed(NotificationType type, int userId)
         {
             return DbContext.Subscriptions.Any(subscription => subscription.Subscriber.Id == userId && subscription.Type == type);
         }
 
         #endregion
 
-        private void finnish()
+        private void Finish()
         {
             DbContext.SaveChanges();
         }

@@ -1,6 +1,7 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -20,9 +21,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PostMetaData([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]Metadata metadata)
+        public async Task<IActionResult> PostMetaDataAsync([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]Metadata metadata)
         {
-            return UpdateMetaData(topicId, attachmentId, metadata);
+            return await UpdateMetaDataAsync(topicId, attachmentId, metadata);
         }
 
         /// <summary>
@@ -38,15 +39,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutMetaData([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]Metadata metadata)
+        public async Task<IActionResult> PutMetaDataAsync([FromRoute]int topicId, [FromRoute] int attachmentId, [FromBody]Metadata metadata)
         {
-            return UpdateMetaData(topicId, attachmentId, metadata);
+            return await UpdateMetaDataAsync(topicId, attachmentId, metadata);
         }
 
 
-        private IActionResult UpdateMetaData(int topicId, int attachmentId, Metadata metadata)
+        private async Task<IActionResult> UpdateMetaDataAsync(int topicId, int attachmentId, Metadata metadata)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             if (!ModelState.IsValid)

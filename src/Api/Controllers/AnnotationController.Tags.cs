@@ -5,6 +5,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -92,9 +93,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post([FromBody]TagFormModel tag)
+        public async Task<IActionResult> PostAsync([FromBody]TagFormModel tag)
         {
-            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToCreateTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -121,9 +122,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult Post([FromRoute]int parentId, [FromRoute]int childId)
+        public async Task<IActionResult> PostAsync([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             if (_tagManager.AddChildTag(parentId, childId))
@@ -150,9 +151,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTag([FromRoute]int id, [FromBody]TagFormModel model)
+        public async Task<IActionResult> PutTagAsync([FromRoute]int id, [FromBody]TagFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             if (_tagManager.EditTag(model, id))
@@ -178,9 +179,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult Delete([FromRoute]int id)
+        public async Task<IActionResult> DeleteAsync([FromRoute]int id)
         {
-            if (!_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToCreateTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             if (_tagManager.DeleteTag(id))
@@ -201,9 +202,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteChildOf([FromRoute]int parentId, [FromRoute]int childId)
+        public async Task<IActionResult> DeleteChildOfAsync([FromRoute]int parentId, [FromRoute]int childId)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             if (_tagManager.RemoveChildTag(parentId, childId))

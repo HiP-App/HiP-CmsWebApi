@@ -8,11 +8,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
-    [Obsolete("Use UserResult from UserStore instead", error: true)]
+    [Obsolete("Use UserResult from UserStore instead", error: false)]
     public class User
     {
-        //[Key]
-        //public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         [Required]
         public string UId { get; set; }

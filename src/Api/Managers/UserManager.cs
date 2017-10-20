@@ -1,34 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using PaderbornUniversity.SILab.Hip.CmsApi.Services;
-using Microsoft.EntityFrameworkCore;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Refit;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
-    public class UserManager
+    public static class UserManager
     {
         // TODO: make configurable
         private const string UserStoreUrl = "localhost:5000";
+
+        private static readonly IUserStore UserStore = RestService.For<IUserStore>(UserStoreUrl);
 
         // TODO: Try out Refit (as an alternative to manual HttpClient requests)
 
         public static async Task<IReadOnlyCollection<UserResult>> GetAllUsersAsync()
         {
-            using (var http = new HttpClient())
-            {
-                var json = await http.GetStringAsync($"{UserStoreUrl}/api/User");
-                var users = JsonConvert.DeserializeObject<UserResult[]>(json);
-                return users;
-            }
+            return await UserStore.GetAllUsersAsync();
         }
 
         public static async Task<PagedResult<UserResult>> GetAllUsersAsync(string query, string role, int page, int pageSize)
@@ -45,12 +37,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public static async Task<UserResult> GetUserByIdAsync(string userId)
         {
-            using (var http = new HttpClient())
-            {
-                var json = await http.GetStringAsync($"{UserStoreUrl}/api/User/{userId}");
-                var user = JsonConvert.DeserializeObject<UserResult>(json);
-                return user;
-            }
+            return await UserStore.GetUserAsync(userId);
+        }
+
+        public static async Task<UserResult> GetUserByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
         }
 
         //public virtual PagedResult<UserResultLegacy> GetAllUsers(string query, string role, int page, int pageSize)
@@ -205,20 +197,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         //    DbContext.SaveChanges();
         //}
 
-        public string[] GetDisciplines()
+        public static string[] GetDisciplines()
         {
             // TODO: This should be stored in the DB once we have the full list.
-            string[] disciplines =
-            {
-                "History",
-                "Computer Science",
-                "Medieval Studies",
-                "History and Arts",
-                "Arts",
-                "Linguistics"
-            };
-            Array.Sort(disciplines);
-            return disciplines;
+            return new[]
+                {
+                    "History",
+                    "Computer Science",
+                    "Medieval Studies",
+                    "History and Arts",
+                    "Arts",
+                    "Linguistics"
+                }
+                .OrderBy(s => s)
+                .ToArray();
         }
     }
 }

@@ -8,6 +8,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -108,9 +109,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(EntityResult), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Post([FromBody]TopicFormModel model)
+        public async Task<IActionResult> PostAsync([FromBody]TopicFormModel model)
         {
-            if (!_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdentity()))
+            if (!(await _topicPermissions.IsAllowedToCreateAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             if (ModelState.IsValid)
@@ -145,9 +146,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Put([FromRoute]int topicId, [FromBody] TopicFormModel model)
+        public async Task<IActionResult> PutAsync([FromRoute]int topicId, [FromBody] TopicFormModel model)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             if (!ModelState.IsValid)
@@ -176,9 +177,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         [ProducesResponseType(typeof(void), 409)]
-        public IActionResult ChangeStatus([FromRoute] int topicId, [FromBody] TopicStatus topicStatus)
+        public async Task<IActionResult> ChangeStatusAsync([FromRoute] int topicId, [FromBody] TopicStatus topicStatus)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             if (!_topicManager.IsValidTopicId(topicId))
@@ -212,9 +213,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult Delete([FromRoute]int topicId)
+        public async Task<IActionResult> DeleteAsync([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
             if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserIdentity()))
                 return Ok();

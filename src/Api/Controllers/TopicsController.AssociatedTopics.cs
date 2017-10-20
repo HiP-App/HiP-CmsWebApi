@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -54,9 +55,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(EntityResult), 403)]
-        public IActionResult PutParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
+        public async Task<IActionResult> PutParentTopicsAsync([FromRoute]int topicId, [FromRoute]int parentId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             var result = _topicManager.AssociateTopic(parentId, topicId);
@@ -80,9 +81,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(EntityResult), 403)]
-        public IActionResult PutSubTopics([FromRoute]int topicId, [FromRoute]int childId)
+        public async Task<IActionResult> PutSubTopicsAsync([FromRoute]int topicId, [FromRoute]int childId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
 
             var result = _topicManager.AssociateTopic(topicId, childId);
@@ -108,9 +109,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [HttpDelete("{topicId}/ParentTopics/{parentId}")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteParentTopics([FromRoute]int topicId, [FromRoute]int parentId)
+        public async Task<IActionResult> DeleteParentTopicsAsync([FromRoute]int topicId, [FromRoute]int parentId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Unauthorized();
             if (_topicManager.DeleteAssociated(parentId, topicId))
                 return Ok();
@@ -133,9 +134,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteSubTopics([FromRoute]int topicId, [FromRoute]int childId)
+        public async Task<IActionResult> DeleteSubTopicsAsync([FromRoute]int topicId, [FromRoute]int childId)
         {
-            if (!_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
             if (_topicManager.DeleteAssociated(topicId, childId))
                 return Ok();

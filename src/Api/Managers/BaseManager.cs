@@ -3,6 +3,7 @@ using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using Microsoft.EntityFrameworkCore;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
@@ -37,5 +38,21 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         //{
         //    return DbContext.Users.Single(u => u.UId == identity).Id;
         //}
+
+        public User GetUserByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public User GetUserByIdentity(string identity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetIdByIdentity(string identity)
+        {
+            throw new NotSupportedException();
+        }
     }
 }
