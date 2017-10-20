@@ -20,7 +20,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">A list of students assocaited with the topic {topicId}</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Students")]
-        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserResultLegacy>), 200)]
         public IActionResult GetTopicStudents([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Student);
@@ -35,7 +35,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">A list of supervisors assocaited with the topic {topicId}</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Supervisors")]
-        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserResultLegacy>), 200)]
         public IActionResult GetTopicSupervisors([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
@@ -50,7 +50,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">A list of reviewers assocaited with the topic {topicId}</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Reviewers")]
-        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserResultLegacy>), 200)]
         public IActionResult GetTopicReviewers([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Reviewer);

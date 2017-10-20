@@ -34,7 +34,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.Get(_tester.Admin.UId))
                 .ShouldReturn()
                 .Ok()                
-                .WithModelOfType<UserResult>()
+                .WithModelOfType<UserResultLegacy>()
                 .Passing(m => m.Email == _tester.Admin.Email);                
         }
 

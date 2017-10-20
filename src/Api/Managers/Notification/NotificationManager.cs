@@ -24,7 +24,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             var result = new List<NotificationResult>();
             foreach (Notification not in notifications)
             {
-                var nr = new NotificationResult(not) {Updater = new UserResult(not.Updater)};
+                var nr = new NotificationResult(not) {Updater = new UserResultLegacy(not.Updater)};
 
                 switch (not.Type)
                 {

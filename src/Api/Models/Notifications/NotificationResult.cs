@@ -19,7 +19,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications
 
         public DateTime TimeStamp { get; set; }
 
-        public UserResult Updater { get; set; }
+        public UserResultLegacy Updater { get; set; }
 
         public string Type { get; set; }
 

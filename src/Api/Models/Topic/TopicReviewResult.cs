@@ -11,10 +11,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
             Status = new TopicReviewStatus() { Status = review.Status };
             TimeStamp = review.TimeStamp;
             if (review.Reviewer != null)
-                Reviewer = new UserResult(review.Reviewer);
+                Reviewer = new UserResultLegacy(review.Reviewer);
         }
 
-        public TopicReviewResult(UserResult reviewer)
+        public TopicReviewResult(UserResultLegacy reviewer)
         {
             // No Review present!
             Reviewer = reviewer;
@@ -25,6 +25,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 
         public DateTime TimeStamp { get; set; }
 
-        public UserResult Reviewer { get; set; }
+        public UserResultLegacy Reviewer { get; set; }
     }
 }

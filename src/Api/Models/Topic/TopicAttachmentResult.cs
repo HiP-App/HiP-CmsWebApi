@@ -14,7 +14,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
                 Metadata = new Metadata(att.Metadata);
             Type = att.Type;
             if (att.User != null)
-                User = new UserResult(att.User);
+                User = new UserResultLegacy(att.User);
             CreatedAt = att.UpdatedAt;
         }
 
@@ -27,7 +27,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 
         public string Type { get; set; }
 
-        public UserResult User { get; set; }
+        public UserResultLegacy User { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

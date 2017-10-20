@@ -92,7 +92,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.GetTopicStudents(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<IEnumerable<UserResult>>()
+                .WithModelOfType<IEnumerable<UserResultLegacy>>()
                 .Passing(actual => actual.Any(u => u.Email == _tester.Student.Email));
         }
         
@@ -106,7 +106,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.GetTopicSupervisors(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<IEnumerable<UserResult>>()
+                .WithModelOfType<IEnumerable<UserResultLegacy>>()
                 .Passing(actual => actual.Any(u => u.Email == _tester.Supervisor.Email));
         }
         
@@ -136,7 +136,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.GetTopicReviewers(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<IEnumerable<UserResult>>()
+                .WithModelOfType<IEnumerable<UserResultLegacy>>()
                 .Passing(actual => actual.Any(u => u.Email == reviewer.Email));
         }
         

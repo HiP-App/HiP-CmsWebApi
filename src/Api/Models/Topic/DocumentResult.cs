@@ -12,12 +12,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
             Content = document.Content;
             TimeStamp = document.TimeStamp;
             if (document.Updater != null)
-                Updater = new UserResult(document.Updater);
+                Updater = new UserResultLegacy(document.Updater);
         }
 
         public DateTime TimeStamp { get; set; }
 
-        public UserResult Updater { get; set; }
+        public UserResultLegacy Updater { get; set; }
 
         public string Content { get; set; }
     }

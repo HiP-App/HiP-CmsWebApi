@@ -76,9 +76,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return true;
         }
 
-        public IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
+        public IEnumerable<UserResultLegacy> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
+            return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResultLegacy(u.User));
         }
 
         public bool ChangeAssociatedUsersByRole(string updaterIdentity, int topicId, string role, UsersFormModel users)

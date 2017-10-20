@@ -11,8 +11,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
         public CmsDbContext(DbContextOptions options) : base(options) { }
 
         // Add all Tables here
-        public DbSet<User> Users { get; set; }
-
         public DbSet<Topic> Topics { get; set; }
 
         public DbSet<TopicUser> TopicUsers { get; set; }

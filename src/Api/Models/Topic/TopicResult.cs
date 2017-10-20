@@ -18,7 +18,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
             UpdatedAt = topic.UpdatedAt;
 
             if (topic.CreatedBy != null)
-                CreatedBy = new UserResult(topic.CreatedBy);
+                CreatedBy = new UserResultLegacy(topic.CreatedBy);
 
             // TODO this.CreatedBy = topic.UpdatedBy;
         }
@@ -36,11 +36,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 
         public string Requirements { get; set; }
 
-        public UserResult CreatedBy { get; set; }
+        public UserResultLegacy CreatedBy { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
-        public UserResult UpdatedBy { get; set; }
+        public UserResultLegacy UpdatedBy { get; set; }
 
         public DateTime UpdatedAt { get; set; }
     }

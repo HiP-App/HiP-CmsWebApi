@@ -135,7 +135,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.Get(null, null, 0, 0))                
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<PagedResult<UserResult>>()
+                .WithModelOfType<PagedResult<UserResultLegacy>>()
                 .Passing(m => m.Metadata.ItemsCount == 4);
         }
 
@@ -149,7 +149,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.Get("Administrator", null, 0, 0))                
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<PagedResult<UserResult>>()
+                .WithModelOfType<PagedResult<UserResultLegacy>>()
                 .Passing(m => m.Metadata.ItemsCount == 1);
         }
 
