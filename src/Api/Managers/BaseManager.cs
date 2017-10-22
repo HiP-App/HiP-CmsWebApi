@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using Microsoft.EntityFrameworkCore;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using System;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {

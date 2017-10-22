@@ -9,8 +9,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class AnnotationPermissions : BaseManager
     {
-        public AnnotationPermissions(CmsDbContext dbContext) : base(dbContext)
+        private readonly UserManager _userManager;
+
+        public AnnotationPermissions(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
         {
+            _userManager = userManager;
         }
 
         private async Task<bool> IsAdminOrSupervisorAsync(string identity)
@@ -18,7 +21,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
             bool allowed;
             try
             {
-                var user = await UserManager.GetUserByIdAsync(identity);
+                var user = await _userManager.GetUserByIdAsync(identity);
                 allowed = user.Roles.Contains(Role.Administrator) || user.Roles.Contains(Role.Supervisor);
             }
             catch (InvalidOperationException)

@@ -3,15 +3,17 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class TopicPermissions : BaseManager
     {
-        public TopicPermissions(CmsDbContext dbContext) : base(dbContext)
+        private readonly UserManager _userManager;
+
+        public TopicPermissions(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
         {
+            _userManager = userManager;
         }
 
         public async Task<bool> IsAllowedToEditAsync(string identity, int topicId)
@@ -58,7 +60,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
         {
             try
             {
-                var user = await UserManager.GetUserByIdAsync(identity);
+                var user = await _userManager.GetUserByIdAsync(identity);
                 return user.Roles.Contains(Role.Administrator) || user.Roles.Contains(Role.Supervisor);
             }
             catch (InvalidOperationException)

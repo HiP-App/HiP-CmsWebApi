@@ -1,29 +1,44 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System;
+﻿using Microsoft.AspNetCore.Http;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using System.Threading.Tasks;
-using Refit;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using Refit;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
-    public static class UserManager
+    public class UserManager
     {
         // TODO: make configurable
-        private const string UserStoreUrl = "localhost:5000";
+        private const string UserStoreUrl = "http://localhost:5000";
 
-        private static readonly IUserStore UserStore = RestService.For<IUserStore>(UserStoreUrl);
+        //private static readonly IUserStore UserStore = RestService.For<IUserStore>(UserStoreUrl);
 
-        // TODO: Try out Refit (as an alternative to manual HttpClient requests)
+        private readonly IUserStore UserStore;
 
-        public static async Task<IReadOnlyCollection<UserResult>> GetAllUsersAsync()
+        public UserManager(IHttpContextAccessor context)
+        {
+            UserStore = RestService.For<IUserStore>(new HttpClient
+            {
+                BaseAddress = new Uri(UserStoreUrl),
+                DefaultRequestHeaders =
+                {
+                    // Requests to UserStore uses the same access token as the incoming CmsWebApi request
+                    { "Authorization", context.HttpContext.Request.Headers["Authorization"].ToString() }
+                }
+            });
+        }
+
+        public async Task<IReadOnlyCollection<UserResult>> GetAllUsersAsync()
         {
             return await UserStore.GetAllUsersAsync();
         }
 
-        public static async Task<PagedResult<UserResult>> GetAllUsersAsync(string query, string role, int page, int pageSize)
+        public async Task<PagedResult<UserResult>> GetAllUsersAsync(string query, string role, int page, int pageSize)
         {
             var users = (await GetAllUsersAsync())
                 .Where(u => string.IsNullOrEmpty(query) || u.Email.Contains(query) || u.FirstName.Contains(query) || u.LastName.Contains(query))
@@ -35,12 +50,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 : new PagedResult<UserResult>(users.Skip((page - 1) * pageSize).Take(pageSize).ToList(), page, pageSize, users.Count);
         }
 
-        public static async Task<UserResult> GetUserByIdAsync(string userId)
+        public async Task<UserResult> GetUserByIdAsync(string userId)
         {
             return await UserStore.GetUserAsync(userId);
         }
 
-        public static async Task<UserResult> GetUserByEmailAsync(string email)
+        public async Task<UserResult> GetUserByEmailAsync(string email)
         {
             throw new NotImplementedException();
         }

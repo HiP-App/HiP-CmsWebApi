@@ -7,13 +7,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Services
 {
     public interface IUserStore
     {
-        [Get("/api/User/{userId}")]
+        [Get("/api/Users/{userId}")]
         Task<UserResult> GetUserAsync(string userId);
 
-        [Get("/api/User/Me")]
+        [Get("/api/Users/Me")]
         Task<UserResult> GetCurrentUserAsync();
 
-        [Get("/api/User")]
+        [Get("/api/Users")]
         Task<IReadOnlyList<UserResult>> GetAllUsersAsync();
     }
 }

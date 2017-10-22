@@ -16,16 +16,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
     [ProducesResponseType(typeof(void), 403)]
     public class PermissionsController : ApiController
     {
-
         private readonly AnnotationPermissions _annotationPermissions;
         private readonly TopicPermissions _topicPermissions;
         private readonly UserPermissions _userPermissions;
 
-        public PermissionsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public PermissionsController(CmsDbContext dbContext, ILoggerFactory loggerFactory,
+            AnnotationPermissions annotationPermissions,
+            TopicPermissions topicPermissions,
+            UserPermissions userPermissions)
+            : base(dbContext, loggerFactory)
         {
-            _annotationPermissions = new AnnotationPermissions(dbContext);
-            _topicPermissions = new TopicPermissions(dbContext);
-            _userPermissions = new UserPermissions(dbContext);
+            _annotationPermissions = annotationPermissions;
+            _topicPermissions = topicPermissions;
+            _userPermissions = userPermissions;
         }
 
         #region Annotations

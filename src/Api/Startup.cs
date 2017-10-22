@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using PaderbornUniversity.SILab.Hip.Webservice;
 using Swashbuckle.AspNetCore.Swagger;
@@ -18,7 +20,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-    internal static IServiceProvider ServiceProvider { get; private set; }
+        internal static IServiceProvider ServiceProvider { get; private set; }
 
         private IConfigurationRoot Configuration { get; }
 
@@ -47,6 +49,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             // Register AppConfig in Services 
             services.AddSingleton(appConfig);
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddScoped<UserManager>();
+            services.AddScoped<AnnotationPermissions>();
+            services.AddScoped<TopicPermissions>();
+            services.AddScoped<UserPermissions>();
 
             // Configure authentication
             services
@@ -132,6 +138,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseConfiguration(config)
+                .UseUrls("http://*:5001")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();

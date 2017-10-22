@@ -10,7 +10,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
     public class UserPermissions : BaseManager
     {
-        public UserPermissions(CmsDbContext dbContext) : base(dbContext) {}
+        public UserPermissions(CmsDbContext dbContext) : base(dbContext)
+        {
+        }
 
         public bool IsAllowedToAdminister(IIdentity identity)
         {

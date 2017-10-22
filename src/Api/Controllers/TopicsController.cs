@@ -1,13 +1,13 @@
-using System;
-using System.Linq;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using Microsoft.Extensions.Logging;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
@@ -18,10 +18,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
         private readonly TopicPermissions _topicPermissions;
 
-        public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory, TopicPermissions topicPermissions) : base(dbContext, loggerFactory)
         {
             _topicManager = new TopicManager(dbContext);
-            _topicPermissions = new TopicPermissions(dbContext);
+            _topicPermissions = topicPermissions;
             TopicsAttachmentsController();
             TopicsDocumentController();
             TopicsAnalyticsController();
@@ -224,7 +224,5 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         }
 
         #endregion
-
-
     }
 }
