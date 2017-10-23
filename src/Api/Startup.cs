@@ -10,10 +10,12 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.Webservice;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
+using AppConfig = PaderbornUniversity.SILab.Hip.CmsApi.Utility.AppConfig;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
@@ -43,12 +45,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // Read configurations from json
-            var appConfig = new Utility.AppConfig(Configuration);
+            // Read configurations from JSON or environment variables
+            services
+                .Configure<AppConfig>(Configuration.GetSection("App"))
+                .Configure<DatabaseConfig>(Configuration.GetSection("Database"))
+                .Configure<AuthConfig>(Configuration.GetSection("Auth"));
+
+            var appConfig = services.BuildServiceProvider().GetService<AppConfig>();
 
             // Register AppConfig in Services 
             services
-                .AddSingleton(appConfig)
                 .AddTransient<IEmailSender, EmailSender>()
                 .AddScoped<UserManager>()
                 .AddScoped<NotificationManager>()
@@ -105,12 +111,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             if (env.IsDevelopment())
                 loggerFactory.AddDebug();
 
-            app.UseCors(builder =>
+            app.UseCors(builder => 
+            {
                 // This will allow any request from any server. Tweak to fit your needs!
                 builder.AllowAnyHeader()
                        .AllowAnyMethod()
-                       .AllowAnyOrigin()
-            );
+                       .AllowAnyOrigin();
+            });
 
             app.UseAuthentication();
             app.UseMvc();
