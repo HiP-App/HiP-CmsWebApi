@@ -56,7 +56,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             if(!_topicManager.IsValidTopicId(topicId))
                 return NotFound();
 
-            if (_topicManager.ChangeReviewStatus(User.Identity.GetUserIdentity(), topicId, status))
+            if (_topicManager.ChangeReviewStatusAsync(User.Identity.GetUserIdentity(), topicId, status))
                 return Ok();
 
             return BadRequest();

@@ -8,12 +8,18 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public partial class TopicManager : BaseManager
     {
-        public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
+        private readonly UserManager _userManager;
+
+        public TopicManager(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
+        {
+            _userManager = userManager;
+        }
 
         public PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page, int pageSize)
         {
@@ -41,13 +47,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         }
 
-        public PagedResult<TopicResult> GetTopicsForUser(string identity, int page, int pageSize, string queryString)
+        public PagedResult<TopicResult> GetTopicsForUser(string userId, int page, int pageSize, string queryString)
         {
-            var userId = GetUserByIdentity(identity).Id;
             var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
 
             var query = DbContext.Topics.Include(t => t.CreatedBy)
-                 .Where(t => t.CreatedById== userId || relatedTopicIds.Contains(t.Id));
+                 .Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id));
 
             if (!string.IsNullOrEmpty(queryString)) query = query.Where(t => t.Title.Contains(queryString) || t.Description.Contains(queryString));
 
@@ -81,7 +86,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResultLegacy(u.User));
         }
 
-        public bool ChangeAssociatedUsersByRole(string updaterIdentity, int topicId, string role, UsersFormModel users)
+        public async Task<bool> ChangeAssociatedUsersByRoleAsync(string updaterIdentity, int topicId, string role, UsersFormModel users)
         {
             Topic topic;
             try
@@ -101,7 +106,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 foreach (var email in users.Users)
                 {
                     if (!existingUsers.Any(tu => (tu.User.Email == email && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = GetUserByEmail(email).Id, Role = role });
+                    {
+                        var user = await _userManager.GetUserByEmailAsync(email);
+                        newUsers.Add(new TopicUser() { UserId = user.Id, Role = role });
+                    }
                 }
                 // removed user?
                 removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
@@ -123,7 +131,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             {
                 return false;
             }
-            
+
             return true;
         }
 
@@ -137,17 +145,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return DbContext.AssociatedTopics.Include(at => at.ParentTopic).Where(at => at.ChildTopicId == topicId).Select(at => at.ParentTopic).ToList();
         }
 
-        public EntityResult AddTopic(string updaterIdentity, TopicFormModel model)
+        public EntityResult AddTopic(string updaterUserId, TopicFormModel model)
         {
             try
             {
-                var user = GetUserByIdentity(updaterIdentity);
-                var topic = new Topic(model) { CreatedById = user.Id };
+                var topic = new Topic(model) { CreatedById = updaterUserId };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
-                new NotificationProcessor(DbContext, topic, updaterIdentity).OnNewTopic();
+                new NotificationProcessor(DbContext, topic, updaterUserId, _userManager).OnNewTopic();
 
-                return EntityResult.Successfull(topic.Id);
+                return EntityResult.Successful(topic.Id);
             }
             catch (Exception e)
             {
@@ -208,7 +215,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 {
                     return false;
                 }
-                
+
                 return true;
             }
             catch (InvalidOperationException)
@@ -234,7 +241,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 {
                     return false;
                 }
-                
+
                 return true;
             }
             catch (InvalidOperationException)
@@ -258,7 +265,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
             DbContext.Add(relation);
             DbContext.SaveChanges();
-            return EntityResult.Successfull(null);
+            return EntityResult.Successful(null);
         }
 
         public virtual bool DeleteAssociated(int parentId, int childId)

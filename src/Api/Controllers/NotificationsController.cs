@@ -7,6 +7,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using System.Collections.Generic;
 using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -144,7 +145,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [HttpPut("subscribe/{notificationType}")]
         public IActionResult PutSubscribe([FromRoute]string notificationType)
         {
-            return SetSubscription(notificationType, true);
+            return SetSubscriptionAsync(notificationType, true);
         }
 
         /// <summary>
@@ -156,28 +157,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="403">User is not allowed to unsubscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("unsubscribe/{notificationType}")]
-        public IActionResult PutUnsubscribe([FromRoute]string notificationType)
+        public async Task<IActionResult> PutUnsubscribeAsync([FromRoute]string notificationType)
         {
-            return SetSubscription(notificationType, false);
+            return await SetSubscriptionAsync(notificationType, false);
         }
 
-        private IActionResult SetSubscription(string notificationType, bool subscribe)
+        private async Task<IActionResult> SetSubscriptionAsync(string notificationType, bool subscribe)
         {
-            if (Enum.TryParse(notificationType, out NotificationType type))
+            if (Enum.TryParse(notificationType, out NotificationType type) &&
+                await _notificationManager.SetSubscriptionAsync(User.Identity.GetUserIdentity(), type, subscribe))
             {
-                if (_notificationManager.SetSubscription(User.Identity.GetUserIdentity(), type, subscribe))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                return Ok();
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest();
         }
 
         #endregion

@@ -6,16 +6,21 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationManager : BaseManager
     {
-        public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
+        private readonly UserManager _userManager;
 
-        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string identity, bool onlyUnread)
+        public NotificationManager(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
         {
-            var userId = GetIdByIdentity(identity);
+            _userManager = userManager;
+        }
+
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userId, bool onlyUnread)
+        {
             var query = DbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUnread)
                 query = query.Where(n => !n.IsRead);
@@ -24,7 +29,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             var result = new List<NotificationResult>();
             foreach (Notification not in notifications)
             {
-                var nr = new NotificationResult(not) {Updater = new UserResultLegacy(not.Updater)};
+                var nr = new NotificationResult(not) { Updater = new UserResultLegacy(not.Updater) };
 
                 switch (not.Type)
                 {
@@ -67,33 +72,29 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
         }
 
-        internal int GetNotificationCount(string identity)
+        internal int GetNotificationCount(string userId)
         {
-            var userId = GetIdByIdentity(identity);
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
-        public bool SetSubscription(string identity, NotificationType type, bool subscribe)
+        public async Task<bool> SetSubscriptionAsync(string identity, NotificationType type, bool subscribe)
         {
-            throw new NotImplementedException();
-            //var userId = GetIdByIdentity(identity);
-            //User user = DbContext.Users.Single(u => u.Id == userId);
-            //Subscription sub = new Subscription
-            //{
-            //    Subscriber = user,
-            //    Type = type
-            //};
-            //return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
+            var user = await _userManager.GetUserByIdAsync(identity);
+
+            Subscription sub = new Subscription
+            {
+                Subscriber = user,
+                Type = type
+            };
+            return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<string> GetSubscriptions(string identity)
+        public IEnumerable<string> GetSubscriptions(string userId)
         {
-            var userId = GetIdByIdentity(identity);
-            return DbContext.Subscriptions.Where(
-                subscription => subscription.SubscriberId == userId
-            ).ToList().Select(
-                subscription => subscription.TypeName
-            );
+            return DbContext.Subscriptions
+                .Where(subscription => subscription.SubscriberId == userId)
+                .ToList()
+                .Select(subscription => subscription.TypeName);
         }
 
         private bool AddSubscription(Subscription sub)
@@ -104,7 +105,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 if (subs.Any())
                 {
                     DbContext.Subscriptions.Update(subs.First());
-                } else
+                }
+                else
                 {
                     DbContext.Subscriptions.Add(sub);
                 }

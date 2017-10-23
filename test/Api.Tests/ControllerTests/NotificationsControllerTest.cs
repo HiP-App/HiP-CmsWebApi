@@ -229,7 +229,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUnsubscribeTest200()
         {
             _tester.TestControllerWithMockData(_tester.Student.UId) // Student is already subscribed to this notification                
-                .Calling(c => c.PutUnsubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString()))
+                .Calling(c => c.PutUnsubscribeAsync(NotificationType.TOPIC_ASSIGNED_TO.ToString()))
                 .ShouldHave()                
                 .DbContext(db => db.WithSet<User>(s => s.Any(actual => actual.Subscriptions.Count == 0)))
                 .AndAlso() // Student is no longer subscribed
@@ -244,7 +244,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutUnsubscribeTest404()
         {
             _tester.TestController(_tester.Student.UId)                                    
-                .Calling(c => c.PutUnsubscribe("BadSubscription"))
+                .Calling(c => c.PutUnsubscribeAsync("BadSubscription"))
                 .ShouldReturn()
                 .BadRequest(); //Returns 404
         }

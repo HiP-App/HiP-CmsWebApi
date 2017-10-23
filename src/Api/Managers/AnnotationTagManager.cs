@@ -102,7 +102,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             DbContext.AnnotationTags.Add(tag);
             DbContext.SaveChanges();
 
-            return EntityResult.Successfull(tag.Id);
+            return EntityResult.Successful(tag.Id);
         }
 
         public bool AddChildTag(int parentId, int childId)

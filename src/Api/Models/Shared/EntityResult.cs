@@ -8,19 +8,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models
 
         public string ErrorMessage { get; set; }
 
-        public static EntityResult Successfull()
-        {
-            return Successfull(null);
-        }
+        public static EntityResult Successful() => Successful(null);
 
-        public static EntityResult Successfull(object value)
+        public static EntityResult Successful(object value) => new EntityResult
         {
-            return new EntityResult() { Success = true, Value = value };
-        }
+            Success = true,
+            Value = value
+        };
 
-        public static EntityResult Error(string errorMessage)
+        public static EntityResult Error(string errorMessage) => new EntityResult
         {
-            return new EntityResult() { Success = false, ErrorMessage = errorMessage };
-        }
+            Success = false,
+            ErrorMessage = errorMessage
+        };
     }
+}
 }

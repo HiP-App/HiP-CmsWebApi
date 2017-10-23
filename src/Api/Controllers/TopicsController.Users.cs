@@ -132,7 +132,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
                 return Forbid();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdentity(), topicId, role, users))
+            else if (_topicManager.ChangeAssociatedUsersByRoleAsync(User.Identity.GetUserIdentity(), topicId, role, users))
                 return Ok();
             return BadRequest();
         }

@@ -24,7 +24,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
         }
 
-        internal EntityResult UpdateDocument(int topicId, string identity, string htmlContent)
+        internal EntityResult UpdateDocument(int topicId, string userId, string htmlContent)
         {
             try
             {
@@ -36,7 +36,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
             // already exitsts
 
-            var userId = GetIdByIdentity(identity);
             Document document;
             try
             {
@@ -99,7 +98,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 DbContext.SaveChanges();
-                return EntityResult.Successfull();
+                return EntityResult.Successful();
             }
             catch (Exception e)
             {
