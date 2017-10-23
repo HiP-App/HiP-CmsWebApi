@@ -47,22 +47,21 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
         {
             modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
 
-            new AssociatedTopicMap(modelBuilder.Entity<AssociatedTopic>());
-            new TopicMap(modelBuilder.Entity<Topic>());
-            new TopicUserMap(modelBuilder.Entity<TopicUser>());
-            new TopicAttachmentMap(modelBuilder.Entity<TopicAttachment>());
-            new DocumentMap(modelBuilder.Entity<Document>());
-            new NotificationMap(modelBuilder.Entity<Notification>());
-            new AnnotationTagRelationMap(modelBuilder.Entity<AnnotationTagInstanceRelation>());
-            new AnnotationTag.AnnotationTagMap(modelBuilder.Entity<AnnotationTag>());
-            new SubscriptionMap(modelBuilder.Entity<Subscription>());
-            new AnnotationTagInstance.AnnotationTagInstanceMap(modelBuilder.Entity<AnnotationTagInstance>());
-            new TopicAttachmentMetadataMap(modelBuilder.Entity<TopicAttachmentMetadata>());
-            new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
-            new LayerRelationRule.LayerRelationRuleMap(modelBuilder.Entity<LayerRelationRule>());
-            new AnnotationTagRelationRule.TagRelationRuleMap(modelBuilder.Entity<AnnotationTagRelationRule>());
-            new StudentDetailsMap(modelBuilder.Entity<StudentDetails>());
-            new TopicReviewMap(modelBuilder.Entity<TopicReview>());
+            AssociatedTopic.ConfigureModel(modelBuilder.Entity<AssociatedTopic>());
+            Topic.ConfigureModel(modelBuilder.Entity<Topic>());
+            TopicUser.ConfigureModel(modelBuilder.Entity<TopicUser>());
+            TopicAttachment.ConfigureModel(modelBuilder.Entity<TopicAttachment>());
+            Document.ConfigureModel(modelBuilder.Entity<Document>());
+            Notification.ConfigureModel(modelBuilder.Entity<Notification>());
+            AnnotationTagInstanceRelation.ConfigureModel(modelBuilder.Entity<AnnotationTagInstanceRelation>());
+            AnnotationTag.ConfigureModel(modelBuilder.Entity<AnnotationTag>());
+            Subscription.ConfigureModel(modelBuilder.Entity<Subscription>());
+            AnnotationTagInstance.ConfigureModel(modelBuilder.Entity<AnnotationTagInstance>());
+            Models.Entity.TopicAttachmentMetadata.ConfigureModel(modelBuilder.Entity<TopicAttachmentMetadata>());
+            LayerRelationRule.ConfigureModel(modelBuilder.Entity<LayerRelationRule>());
+            AnnotationTagRelationRule.ConfigureModel(modelBuilder.Entity<AnnotationTagRelationRule>());
+            Models.Entity.StudentDetails.ConfigureModel(modelBuilder.Entity<StudentDetails>());
+            TopicReview.ConfigureModel(modelBuilder.Entity<TopicReview>());
         }
     }
 }

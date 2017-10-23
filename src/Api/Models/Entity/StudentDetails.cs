@@ -11,9 +11,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         // ReSharper disable once UnusedMember.Global
         public StudentDetails() { }
 
-        public StudentDetails(User user, StudentFormModel model)
+        public StudentDetails(string userId, StudentFormModel model)
         {
-            UserId = user.Id;
+            UserId = userId;
             Discipline = model.Discipline;
             CurrentDegree = model.CurrentDegree;
             CurrentSemester = model.CurrentSemester;
@@ -22,18 +22,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         [Required, ForeignKey("UserId")]
         public int UserId { get; set; }
 
-        public virtual User User { get; set; }
-
         public string Discipline { get; set; }
 
         public string CurrentDegree { get; set; }
 
         public short CurrentSemester { get; set; }
-    }
 
-    public class StudentDetailsMap
-    {
-        public StudentDetailsMap(EntityTypeBuilder<StudentDetails> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<StudentDetails> entityBuilder)
         {
             entityBuilder.HasKey(d => new { d.UserId });
             entityBuilder.HasOne(d => d.User).WithOne(u => u.StudentDetails).OnDelete(DeleteBehavior.Cascade);

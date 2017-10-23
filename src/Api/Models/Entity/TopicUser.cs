@@ -13,15 +13,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         [Required]
         public int UserId { get; set; }
 
-        public User User { get; set; }
-
         [Required]
         public string Role { get; set; }
-    }
 
-    public class TopicUserMap
-    {
-        public TopicUserMap(EntityTypeBuilder<TopicUser> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<TopicUser> entityBuilder)
         {
             entityBuilder.HasKey(tu => new { tu.TopicId, tu.UserId, tu.Role });
 

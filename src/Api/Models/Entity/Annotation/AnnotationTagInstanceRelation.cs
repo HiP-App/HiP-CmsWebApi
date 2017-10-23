@@ -45,11 +45,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
             ArrowStyle = model.ArrowStyle;
             Color = model.Color;
         }
-    }
 
-    public class AnnotationTagRelationMap
-    {
-        public AnnotationTagRelationMap(EntityTypeBuilder<AnnotationTagInstanceRelation> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<AnnotationTagInstanceRelation> entityBuilder)
         {
             entityBuilder
                 .HasKey(r => new { FirstTagId = r.SourceTagId, SecondTagId = r.TargetTagId });

@@ -16,18 +16,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public DateTime TimeStamp { get; set; }
 
         [Required]
-        public int ReviewerId { get; set; }
-
-        public virtual User Reviewer { get; set; }
+        public int ReviewerId { get; set; } // a user ID
 
         public string Status { get; set; }
 
-
-    }
-
-    public class TopicReviewMap
-    {
-        public TopicReviewMap(EntityTypeBuilder<TopicReview> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<TopicReview> entityBuilder)
         {
             entityBuilder.HasKey(rs => new { rs.TopicId, rs.ReviewerId });
 

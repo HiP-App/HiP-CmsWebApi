@@ -58,41 +58,22 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
             IsDeleted = false;
         }
 
-        #region Utily Methods
-
         public string GetAbsoluteName()
         {
-            if (ParentTag == null)
-            {
-                return Layer + "_" + ShortName;
-            }
-            return ParentTag.ShortName + "-" + ShortName;
+            return (ParentTag == null)
+                ? Layer + "_" + ShortName
+                : ParentTag.ShortName + "-" + ShortName;
         }
 
-        public int UsageCounter()
-        {
-            try
-            {
-                return TagInstances.Count;
-            }
-            catch (System.NullReferenceException)
-            {
-                return 0;
-            }
-        }
+        public int UsageCounter => TagInstances?.Count ?? 0;
 
-        #endregion
-
-        public class AnnotationTagMap
+        public static void ConfigureModel(EntityTypeBuilder<AnnotationTag> entityBuilder)
         {
-            public AnnotationTagMap(EntityTypeBuilder<AnnotationTag> entityBuilder)
-            {
-                entityBuilder.HasOne(at => at.ParentTag)
-                    .WithMany(pt => pt.ChildTags)
-                    .HasForeignKey(at => at.ParentTagId)
-                    .OnDelete(DeleteBehavior.SetNull);
-                entityBuilder.HasMany(at => at.TagInstances).WithOne(ati => ati.TagModel);
-            }
+            entityBuilder.HasOne(at => at.ParentTag)
+                .WithMany(pt => pt.ChildTags)
+                .HasForeignKey(at => at.ParentTagId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entityBuilder.HasMany(at => at.TagInstances).WithOne(ati => ati.TagModel);
         }
     }
 }

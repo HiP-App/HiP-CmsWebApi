@@ -15,9 +15,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         [Required]
         public int SubscriberId { get; set; }
 
-        [Required]
-        public User Subscriber { get; set; }
-        
         [NotMapped]
         // Store as String to avoid inconsistency
         public NotificationType Type
@@ -35,11 +32,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         }
 
         public string TypeName { get; set; }
-    }
 
-    public class SubscriptionMap
-    {
-        public SubscriptionMap(EntityTypeBuilder<Subscription> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<Subscription> entityBuilder)
         {
             entityBuilder
                 .HasOne(sub => sub.Subscriber)

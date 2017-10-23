@@ -66,11 +66,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
             DetailedPosition = metadata.DetailedPosition;
         }
 
-    }
-
-    public class TopicAttachmentMetadataMap
-    {
-        public TopicAttachmentMetadataMap(EntityTypeBuilder<TopicAttachmentMetadata> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<TopicAttachmentMetadata> entityBuilder)
         {
             entityBuilder.HasKey(tam => new { tam.TopicAttachmentId });
 

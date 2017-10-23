@@ -31,17 +31,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 
         public Topic Topic { get; set; }
 
-        public int UserId { get; set; }
-
-        public User User { get; set; }
+        public string UserId { get; set; }
 
         public DateTime UpdatedAt { get; set; }
 
-    }
-
-    public class TopicAttachmentMap
-    {
-        public TopicAttachmentMap(EntityTypeBuilder<TopicAttachment> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<TopicAttachment> entityBuilder)
         {
             entityBuilder.Property(t => t.UpdatedAt).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
 

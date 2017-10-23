@@ -16,8 +16,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         [Required]
         public int UserId { get; set; }
 
-        public User User { get; set; }
-
         public DateTime TimeStamp { get; set; }
 
         [Required]
@@ -53,11 +51,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public Topic Topic { get; set; }
 
         public bool IsRead { get; set; }
-    }
 
-    public class NotificationMap
-    {
-        public NotificationMap(EntityTypeBuilder<Notification> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<Notification> entityBuilder)
         {
             entityBuilder.Property(n => n.TimeStamp).ValueGeneratedOnAddOrUpdate().HasDefaultValueSql("CURRENT_TIMESTAMP");
             entityBuilder.Property(n => n.IsRead).ValueGeneratedOnAdd().HasDefaultValueSql("false");
