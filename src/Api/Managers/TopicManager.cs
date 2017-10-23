@@ -109,15 +109,22 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 // new user?
                 foreach (var email in users.Users)
                 {
-                    if (!existingUsers.Any(tu => tu.User.Email == email && tu.Role == role))
-                    {
-                        var user = await _userManager.GetUserByEmailAsync(email);
+                    var user = await _userManager.GetUserByEmailAsync(email);
+
+                    if (!existingUsers.Any(tu => tu.UserId == user.Id && tu.Role == role))
                         newUsers.Add(new TopicUser { UserId = user.Id, Role = role });
-                    }
                 }
+
                 // removed user?
-                removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
+                foreach (var existingUser in existingUsers)
+                {
+                    var userInfo = await _userManager.GetUserByIdAsync(existingUser.UserId);
+
+                    if (!users.Users.Contains(userInfo.Email))
+                        removedUsers.Add(existingUser);
+                }
             }
+
             topic.TopicUsers.AddRange(newUsers);
             topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
             // Updated // TODO add user
@@ -228,7 +235,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
         }
 
-        public virtual bool DeleteTopic(int topicId, string identity)
+        public virtual async Task<bool> DeleteTopicAsync(int topicId, string identity)
         {
             try
             {

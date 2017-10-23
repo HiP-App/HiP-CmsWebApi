@@ -221,10 +221,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (!(await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
-            if (_topicManager.DeleteTopic(topicId, User.Identity.GetUserIdentity()))
-                return Ok();
 
-            return NotFound();
+            return await _topicManager.DeleteTopicAsync(topicId, User.Identity.GetUserIdentity())
+                ? Ok() as IActionResult
+                : NotFound();
         }
 
         #endregion

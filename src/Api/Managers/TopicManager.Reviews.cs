@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using System;
@@ -10,7 +9,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public partial class TopicManager
     {
-
         public IEnumerable<TopicReviewResult> GetReviews(int topicId)
         {
             var result = new List<TopicReviewResult>();
@@ -21,7 +19,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             {
                 try
                 {
-                    var review = reviews.Single(r => r.Reviewer.Email == reviewer.Email);
+                    var review = reviews.Single(r => r.ReviewerId == reviewer);
                     result.Add(new TopicReviewResult(review));
                 }
                 catch (InvalidOperationException)
