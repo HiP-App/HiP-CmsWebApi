@@ -16,8 +16,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         // TODO: make configurable
         private const string UserStoreUrl = "http://localhost:5000";
 
-        //private static readonly IUserStore UserStore = RestService.For<IUserStore>(UserStoreUrl);
-
         private readonly IUserStore UserStore;
 
         public UserManager(IHttpContextAccessor context)
@@ -57,7 +55,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public async Task<UserResult> GetUserByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await UserStore.GetUserByEmailAsync(email);
         }
         
         public static string[] GetDisciplines()

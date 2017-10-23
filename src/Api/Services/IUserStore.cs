@@ -10,6 +10,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Services
         [Get("/api/Users/{userId}")]
         Task<UserResult> GetUserAsync(string userId);
 
+        [Get("/api/Users/ByEmail/{email}")]
+        Task<UserResult> GetUserByEmailAsync(string email);
+
         [Get("/api/Users/Me")]
         Task<UserResult> GetCurrentUserAsync();
 
