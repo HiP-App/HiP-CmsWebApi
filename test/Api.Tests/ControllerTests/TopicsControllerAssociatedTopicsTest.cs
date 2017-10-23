@@ -67,7 +67,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutParentTopicsTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutParentTopics(_tester.TopicTwo.Id, _tester.TopicOne.Id))
+                .Calling(c => c.PutParentTopicsAsync(_tester.TopicTwo.Id, _tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok(); //The method doesn't return any model in return other than just an Ok() and so assetion is not possible
         }
@@ -78,8 +78,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutParentTopicsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutParentTopics(_tester.TopicTwo.Id, _tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutParentTopicsAsync(_tester.TopicTwo.Id, _tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403); 
         }
@@ -93,7 +93,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AssociatedTopic>(db => db.Add(AssociatedTopic)))
-                .Calling(c => c.PutParentTopics(_tester.TopicTwo.Id, _tester.TopicOne.Id))
+                .Calling(c => c.PutParentTopicsAsync(_tester.TopicTwo.Id, _tester.TopicOne.Id))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -105,7 +105,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutSubTopicsTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutSubTopics(_tester.TopicOne.Id, _tester.TopicTwo.Id))
+                .Calling(c => c.PutSubTopicsAsync(_tester.TopicOne.Id, _tester.TopicTwo.Id))
                 .ShouldReturn()
                 .Ok(); //The method doesn't return any model in return other than just an Ok() and so assetion is not possible
         }
@@ -116,8 +116,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubTopicsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutSubTopics(_tester.TopicTwo.Id, _tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutSubTopicsAsync(_tester.TopicTwo.Id, _tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -131,7 +131,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AssociatedTopic>(db => db.Add(AssociatedTopic)))
-                .Calling(c => c.PutSubTopics(_tester.TopicOne.Id, _tester.TopicTwo.Id))
+                .Calling(c => c.PutSubTopicsAsync(_tester.TopicOne.Id, _tester.TopicTwo.Id))
                 .ShouldReturn()
                 .BadRequest();
         }

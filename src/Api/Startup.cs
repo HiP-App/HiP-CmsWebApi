@@ -51,7 +51,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                 .Configure<DatabaseConfig>(Configuration.GetSection("Database"))
                 .Configure<AuthConfig>(Configuration.GetSection("Auth"));
 
-            var appConfig = services.BuildServiceProvider().GetService<AppConfig>();
+            var serviceProvider = services.BuildServiceProvider();
+            var appConfig = serviceProvider.GetService<AppConfig>();
+            var authConfig = serviceProvider.GetService<AuthConfig>();
+            var databaseConfig = serviceProvider.GetService<DatabaseConfig>();
 
             // Register AppConfig in Services 
             services
@@ -71,12 +74,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                 .AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Audience = appConfig.AuthConfig.Audience;
-                    options.Authority = appConfig.AuthConfig.Authority;
+                    options.Audience = authConfig.Audience;
+                    options.Authority = authConfig.Authority;
                 });
 
             // Configure authorization
-            var domain = appConfig.AuthConfig.Authority;
+            var domain = authConfig.Authority;
 
             services.AddAuthorization(options =>
             {
@@ -90,7 +93,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             services.AddCors();
 
             // Add database service for Postgres
-            services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
+            services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(databaseConfig.ConnectionString));
 
             // Add framework services.
             services.AddMvc();

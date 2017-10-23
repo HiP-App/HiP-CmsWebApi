@@ -35,11 +35,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicReview>(db => db.Add(TopicReview)))
-                .Calling(c => c.GetReviewStatus(_tester.TopicOne.Id))
+                .Calling(c => c.GetReviewStatusAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<IEnumerable<TopicReviewResult>>()
-                .Passing(actual => actual.Any(u => u.Reviewer.Email == _tester.Reviewer.Email && u.Status.Status == TopicReview.Status));
+                .Passing(actual => actual.Any(u => u.Reviewer == _tester.Reviewer.Id && u.Status.Status == TopicReview.Status));
         }
         /// <summary>
         /// Returns 403 if the user is not associated with the topic to get the status of the topic review
@@ -47,8 +47,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetReviewStatusTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.GetReviewStatus(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.GetReviewStatusAsync(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -59,7 +59,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetReviewStatusTest404()
         {
             _tester.TestController()
-                .Calling(c => c.GetReviewStatus(_tester.TopicOne.Id))
+                .Calling(c => c.GetReviewStatusAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -71,13 +71,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutReviewStatusTest200()
         {
-            _tester.TestControllerWithMockData(_tester.Reviewer.UId)
+            _tester.TestControllerWithMockData(_tester.Reviewer.Id)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicReview>(db => db.Add(TopicReview)))
-                .Calling(c => c.PutReviewStatus(_tester.TopicOne.Id, TopicReviewStatus))
+                .Calling(c => c.PutReviewStatusAsync(_tester.TopicOne.Id, TopicReviewStatus))
                 .ShouldHave()
-                .DbContext(db => db.WithSet<TopicReview>
-                    (s => s.Single(r => r.Status == TopicReviewStatus.Status).Reviewer.Email == _tester.Reviewer.Email))
+                .DbContext(db => db.WithSet<TopicReview>(s =>
+                    s.Single(r => r.Status == TopicReviewStatus.Status).ReviewerId == _tester.Reviewer.Id))
                 .AndAlso()
                 .ShouldReturn()
                 .Ok();
@@ -89,8 +89,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutReviewStatusTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutReviewStatus(_tester.TopicOne.Id, TopicReviewStatus))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutReviewStatusAsync(_tester.TopicOne.Id, TopicReviewStatus))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -101,7 +101,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutReviewStatusTest404()
         {
             _tester.TestControllerWithMockData(_tester.Reviewer.Email)
-                .Calling(c => c.PutReviewStatus(3, TopicReviewStatus))
+                .Calling(c => c.PutReviewStatusAsync(3, TopicReviewStatus))
                 .ShouldReturn()
                 .StatusCode(403);
         }

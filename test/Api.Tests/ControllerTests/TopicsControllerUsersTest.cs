@@ -11,59 +11,53 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
     public class TopicsControllerUsersTest
     {
         private ControllerTester<TopicsController> _tester;
-        public User Student1 { get; set; }
-        public User Student2 { get; set; }
-        public User Supervisor1 { get; set; }
-        public User Supervisor2 { get; set; }
-        public User Reviewer1 { get; set; }
-        public User Reviewer2 { get; set; }
+        public UserResult Student1 { get; set; }
+        public UserResult Student2 { get; set; }
+        public UserResult Supervisor1 { get; set; }
+        public UserResult Supervisor2 { get; set; }
+        public UserResult Reviewer1 { get; set; }
+        public UserResult Reviewer2 { get; set; }
         public UsersFormModel UsersFormModelForStudent { get; set; }
         public UsersFormModel UsersFormModelForSupervisor { get; set; }
         public UsersFormModel UsersFormModelForReviewer { get; set; }
         public TopicsControllerUsersTest()
         {
             _tester = new ControllerTester<TopicsController>();
-            Student1 = new User
+            Student1 = new UserResult
             {
-                Id = 7,
-                UId = "test-auth:student7",
+                Id = "test-auth:student7",
                 Email = "student1@hipapp.de",
-                Role = "Student"
+                Roles = new[] { "Student" }
             };
-            Student2 = new User
+            Student2 = new UserResult
             {
-                Id = 8,
-                UId = "test-auth:student8",
+                Id = "test-auth:student8",
                 Email = "student2@hipapp.de",
-                Role = "Student"
+                Roles = new[] { "Student" }
             };
-            Supervisor1 = new User
+            Supervisor1 = new UserResult
             {
-                Id = 9,
-                UId = "test-auth:supervisor9",
+                Id = "test-auth:supervisor9",
                 Email = "supervisor1@hipapp.de",
-                Role = "Supervisor"
+                Roles = new[] { "Supervisor" }
             };
-            Supervisor2 = new User
+            Supervisor2 = new UserResult
             {
-                Id = 10,
-                UId = "test-auth:supervisor10",
+                Id = "test-auth:supervisor10",
                 Email = "supervisor2@hipapp.de",
-                Role = "Supervisor"
+                Roles = new[] { "Supervisor" }
             };
-            Reviewer1 = new User
+            Reviewer1 = new UserResult
             {
-                Id = 11,
-                UId = "test-auth:reviewer11",
+                Id = "test-auth:reviewer11",
                 Email = "reviewer1@hipapp.de",
-                Role = "Reviewer"
+                Roles = new[] { "Reviewer" }
             };
-            Reviewer2 = new User
+            Reviewer2 = new UserResult
             {
-                Id = 12,
-                UId = "test-auth:reviewer12",
+                Id = "test-auth:reviewer12",
                 Email = "reviewer2@hipapp.de",
-                Role = "Reviewer"
+                Roles = new[] { "Reviewer" }
             };
             UsersFormModelForStudent = new UsersFormModel
             {
@@ -92,8 +86,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.GetTopicStudents(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<IEnumerable<UserResultLegacy>>()
-                .Passing(actual => actual.Any(u => u.Email == _tester.Student.Email));
+                .WithModelOfType<IEnumerable<string>>()
+                .Passing(actual => actual.Any(u => u == _tester.Student.Id));
         }
         
         /// <summary>
@@ -106,8 +100,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Calling(c => c.GetTopicSupervisors(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<IEnumerable<UserResultLegacy>>()
-                .Passing(actual => actual.Any(u => u.Email == _tester.Supervisor.Email));
+                .WithModelOfType<IEnumerable<string>>()
+                .Passing(actual => actual.Any(u => u == _tester.Supervisor.Id));
         }
         
         /// <summary>
@@ -116,28 +110,28 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTopicReviewersTest()
         {
-            var reviewer = new User
+            var reviewer = new UserResult
             {
-                Id = 4,
+                Id = "test-auth:reviewer",
                 Email = "reviewer@hipapp.de",
-                Role = "Reviewer"
+                Roles = new[] { "Reviewer" }
             };
+
             var reviewerUser = new TopicUser
             {
                 TopicId = _tester.TopicOne.Id,
                 UserId = reviewer.Id,
-                Role = reviewer.Role
+                Role = reviewer.Roles.First()
             };
             
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(reviewer))
                     .WithSet<TopicUser>(db => db.Add(reviewerUser)))
                 .Calling(c => c.GetTopicReviewers(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
-                .WithModelOfType<IEnumerable<UserResultLegacy>>()
-                .Passing(actual => actual.Any(u => u.Email == reviewer.Email));
+                .WithModelOfType<IEnumerable<string>>()
+                .Passing(actual => actual.Any(u => u == reviewer.Id));
         }
         
         #endregion
@@ -151,9 +145,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTopicStudentsTest()
         {
             _tester.TestControllerWithMockData()
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.AddRange(Student1, Student2)))
-                .Calling(c => c.PutTopicStudents(_tester.TopicTwo.Id, UsersFormModelForStudent))
+                .WithDbContext(dbContext => { })
+                .Calling(c => c.PutTopicStudentsAsync(_tester.TopicTwo.Id, UsersFormModelForStudent))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Topic>(topic =>
                     topic.Single(actual =>
@@ -168,8 +161,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicStudentsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutTopicStudents(_tester.TopicTwo.Id, UsersFormModelForStudent))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutTopicStudentsAsync(_tester.TopicTwo.Id, UsersFormModelForStudent))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -182,7 +175,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var usersFormModel = new UsersFormModel();
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTopicStudents(_tester.TopicTwo.Id, usersFormModel))
+                .Calling(c => c.PutTopicStudentsAsync(_tester.TopicTwo.Id, usersFormModel))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -194,9 +187,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTopicSupervisorsTest()
         {
             _tester.TestControllerWithMockData()
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.AddRange(Supervisor1, Supervisor2)))
-                .Calling(c => c.PutTopicSupervisors(_tester.TopicTwo.Id, UsersFormModelForSupervisor))
+                .WithDbContext(dbContext => { })
+                .Calling(c => c.PutTopicSupervisorsAsync(_tester.TopicTwo.Id, UsersFormModelForSupervisor))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Topic>(topic =>
                     topic.Single(actual =>
@@ -211,8 +203,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicSupervisorsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutTopicSupervisors(_tester.TopicTwo.Id, UsersFormModelForSupervisor))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutTopicSupervisorsAsync(_tester.TopicTwo.Id, UsersFormModelForSupervisor))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -225,7 +217,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var usersFormModel = new UsersFormModel();
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTopicSupervisors(_tester.TopicTwo.Id, usersFormModel))
+                .Calling(c => c.PutTopicSupervisorsAsync(_tester.TopicTwo.Id, usersFormModel))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -237,9 +229,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTopicReviewersTest()
         {
             _tester.TestControllerWithMockData()
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.AddRange(Reviewer1, Reviewer2)))
-                .Calling(c => c.PutTopicReviewers(_tester.TopicTwo.Id, UsersFormModelForReviewer))
+                .WithDbContext(dbContext => { })
+                .Calling(c => c.PutTopicReviewersAsync(_tester.TopicTwo.Id, UsersFormModelForReviewer))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Topic>(topic =>
                     topic.Single(actual =>
@@ -254,8 +245,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTopicReviewersTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutTopicReviewers(_tester.TopicTwo.Id, UsersFormModelForReviewer))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutTopicReviewersAsync(_tester.TopicTwo.Id, UsersFormModelForReviewer))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -268,7 +259,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var usersFormModel = new UsersFormModel();
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTopicReviewers(_tester.TopicTwo.Id, usersFormModel))
+                .Calling(c => c.PutTopicReviewersAsync(_tester.TopicTwo.Id, usersFormModel))
                 .ShouldReturn()
                 .BadRequest();
         }

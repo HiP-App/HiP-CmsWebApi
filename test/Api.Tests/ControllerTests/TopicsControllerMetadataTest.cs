@@ -41,7 +41,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicAttachment>(db => db.Add(TopicAttachment)))
-                .Calling(c => c.PostMetaData(_tester.TopicOne.Id, TopicAttachment.Id, Metadata))
+                .Calling(c => c.PostMetaDataAsync(_tester.TopicOne.Id, TopicAttachment.Id, Metadata))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TopicAttachmentMetadata>(metadata =>
                     metadata.Any(actual => actual.Type == Metadata.Type)
@@ -59,7 +59,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var metadata = new Metadata();
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PostMetaData(_tester.TopicOne.Id, TopicAttachment.Id, metadata))
+                .Calling(c => c.PostMetaDataAsync(_tester.TopicOne.Id, TopicAttachment.Id, metadata))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -70,8 +70,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PostMetaDataTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PostMetaData(_tester.TopicTwo.Id, TopicAttachment.Id, Metadata))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PostMetaDataAsync(_tester.TopicTwo.Id, TopicAttachment.Id, Metadata))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -96,7 +96,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicAttachment>(db => db.Add(TopicAttachment))
                     .WithSet<TopicAttachmentMetadata>(db => db.Add(topicAttachmentMetadata)))
-                .Calling(c => c.PutMetaData(_tester.TopicOne.Id, TopicAttachment.Id, metadata))
+                .Calling(c => c.PutMetaDataAsync(_tester.TopicOne.Id, TopicAttachment.Id, metadata))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<TopicAttachmentMetadata>(md =>
                     md.Any(actual => actual.Type == metadata.Type)
@@ -114,7 +114,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var metadata = new Metadata();
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutMetaData(_tester.TopicOne.Id, TopicAttachment.Id, metadata))
+                .Calling(c => c.PutMetaDataAsync(_tester.TopicOne.Id, TopicAttachment.Id, metadata))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -125,8 +125,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutMetaDataTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PutMetaData(_tester.TopicTwo.Id, TopicAttachment.Id, Metadata))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PutMetaDataAsync(_tester.TopicTwo.Id, TopicAttachment.Id, Metadata))
                 .ShouldReturn()
                 .StatusCode(403);
         }
