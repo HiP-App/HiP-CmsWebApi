@@ -1,14 +1,15 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
@@ -29,7 +30,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return DbContext.TopicAttachments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Metadata).ToList().Select(at => new TopicAttachmentResult(at));
+            return DbContext.TopicAttachments
+                .Where(ta => ta.TopicId == topicId)
+                .Include(ta => ta.Metadata)
+                .ToList()
+                .Select(at => new TopicAttachmentResult(at));
         }
 
         public EntityResult CreateAttachment(int topicId, string userId, AttachmentFormModel model)
@@ -56,7 +61,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 return EntityResult.Error(e.Message);
             }
         }
-        public EntityResult PutAttachment(int attachmentId, string identity, IFormFile file)
+
+        public async Task<EntityResult> PutAttachmentAsync(int attachmentId, string identity, IFormFile file)
         {
             TopicAttachment attachment;
             try
@@ -85,7 +91,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 DbContext.Update(attachment);
                 DbContext.SaveChanges();
 
-                new NotificationProcessor(DbContext, attachment.Topic, identity, _userManager).OnAttachmentAddedAsync(attachment.Title);
+                await new NotificationProcessor(DbContext, attachment.Topic, identity, _userManager).OnAttachmentAddedAsync(attachment.Title);
 
                 return EntityResult.Successful(attachment.Id);
             }
@@ -94,7 +100,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 return EntityResult.Error(e.Message);
             }
         }
-
 
         public bool DeleteAttachment(int topicId, int attachmentId)
         {
@@ -116,7 +121,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 return false;
             }
         }
-        #region Metadata
 
         internal void UpdateMetadata(int topicId, int attachmentId, string identity, Metadata metadata)
         {
@@ -139,6 +143,5 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             DbContext.Add(newMetadata);
             DbContext.SaveChanges();
         }
-        #endregion
     }
 }

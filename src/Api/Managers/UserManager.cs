@@ -196,7 +196,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         //            existingUsers.Add(email);
         //        }
         //    }
-        //    return new InvitationResult() { FailedInvitations = failedInvitations, ExistingUsers = existingUsers };
+        //    return new InvitationResult { FailedInvitations = failedInvitations, ExistingUsers = existingUsers };
         //}
 
         //public void PutStudentDetials(User student, StudentFormModel model)

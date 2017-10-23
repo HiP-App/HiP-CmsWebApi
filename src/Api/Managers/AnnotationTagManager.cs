@@ -296,7 +296,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 var tag = DbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
-                if (tag.UsageCounter() == 0)
+                if (tag.UsageCounter == 0)
                 {
                     DbContext.AnnotationTags.Remove(tag);
                 }

@@ -16,6 +16,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.User
 
         public string LastName { get; set; }
 
+        public string FullName => (FirstName == null && LastName == null) ? null : FirstName + ' ' + LastName;
+
         public IReadOnlyCollection<string> Roles { get; set; }
 
         /// <summary>

@@ -27,11 +27,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
                     return true;
                 
                 // Created?
-                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
+                if (DbContext.Topics.Any(t => t.Id == topicId && t.CreatedById == user.Id))
                     return true;
 
                 // Supervisor?
-                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Supervisor)))
+                if (DbContext.TopicUsers.Any(tu => tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Supervisor))
                     return true;
             }
             catch (InvalidOperationException) { }
@@ -49,11 +49,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
                     return true;
 
                 // Created?
-                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
+                if (DbContext.Topics.Any(t => t.Id == topicId && t.CreatedById == user.Id))
                     return true;
 
                 // Is associated
-                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id)))
+                if (DbContext.TopicUsers.Any(tu => tu.TopicId == topicId && tu.UserId == user.Id))
                     return true;
             }
             catch (InvalidOperationException) { }

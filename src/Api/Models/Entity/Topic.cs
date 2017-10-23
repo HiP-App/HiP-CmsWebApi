@@ -26,7 +26,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public string Requirements { get; set; }
 
         [Required]
-        public int CreatedById { get; set; } // a user ID
+        public string CreatedById { get; set; } // a user ID
 
         public DateTime CreatedAt { get; set; }
 

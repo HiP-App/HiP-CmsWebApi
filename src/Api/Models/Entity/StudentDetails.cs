@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,7 +19,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         }
 
         [Required, ForeignKey("UserId")]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         public string Discipline { get; set; }
 
@@ -31,8 +30,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public static void ConfigureModel(EntityTypeBuilder<StudentDetails> entityBuilder)
         {
             entityBuilder.HasKey(d => new { d.UserId });
-            entityBuilder.HasOne(d => d.User).WithOne(u => u.StudentDetails).OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
-using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-// ReSharper disable InconsistentNaming
 
+// ReSharper disable InconsistentNaming
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationProcessor : BaseManager
@@ -63,8 +63,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 await CreateNotificationAsync(tu, type, data);
         }
 
-        #region OnUpdate
-
         public async Task OnUpdateAsync(TopicFormModel changes)
         {
             // Deadline Changed
@@ -78,10 +76,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             Finish();
         }
 
-        #endregion
-
-        #region OnUsersChanged
-
         public async Task OnUsersChangedAsync(IEnumerable<TopicUser> newUser, IEnumerable<TopicUser> deletedUser, string role)
         {
             foreach (var user in newUser)
@@ -92,10 +86,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
             Finish();
         }
-
-        #endregion
-
-        #region createNotification
 
         private async Task CreateNotificationAsync(TopicUser topicUser, NotificationType type, string data = null)
         {
@@ -123,7 +113,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return notification;
         }
 
-        private async Task CreateMailNotificationAsync(TopicUser topicUser, NotificationType type, int userId, Notification not)
+        private async Task CreateMailNotificationAsync(TopicUser topicUser, NotificationType type, string userId, Notification not)
         {
             var email = await TryFetchUserEmailAsync();
             var subscribed = IsSubscribed(type, userId);
@@ -145,12 +135,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
         }
 
-        private bool IsSubscribed(NotificationType type, int userId)
+        private bool IsSubscribed(NotificationType type, string userId)
         {
-            return DbContext.Subscriptions.Any(subscription => subscription.Subscriber.Id == userId && subscription.Type == type);
+            return DbContext.Subscriptions.Any(subscription => subscription.SubscriberId == userId && subscription.Type == type);
         }
-
-        #endregion
 
         private void Finish()
         {

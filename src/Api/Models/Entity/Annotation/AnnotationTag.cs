@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 // ReSharper disable CollectionNeverUpdated.Global
 
@@ -58,13 +59,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
             IsDeleted = false;
         }
 
-        public string GetAbsoluteName()
-        {
-            return (ParentTag == null)
-                ? Layer + "_" + ShortName
-                : ParentTag.ShortName + "-" + ShortName;
-        }
+        [NotMapped]
+        public string AbsoluteName => (ParentTag == null)
+            ? Layer + "_" + ShortName
+            : ParentTag.ShortName + "-" + ShortName;
 
+        [NotMapped]
         public int UsageCounter => TagInstances?.Count ?? 0;
 
         public static void ConfigureModel(EntityTypeBuilder<AnnotationTag> entityBuilder)

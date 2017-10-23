@@ -126,7 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
                 }
                 else
                 {
-                    var result = _topicManager.AddTopicAsync(User.Identity.GetUserIdentity(), model);
+                    var result = await _topicManager.AddTopicAsync(User.Identity.GetUserIdentity(), model);
                     if (result.Success)
                         return Ok(result);
                 }
@@ -159,9 +159,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
                 return BadRequest(ModelState);
 
             // TODO createUser is Supervisor!
-            if (_topicManager.UpdateTopic(User.Identity.GetUserIdentity(), topicId, model))
-                return Ok();
-            return BadRequest(ModelState);
+            return await _topicManager.UpdateTopicAsync(User.Identity.GetUserIdentity(), topicId, model)
+                ? Ok() as IActionResult
+                : BadRequest(ModelState);
         }
 
         // PUT api/topic/:topicId/status
@@ -197,9 +197,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             if (topicStatus.IsDone() &&_topicManager.GetReviews(topicId).Any(r => !r.Status.IsReviewed()))
                     return Conflict();
 
-            if (_topicManager.ChangeTopicStatusAsync(User.Identity.GetUserIdentity(), topicId, topicStatus.Status))
-                return Ok();
-            return NotFound();
+            return await _topicManager.ChangeTopicStatusAsync(User.Identity.GetUserIdentity(), topicId, topicStatus.Status)
+                ? Ok() as IActionResult
+                : NotFound();
         }
 
 

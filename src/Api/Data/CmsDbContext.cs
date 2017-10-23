@@ -45,8 +45,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasIndex(b => b.Email).IsUnique();
-
             AssociatedTopic.ConfigureModel(modelBuilder.Entity<AssociatedTopic>());
             Topic.ConfigureModel(modelBuilder.Entity<Topic>());
             TopicUser.ConfigureModel(modelBuilder.Entity<TopicUser>());

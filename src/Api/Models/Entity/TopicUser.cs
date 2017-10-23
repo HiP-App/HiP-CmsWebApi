@@ -11,7 +11,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public Topic Topic { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         public string Role { get; set; }
@@ -19,8 +19,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public static void ConfigureModel(EntityTypeBuilder<TopicUser> entityBuilder)
         {
             entityBuilder.HasKey(tu => new { tu.TopicId, tu.UserId, tu.Role });
-
-            entityBuilder.HasOne(tu => tu.User).WithMany(u => u.TopicUsers).HasForeignKey(t => t.UserId);
             entityBuilder.HasOne(tu => tu.Topic).WithMany(t => t.TopicUsers).HasForeignKey(t => t.TopicId);
         }
     }

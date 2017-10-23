@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
@@ -15,7 +14,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         public IEnumerable<TopicReviewResult> GetReviews(int topicId)
         {
             var result = new List<TopicReviewResult>();
-            var reviews = DbContext.TopicReviews.Include(r => r.Reviewer).Where(rs => rs.TopicId == topicId).ToList();
+            var reviews = DbContext.TopicReviews.Where(rs => rs.TopicId == topicId).ToList();
             var reviewers = GetAssociatedUsersByRole(topicId, Role.Reviewer);
 
             foreach (var reviewer in reviewers)
@@ -27,7 +26,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 }
                 catch (InvalidOperationException)
                 {
-                    result.Add(new TopicReviewResult(reviewer));
+                    result.Add(TopicReviewResult.NotReviewed(reviewer));
                 }
             }
             return result;
@@ -49,9 +48,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 }
                 else
                 {
-                    var review =
-                        DbContext.TopicReviews.Include(r => r.Reviewer)
-                            .Single(rs => rs.TopicId == topicId && rs.ReviewerId == userId);
+                    var review = DbContext.TopicReviews.Single(rs => rs.TopicId == topicId && rs.ReviewerId == userId);
                     review.Status = status.Status;
                     DbContext.Update(review);
                 }

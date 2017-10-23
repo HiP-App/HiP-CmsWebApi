@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using System;
@@ -13,7 +12,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public int SubscriptionId { get; set; }
 
         [Required]
-        public int SubscriberId { get; set; }
+        public string SubscriberId { get; set; } // a user ID
 
         [NotMapped]
         // Store as String to avoid inconsistency
@@ -35,11 +34,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 
         public static void ConfigureModel(EntityTypeBuilder<Subscription> entityBuilder)
         {
-            entityBuilder
-                .HasOne(sub => sub.Subscriber)
-                .WithMany(user => user.Subscriptions)
-                .HasForeignKey(u => u.SubscriberId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -25,27 +25,27 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             if (onlyUnread)
                 query = query.Where(n => !n.IsRead);
 
-            var notifications = query.Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
+            var notifications = query.Include(n => n.Topic).OrderByDescending(n => n.TimeStamp);
             var result = new List<NotificationResult>();
-            foreach (Notification not in notifications)
+            foreach (var notification in notifications)
             {
-                var nr = new NotificationResult(not) { Updater = new UserResultLegacy(not.Updater) };
+                var nr = new NotificationResult(notification);
 
-                switch (not.Type)
+                switch (notification.Type)
                 {
                     case NotificationType.TOPIC_CREATED:
                     case NotificationType.TOPIC_UPDATED:
                     case NotificationType.TOPIC_ASSIGNED_TO:
                     case NotificationType.TOPIC_REMOVED_FROM:
-                        nr.Data = new object[] { not.Topic.Id, not.Topic.Title };
+                        nr.Data = new object[] { notification.Topic.Id, notification.Topic.Title };
                         break;
                     case NotificationType.TOPIC_STATE_CHANGED:
                     case NotificationType.TOPIC_DEADLINE_CHANGED:
                     case NotificationType.TOPIC_ATTACHMENT_ADDED:
-                        nr.Data = new object[] { not.Topic.Id, not.Topic.Title, not.Data };
+                        nr.Data = new object[] { notification.Topic.Id, notification.Topic.Title, notification.Data };
                         break;
                     case NotificationType.TOPIC_DELETED:
-                        nr.Data = new object[] { not.Data };
+                        nr.Data = new object[] { notification.Data };
                         break;
                     case NotificationType.UNKNOWN:
                         break;
@@ -77,15 +77,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
-        public async Task<bool> SetSubscriptionAsync(string identity, NotificationType type, bool subscribe)
+        public bool SetSubscription(string userId, NotificationType type, bool subscribe)
         {
-            var user = await _userManager.GetUserByIdAsync(identity);
-
-            Subscription sub = new Subscription
+            var sub = new Subscription
             {
-                Subscriber = user,
+                SubscriberId = userId,
                 Type = type
             };
+
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
@@ -138,9 +137,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         private IQueryable<Subscription> FindSubscriptionsLike(Subscription sub)
         {
-            return DbContext.Subscriptions.Where(
-                candidate => sub.Subscriber == candidate.Subscriber && sub.TypeName == candidate.TypeName
-            );
+            return DbContext.Subscriptions
+                .Where(candidate => sub.SubscriberId == candidate.SubscriberId && sub.TypeName == candidate.TypeName);
         }
     }
 }

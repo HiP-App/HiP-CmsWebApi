@@ -143,9 +143,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="403">User is not allowed to subscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("subscribe/{notificationType}")]
-        public async Task<IActionResult> PutSubscribeAsync([FromRoute]string notificationType)
+        public IActionResult PutSubscribe([FromRoute]string notificationType)
         {
-            return await SetSubscriptionAsync(notificationType, true);
+            return SetSubscription(notificationType, true);
         }
 
         /// <summary>
@@ -157,15 +157,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="403">User is not allowed to unsubscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("unsubscribe/{notificationType}")]
-        public async Task<IActionResult> PutUnsubscribeAsync([FromRoute]string notificationType)
+        public IActionResult PutUnsubscribe([FromRoute]string notificationType)
         {
-            return await SetSubscriptionAsync(notificationType, false);
+            return SetSubscription(notificationType, false);
         }
 
-        private async Task<IActionResult> SetSubscriptionAsync(string notificationType, bool subscribe)
+        private IActionResult SetSubscription(string notificationType, bool subscribe)
         {
             if (Enum.TryParse(notificationType, out NotificationType type) &&
-                await _notificationManager.SetSubscriptionAsync(User.Identity.GetUserIdentity(), type, subscribe))
+                _notificationManager.SetSubscription(User.Identity.GetUserIdentity(), type, subscribe))
             {
                 return Ok();
             }

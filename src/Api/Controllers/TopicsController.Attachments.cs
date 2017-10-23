@@ -66,7 +66,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
                 var attachment = _attachmentsManager.GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttachmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
-                return Ok(new StringWrapper() { Value = hash });
+                return Ok(new StringWrapper { Value = hash });
             }
             catch (InvalidOperationException)
             {
@@ -134,11 +134,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserIdentity(), file);
+            var result = await _attachmentsManager.PutAttachmentAsync(attachmentId, User.Identity.GetUserIdentity(), file);
 
-            if (result.Success)
-                return Ok(result);
-            return NotFound(result);
+            return result.Success
+                ? Ok(result) as IActionResult
+                : NotFound(result);
         }
 
         // DELETE api/topics/:id/attachments
