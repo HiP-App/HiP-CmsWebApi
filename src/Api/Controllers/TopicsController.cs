@@ -15,16 +15,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
     public partial class TopicsController : ApiController
     {
         private readonly TopicManager _topicManager;
-
         private readonly TopicPermissions _topicPermissions;
 
-        public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory, TopicPermissions topicPermissions) : base(dbContext, loggerFactory)
+        public TopicsController(CmsDbContext dbContext, ILoggerFactory loggerFactory,
+            TopicManager topicManager, TopicPermissions topicPermissions,
+            AttachmentsManager attachmentsManager,
+            DocumentManager documentManager,
+            ContentAnalyticsManager analyticsManager) : base(dbContext, loggerFactory)
         {
-            _topicManager = new TopicManager(dbContext);
+            _topicManager = topicManager;
             _topicPermissions = topicPermissions;
-            TopicsAttachmentsController();
-            TopicsDocumentController();
-            TopicsAnalyticsController();
+
+            _attachmentsManager = attachmentsManager;
+            _documentManager = documentManager;
+            _analyticsManager = analyticsManager;
         }
 
         #region GET topics
@@ -122,7 +126,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
                 }
                 else
                 {
-                    var result = _topicManager.AddTopic(User.Identity.GetUserIdentity(), model);
+                    var result = _topicManager.AddTopicAsync(User.Identity.GetUserIdentity(), model);
                     if (result.Success)
                         return Ok(result);
                 }
@@ -193,7 +197,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             if (topicStatus.IsDone() &&_topicManager.GetReviews(topicId).Any(r => !r.Status.IsReviewed()))
                     return Conflict();
 
-            if (_topicManager.ChangeTopicStatus(User.Identity.GetUserIdentity(), topicId, topicStatus.Status))
+            if (_topicManager.ChangeTopicStatusAsync(User.Identity.GetUserIdentity(), topicId, topicStatus.Status))
                 return Ok();
             return NotFound();
         }

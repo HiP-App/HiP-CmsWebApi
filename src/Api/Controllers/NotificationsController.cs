@@ -1,12 +1,12 @@
-﻿using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
@@ -15,9 +15,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
     {
         private readonly NotificationManager _notificationManager;
 
-        public NotificationsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public NotificationsController(CmsDbContext dbContext, ILoggerFactory loggerFactory, NotificationManager notificationManager) : base(dbContext, loggerFactory)
         {
-            _notificationManager = new NotificationManager(dbContext);
+            _notificationManager = notificationManager;
         }
 
         #region GET
@@ -143,9 +143,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="403">User is not allowed to subscribe</response>
         /// <response code="404">Resource Not Found</response>
         [HttpPut("subscribe/{notificationType}")]
-        public IActionResult PutSubscribe([FromRoute]string notificationType)
+        public async Task<IActionResult> PutSubscribeAsync([FromRoute]string notificationType)
         {
-            return SetSubscriptionAsync(notificationType, true);
+            return await SetSubscriptionAsync(notificationType, true);
         }
 
         /// <summary>

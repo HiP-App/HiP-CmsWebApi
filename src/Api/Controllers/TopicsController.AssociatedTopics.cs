@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-
         #region GET
         // GET api/topics/:topicId/subtopics
 
@@ -145,6 +144,5 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         }
 
         #endregion
-
     }
 }

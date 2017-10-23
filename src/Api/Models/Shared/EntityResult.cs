@@ -23,4 +23,3 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models
         };
     }
 }
-}

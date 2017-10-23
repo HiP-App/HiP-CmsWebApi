@@ -1,25 +1,20 @@
-using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Collections.Generic;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Shared;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-        private AttachmentsManager _attachmentsManager;
-
-        private void TopicsAttachmentsController()
-        {
-            _attachmentsManager = new AttachmentsManager(DbContext);
-        }
+        private readonly AttachmentsManager _attachmentsManager;
 
         // GET api/topics/:id/attachments
 

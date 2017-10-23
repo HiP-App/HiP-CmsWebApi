@@ -47,12 +47,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             var appConfig = new Utility.AppConfig(Configuration);
 
             // Register AppConfig in Services 
-            services.AddSingleton(appConfig);
-            services.AddTransient<IEmailSender, EmailSender>();
-            services.AddScoped<UserManager>();
-            services.AddScoped<AnnotationPermissions>();
-            services.AddScoped<TopicPermissions>();
-            services.AddScoped<UserPermissions>();
+            services
+                .AddSingleton(appConfig)
+                .AddTransient<IEmailSender, EmailSender>()
+                .AddScoped<UserManager>()
+                .AddScoped<NotificationManager>()
+                .AddScoped<TopicManager>()
+                .AddScoped<AttachmentsManager>()
+                .AddScoped<DocumentManager>()
+                .AddScoped<ContentAnalyticsManager>()
+                .AddScoped<AnnotationPermissions>()
+                .AddScoped<TopicPermissions>()
+                .AddScoped<UserPermissions>();
 
             // Configure authentication
             services

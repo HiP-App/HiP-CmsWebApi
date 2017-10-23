@@ -125,7 +125,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 // Notifications
-                new NotificationProcessor(DbContext, topic, updaterIdentity).OnUsersChanged(newUsers, removedUsers, role);
+                new NotificationProcessor(DbContext, topic, updaterIdentity, _userManager).OnUsersChangedAsync(newUsers, removedUsers, role);
             }
             catch (NullReferenceException)
             {
@@ -145,14 +145,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return DbContext.AssociatedTopics.Include(at => at.ParentTopic).Where(at => at.ChildTopicId == topicId).Select(at => at.ParentTopic).ToList();
         }
 
-        public EntityResult AddTopic(string updaterUserId, TopicFormModel model)
+        public async Task<EntityResult> AddTopicAsync(string updaterUserId, TopicFormModel model)
         {
             try
             {
                 var topic = new Topic(model) { CreatedById = updaterUserId };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
-                new NotificationProcessor(DbContext, topic, updaterUserId, _userManager).OnNewTopic();
+                await new NotificationProcessor(DbContext, topic, updaterUserId, _userManager).OnNewTopicAsync();
 
                 return EntityResult.Successful(topic.Id);
             }
@@ -170,7 +170,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 {
                     var topic = DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
                     // REM: do before updating to estimate the changes
-                    new NotificationProcessor(DbContext, topic, identity).OnUpdate(model);
+                    new NotificationProcessor(DbContext, topic, identity, _userManager).OnUpdateAsync(model);
 
                     // TODO  topic.UpdatedById = userId;
                     topic.Title = model.Title;
@@ -197,7 +197,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 }
         }
 
-        public bool ChangeTopicStatus(string identity, int topicId, string status)
+        public async Task<bool> ChangeTopicStatusAsync(string identity, int topicId, string status)
         {
             try
             {
@@ -209,7 +209,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 try
                 {
                     // Notifications
-                    new NotificationProcessor(DbContext, topic, identity).OnStateChanged(status);
+                    await new NotificationProcessor(DbContext, topic, identity, _userManager).OnStateChangedAsync(status);
                 }
                 catch (NullReferenceException)
                 {
@@ -235,7 +235,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 try
                 {
                     // Notifications
-                    new NotificationProcessor(DbContext, topic, identity).OnDeleteTopic();
+                    new NotificationProcessor(DbContext, topic, identity, _userManager).OnDeleteTopicAsync();
                 }
                 catch (NullReferenceException)
                 {
@@ -254,9 +254,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             // TODO throw errors
             if (!DbContext.Topics.Any(t => t.Id == childId))
-                return EntityResult.Error("Child not Found");
+                return EntityResult.Error("Child not found");
+
             if (!DbContext.Topics.Any(t => t.Id == parentId))
-                return EntityResult.Error("Parent not Found");
+                return EntityResult.Error("Parent not found");
 
             if (DbContext.AssociatedTopics.Any(at => at.ChildTopicId == childId && at.ParentTopicId == parentId))
                 return EntityResult.Error("Allready exists");

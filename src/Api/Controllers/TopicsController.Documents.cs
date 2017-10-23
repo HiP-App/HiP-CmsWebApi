@@ -9,12 +9,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-        private DocumentManager _documentManager;
-
-        private void TopicsDocumentController()
-        {
-            _documentManager = new DocumentManager(DbContext);
-        }
+        private readonly DocumentManager _documentManager;
 
         /// <summary>
         /// The Document of the topic {topicId}

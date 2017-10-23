@@ -33,46 +33,47 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             _notifiedUsers.Add(_currentUser);
         }
 
-        public void OnNewTopic()
+        public async Task OnNewTopicAsync()
         {
-            NotifyAll(NotificationType.TOPIC_CREATED);
+            await NotifyAllAsync(NotificationType.TOPIC_CREATED);
             Finish();
         }
 
-        public void OnDeleteTopic()
+        public async Task OnDeleteTopicAsync()
         {
-            NotifyAll(NotificationType.TOPIC_DELETED, _topic.Title);
+            await NotifyAllAsync(NotificationType.TOPIC_DELETED, _topic.Title);
             Finish();
         }
 
-        public void OnStateChanged(string state)
+        public async Task OnStateChangedAsync(string state)
         {
-            NotifyAll(NotificationType.TOPIC_STATE_CHANGED, state);
+            await NotifyAllAsync(NotificationType.TOPIC_STATE_CHANGED, state);
             Finish();
         }
 
-        public void OnAttachmentAdded(string name)
+        public async Task OnAttachmentAddedAsync(string name)
         {
-            NotifyAll(NotificationType.TOPIC_ATTACHMENT_ADDED, name);
+            await NotifyAllAsync(NotificationType.TOPIC_ATTACHMENT_ADDED, name);
             Finish();
         }
 
-        private void NotifyAll(NotificationType type, string data = null)
+        private async Task NotifyAllAsync(NotificationType type, string data = null)
         {
-            _topic.TopicUsers.ForEach(tu => CreateNotificationAsync(tu, type, data));
+            foreach (var tu in _topic.TopicUsers)
+                await CreateNotificationAsync(tu, type, data);
         }
 
         #region OnUpdate
 
-        public void OnUpdate(TopicFormModel changes)
+        public async Task OnUpdateAsync(TopicFormModel changes)
         {
             // Deadline Changed
             if (changes.Deadline != _topic.Deadline)
-                NotifyAll(NotificationType.TOPIC_DEADLINE_CHANGED, changes.Deadline.ToString());
-            else if ((changes.Status != _topic.Status))
-                NotifyAll(NotificationType.TOPIC_STATE_CHANGED, changes.Status);
+                await NotifyAllAsync(NotificationType.TOPIC_DEADLINE_CHANGED, changes.Deadline.ToString());
+            else if (changes.Status != _topic.Status)
+                await NotifyAllAsync(NotificationType.TOPIC_STATE_CHANGED, changes.Status);
             else
-                NotifyAll(NotificationType.TOPIC_UPDATED);
+                await NotifyAllAsync(NotificationType.TOPIC_UPDATED);
 
             Finish();
         }
@@ -81,16 +82,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         #region OnUsersChanged
 
-        public void OnUsersChanged(IEnumerable<TopicUser> newUser, IEnumerable<TopicUser> deletedUser, string role)
+        public async Task OnUsersChangedAsync(IEnumerable<TopicUser> newUser, IEnumerable<TopicUser> deletedUser, string role)
         {
-            foreach (TopicUser user in newUser)
-            {
-                CreateNotificationAsync(user, NotificationType.TOPIC_ASSIGNED_TO, role);
-            }
-            foreach (TopicUser user in deletedUser)
-            {
-                CreateNotificationAsync(user, NotificationType.TOPIC_REMOVED_FROM, role);
-            }
+            foreach (var user in newUser)
+                await CreateNotificationAsync(user, NotificationType.TOPIC_ASSIGNED_TO, role);
+
+            foreach (var user in deletedUser)
+                await CreateNotificationAsync(user, NotificationType.TOPIC_REMOVED_FROM, role);
 
             Finish();
         }
@@ -104,22 +102,25 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             var userId = topicUser.UserId;
             if (!_notifiedUsers.Contains(userId))
             {
-                var not = CreateAppNotification(type, data, userId);
-                await CreateMailNotificationAsync(topicUser, type, userId, not);
+                var notification = CreateAppNotification(type, data, userId);
+                await CreateMailNotificationAsync(topicUser, type, userId, notification);
             }
         }
 
         private Notification CreateAppNotification(NotificationType type, string data, string userId)
         {
-            Notification not = new Notification() { UpdaterId = _currentUser, Type = type, UserId = userId };
-            if (_topic != null)
-                not.TopicId = _topic.Id;
-            if (data != null)
-                not.Data = data;
+            var notification = new Notification
+            {
+                UpdaterId = _currentUser,
+                Type = type,
+                UserId = userId,
+                TopicId = _topic?.Id ?? 0,
+                Data = data
+            };
 
             _notifiedUsers.Add(userId);
-            DbContext.Notifications.Add(not);
-            return not;
+            DbContext.Notifications.Add(notification);
+            return notification;
         }
 
         private async Task CreateMailNotificationAsync(TopicUser topicUser, NotificationType type, int userId, Notification not)

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,7 +9,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-
         #region Get Users
 
         // GET api/topics/:topicId/students
@@ -130,14 +129,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
                 return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (_topicManager.ChangeAssociatedUsersByRoleAsync(User.Identity.GetUserIdentity(), topicId, role, users))
+
+            if (await _topicManager.ChangeAssociatedUsersByRoleAsync(User.Identity.GetUserIdentity(), topicId, role, users))
                 return Ok();
+
             return BadRequest();
         }
 
         #endregion
-
     }
 }

@@ -1,20 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+﻿using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-        private ContentAnalyticsManager _analyticsManager;
-
-        private void TopicsAnalyticsController()
-        {
-            _analyticsManager = new ContentAnalyticsManager(DbContext);
-        }
+        private readonly ContentAnalyticsManager _analyticsManager;
 
         /// <summary>
         /// gets the AnnotationTag Frequency Analytics of {topicId}

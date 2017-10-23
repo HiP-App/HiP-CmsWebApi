@@ -85,7 +85,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 DbContext.Update(attachment);
                 DbContext.SaveChanges();
 
-                new NotificationProcessor(DbContext, attachment.Topic, identity, _userManager).OnAttachmentAdded(attachment.Title);
+                new NotificationProcessor(DbContext, attachment.Topic, identity, _userManager).OnAttachmentAddedAsync(attachment.Title);
 
                 return EntityResult.Successful(attachment.Id);
             }
