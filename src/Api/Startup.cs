@@ -54,8 +54,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
 
             var serviceProvider = services.BuildServiceProvider();
             var appConfig = serviceProvider.GetService<IOptions<AppConfig>>().Value;
-            var authConfig = serviceProvider.GetService< IOptions<AuthConfig>>().Value;
-            var databaseConfig = serviceProvider.GetService< IOptions<DatabaseConfig>>().Value;
+            var authConfig = serviceProvider.GetService<IOptions<AuthConfig>>().Value;
+            var databaseConfig = serviceProvider.GetService<IOptions<DatabaseConfig>>().Value;
 
             // Register AppConfig in Services 
             services
@@ -115,7 +115,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             if (env.IsDevelopment())
                 loggerFactory.AddDebug();
 
-            app.UseCors(builder => 
+            app.UseCors(builder =>
             {
                 // This will allow any request from any server. Tweak to fit your needs!
                 builder.AllowAnyHeader()

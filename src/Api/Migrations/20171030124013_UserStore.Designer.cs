@@ -11,9 +11,10 @@ using System;
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171030124013_UserStore")]
+    partial class UserStore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

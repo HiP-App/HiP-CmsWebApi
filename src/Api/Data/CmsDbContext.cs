@@ -1,6 +1,12 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Options;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable ObjectCreationAsStatement
 
@@ -60,6 +66,30 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
             AnnotationTagRelationRule.ConfigureModel(modelBuilder.Entity<AnnotationTagRelationRule>());
             Models.Entity.StudentDetails.ConfigureModel(modelBuilder.Entity<StudentDetails>());
             TopicReview.ConfigureModel(modelBuilder.Entity<TopicReview>());
+        }
+    }
+
+    /// <summary>
+    /// A helper class needed to auto-generate database migrations.
+    /// </summary>
+    public class DesignTimeCmsDbContextFactory : IDesignTimeDbContextFactory<CmsDbContext>
+    {
+        public CmsDbContext CreateDbContext(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+               .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
+               .AddEnvironmentVariables()
+               .Build();
+
+            var databaseConfig = configuration.GetSection("Database").Get<DatabaseConfig>();
+
+            var options = new DbContextOptionsBuilder<CmsDbContext>()
+                .UseNpgsql(databaseConfig.ConnectionString)
+                .Options;
+
+            return new CmsDbContext(options);
         }
     }
 }

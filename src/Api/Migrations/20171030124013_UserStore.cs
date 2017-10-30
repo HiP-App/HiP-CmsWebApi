@@ -1,0 +1,348 @@
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
+{
+    public partial class UserStore : Migration
+    {
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Documents_Users_UpdaterId",
+                table: "Documents");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Notifications_Users_UpdaterId",
+                table: "Notifications");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Notifications_Users_UserId",
+                table: "Notifications");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_StudentDetails_Users_UserId",
+                table: "StudentDetails");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Subscriptions_Users_SubscriberId",
+                table: "Subscriptions");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_TopicAttachments_Users_UserId",
+                table: "TopicAttachments");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_TopicReviews_Users_ReviewerId",
+                table: "TopicReviews");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Topics_Users_CreatedById",
+                table: "Topics");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_TopicUsers_Users_UserId",
+                table: "TopicUsers");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropIndex(
+                name: "IX_TopicUsers_UserId",
+                table: "TopicUsers");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Topics_CreatedById",
+                table: "Topics");
+
+            migrationBuilder.DropIndex(
+                name: "IX_TopicReviews_ReviewerId",
+                table: "TopicReviews");
+
+            migrationBuilder.DropIndex(
+                name: "IX_TopicAttachments_UserId",
+                table: "TopicAttachments");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Subscriptions_SubscriberId",
+                table: "Subscriptions");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Notifications_UpdaterId",
+                table: "Notifications");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Documents_UpdaterId",
+                table: "Documents");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UserId",
+                table: "TopicUsers",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "CreatedById",
+                table: "Topics",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "ReviewerId",
+                table: "TopicReviews",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UserId",
+                table: "TopicAttachments",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "SubscriberId",
+                table: "Subscriptions",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UserId",
+                table: "StudentDetails",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UserId",
+                table: "Notifications",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UpdaterId",
+                table: "Notifications",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<string>(
+                name: "UpdaterId",
+                table: "Documents",
+                type: "text",
+                nullable: false,
+                oldClrType: typeof(int));
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.AlterColumn<int>(
+                name: "UserId",
+                table: "TopicUsers",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "CreatedById",
+                table: "Topics",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "ReviewerId",
+                table: "TopicReviews",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "UserId",
+                table: "TopicAttachments",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text",
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "SubscriberId",
+                table: "Subscriptions",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "UserId",
+                table: "StudentDetails",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "UserId",
+                table: "Notifications",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "UpdaterId",
+                table: "Notifications",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "UpdaterId",
+                table: "Documents",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "text");
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Email = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    ProfilePicture = table.Column<string>(nullable: true),
+                    Role = table.Column<string>(nullable: false),
+                    UId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopicUsers_UserId",
+                table: "TopicUsers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Topics_CreatedById",
+                table: "Topics",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopicReviews_ReviewerId",
+                table: "TopicReviews",
+                column: "ReviewerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopicAttachments_UserId",
+                table: "TopicAttachments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_SubscriberId",
+                table: "Subscriptions",
+                column: "SubscriberId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UpdaterId",
+                table: "Notifications",
+                column: "UpdaterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Documents_UpdaterId",
+                table: "Documents",
+                column: "UpdaterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Documents_Users_UpdaterId",
+                table: "Documents",
+                column: "UpdaterId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_Users_UpdaterId",
+                table: "Notifications",
+                column: "UpdaterId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_Users_UserId",
+                table: "Notifications",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_StudentDetails_Users_UserId",
+                table: "StudentDetails",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Subscriptions_Users_SubscriberId",
+                table: "Subscriptions",
+                column: "SubscriberId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TopicAttachments_Users_UserId",
+                table: "TopicAttachments",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TopicReviews_Users_ReviewerId",
+                table: "TopicReviews",
+                column: "ReviewerId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.SetNull);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Topics_Users_CreatedById",
+                table: "Topics",
+                column: "CreatedById",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_TopicUsers_Users_UserId",
+                table: "TopicUsers",
+                column: "UserId",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+        }
+    }
+}
