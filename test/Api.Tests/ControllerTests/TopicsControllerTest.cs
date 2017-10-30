@@ -8,6 +8,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.UserStore;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {

@@ -2,6 +2,7 @@
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

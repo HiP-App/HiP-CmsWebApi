@@ -8,6 +8,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Linq;
+using PaderbornUniversity.SILab.Hip.UserStore;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {

@@ -1,7 +1,6 @@
 ﻿using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using Xunit;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests

@@ -1,31 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.User
 {
-    public class UserResult
-    {
-        /// <summary>
-        /// The user ID (not the internally used integer-ID).
-        /// </summary>
-        public string Id { get; set; }
-
-        public string Email { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string FullName => (FirstName == null && LastName == null) ? null : FirstName + ' ' + LastName;
-
-        public IReadOnlyCollection<string> Roles { get; set; }
-
-        /// <summary>
-        /// URL from which the profile picture or a thumbnail of it can be obtained.
-        /// </summary>
-        public string ProfilePicture { get; set; }
-    }
-
     [Obsolete("Use UserResult instead", error: false)]
     public class UserResultLegacy
     {

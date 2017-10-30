@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using Refit;
-using System;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
@@ -16,24 +12,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         // TODO: make configurable
         private const string UserStoreUrl = "http://localhost:5000";
 
-        private readonly IUserStore UserStore;
+        private readonly UsersClient UsersClient;
 
         public UserManager(IHttpContextAccessor context)
         {
-            UserStore = RestService.For<IUserStore>(new HttpClient
+            UsersClient = new UsersClient(UserStoreUrl)
             {
-                BaseAddress = new Uri(UserStoreUrl),
-                DefaultRequestHeaders =
-                {
-                    // Requests to UserStore uses the same access token as the incoming CmsWebApi request
-                    { "Authorization", context.HttpContext.Request.Headers["Authorization"].ToString() }
-                }
-            });
+                Authorization = context.HttpContext.Request.Headers["Authorization"].ToString()
+            };
         }
 
         public async Task<IReadOnlyCollection<UserResult>> GetAllUsersAsync()
         {
-            return await UserStore.GetAllUsersAsync();
+            return await UsersClient.GetAllAsync();
         }
 
         public async Task<PagedResult<UserResult>> GetAllUsersAsync(string query, string role, int page, int pageSize)
@@ -50,12 +41,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public async Task<UserResult> GetUserByIdAsync(string userId)
         {
-            return await UserStore.GetUserAsync(userId);
+            return await UsersClient.GetByIdAsync(userId);
         }
 
         public async Task<UserResult> GetUserByEmailAsync(string email)
         {
-            return await UserStore.GetUserByEmailAsync(email);
+            return await UsersClient.GetByIdAsync(email);
         }
         
         public static string[] GetDisciplines()

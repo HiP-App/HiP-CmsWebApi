@@ -2,8 +2,8 @@
 {
     public class AppConfig
     {
-        public string EmailService { get; }
+        public string EmailService { get; set; }
 
-        public string AdminEmail { get; }
+        public string AdminEmail { get; set; }
     }
 }

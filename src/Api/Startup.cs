@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
@@ -52,9 +53,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                 .Configure<AuthConfig>(Configuration.GetSection("Auth"));
 
             var serviceProvider = services.BuildServiceProvider();
-            var appConfig = serviceProvider.GetService<AppConfig>();
-            var authConfig = serviceProvider.GetService<AuthConfig>();
-            var databaseConfig = serviceProvider.GetService<DatabaseConfig>();
+            var appConfig = serviceProvider.GetService<IOptions<AppConfig>>().Value;
+            var authConfig = serviceProvider.GetService< IOptions<AuthConfig>>().Value;
+            var databaseConfig = serviceProvider.GetService< IOptions<DatabaseConfig>>().Value;
 
             // Register AppConfig in Services 
             services
@@ -108,7 +109,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, Utility.AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             if (env.IsDevelopment())
