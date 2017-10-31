@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System.Linq;
 using PaderbornUniversity.SILab.Hip.UserStore;
 

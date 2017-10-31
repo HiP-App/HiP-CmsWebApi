@@ -12,11 +12,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         // TODO: make configurable
         private const string UserStoreUrl = "http://localhost:5000";
 
-        private readonly UsersClient UsersClient;
+        private readonly UsersClient _usersClient;
 
         public UserManager(IHttpContextAccessor context)
         {
-            UsersClient = new UsersClient(UserStoreUrl)
+            _usersClient = new UsersClient(UserStoreUrl)
             {
                 Authorization = context.HttpContext.Request.Headers["Authorization"].ToString()
             };
@@ -24,7 +24,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public async Task<IReadOnlyCollection<UserResult>> GetAllUsersAsync()
         {
-            return await UsersClient.GetAllAsync();
+            return await _usersClient.GetAllAsync();
         }
 
         public async Task<PagedResult<UserResult>> GetAllUsersAsync(string query, string role, int page, int pageSize)
@@ -41,12 +41,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public async Task<UserResult> GetUserByIdAsync(string userId)
         {
-            return await UsersClient.GetByIdAsync(userId);
+            return await _usersClient.GetByIdAsync(userId);
         }
 
         public async Task<UserResult> GetUserByEmailAsync(string email)
         {
-            return await UsersClient.GetByIdAsync(email);
+            return await _usersClient.GetByIdAsync(email);
         }
         
         public static string[] GetDisciplines()

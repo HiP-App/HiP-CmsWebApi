@@ -1,22 +1,17 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationManager : BaseManager
     {
-        private readonly UserManager _userManager;
-
-        public NotificationManager(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
+        public NotificationManager(CmsDbContext dbContext) : base(dbContext)
         {
-            _userManager = userManager;
         }
 
         public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userId, bool onlyUnread)

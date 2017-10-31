@@ -1,5 +1,4 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using System;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic

@@ -1,14 +1,13 @@
-﻿using Xunit;
+﻿using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
-using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
-using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using System.Linq;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.UserStore;
+using System;
+using System.Linq;
+using Xunit;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {

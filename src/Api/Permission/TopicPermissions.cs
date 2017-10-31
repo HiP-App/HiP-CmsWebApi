@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using System;

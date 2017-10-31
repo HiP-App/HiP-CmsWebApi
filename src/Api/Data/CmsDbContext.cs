@@ -2,9 +2,7 @@
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Options;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 // ReSharper disable UnusedAutoPropertyAccessor.Global

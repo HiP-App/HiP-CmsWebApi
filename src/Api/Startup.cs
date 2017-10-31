@@ -53,7 +53,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
                 .Configure<AuthConfig>(Configuration.GetSection("Auth"));
 
             var serviceProvider = services.BuildServiceProvider();
-            var appConfig = serviceProvider.GetService<IOptions<AppConfig>>().Value;
             var authConfig = serviceProvider.GetService<IOptions<AuthConfig>>().Value;
             var databaseConfig = serviceProvider.GetService<IOptions<DatabaseConfig>>().Value;
 
