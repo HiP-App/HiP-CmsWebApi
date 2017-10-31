@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\Api\Api.csproj",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Tests", "test\Api.Tests\Api.Tests.csproj", "{7674076F-C385-4528-847D-F802C6D4F43E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiP-UserStore.Sdk", "..\HiP-UserStore\HiP-UserStore.Sdk\HiP-UserStore.Sdk.csproj", "{91706BB1-9FB6-4CE6-B24C-93DB85E3EB3E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{7674076F-C385-4528-847D-F802C6D4F43E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7674076F-C385-4528-847D-F802C6D4F43E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7674076F-C385-4528-847D-F802C6D4F43E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91706BB1-9FB6-4CE6-B24C-93DB85E3EB3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91706BB1-9FB6-4CE6-B24C-93DB85E3EB3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91706BB1-9FB6-4CE6-B24C-93DB85E3EB3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91706BB1-9FB6-4CE6-B24C-93DB85E3EB3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,7 +34,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{6931CA43-19CC-4DD4-8A58-2E951680EE61} = {34D82A28-5BE4-41C7-AE05-91C8B206E0CF}
 		{7674076F-C385-4528-847D-F802C6D4F43E} = {9473AA7F-9674-4647-A8FD-7BF823E4EBF8}
-		{91706BB1-9FB6-4CE6-B24C-93DB85E3EB3E} = {34D82A28-5BE4-41C7-AE05-91C8B206E0CF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BCF6752D-0921-4891-B27C-7A6509B7C065}
