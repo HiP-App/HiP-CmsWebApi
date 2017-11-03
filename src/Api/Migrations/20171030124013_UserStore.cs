@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System.Linq;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     public partial class UserStore : Migration
     {
+        public const string AdminUserId = "auth0|5968ed8cdd1b3733ca94865d"; // Account "admin@hipapp.de"
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -140,6 +143,56 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                 type: "text",
                 nullable: false,
                 oldClrType: typeof(int));
+
+            // Custom migration logic:
+            //
+            // - Columns holding user IDs are now of type text, but still contain the old integer user ID
+            //   referring to the (no longer available) 'User'-table. We now "correct" this by assigning the
+            //   pre-configured admin user ID.
+            //
+            // - In cases where the user ID is part of the primary key, we may now have created duplicates,
+            //   which need to be eliminated (otherwise primary key constraint is violated and changes can't be saved)
+            //
+            AssignAdminUserIdAndRemoveDuplicates("TopicUsers", "UserId", new[] { "TopicId", "UserId", "Role" });
+            AssignAdminUserId("Topics", "CreatedById");
+            AssignAdminUserIdAndRemoveDuplicates("TopicReviews", "ReviewerId", new[] { "TopicId", "ReviewerId" });
+            AssignAdminUserId("TopicAttachments", "UserId");
+            AssignAdminUserId("Subscriptions", "SubscriberId");
+            AssignAdminUserIdAndRemoveDuplicates("StudentDetails", "UserId", new[] { "UserId" });
+            AssignAdminUserId("Notifications", "UserId");
+            AssignAdminUserId("Notifications", "UpdaterId");
+            AssignAdminUserId("Documents", "UpdaterId");
+
+            void AssignAdminUserIdAndRemoveDuplicates(string table, string userIdColumn, string[] primaryKeyColumns)
+            {
+                // temporarily remove primary key uniquencess constraint
+                migrationBuilder.DropUniqueConstraint(
+                    name: "PK_" + table,
+                    table: table);
+
+                // replace invalid user IDs with admin user ID (possibly introducing duplicates)
+                AssignAdminUserId(table, userIdColumn);
+
+                // remove the duplicates
+                RemoveDuplicates(table, primaryKeyColumns);
+
+                // restore the uniqueness constraint
+                migrationBuilder.AddUniqueConstraint(
+                    name: "PK_" + table,
+                    table: table,
+                    columns: primaryKeyColumns);
+            }
+
+            void AssignAdminUserId(string table, string column)
+            {
+                migrationBuilder.Sql($"UPDATE \"{table}\" SET \"{column}\" = '{AdminUserId}'");
+            }
+
+            void RemoveDuplicates(string table, params string[] primaryKeyColumns)
+            {
+                var keyString = string.Join(", ", primaryKeyColumns.Select(c => $"\"{c}\""));
+                migrationBuilder.Sql($"DELETE FROM \"{table}\" WHERE CTID NOT IN (SELECT MIN(CTID) FROM \"{table}\" GROUP BY {keyString})");
+            }
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
