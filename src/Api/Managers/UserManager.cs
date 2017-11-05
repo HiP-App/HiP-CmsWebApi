@@ -48,21 +48,5 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             return await _usersClient.GetByIdAsync(email);
         }
-        
-        public static string[] GetDisciplines()
-        {
-            // TODO: This should be stored in the DB once we have the full list.
-            return new[]
-                {
-                    "History",
-                    "Computer Science",
-                    "Medieval Studies",
-                    "History and Arts",
-                    "Arts",
-                    "Linguistics"
-                }
-                .OrderBy(s => s)
-                .ToArray();
-        }
     }
 }

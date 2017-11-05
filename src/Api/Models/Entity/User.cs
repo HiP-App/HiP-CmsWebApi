@@ -42,8 +42,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 
         public List<Subscription> Subscriptions { get; set; }
 
-        public virtual StudentDetails StudentDetails { get; set; }
-
         public List<TopicReview> Reviews { get; set; }
 
         [NotMapped]

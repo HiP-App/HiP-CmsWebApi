@@ -43,8 +43,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
 
         public DbSet<AnnotationTagRelationRule> TagRelationRules { get; set; }
 
-        public DbSet<StudentDetails> StudentDetails { get; set; }
-
         public DbSet<TopicReview> TopicReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,7 +60,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
             Models.Entity.TopicAttachmentMetadata.ConfigureModel(modelBuilder.Entity<TopicAttachmentMetadata>());
             LayerRelationRule.ConfigureModel(modelBuilder.Entity<LayerRelationRule>());
             AnnotationTagRelationRule.ConfigureModel(modelBuilder.Entity<AnnotationTagRelationRule>());
-            Models.Entity.StudentDetails.ConfigureModel(modelBuilder.Entity<StudentDetails>());
             TopicReview.ConfigureModel(modelBuilder.Entity<TopicReview>());
         }
     }
