@@ -77,7 +77,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutLayerRelationRule([FromBody] RelationFormModel original, [FromQuery] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToCreateRelationRules(User.Identity.GetUserIdentity()))
                 return Forbid();

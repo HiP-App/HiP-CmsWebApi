@@ -242,3 +242,7 @@ web.config
 appsettings.Development.json
 test/Api.Tests/appsettings.json
 test/Api.Tests/testconfig.json
+
+#Generated files from NSwag
+src/Api.Sdk/swagger.json
+src/Api.Sdk/*.g.cs

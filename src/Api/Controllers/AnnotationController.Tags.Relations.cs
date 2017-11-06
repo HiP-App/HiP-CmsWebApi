@@ -178,7 +178,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagInstanceRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutTagInstanceRelation([FromBody] RelationFormModel original, [FromQuery] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
@@ -209,7 +209,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutTagRelationRule([FromBody] RelationFormModel original, [FromQuery] RelationFormModel changed)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
