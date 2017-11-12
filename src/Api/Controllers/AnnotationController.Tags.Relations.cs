@@ -169,8 +169,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// Source and target tags of the relations may *not* be changed for now.
         /// NOT IMPLEMENTED YET.
         /// </summary>
-        /// <param name="original">The model describing the original relation</param>
-        /// <param name="changed">The model describing the changed relation</param>
+        /// <param name="update">The model describing the changes of the relation</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="404">Request was misformed</response>
@@ -178,14 +177,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagInstanceRelation([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutTagInstanceRelation([FromBody] RelationUpdateModel update)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
             {
-                if (_tagManager.ChangeTagRelation(original, changed))
+                if (_tagManager.ChangeTagRelation(update))
                     return Ok();
                 return NotFound();
             }
@@ -200,8 +199,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// The new relation rule must be given in the body of the call.
         /// Source and target tags of the relations may *not* be changed for now.
         /// </summary>
-        /// <param name="original">The model describing the original relation rule</param>
-        /// <param name="changed">The model describing the changed relation rule</param>
+        /// <param name="update">The model describing the changes of the relation rule</param>
         /// <response code="200">Relation rule modified</response>
         /// <response code="403">User not allowed to modify a relation rule</response>
         /// <response code="404">Request was misformed</response>
@@ -209,14 +207,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagRelationRule([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutTagRelationRule([FromBody] RelationUpdateModel update)
         {
             if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
                 return Forbid();
 
             try
             {
-                if (_tagManager.ChangeTagRelationRule(original, changed))
+                if (_tagManager.ChangeTagRelationRule(update))
                     return Ok();
                 return NotFound();
             }
