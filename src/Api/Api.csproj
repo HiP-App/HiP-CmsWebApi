@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
+    <RootNamespace>PaderbornUniversity.SILab.Hip.CmsApi</RootNamespace>
+    <VersionPrefix>0.0.1</VersionPrefix>
     <NoWarn>$(NoWarn);1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>PaderbornUniversity.SILab.Hip.CmsApi</RootNamespace>
@@ -37,12 +40,17 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
     <PackageReference Include="AutoRest" Version="0.17.3" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
+    <PackageReference Include="NSwag.MSBuild" Version="11.11.0" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="1.0.0" />
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
   </ItemGroup>
+
+  <Target Name="NSwag" AfterTargets="Build" Condition="'$(OS)'=='Windows_NT'">
+    <Exec Command="$(NSwagExe_Core20) webapi2swagger /assembly:$(TargetPath) /output:../$(ProjectName).Sdk/swagger.json" />
+    <Exec Command="$(NSwagExe_Core20) swagger2csclient /input:../$(ProjectName).Sdk/swagger.json /output:../$(ProjectName).Sdk/NSwag.g.cs /namespace:$(RootNamespace) /clientBaseClass:NSwagClientBase /useHttpClientCreationMethod:true /generateOptionalParameters:true" />
+  </Target>
 
 </Project>

@@ -240,49 +240,49 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         }
 
 
-        internal bool ChangeLayerRelationRule(RelationFormModel original, RelationFormModel changed)
+        internal bool ChangeLayerRelationRule(LayerRelationRuleUpdateModel update)
         {
-            if (!(DbContext.Layers.Any(l => l.Id == original.SourceId) &&
-                    DbContext.Layers.Any(l => l.Id == original.TargetId)))
+            if (!(DbContext.Layers.Any(l => l.Id == update.SourceId) &&
+                    DbContext.Layers.Any(l => l.Id == update.TargetId)))
                 return false;
 
             var rule = DbContext.LayerRelationRules.Single(
-                r => r.SourceLayerId == original.SourceId &&
-                r.TargetLayerId == original.TargetId &&
-                r.Title == original.Title);
-            rule.Title = changed.Title;
-            rule.Description = changed.Description;
-            rule.ArrowStyle = changed.ArrowStyle;
-            rule.Color = changed.Color;
+                r => r.SourceLayerId == update.SourceId &&
+                r.TargetLayerId == update.TargetId &&
+                r.Title == update.OriginalTitle);
+            rule.Title = update.Title;
+            rule.Description = update.Description;
+            rule.ArrowStyle = update.ArrowStyle;
+            rule.Color = update.Color;
             DbContext.SaveChanges();
             return true;
         }
-        public bool ChangeTagRelationRule(RelationFormModel original, RelationFormModel changed)
+        public bool ChangeTagRelationRule(RelationUpdateModel update)
         {
-            if (!(DbContext.AnnotationTags.Any(l => l.Id == original.SourceId) &&
-                    DbContext.AnnotationTags.Any(l => l.Id == original.TargetId)))
+            if (!(DbContext.AnnotationTags.Any(l => l.Id == update.SourceId) &&
+                    DbContext.AnnotationTags.Any(l => l.Id == update.TargetId)))
                 return false;
 
-            var rule = DbContext.TagRelationRules.Single(EqualsTagRelationRule(original));
-            rule.Title = changed.Title;
-            rule.Description = changed.Description;
-            rule.ArrowStyle = changed.ArrowStyle;
-            rule.Color = changed.Color;
+            var rule = DbContext.TagRelationRules.Single(EqualsTagRelationRule(update));
+            rule.Title = update.NewTitle;
+            rule.Description = update.Description;
+            rule.ArrowStyle = update.ArrowStyle;
+            rule.Color = update.Color;
             DbContext.SaveChanges();
             return true;
         }
 
-        public bool ChangeTagRelation(RelationFormModel original, RelationFormModel changed)
+        public bool ChangeTagRelation(RelationUpdateModel update)
         {
-            if (!(DbContext.AnnotationTagInstances.Any(l => l.Id == original.SourceId) &&
-                    DbContext.AnnotationTagInstances.Any(l => l.Id == original.TargetId)))
+            if (!(DbContext.AnnotationTagInstances.Any(l => l.Id == update.SourceId) &&
+                    DbContext.AnnotationTagInstances.Any(l => l.Id == update.TargetId)))
                 return false;
 
             var rule = DbContext.AnnotationTagRelations.Single(rel => true);
-            if (changed.Title != null) rule.Title = changed.Title;
-            if (changed.Description != null) rule.Description = changed.Description;
-            if (changed.ArrowStyle != null) rule.ArrowStyle = changed.ArrowStyle;
-            if (changed.Color != null) rule.Color = changed.Color;
+            if (update.NewTitle != null) rule.Title = update.NewTitle;
+            if (update.Description != null) rule.Description = update.Description;
+            if (update.ArrowStyle != null) rule.ArrowStyle = update.ArrowStyle;
+            if (update.Color != null) rule.Color = update.Color;
             DbContext.SaveChanges();
             return true;
         }
@@ -374,6 +374,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         #endregion
 
         private static Expression<Func<AnnotationTagRelationRule, bool>> EqualsTagRelationRule(RelationFormModel original)
+        {
+            return r => r.SourceTagId == original.SourceId &&
+                        r.TargetTagId == original.TargetId &&
+                        r.Title == original.Title;
+        }
+
+        private static Expression<Func<AnnotationTagRelationRule, bool>> EqualsTagRelationRule(RelationUpdateModel original)
         {
             return r => r.SourceTagId == original.SourceId &&
                         r.TargetTagId == original.TargetId &&

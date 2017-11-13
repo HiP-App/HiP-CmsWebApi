@@ -523,24 +523,26 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             var expectedColor = "oldColor";
             _tester.Relation12.Color = expectedColor;
             var original = RelationFormModelFromRelation(_tester.Relation12);
-            var expected = new RelationFormModel()
+            var updated = new RelationUpdateModel()
             {
                 SourceId = _tester.Relation12.SourceTag.Id,
                 TargetId = _tester.Relation12.TargetTag.Id,
-                Title = "changedName"
+                Title = original.Title,
+                NewTitle = "changed"
+
             };
             _tester.TestController()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AnnotationTagInstance>(db => db.AddRange(_tester.TagInstance1, _tester.TagInstance2))
                     .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_tester.Relation12))
                 )
-                .Calling(c => c.PutTagInstanceRelationAsync(original, expected))
+                .Calling(c => c.PutTagInstanceRelation(updated))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     relations.Any(actual =>
-                        actual.SourceTagId == expected.SourceId &&
-                        actual.TargetTagId == expected.TargetId &&
-                        actual.Title == expected.Title &&
+                        actual.SourceTagId == updated.SourceId &&
+                        actual.TargetTagId == updated.TargetId &&
+                        actual.Title == updated.Title &&
                         actual.Color == expectedColor // color should not change as it was not set in the model
                     )
                 ))
@@ -555,9 +557,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutTagRelationTest404()
         {
-            var model = RelationFormModelFromRelation(_tester.Relation12);
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTagInstanceRelationAsync(model, model))
+                .Calling(c => c.PutTagInstanceRelation(new RelationUpdateModel()))
                 .ShouldReturn()
 		       	.NotFound();
         }
@@ -569,8 +570,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTagRelationTest403()
         {
             var model = RelationFormModelFromRelation(_tester.Relation12);
-            _tester.TestController(_tester.Student.Id) // --> log in as student
-                .Calling(c => c.PutTagInstanceRelationAsync(model, model))
+            var update = new RelationUpdateModel()
+            {
+                SourceId = _tester.Relation12.SourceTag.Id,
+                TargetId = _tester.Relation12.TargetTag.Id,
+                Title = model.Title,
+                NewTitle = "changed"
+            };
+            _tester.TestController(_tester.Student.UId) // --> log in as student
+                .Calling(c => c.PutTagInstanceRelation(update))
                 .ShouldReturn()
                 .Forbid();
         }
@@ -586,20 +594,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTagRelationRuleTest()
         {
             var original = RelationFormModelFromRelationRule(_tester.RelationRule12);
-            var expected = new RelationFormModel()
+            var update = new RelationUpdateModel()
             {
                 SourceId = _tester.RelationRule12.SourceTagId,
                 TargetId = _tester.RelationRule12.TargetTagId,
-                Title = "relationName",
+                Title = original.Title,
                 Description = "my relation",
                 Color = "schwarzgelb",
                 ArrowStyle = "dotted"
             };
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTagRelationRuleAsync(original, expected))
+                .Calling(c => c.PutTagRelationRule(update))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
-                    relations.Any(actual => TagRulesEqual(actual, expected))
+                    relations.Any(actual => TagRulesEqual(actual, update))
                 ))
                 .AndAlso()
                 .ShouldReturn()
@@ -709,6 +717,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         }
 
         private static bool TagRulesEqual(AnnotationTagRelationRule actual, RelationFormModel expected)
+        {
+            return actual.SourceTagId == expected.SourceId &&
+                   actual.TargetTagId == expected.TargetId &&
+                   actual.Title == expected.Title &&
+                   actual.Description == expected.Description &&
+                   actual.Color == expected.Color &&
+                   actual.ArrowStyle == expected.ArrowStyle;
+        }
+
+        private static bool TagRulesEqual(AnnotationTagRelationRule actual, RelationUpdateModel expected)
         {
             return actual.SourceTagId == expected.SourceId &&
                    actual.TargetTagId == expected.TargetId &&

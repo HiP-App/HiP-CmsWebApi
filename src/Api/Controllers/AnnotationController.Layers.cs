@@ -69,8 +69,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// The new relation must be given in the body of the call.
         /// Source and target layers of the relations may *not* be changed for now.
         /// </summary>
-        /// <param name="original">The layer relation rule that you want to modify</param>
-        /// <param name="changed">The changed layer relation rule</param>
+        /// <param name="update">The update model of the layer relation rule</param>
         /// <response code="200">Relation modified</response>
         /// <response code="403">User not allowed to modify a relation</response>
         /// <response code="400">Request was misformed</response>
@@ -78,14 +77,14 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public async Task<IActionResult> PutLayerRelationRuleAsync([FromBody] RelationFormModel original, [FromBody] RelationFormModel changed)
+        public IActionResult PutLayerRelationRule([FromBody] LayerRelationRuleUpdateModel update)
         {
             if (!(await _annotationPermissions.IsAllowedToCreateRelationRulesAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
             {
-                if (_tagManager.ChangeLayerRelationRule(original, changed))
+                if (_tagManager.ChangeLayerRelationRule(update))
                     return Ok();
                 return NotFound();
             }
