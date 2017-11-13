@@ -536,7 +536,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                     .WithSet<AnnotationTagInstance>(db => db.AddRange(_tester.TagInstance1, _tester.TagInstance2))
                     .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_tester.Relation12))
                 )
-                .Calling(c => c.PutTagInstanceRelation(updated))
+                .Calling(c => c.PutTagInstanceRelationAsync(updated))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     relations.Any(actual =>
@@ -558,7 +558,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTagRelationTest404()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTagInstanceRelation(new RelationUpdateModel()))
+                .Calling(c => c.PutTagInstanceRelationAsync(new RelationUpdateModel()))
                 .ShouldReturn()
 		       	.NotFound();
         }
@@ -577,8 +577,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Title = model.Title,
                 NewTitle = "changed"
             };
-            _tester.TestController(_tester.Student.UId) // --> log in as student
-                .Calling(c => c.PutTagInstanceRelation(update))
+            _tester.TestController(_tester.Student.Id) // --> log in as student
+                .Calling(c => c.PutTagInstanceRelationAsync(update))
                 .ShouldReturn()
                 .Forbid();
         }
@@ -604,7 +604,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 ArrowStyle = "dotted"
             };
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTagRelationRule(update))
+                .Calling(c => c.PutTagRelationRuleAsync(update))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
                     relations.Any(actual => TagRulesEqual(actual, update))

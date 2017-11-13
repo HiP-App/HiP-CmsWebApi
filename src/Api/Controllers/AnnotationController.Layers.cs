@@ -77,7 +77,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 400)]
-        public IActionResult PutLayerRelationRule([FromBody] LayerRelationRuleUpdateModel update)
+        public async Task<IActionResult> PutLayerRelationRuleAsync([FromBody] LayerRelationRuleUpdateModel update)
         {
             if (!(await _annotationPermissions.IsAllowedToCreateRelationRulesAsync(User.Identity.GetUserIdentity())))
                 return Forbid();

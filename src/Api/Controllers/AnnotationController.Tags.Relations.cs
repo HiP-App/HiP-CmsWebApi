@@ -178,7 +178,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagInstanceRelation([FromBody] RelationUpdateModel update)
+        public async Task<IActionResult> PutTagInstanceRelationAsync([FromBody] RelationUpdateModel update)
         {
             if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
@@ -208,7 +208,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagRelationRule([FromBody] RelationUpdateModel update)
+        public async Task<IActionResult> PutTagRelationRuleAsync([FromBody] RelationUpdateModel update)
         {
             if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
