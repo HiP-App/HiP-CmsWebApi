@@ -3,7 +3,7 @@
         "Name": "hipCmsDb",
         "Host": "localhost",
         "Username": "postgres",
-        "Passwort": "postgres",
+        "Password": "postgres",
         "Port": "5632"
     },
     "Auth": {
