@@ -30,7 +30,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return result;
         }
 
-        public bool ChangeReviewStatusAsync(string userId, int topicId, TopicReviewStatus status)
+        public bool ChangeReviewStatus(string userId, int topicId, TopicReviewStatus status)
         {
             try
             {

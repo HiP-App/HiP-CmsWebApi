@@ -136,9 +136,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             var result = await _attachmentsManager.PutAttachmentAsync(attachmentId, User.Identity.GetUserIdentity(), file);
 
-            return result.Success
-                ? Ok(result) as IActionResult
-                : NotFound(result);
+            if (result.Success)
+                return Ok(result);
+            return NotFound(result);
         }
 
         // DELETE api/topics/:id/attachments
