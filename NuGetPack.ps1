@@ -6,5 +6,5 @@ Switch ("$env:Build_SourceBranchName")
     default { exit }
 }
 $nupkg = (ls src\*.Sdk\*.nupkg).FullName
-dotnet --% nuget push "$nupkg" -k %MyGetKey% -s %NuGetFeed%
+dotnet nuget push "$nupkg" -k "$env:MyGetKey" -s "$env:NuGetFeed"
 $LASTEXITCODE = 0
