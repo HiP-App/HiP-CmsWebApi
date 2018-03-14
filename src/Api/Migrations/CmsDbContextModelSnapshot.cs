@@ -16,7 +16,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "1.1.1");
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTag", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -47,7 +47,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("AnnotationTags");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagInstance", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("AnnotationTagInstances");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstanceRelation", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagInstanceRelation", b =>
                 {
                     b.Property<int>("SourceTagId");
 
@@ -96,7 +96,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("AnnotationTagRelations");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelationRule", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagRelationRule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -122,7 +122,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("TagRelationRules");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.Layer", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.Layer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -134,7 +134,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("Layers");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.LayerRelationRule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -160,7 +160,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("LayerRelationRules");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.AssociatedTopic", b =>
                 {
                     b.Property<int>("ParentTopicId");
 
@@ -173,7 +173,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("AssociatedTopics");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Document", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Document", b =>
                 {
                     b.Property<int>("TopicId");
 
@@ -193,7 +193,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("Documents");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Notification", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
                         .ValueGeneratedOnAdd();
@@ -227,7 +227,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.StudentDetails", b =>
                 {
                     b.Property<int>("UserId");
 
@@ -242,7 +242,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("StudentDetails");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Subscription", b =>
                 {
                     b.Property<int>("SubscriptionId")
                         .ValueGeneratedOnAdd();
@@ -258,7 +258,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Topic", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -292,7 +292,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("Topics");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicAttachment", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicAttachment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -321,7 +321,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("TopicAttachments");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicAttachmentMetadata", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicAttachmentMetadata", b =>
                 {
                     b.Property<int>("TopicAttachmentId");
 
@@ -374,7 +374,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("TopicAttachmentMetadata");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicReview", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicReview", b =>
                 {
                     b.Property<int>("TopicId");
 
@@ -393,7 +393,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("TopicReviews");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicUser", b =>
                 {
                     b.Property<int>("TopicId");
 
@@ -408,7 +408,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("TopicUsers");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.User", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -425,6 +425,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.Property<string>("Role")
                         .IsRequired();
 
+                    b.Property<string>("UId")
+                        .IsRequired();
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -433,176 +436,176 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTag", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTag", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "ParentTag")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTag", "ParentTag")
                         .WithMany("ChildTags")
                         .HasForeignKey("ParentTagId")
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstance", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagInstance", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Document", "Document")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Document", "Document")
                         .WithMany("TagsInstances")
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TagModel")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTag", "TagModel")
                         .WithMany("TagInstances")
                         .HasForeignKey("TagModelId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagInstanceRelation", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagInstanceRelation", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTagInstance", "SourceTag")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagInstance", "SourceTag")
                         .WithMany("TagRelations")
                         .HasForeignKey("SourceTagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTagInstance", "TargetTag")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagInstance", "TargetTag")
                         .WithMany("IncomingRelations")
                         .HasForeignKey("TargetTagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.AnnotationTagRelationRule", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTagRelationRule", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "SourceTag")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTag", "SourceTag")
                         .WithMany("TagRelationRules")
                         .HasForeignKey("SourceTagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.Annotation.AnnotationTag", "TargetTag")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.AnnotationTag", "TargetTag")
                         .WithMany("IncomingTagRelationRules")
                         .HasForeignKey("TargetTagId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Annotation.LayerRelationRule", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.LayerRelationRule", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Annotation.Layer", "SourceLayer")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.Layer", "SourceLayer")
                         .WithMany("Relations")
                         .HasForeignKey("SourceLayerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.Annotation.Layer", "TargetLayer")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation.Layer", "TargetLayer")
                         .WithMany("IncomingRelations")
                         .HasForeignKey("TargetLayerId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.AssociatedTopic", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.AssociatedTopic", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Topic", "ChildTopic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "ChildTopic")
                         .WithMany("ParentTopics")
                         .HasForeignKey("ChildTopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.Topic", "ParentTopic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "ParentTopic")
                         .WithMany("AssociatedTopics")
                         .HasForeignKey("ParentTopicId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Document", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Document", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "Topic")
                         .WithOne("Document")
-                        .HasForeignKey("Api.Models.Entity.Document", "TopicId")
+                        .HasForeignKey("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Document", "TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.User", "Updater")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "Updater")
                         .WithMany("Documents")
                         .HasForeignKey("UpdaterId")
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Notification", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Notification", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "Topic")
                         .WithMany()
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.User", "Updater")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "Updater")
                         .WithMany("ProducedNotifications")
                         .HasForeignKey("UpdaterId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Api.Models.Entity.User", "User")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.StudentDetails", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.StudentDetails", b =>
                 {
-                    b.HasOne("Api.Models.Entity.User", "User")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "User")
                         .WithOne("StudentDetails")
-                        .HasForeignKey("Api.Models.Entity.StudentDetails", "UserId")
+                        .HasForeignKey("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.StudentDetails", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Subscription", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Subscription", b =>
                 {
-                    b.HasOne("Api.Models.Entity.User", "Subscriber")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "Subscriber")
                         .WithMany("Subscriptions")
                         .HasForeignKey("SubscriberId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.Topic", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", b =>
                 {
-                    b.HasOne("Api.Models.Entity.User", "CreatedBy")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicAttachment", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicAttachment", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "Topic")
                         .WithMany("Attachments")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.User", "User")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "User")
                         .WithMany("Attachments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicAttachmentMetadata", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicAttachmentMetadata", b =>
                 {
-                    b.HasOne("Api.Models.Entity.TopicAttachment", "TopicAttachment")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicAttachment", "TopicAttachment")
                         .WithOne("Metadata")
-                        .HasForeignKey("Api.Models.Entity.TopicAttachmentMetadata", "TopicAttachmentId")
+                        .HasForeignKey("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicAttachmentMetadata", "TopicAttachmentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicReview", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicReview", b =>
                 {
-                    b.HasOne("Api.Models.Entity.User", "Reviewer")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "Reviewer")
                         .WithMany("Reviews")
                         .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "Topic")
                         .WithMany("Reviews")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Api.Models.Entity.TopicUser", b =>
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.TopicUser", b =>
                 {
-                    b.HasOne("Api.Models.Entity.Topic", "Topic")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Topic", "Topic")
                         .WithMany("TopicUsers")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Api.Models.Entity.User", "User")
+                    b.HasOne("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.User", "User")
                         .WithMany("TopicUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

@@ -43,7 +43,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 503)]
         public IActionResult InviteUsers([FromBody]InviteFormModel model, [FromServices]IEmailSender emailSender)
         {
-            if (!_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdentity()))
+            if (!_userPermissions.IsAllowedToInvite(User.Identity))
                 return Forbidden();
 
             if (!ModelState.IsValid)

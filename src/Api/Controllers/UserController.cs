@@ -6,6 +6,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using System;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
@@ -20,9 +21,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             _userManager = new UserManager(dbContext);
             _userPermissions = new UserPermissions(dbContext);
         }
-
-
-
+        
         #region GET user
 
         /// <summary>
@@ -39,7 +38,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
+                var uid = identity ?? User.Identity.GetUserIdentity();
+                var user = _userManager.GetUserByIdentity(uid);
                 return Ok(new UserResult(user));
             }
             catch (InvalidOperationException)
@@ -71,7 +71,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 404)]
         public IActionResult Put([FromQuery]string identity, [FromBody]UserFormModel model)
         {
-            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Forbidden();
 
             if (identity != null && model.Role != null && !Role.IsRoleValid(model.Role))
@@ -82,7 +82,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             try
             {
-                var user = _userManager.GetUserByIdentity(identity ?? User.Identity.GetUserIdentity());
+                User user;
+                if (identity == null)
+                {
+                    user = _userManager.GetUserByIdentity(User.Identity.GetUserIdentity());
+                }
+                else
+                {
+                    user = _userManager.GetUserByIdentity(identity);
+                }
                 _userManager.UpdateUser(user, model, (identity != null && model.Role != null));
                 Logger.LogInformation(5, "User with ID: " + user.Id + " updated.");
                 return Ok();

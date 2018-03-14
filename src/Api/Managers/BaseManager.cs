@@ -25,9 +25,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         // Could be needed at every controller!
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
+        public User GetUserByEmail(string email)
+        {
+            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == email);
+        }
+
         public User GetUserByIdentity(string identity)
         {
-            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.Email == identity);
+            return DbContext.Users.Include(u => u.StudentDetails).Single(u => u.UId == identity);
+        }
+
+        public int GetIdByIdentity(string identity)
+        {
+            return DbContext.Users.Single(u => u.UId == identity).Id;
         }
     }
 }

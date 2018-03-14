@@ -105,7 +105,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             if (result.Success)
                 return Ok(result);
-            return InternalServerError(result);
+            return NotFoundError(result);
         }
 
 
@@ -142,7 +142,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             if (result.Success)
                 return Ok(result);
-            return InternalServerError(result);
+            return NotFoundError(result);
         }
 
         // DELETE api/topics/:id/attachments

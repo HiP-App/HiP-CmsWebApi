@@ -1,11 +1,12 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+﻿// ReSharper disable RedundantUsingDirective
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Data
 {

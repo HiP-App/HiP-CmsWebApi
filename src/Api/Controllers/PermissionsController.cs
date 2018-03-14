@@ -127,7 +127,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [HttpGet("Users/All/Permission/IsAllowedToAdminister")]
         public IActionResult IsAllowedToAdminister()
         {
-            if (_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
+            if (_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Ok();
             return Forbidden();
         }
@@ -140,7 +140,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [HttpGet("Users/All/Permission/IsAllowedToInvite")]
         public IActionResult IsAllowedToInvite()
         {
-            if (_userPermissions.IsAllowedToInvite(User.Identity.GetUserIdentity()))
+            if (_userPermissions.IsAllowedToInvite(User.Identity))
                 return Ok();
             return Forbidden();
         }

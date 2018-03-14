@@ -1,9 +1,10 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using System;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -61,7 +62,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult PutPicture([FromQuery] string identity, [FromForm] IFormFile file)
         {
-            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Forbidden();
 
             var uploads = Path.Combine(Constants.ProfilePicturePath);
@@ -97,7 +98,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
         private static bool IsImage(IFormFile file)
         {
-            return ((file != null) && System.Text.RegularExpressions.Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
+            return ((file != null) && Regex.IsMatch(file.ContentType, "image/\\S+") && (file.Length > 0));
         }
 
         #endregion
@@ -120,7 +121,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 403)]
         public IActionResult Delete([FromQuery] string identity)
         {
-            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity.GetUserIdentity()))
+            if (identity != null && !_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Forbidden();
             // Fetch user
             try
