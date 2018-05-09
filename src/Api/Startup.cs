@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using PaderbornUniversity.SILab.Hip.Webservice;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
@@ -50,6 +52,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             services
                 .Configure<AppConfig>(Configuration.GetSection("App"))
                 .Configure<DatabaseConfig>(Configuration.GetSection("Database"))
+                .Configure<UserStoreConfig>(Configuration.GetSection("App"))
                 .Configure<AuthConfig>(Configuration.GetSection("Auth"));
 
             var serviceProvider = services.BuildServiceProvider();
@@ -59,7 +62,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             // Register AppConfig in Services 
             services
                 .AddTransient<IEmailSender, EmailSender>()
-                .AddScoped<UserManager>()
+                .AddTransient<IHttpContextAccessor, HttpContextAccessor>()
+                .AddSingleton<UserStoreService>()
+                .AddSingleton<UserManager>()                
                 .AddScoped<NotificationManager>()
                 .AddScoped<TopicManager>()
                 .AddScoped<AttachmentsManager>()
