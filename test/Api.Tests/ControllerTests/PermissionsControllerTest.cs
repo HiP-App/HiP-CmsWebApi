@@ -1,17 +1,18 @@
 ﻿using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
 using PaderbornUniversity.SILab.Hip.UserStore;
+using System.Collections.ObjectModel;
 using Xunit;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class PermissionControllerTest
     {
-        private ControllerTester<PermissionsController> _tester;                      
+        private ControllerTester<PermissionsController> _tester;
 
         public PermissionControllerTest()
         {
-            _tester = new ControllerTester<PermissionsController>();                                    
+            _tester = new ControllerTester<PermissionsController>();
         }
 
         #region Annotations test
@@ -122,7 +123,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestOk()
         {
-            _tester.TestControllerWithMockData()                
+            _tester.TestControllerWithMockData()
                 .Calling(c => c.IsAssociatedToAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
@@ -162,7 +163,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             {
                 Id = "test-auth:student13",
                 Email = "student1@hipapp.de",
-                Roles = new[] { "Student" }
+                Roles = new ObservableCollection<string>(new[] { "Student" })
             };
 
             _tester.TestControllerWithMockData(newStudent.Id)
@@ -218,7 +219,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToAdministerTestOk()
         {
-            _tester.TestController()                
+            _tester.TestController()
                 .Calling(c => c.IsAllowedToAdminister())
                 .ShouldReturn()
                 .Ok();

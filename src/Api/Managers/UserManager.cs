@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+﻿using Microsoft.Extensions.Options;
 using PaderbornUniversity.SILab.Hip.UserStore;
 using System;
 using System.Threading.Tasks;
@@ -9,27 +7,23 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class UserManager
     {
-        private readonly UsersClient _usersClient;
+        private readonly UserStoreService _userStoreService;
 
-        public UserManager(IHttpContextAccessor context, IOptions<AppConfig> appConfig)
+        public UserManager(UserStoreService service, IOptions<UserStoreConfig> userStoreConfig)
         {
-            if (string.IsNullOrWhiteSpace(appConfig.Value?.UserStoreUrl))
-                throw new ArgumentException($"The property '{nameof(AppConfig)}.{nameof(AppConfig.UserStoreUrl)}' is not configured");
-
-            _usersClient = new UsersClient(appConfig.Value.UserStoreUrl)
-            {
-                Authorization = context.HttpContext.Request.Headers["Authorization"].ToString()
-            };
+            if (string.IsNullOrWhiteSpace(userStoreConfig.Value?.UserStoreHost))
+                throw new ArgumentException($"The property '{nameof(UserStoreConfig)}.{nameof(UserStoreConfig.UserStoreHost)}' is not configured");
+            _userStoreService = service;
         }
-        
+
         public async Task<UserResult> GetUserByIdAsync(string userId)
         {
-            return await _usersClient.GetByIdAsync(userId);
+            return await _userStoreService.Users.GetByIdAsync(userId);
         }
 
         public async Task<UserResult> GetUserByEmailAsync(string email)
         {
-            return await _usersClient.GetByIdAsync(email);
+            return await _userStoreService.Users.GetByEmailAsync(email);
         }
     }
 }

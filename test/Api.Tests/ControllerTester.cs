@@ -8,6 +8,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
 using System.Linq;
 using PaderbornUniversity.SILab.Hip.UserStore;
+using System.Collections.ObjectModel;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
@@ -56,25 +57,25 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
             {
                 Id = AdminUId,
                 Email = "admin@hipapp.de",
-                Roles = new[] { "Administrator" }
+                Roles = new ObservableCollection<string>(new[] { "Administrator" })
             };
             Student = new UserResult
             {
                 Id = StudentUId,
                 Email = "student@hipapp.de",
-                Roles = new[] { "Student" }
+                Roles = new ObservableCollection<string>(new[] { "Student" })
             };
             Supervisor = new UserResult
             {
                 Id = SupervisorUId,
                 Email = "supervisor@hipapp.de",
-                Roles = new[] { "Supervisor" }
+                Roles = new ObservableCollection<string>(new[] { "Supervisor" })
             };
             Reviewer = new UserResult
             {
                 Id = ReviewerUId,
                 Email = "reviewer@hipapp.de",
-                Roles = new[] { "Reviewer" }
+                Roles = new ObservableCollection<string>(new[] { "Reviewer" })
             };
             /*
              * Layer1   Layer2

@@ -4,6 +4,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using PaderbornUniversity.SILab.Hip.UserStore;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Xunit;
 
@@ -28,37 +29,37 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             {
                 Id = "test-auth:student7",
                 Email = "student1@hipapp.de",
-                Roles = new[] { "Student" }
+                Roles = new ObservableCollection<string>(new[] { "Student" })
             };
             Student2 = new UserResult
             {
                 Id = "test-auth:student8",
                 Email = "student2@hipapp.de",
-                Roles = new[] { "Student" }
+                Roles = new ObservableCollection<string>(new[] { "Student" })
             };
             Supervisor1 = new UserResult
             {
                 Id = "test-auth:supervisor9",
                 Email = "supervisor1@hipapp.de",
-                Roles = new[] { "Supervisor" }
+                Roles = new ObservableCollection<string>(new[] { "Supervisor" })
             };
             Supervisor2 = new UserResult
             {
                 Id = "test-auth:supervisor10",
                 Email = "supervisor2@hipapp.de",
-                Roles = new[] { "Supervisor" }
+                Roles = new ObservableCollection<string>(new[] { "Supervisor" })
             };
             Reviewer1 = new UserResult
             {
                 Id = "test-auth:reviewer11",
                 Email = "reviewer1@hipapp.de",
-                Roles = new[] { "Reviewer" }
+                Roles = new ObservableCollection<string>(new[] { "Reviewer" })
             };
             Reviewer2 = new UserResult
             {
                 Id = "test-auth:reviewer12",
                 Email = "reviewer2@hipapp.de",
-                Roles = new[] { "Reviewer" }
+                Roles = new ObservableCollection<string>(new[] { "Reviewer" })
             };
             UsersFormModelForStudent = new UsersFormModel
             {
@@ -74,9 +75,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
         }
 
-        
+
         #region Get Users test
-        
+
         /// <summary>
         /// Returns ok if topic students are retrieved
         /// </summary>
@@ -90,7 +91,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<IEnumerable<string>>()
                 .Passing(actual => actual.Any(u => u == _tester.Student.Id));
         }
-        
+
         /// <summary>
         /// Returns ok if topic supervisors are retrieved
         /// </summary>
@@ -104,7 +105,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<IEnumerable<string>>()
                 .Passing(actual => actual.Any(u => u == _tester.Supervisor.Id));
         }
-        
+
         /// <summary>
         /// Returns ok if topic supervisors are retrieved
         /// </summary>
@@ -115,7 +116,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             {
                 Id = "test-auth:reviewer",
                 Email = "reviewer@hipapp.de",
-                Roles = new[] { "Reviewer" }
+                Roles = new ObservableCollection<string>(new[] { "Reviewer" })
             };
 
             var reviewerUser = new TopicUser
@@ -124,7 +125,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 UserId = reviewer.Id,
                 Role = reviewer.Roles.First()
             };
-            
+
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
                     .WithSet<TopicUser>(db => db.Add(reviewerUser)))
@@ -134,11 +135,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<IEnumerable<string>>()
                 .Passing(actual => actual.Any(u => u == reviewer.Id));
         }
-        
+
         #endregion
-        
+
         #region PUT users
-        
+
         /// <summary>
         /// Asserts if topic students are updated
         /// </summary>
@@ -155,7 +156,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                         actual.TopicUsers.Count == 2)));
             //As we have problems with DI, it does not check for any return
         }
-        
+
         /// <summary>
         /// Returns 403 if s student is trying to update topic users
         /// </summary>
@@ -167,7 +168,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
-        
+
         /// <summary>
         /// Returns 400 if the model is incorrect
         /// </summary>
@@ -180,7 +181,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         /// <summary>
         /// Asserts if topic supervisors are updated
         /// </summary>
@@ -197,7 +198,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                         actual.TopicUsers.Count == 2)));
             //As we have problems with DI, it does not check for any return
         }
-        
+
         /// <summary>
         /// Returns 403 if s student is trying to update topic users
         /// </summary>
@@ -209,7 +210,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
-        
+
         /// <summary>
         /// Returns 400 if the model is incorrect
         /// </summary>
@@ -222,7 +223,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         /// <summary>
         /// Asserts if topic supervisors are updated
         /// </summary>
@@ -239,7 +240,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                         actual.TopicUsers.Count == 2)));
             //As we have problems with DI, it does not check for any return
         }
-        
+
         /// <summary>
         /// Returns 403 if s student is trying to update topic users
         /// </summary>
@@ -251,7 +252,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .StatusCode(403);
         }
-        
+
         /// <summary>
         /// Returns 400 if the model is incorrect
         /// </summary>
@@ -264,7 +265,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         #endregion
     }
 }
