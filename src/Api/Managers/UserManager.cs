@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+﻿using Microsoft.Extensions.Options;
 using PaderbornUniversity.SILab.Hip.UserStore;
 using System;
 using System.Threading.Tasks;
