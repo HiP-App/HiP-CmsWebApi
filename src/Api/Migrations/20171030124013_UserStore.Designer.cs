@@ -11,9 +11,10 @@ using System;
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     [DbContext(typeof(CmsDbContext))]
-    partial class CmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171030124013_UserStore")]
+    partial class UserStore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,6 +227,22 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.StudentDetails", b =>
+                {
+                    b.Property<string>("UserId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CurrentDegree");
+
+                    b.Property<short>("CurrentSemester");
+
+                    b.Property<string>("Discipline");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("StudentDetails");
                 });
 
             modelBuilder.Entity("PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Subscription", b =>

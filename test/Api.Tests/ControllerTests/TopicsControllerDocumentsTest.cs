@@ -30,7 +30,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetDocumentTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetDocument(_tester.TopicOne.Id))
+                .Calling(c => c.GetDocumentAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<DocumentResult>()
@@ -44,7 +44,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetDocumentTest404()
         {
             _tester.TestController()
-                .Calling(c => c.GetDocument(_tester.TopicOne.Id))
+                .Calling(c => c.GetDocumentAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -55,8 +55,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetDocumentTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
-                .Calling(c => c.GetDocument(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id) // Student not attached to topic two
+                .Calling(c => c.GetDocumentAsync(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -72,7 +72,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PostDocumentTestWithContent()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PostDocument(_tester.TopicOne.Id, HtmlContentModel))
+                .Calling(c => c.PostDocumentAsync(_tester.TopicOne.Id, HtmlContentModel))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Document>(actual => actual.Any(t => t.Content == _tester.FirstDocument.Content)))
                 .AndAlso()
@@ -89,7 +89,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             _tester.FirstDocument.Content = string.Empty;
 
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PostDocument(_tester.TopicOne.Id, HtmlContentModel))
+                .Calling(c => c.PostDocumentAsync(_tester.TopicOne.Id, HtmlContentModel))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Document>(actual => actual.Any(t => t.Content == HtmlContentModel.HtmlContent)))
                 .AndAlso()
@@ -103,8 +103,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PostDocumentTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.PostDocument(_tester.TopicTwo.Id, HtmlContentModel))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.PostDocumentAsync(_tester.TopicTwo.Id, HtmlContentModel))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -116,7 +116,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PostDocumentTestBadRequest()
         {
             _tester.TestController()
-                .Calling(c => c.PostDocument(_tester.TopicOne.Id, HtmlContentModel))
+                .Calling(c => c.PostDocumentAsync(_tester.TopicOne.Id, HtmlContentModel))
                 .ShouldReturn()
                 .BadRequest();
         }
@@ -132,7 +132,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void DeleteDocumentTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.DeleteDocument(_tester.TopicOne.Id))
+                .Calling(c => c.DeleteDocumentAsync(_tester.TopicOne.Id))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Document>(actual => !actual.Any(t => t.Content == HtmlContentModel.HtmlContent)))
                 .AndAlso()
@@ -147,7 +147,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void DeleteDocumentTestBadRequest()
         {
             _tester.TestController()
-                .Calling(c => c.DeleteDocument(_tester.TopicOne.Id))
+                .Calling(c => c.DeleteDocumentAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -158,8 +158,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void DeleteDocumentTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
-                .Calling(c => c.DeleteDocument(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id) // Student not attached to topic two
+                .Calling(c => c.DeleteDocumentAsync(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }

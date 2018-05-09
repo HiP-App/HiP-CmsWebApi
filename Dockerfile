@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.1.1-sdk
+FROM microsoft/dotnet:2.0.0-sdk-jessie
 
 RUN mkdir -p /dotnetapp
 
@@ -10,7 +10,7 @@ EXPOSE 5000
 VOLUME ["/dotnetapp/Api/wwwroot"]
 
 WORKDIR /dotnetapp/Api
-RUN dotnet restore --no-cache --configfile ./NuGet.Config
+RUN dotnet build
 ENTRYPOINT ["dotnet", "run"]
 
 #RUN dotnet publish -c Release -o out

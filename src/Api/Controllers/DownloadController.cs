@@ -30,16 +30,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             var userIp = HttpContext.Connection.RemoteIpAddress;
             var resource = DownloadManager.GetResource(downloadHash);
 
-            if (resource == null) return NotFound();
+            if (resource == null)
+                return NotFound();
 
             if (resource.IsExpired())
-                return ApiController.Gone();
+                return StatusCode(410); // 410 Gone
 
             if (!resource.IsSameUser(userIp))
-                return ApiController.Forbidden();
+                return Forbid();
 
-            string contentType;
-            if (!new FileExtensionContentTypeProvider().TryGetContentType(resource.FileName, out contentType))
+            if (!new FileExtensionContentTypeProvider().TryGetContentType(resource.FileName, out var contentType))
                 contentType = "octet-stream";
 
             return File(resource.FileName, contentType, Path.GetFileName(resource.FileName));

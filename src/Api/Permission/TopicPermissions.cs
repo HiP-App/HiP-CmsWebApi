@@ -1,9 +1,10 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
@@ -11,71 +12,86 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
     {
         private readonly UserManager _userManager;
 
-
-        public TopicPermissions(CmsDbContext dbContext) : base(dbContext)
+        public TopicPermissions(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
         {
-            _userManager = new UserManager(dbContext);
+            _userManager = userManager;
         }
 
-
-        public bool IsAllowedToEdit(string identity, int topicId)
+        public async Task<bool> IsAllowedToEditAsync(string userId, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
-                if (user.Role.Equals(Role.Administrator))
+                var user = await _userManager.GetUserByIdAsync(userId);
+
+                if (user.Roles.Contains(Role.Administrator))
                     return true;
+
                 // Created?
-                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
+                if (DbContext.Topics.Any(t => t.Id == topicId && t.CreatedById == user.Id))
                     return true;
+
                 // Supervisor?
-                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Supervisor)))
+                if (DbContext.TopicUsers.Any(tu => tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Supervisor))
                     return true;
             }
             catch (InvalidOperationException) { }
+            catch (SwaggerException) { }
+
             return false;
         }
 
-        public bool IsAssociatedTo(string identity, int topicId)
+        public async Task<bool> IsAssociatedToAsync(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
-                if (user.Role.Equals(Role.Administrator))
+                var user = await _userManager.GetUserByIdAsync(identity);
+
+                if (user.Roles.Contains(Role.Administrator))
                     return true;
+
                 // Created?
-                if (DbContext.Topics.Include(t => t.CreatedBy).Any(t => (t.Id == topicId && t.CreatedById == user.Id)))
+                if (DbContext.Topics.Any(t => t.Id == topicId && t.CreatedById == user.Id))
                     return true;
+
                 // Is associated
-                if (DbContext.TopicUsers.Include(t => t.User).Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id)))
+                if (DbContext.TopicUsers.Any(tu => tu.TopicId == topicId && tu.UserId == user.Id))
                     return true;
             }
             catch (InvalidOperationException) { }
+            catch (SwaggerException) { }
+
+
             return false;
         }
 
-        public bool IsAllowedToCreate(string identity)
+        public async Task<bool> IsAllowedToCreateAsync(string identity)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
-                return user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+                var user = await _userManager.GetUserByIdAsync(identity);
+                return user.Roles.Contains(Role.Administrator) || user.Roles.Contains(Role.Supervisor);
             }
             catch (InvalidOperationException)
             {
                 return false;
             }
+            catch (SwaggerException)
+            {
+                return false;
+            }
         }
 
-        public bool IsReviewer(string identity, int topicId)
+        public async Task<bool> IsReviewerAsync(string identity, int topicId)
         {
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
+                var user = await _userManager.GetUserByIdAsync(identity);
                 if (DbContext.TopicUsers.Any(tu => (tu.TopicId == topicId && tu.UserId == user.Id && tu.Role == Role.Reviewer)))
                     return true;
             }
             catch (InvalidOperationException) { }
+            catch (SwaggerException) { }
+
             return false;
         }
     }

@@ -1,23 +1,30 @@
+using Microsoft.EntityFrameworkCore;
 using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
-using Microsoft.EntityFrameworkCore;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public partial class TopicManager : BaseManager
     {
-        public TopicManager(CmsDbContext dbContext) : base(dbContext) { }
+        private readonly UserManager _userManager;
+
+        public TopicManager(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
+        {
+            _userManager = userManager;
+        }
 
         public PagedResult<TopicResult> GetAllTopics(string queryString, string status, DateTime? deadline, bool onlyParents, int page, int pageSize)
         {
-            IQueryable<Topic> query = DbContext.Topics.Include(t => t.CreatedBy);
+            IQueryable<Topic> query = DbContext.Topics;
+
             if (!string.IsNullOrEmpty(queryString))
                 query = query.Where(t => t.Title.Contains(queryString) || t.Description.Contains(queryString));
 
@@ -41,26 +48,26 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         }
 
-        public PagedResult<TopicResult> GetTopicsForUser(string identity, int page, int pageSize, string queryString)
+        public PagedResult<TopicResult> GetTopicsForUser(string userId, int page, int pageSize, string queryString)
         {
-            var userId = GetUserByIdentity(identity).Id;
-            var relatedTopicIds = DbContext.TopicUsers.Include(tu => tu.User).Where(ut => ut.UserId == userId).ToList().Select(ut => ut.TopicId);
+            var relatedTopicIds = DbContext.TopicUsers.Where(ut => ut.UserId == userId).Select(ut => ut.TopicId).ToList();
 
-            var query = DbContext.Topics.Include(t => t.CreatedBy)
-                 .Where(t => t.CreatedById== userId || relatedTopicIds.Contains(t.Id));
+            var query = DbContext.Topics.Where(t => t.CreatedById == userId || relatedTopicIds.Contains(t.Id));
 
-            if (!string.IsNullOrEmpty(queryString)) query = query.Where(t => t.Title.Contains(queryString) || t.Description.Contains(queryString));
+            if (!string.IsNullOrEmpty(queryString))
+                query = query.Where(t => t.Title.Contains(queryString) || t.Description.Contains(queryString));
 
             var totalCount = query.Count();
-            if (page != 0)
-                return new PagedResult<TopicResult>(query.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(t => new TopicResult(t)), page, pageSize, totalCount);
-            return new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), totalCount);
+
+            return (page != 0)
+                ? new PagedResult<TopicResult>(query.Skip((page - 1) * pageSize).Take(pageSize).ToList().Select(t => new TopicResult(t)), page, pageSize, totalCount)
+                : new PagedResult<TopicResult>(query.ToList().Select(t => new TopicResult(t)), totalCount);
         }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public Topic GetTopicById(int topicId)
         {
-            return DbContext.Topics.Include(t => t.CreatedBy).Single(t => t.Id == topicId);
+            return DbContext.Topics.Single(t => t.Id == topicId);
         }
 
         public bool IsValidTopicId(int topicId)
@@ -76,17 +83,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return true;
         }
 
-        public IEnumerable<UserResult> GetAssociatedUsersByRole(int topicId, string role)
+        public IEnumerable<string> GetAssociatedUsersByRole(int topicId, string role)
         {
-            return DbContext.TopicUsers.Where(tu => (tu.Role.Equals(role) && tu.TopicId == topicId)).Include(tu => tu.User).ToList().Select(u => new UserResult(u.User));
+            return DbContext.TopicUsers
+                .Where(tu => tu.Role == role && tu.TopicId == topicId)
+                .Select(u => u.UserId);
         }
 
-        public bool ChangeAssociatedUsersByRole(string updaterIdentity, int topicId, string role, UsersFormModel users)
+        public async Task<bool> ChangeAssociatedUsersByRoleAsync(string updaterIdentity, int topicId, string role, UsersFormModel users)
         {
             Topic topic;
             try
             {
-                topic = DbContext.Topics.Include(t => t.TopicUsers).ThenInclude(tu => tu.User).Single(t => t.Id == topicId);
+                topic = DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
             }
             catch (InvalidOperationException)
             {
@@ -100,12 +109,22 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 // new user?
                 foreach (var email in users.Users)
                 {
-                    if (!existingUsers.Any(tu => (tu.User.Email == email && tu.Role == role)))
-                        newUsers.Add(new TopicUser() { UserId = GetUserByEmail(email).Id, Role = role });
+                    var user = await _userManager.GetUserByEmailAsync(email);
+
+                    if (!existingUsers.Any(tu => tu.UserId == user.Id && tu.Role == role))
+                        newUsers.Add(new TopicUser { UserId = user.Id, Role = role });
                 }
+
                 // removed user?
-                removedUsers.AddRange(existingUsers.Where(existingUser => !users.Users.Contains(existingUser.User.Email)));
+                foreach (var existingUser in existingUsers)
+                {
+                    var userInfo = await _userManager.GetUserByIdAsync(existingUser.UserId);
+
+                    if (!users.Users.Contains(userInfo.Email))
+                        removedUsers.Add(existingUser);
+                }
             }
+
             topic.TopicUsers.AddRange(newUsers);
             topic.TopicUsers.RemoveAll(tu => removedUsers.Contains(tu));
             // Updated // TODO add user
@@ -117,13 +136,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 // Notifications
-                new NotificationProcessor(DbContext, topic, updaterIdentity).OnUsersChanged(newUsers, removedUsers, role);
+                await new NotificationProcessor(DbContext, topic, updaterIdentity, _userManager).OnUsersChangedAsync(newUsers, removedUsers, role);
             }
             catch (NullReferenceException)
             {
                 return false;
             }
-            
+
             return true;
         }
 
@@ -137,17 +156,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             return DbContext.AssociatedTopics.Include(at => at.ParentTopic).Where(at => at.ChildTopicId == topicId).Select(at => at.ParentTopic).ToList();
         }
 
-        public EntityResult AddTopic(string updaterIdentity, TopicFormModel model)
+        public async Task<EntityResult> AddTopicAsync(string updaterUserId, TopicFormModel model)
         {
             try
             {
-                var user = GetUserByIdentity(updaterIdentity);
-                var topic = new Topic(model) { CreatedById = user.Id };
+                var topic = new Topic(model) { CreatedById = updaterUserId };
                 DbContext.Topics.Add(topic);
                 DbContext.SaveChanges();
-                new NotificationProcessor(DbContext, topic, updaterIdentity).OnNewTopic();
+                await new NotificationProcessor(DbContext, topic, updaterUserId, _userManager).OnNewTopicAsync();
 
-                return EntityResult.Successfull(topic.Id);
+                return EntityResult.Successful(topic.Id);
             }
             catch (Exception e)
             {
@@ -155,7 +173,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
         }
 
-        public bool UpdateTopic(string identity, int topicId, TopicFormModel model)
+        public async Task<bool> UpdateTopicAsync(string identity, int topicId, TopicFormModel model)
         {
             // Using Transactions to roobback Notifications on error.
             using (var transaction = DbContext.Database.BeginTransaction())
@@ -163,7 +181,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 {
                     var topic = DbContext.Topics.Include(t => t.TopicUsers).Single(t => t.Id == topicId);
                     // REM: do before updating to estimate the changes
-                    new NotificationProcessor(DbContext, topic, identity).OnUpdate(model);
+                    await new NotificationProcessor(DbContext, topic, identity, _userManager).OnUpdateAsync(model);
 
                     // TODO  topic.UpdatedById = userId;
                     topic.Title = model.Title;
@@ -190,7 +208,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 }
         }
 
-        public bool ChangeTopicStatus(string identity, int topicId, string status)
+        public async Task<bool> ChangeTopicStatusAsync(string identity, int topicId, string status)
         {
             try
             {
@@ -202,13 +220,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 try
                 {
                     // Notifications
-                    new NotificationProcessor(DbContext, topic, identity).OnStateChanged(status);
+                    await new NotificationProcessor(DbContext, topic, identity, _userManager).OnStateChangedAsync(status);
                 }
                 catch (NullReferenceException)
                 {
                     return false;
                 }
-                
+
                 return true;
             }
             catch (InvalidOperationException)
@@ -217,7 +235,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
         }
 
-        public virtual bool DeleteTopic(int topicId, string identity)
+        public virtual async Task<bool> DeleteTopicAsync(int topicId, string identity)
         {
             try
             {
@@ -228,13 +246,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 try
                 {
                     // Notifications
-                    new NotificationProcessor(DbContext, topic, identity).OnDeleteTopic();
+                    await new NotificationProcessor(DbContext, topic, identity, _userManager).OnDeleteTopicAsync();
                 }
                 catch (NullReferenceException)
                 {
                     return false;
                 }
-                
+
                 return true;
             }
             catch (InvalidOperationException)
@@ -247,18 +265,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
             // TODO throw errors
             if (!DbContext.Topics.Any(t => t.Id == childId))
-                return EntityResult.Error("Child not Found");
+                return EntityResult.Error("Child not found");
+
             if (!DbContext.Topics.Any(t => t.Id == parentId))
-                return EntityResult.Error("Parent not Found");
+                return EntityResult.Error("Parent not found");
 
             if (DbContext.AssociatedTopics.Any(at => at.ChildTopicId == childId && at.ParentTopicId == parentId))
                 return EntityResult.Error("Allready exists");
 
-            var relation = new AssociatedTopic() { ChildTopicId = childId, ParentTopicId = parentId };
+            var relation = new AssociatedTopic { ChildTopicId = childId, ParentTopicId = parentId };
 
             DbContext.Add(relation);
             DbContext.SaveChanges();
-            return EntityResult.Successfull(null);
+            return EntityResult.Successful(null);
         }
 
         public virtual bool DeleteAssociated(int parentId, int childId)

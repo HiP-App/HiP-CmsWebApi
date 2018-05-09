@@ -31,7 +31,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetAllNotificationsTest200()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)                
+            _tester.TestControllerWithMockData(_tester.Student.Id)                
                 .Calling(c => c.GetAllNotifications())
                 .ShouldReturn()
                 .Ok()
@@ -45,7 +45,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetAllNotificationsTest200_Empty()
         {
-            _tester.TestController(_tester.Supervisor.UId)
+            _tester.TestController(_tester.Supervisor.Id)
                 .Calling(c => c.GetAllNotifications())
                 .ShouldReturn()
                 .Ok()
@@ -63,7 +63,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             {
                 new NotificationResult(_tester.UnreadNotification) // we expect only unread notification
             };
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Id)
                 .Calling(c => c.GetUnreadNotifications())
                 .ShouldReturn()
                 .Ok()
@@ -77,7 +77,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetUnreadNotificationsTest200_Empty()
         {
-            _tester.TestController(_tester.Supervisor.UId)
+            _tester.TestController(_tester.Supervisor.Id)
                 .Calling(c => c.GetUnreadNotifications())
                 .ShouldReturn()
                 .Ok()
@@ -92,7 +92,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetNotificationCountTest200()
         {
             // ReSharper disable once SuspiciousTypeConversion.Global
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Id)
                 .Calling(c => c.GetNotificationCount())
                 .ShouldReturn()
                 .Ok()
@@ -107,7 +107,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetSubscriptionsTest200()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Id)
                 .Calling(c => c.GetSubscriptions())
                 .ShouldReturn()
                 .Ok()
@@ -172,7 +172,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubscribeTest200ForUpdating()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student is already subscribed to this notification                
+            _tester.TestControllerWithMockData(_tester.Student.Id) // Student is already subscribed to this notification                
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString()))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Subscription>
@@ -188,7 +188,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubscribeTest200ForAdding()
         {
-            _tester.TestController(_tester.Supervisor.UId) // Supervisor wants to get subscribed to notification one                
+            _tester.TestController(_tester.Supervisor.Id) // Supervisor wants to get subscribed to notification one                
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString())) //This test will add the subscription to the user
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Subscription>
@@ -204,7 +204,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubscribeTest404()
         {
-            _tester.TestController(_tester.Student.UId)
+            _tester.TestController(_tester.Student.Id)
                 .Calling(c => c.PutSubscribe("BadSubscription"))
                 .ShouldReturn()
                 .BadRequest(); //Returns 404
@@ -216,7 +216,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutSubscribeTest404WhenTryingToChangeSubscription()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Id)
                 .Calling(c => c.PutSubscribe(NotificationType.TOPIC_CREATED.ToString())) //When trying to change the subscription
                 .ShouldReturn()
                 .BadRequest(); //Returns 404
@@ -228,11 +228,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutUnsubscribeTest200()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student is already subscribed to this notification                
+            _tester.TestControllerWithMockData(_tester.Student.Id) // Student is already subscribed to this notification                
                 .Calling(c => c.PutUnsubscribe(NotificationType.TOPIC_ASSIGNED_TO.ToString()))
-                .ShouldHave()                
-                .DbContext(db => db.WithSet<User>(s => s.Any(actual => actual.Subscriptions.Count == 0)))
-                .AndAlso() // Student is no longer subscribed
                 .ShouldReturn()
                 .Ok(); 
         }        
@@ -243,7 +240,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void PutUnsubscribeTest404()
         {
-            _tester.TestController(_tester.Student.UId)                                    
+            _tester.TestController(_tester.Student.Id)                                    
                 .Calling(c => c.PutUnsubscribe("BadSubscription"))
                 .ShouldReturn()
                 .BadRequest(); //Returns 404

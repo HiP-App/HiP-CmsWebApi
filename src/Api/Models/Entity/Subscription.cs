@@ -1,9 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
-using System.ComponentModel.DataAnnotations.Schema;
-using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
@@ -13,11 +12,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public int SubscriptionId { get; set; }
 
         [Required]
-        public int SubscriberId { get; set; }
+        public string SubscriberId { get; set; } // a user ID
 
-        [Required]
-        public User Subscriber { get; set; }
-        
         [NotMapped]
         // Store as String to avoid inconsistency
         public NotificationType Type
@@ -35,13 +31,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         }
 
         public string TypeName { get; set; }
-    }
 
-    public class SubscriptionMap
-    {
-        public SubscriptionMap(EntityTypeBuilder<Subscription> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<Subscription> entityBuilder)
         {
-            entityBuilder.HasOne(sub => sub.Subscriber).WithMany(user => user.Subscriptions).HasForeignKey(u => u.SubscriberId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

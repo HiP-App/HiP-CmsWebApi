@@ -1,7 +1,6 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,36 +10,37 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationManager : BaseManager
     {
-        public NotificationManager(CmsDbContext dbContext) : base(dbContext) { }
-
-        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string identity, bool onlyUnread)
+        public NotificationManager(CmsDbContext dbContext) : base(dbContext)
         {
-            var userId = GetIdByIdentity(identity);
+        }
+
+        public IEnumerable<NotificationResult> GetNotificationsForTheUser(string userId, bool onlyUnread)
+        {
             var query = DbContext.Notifications.Where(n => n.UserId == userId);
             if (onlyUnread)
                 query = query.Where(n => !n.IsRead);
 
-            var notifications = query.Include(n => n.Updater).Include(n => n.Topic).ToList().OrderByDescending(n => n.TimeStamp);
+            var notifications = query.Include(n => n.Topic).OrderByDescending(n => n.TimeStamp);
             var result = new List<NotificationResult>();
-            foreach (Notification not in notifications)
+            foreach (var notification in notifications)
             {
-                var nr = new NotificationResult(not) {Updater = new UserResult(not.Updater)};
+                var nr = new NotificationResult(notification);
 
-                switch (not.Type)
+                switch (notification.Type)
                 {
                     case NotificationType.TOPIC_CREATED:
                     case NotificationType.TOPIC_UPDATED:
                     case NotificationType.TOPIC_ASSIGNED_TO:
                     case NotificationType.TOPIC_REMOVED_FROM:
-                        nr.Data = new object[] { not.Topic.Id, not.Topic.Title };
+                        nr.Data = new object[] { notification.Topic.Id, notification.Topic.Title };
                         break;
                     case NotificationType.TOPIC_STATE_CHANGED:
                     case NotificationType.TOPIC_DEADLINE_CHANGED:
                     case NotificationType.TOPIC_ATTACHMENT_ADDED:
-                        nr.Data = new object[] { not.Topic.Id, not.Topic.Title, not.Data };
+                        nr.Data = new object[] { notification.Topic.Id, notification.Topic.Title, notification.Data };
                         break;
                     case NotificationType.TOPIC_DELETED:
-                        nr.Data = new object[] { not.Data };
+                        nr.Data = new object[] { notification.Data };
                         break;
                     case NotificationType.UNKNOWN:
                         break;
@@ -67,32 +67,28 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             }
         }
 
-        internal int GetNotificationCount(string identity)
+        internal int GetNotificationCount(string userId)
         {
-            var userId = GetIdByIdentity(identity);
             return DbContext.Notifications.Count(n => n.UserId == userId && !n.IsRead);
         }
 
-        public bool SetSubscription(string identity, NotificationType type, bool subscribe)
+        public bool SetSubscription(string userId, NotificationType type, bool subscribe)
         {
-            var userId = GetIdByIdentity(identity);
-            User user = DbContext.Users.Single(u => u.Id == userId);
-            Subscription sub = new Subscription
+            var sub = new Subscription
             {
-                Subscriber = user,
+                SubscriberId = userId,
                 Type = type
             };
+
             return subscribe ? AddSubscription(sub) : RemoveSubscription(sub);
         }
 
-        public IEnumerable<string> GetSubscriptions(string identity)
+        public IEnumerable<string> GetSubscriptions(string userId)
         {
-            var userId = GetIdByIdentity(identity);
-            return DbContext.Subscriptions.Where(
-                subscription => subscription.SubscriberId == userId
-            ).ToList().Select(
-                subscription => subscription.TypeName
-            );
+            return DbContext.Subscriptions
+                .Where(subscription => subscription.SubscriberId == userId)
+                .ToList()
+                .Select(subscription => subscription.TypeName);
         }
 
         private bool AddSubscription(Subscription sub)
@@ -103,7 +99,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 if (subs.Any())
                 {
                     DbContext.Subscriptions.Update(subs.First());
-                } else
+                }
+                else
                 {
                     DbContext.Subscriptions.Add(sub);
                 }
@@ -135,9 +132,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         private IQueryable<Subscription> FindSubscriptionsLike(Subscription sub)
         {
-            return DbContext.Subscriptions.Where(
-                candidate => sub.Subscriber == candidate.Subscriber && sub.TypeName == candidate.TypeName
-            );
+            return DbContext.Subscriptions
+                .Where(candidate => sub.SubscriberId == candidate.SubscriberId && sub.TypeName == candidate.TypeName);
         }
     }
 }

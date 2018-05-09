@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
@@ -66,11 +65,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
             DetailedPosition = metadata.DetailedPosition;
         }
 
-    }
-
-    public class TopicAttachmentMetadataMap
-    {
-        public TopicAttachmentMetadataMap(EntityTypeBuilder<TopicAttachmentMetadata> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<TopicAttachmentMetadata> entityBuilder)
         {
             entityBuilder.HasKey(tam => new { tam.TopicAttachmentId });
 

@@ -1,12 +1,12 @@
-﻿using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -14,9 +14,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
     {
         private readonly NotificationManager _notificationManager;
 
-        public NotificationsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public NotificationsController(CmsDbContext dbContext, ILoggerFactory loggerFactory, NotificationManager notificationManager) : base(dbContext, loggerFactory)
         {
-            _notificationManager = new NotificationManager(dbContext);
+            _notificationManager = notificationManager;
         }
 
         #region GET
@@ -163,21 +163,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
         private IActionResult SetSubscription(string notificationType, bool subscribe)
         {
-            if (Enum.TryParse(notificationType, out NotificationType type))
+            if (Enum.TryParse(notificationType, out NotificationType type) &&
+                _notificationManager.SetSubscription(User.Identity.GetUserIdentity(), type, subscribe))
             {
-                if (_notificationManager.SetSubscription(User.Identity.GetUserIdentity(), type, subscribe))
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                return Ok();
             }
-            else
-            {
-                return BadRequest();
-            }
+
+            return BadRequest();
         }
 
         #endregion

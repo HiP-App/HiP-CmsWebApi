@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
@@ -50,19 +50,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
         {
         }
 
-        public class AnnotationTagInstanceMap
+        public static void ConfigureModel(EntityTypeBuilder<AnnotationTagInstance> entityBuilder)
         {
-            public AnnotationTagInstanceMap(EntityTypeBuilder<AnnotationTagInstance> entityBuilder)
-            {
-                entityBuilder.HasOne(tag => tag.TagModel)
-                    .WithMany(model => model.TagInstances)
-                    .HasForeignKey(tag => tag.TagModelId)
-                    .OnDelete(DeleteBehavior.Cascade);
-                entityBuilder.HasOne(tag => tag.Document)
-                    .WithMany(doc => doc.TagsInstances)
-                    .HasForeignKey(tag => tag.DocumentId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            }
+            entityBuilder.HasOne(tag => tag.TagModel)
+                .WithMany(model => model.TagInstances)
+                .HasForeignKey(tag => tag.TagModelId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entityBuilder.HasOne(tag => tag.Document)
+                .WithMany(doc => doc.TagsInstances)
+                .HasForeignKey(tag => tag.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

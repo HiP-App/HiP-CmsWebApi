@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationTag;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -114,9 +115,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PostTagInstanceRelation([FromBody] RelationFormModel model)
+        public async Task<IActionResult> PostTagInstanceRelationAsync([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
@@ -142,9 +143,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PostTagRelationRule([FromBody] RelationFormModel model)
+        public async Task<IActionResult> PostTagRelationRuleAsync([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
@@ -177,9 +178,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagInstanceRelation([FromBody] RelationUpdateModel update)
+        public async Task<IActionResult> PutTagInstanceRelationAsync([FromBody] RelationUpdateModel update)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
@@ -207,9 +208,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult PutTagRelationRule([FromBody] RelationUpdateModel update)
+        public async Task<IActionResult> PutTagRelationRuleAsync([FromBody] RelationUpdateModel update)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try
@@ -239,9 +240,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteTagRelation([FromBody] RelationFormModel model)
+        public async Task<IActionResult> DeleteTagRelationAsync([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
             try
             {
@@ -265,9 +266,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteTagRelationRule([FromBody] RelationFormModel model)
+        public async Task<IActionResult> DeleteTagRelationRuleAsync([FromBody] RelationFormModel model)
         {
-            if (!_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (!(await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity())))
                 return Forbid();
 
             try

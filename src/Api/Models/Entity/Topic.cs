@@ -25,11 +25,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 
         public string Requirements { get; set; }
 
-        // Created By
         [Required]
-        public int CreatedById { get; set; }
-
-        public User CreatedBy { get; set; }
+        public string CreatedById { get; set; } // a user ID
 
         public DateTime CreatedAt { get; set; }
 
@@ -61,11 +58,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         }
 
         public Topic() { }
-    }
 
-    public class TopicMap
-    {
-        public TopicMap(EntityTypeBuilder<Topic> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<Topic> entityBuilder)
         {
             entityBuilder.Property(t => t.CreatedAt).ValueGeneratedOnAdd().HasDefaultValueSql("CURRENT_TIMESTAMP");
             entityBuilder.Property(t => t.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");

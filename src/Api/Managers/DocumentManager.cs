@@ -1,13 +1,13 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using Microsoft.EntityFrameworkCore;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
@@ -17,14 +17,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
         {
         }
 
-
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public Document GetDocumentById(int topicId)
         {
-            return DbContext.Documents.Include(d => d.Updater).Single(d => (d.TopicId == topicId));
+            return DbContext.Documents.Single(d => d.TopicId == topicId);
         }
 
-        internal EntityResult UpdateDocument(int topicId, string identity, string htmlContent)
+        internal EntityResult UpdateDocument(int topicId, string userId, string htmlContent)
         {
             try
             {
@@ -34,9 +33,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             {
                 return EntityResult.Error("Unknown Topic");
             }
-            // already exitsts
+            // already exists
 
-            var userId = GetIdByIdentity(identity);
             Document document;
             try
             {
@@ -99,7 +97,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 DbContext.SaveChanges();
-                return EntityResult.Successfull();
+                return EntityResult.Successful();
             }
             catch (Exception e)
             {

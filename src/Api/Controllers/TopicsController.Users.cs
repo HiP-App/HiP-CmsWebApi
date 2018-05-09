@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-
         #region Get Users
 
         // GET api/topics/:topicId/students
@@ -20,7 +20,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">A list of students assocaited with the topic {topicId}</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Students")]
-        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetTopicStudents([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Student);
@@ -35,7 +35,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">A list of supervisors assocaited with the topic {topicId}</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Supervisors")]
-        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetTopicSupervisors([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Supervisor);
@@ -50,7 +50,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">A list of reviewers assocaited with the topic {topicId}</response>        
         /// <response code="401">User is denied</response>
         [HttpGet("{topicId}/Reviewers")]
-        [ProducesResponseType(typeof(IEnumerable<UserResult>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<string>), 200)]
         public IActionResult GetTopicReviewers([FromRoute]int topicId)
         {
             return GetTopicUsers(topicId, Role.Reviewer);
@@ -80,9 +80,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicStudents([FromRoute]int topicId, [FromBody]UsersFormModel users)
+        public async Task<IActionResult> PutTopicStudentsAsync([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
-            return PutTopicUsers(topicId, Role.Student, users);
+            return await PutTopicUsersAsync(topicId, Role.Student, users);
         }
 
         // PUT api/topics/:topicId/Supervisors
@@ -100,9 +100,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicSupervisors([FromRoute]int topicId, [FromBody]UsersFormModel users)
+        public async Task<IActionResult> PutTopicSupervisorsAsync([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
-            return PutTopicUsers(topicId, Role.Supervisor, users);
+            return await PutTopicUsersAsync(topicId, Role.Supervisor, users);
         }
 
         // PUT api/topics/:topicId/Reviewers
@@ -120,23 +120,25 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult PutTopicReviewers([FromRoute]int topicId, [FromBody]UsersFormModel users)
+        public async Task<IActionResult> PutTopicReviewersAsync([FromRoute]int topicId, [FromBody]UsersFormModel users)
         {
-            return PutTopicUsers(topicId, Role.Reviewer, users);
+            return await PutTopicUsersAsync(topicId, Role.Reviewer, users);
         }
 
-        private IActionResult PutTopicUsers(int topicId, string role, UsersFormModel users)
+        private async Task<IActionResult> PutTopicUsersAsync(int topicId, string role, UsersFormModel users)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            else if (_topicManager.ChangeAssociatedUsersByRole(User.Identity.GetUserIdentity(), topicId, role, users))
+
+            if (await _topicManager.ChangeAssociatedUsersByRoleAsync(User.Identity.GetUserIdentity(), topicId, role, users))
                 return Ok();
+
             return BadRequest();
         }
 
         #endregion
-
     }
 }

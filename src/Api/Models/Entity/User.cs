@@ -1,4 +1,5 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 {
+    [Obsolete("Use UserResult from UserStore instead", error: false)]
     public class User
     {
         [Key]
@@ -40,27 +42,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
 
         public List<Subscription> Subscriptions { get; set; }
 
-        public virtual StudentDetails StudentDetails { get; set; }
-
         public List<TopicReview> Reviews { get; set; }
-
-        #region Utility Methods
 
         [NotMapped]
         public string Picture
         {
             get
             {
-                if (!HasProfilePicture())
+                if (!HasProfilePicture)
                     return Constants.DefaultPircture;
                 return ProfilePicture;
             }
         }
 
-        public bool HasProfilePicture()
-        {
-            return !string.IsNullOrEmpty(ProfilePicture);
-        }
+        public bool HasProfilePicture => !string.IsNullOrEmpty(ProfilePicture);
 
         public string FullName
         {
@@ -71,22 +66,5 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
                 return FirstName + ' ' + LastName;
             }
         }
-
-        public bool IsAdministrator()
-        {
-            return Role == Models.Role.Administrator;
-        }
-
-        public bool IsSupervisor()
-        {
-            return Role == Models.Role.Supervisor;
-        }
-
-        public bool IsStudent()
-        {
-            return Role == Models.Role.Student;
-        }
-
-        #endregion
     }
 }

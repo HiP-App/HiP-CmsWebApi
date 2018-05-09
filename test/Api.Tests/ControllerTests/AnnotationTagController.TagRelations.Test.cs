@@ -73,8 +73,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
-            _tester.TestControllerWithMockData(_tester.Supervisor.UId)
-                .Calling(c => c.PostLayerRelationRule(model))
+            _tester.TestControllerWithMockData(_tester.Supervisor.Id)
+                .Calling(c => c.PostLayerRelationRuleAsync(model))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<LayerRelationRule>(relations =>
                     relations.Any(actual =>
@@ -104,11 +104,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Color = expected.Color,
                 ArrowStyle = expected.ArrowStyle
             };
-            _tester.TestController(_tester.Student.UId)
+            _tester.TestController(_tester.Student.Id)
                 .WithDbContext(dbContext => dbContext
                     .WithSet<Layer>(db => db.AddRange(expected.SourceLayer, expected.TargetLayer))
                 )
-                .Calling(c => c.PostLayerRelationRule(model))
+                .Calling(c => c.PostLayerRelationRuleAsync(model))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<LayerRelationRule>(relations =>
                     !relations.Any(actual => actual.Equals(expected))
@@ -284,27 +284,27 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         /// <summary>
         /// Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
         /// </summary>
-       // TODO [Fact]
-        public void GetAvailableRelationsForIdTest_NoRelations()
-        {
-            var expected = new List<AnnotationTagInstanceRelation>();
-            var instance3 = new AnnotationTagInstance(_tester.Tag3);
-            var instances = new List<AnnotationTagInstance>()
-            {
-                new AnnotationTagInstance(_tester.Tag1),
-                new AnnotationTagInstance(_tester.Tag2),
-                instance3,
-                new AnnotationTagInstance(_tester.Tag4)
-            };
-            _tester.TestControllerWithMockData()
-                // no relations exist between the tags
-                // TODO How to model that the tag instances are part of the same document?                
-                .Calling(c => c.GetAllowedRelationsForInstance(_tester.Tag3.Id))
-                .ShouldReturn()
-                .Ok()
-                .WithModelOfType<List<AnnotationTagInstanceRelation>>()
-                .Passing(actual => expected.SequenceEqual(actual));
-        }
+        // TODO [Fact]
+        //public void GetAvailableRelationsForIdTest_NoRelations()
+        //{
+        //    var expected = new List<AnnotationTagInstanceRelation>();
+        //    var instance3 = new AnnotationTagInstance(_tester.Tag3);
+        //    var instances = new List<AnnotationTagInstance>()
+        //    {
+        //        new AnnotationTagInstance(_tester.Tag1),
+        //        new AnnotationTagInstance(_tester.Tag2),
+        //        instance3,
+        //        new AnnotationTagInstance(_tester.Tag4)
+        //    };
+        //    _tester.TestControllerWithMockData()
+        //        // no relations exist between the tags
+        //        // TODO How to model that the tag instances are part of the same document?                
+        //        .Calling(c => c.GetAllowedRelationsForInstance(_tester.Tag3.Id))
+        //        .ShouldReturn()
+        //        .Ok()
+        //        .WithModelOfType<List<AnnotationTagInstanceRelation>>()
+        //        .Passing(actual => expected.SequenceEqual(actual));
+        //}
 
         /// <summary>
         /// Should return 404 for tags that do not exist
@@ -337,7 +337,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 ArrowStyle = "dotted"
             };
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PostTagInstanceRelation(expected))
+                .Calling(c => c.PostTagInstanceRelationAsync(expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     relations.Any(actual =>
@@ -369,7 +369,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AnnotationTag>(db => db.AddRange(_tester.Tag1, _tester.Tag2, _tester.Tag3))
                 )
-                .Calling(c => c.PostTagInstanceRelation(expected))
+                .Calling(c => c.PostTagInstanceRelationAsync(expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
@@ -393,7 +393,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithDbContext(dbContext => dbContext
                     .WithSet<AnnotationTag>(db => db.AddRange(_tester.Tag1, _tester.Tag2, _tester.Tag3))
                 )
-                .Calling(c => c.PostTagInstanceRelation(expected))
+                .Calling(c => c.PostTagInstanceRelationAsync(expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
@@ -424,7 +424,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                     .WithSet<AnnotationTagInstance>(db => db.AddRange(_tester.TagInstance1, _tester.TagInstance2))
                     .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_tester.Relation12))
                 )
-                .Calling(c => c.PostTagInstanceRelation(expected))
+                .Calling(c => c.PostTagInstanceRelationAsync(expected))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -443,7 +443,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
             _tester.TestController()
                 // --> tags 1 and 2 were NOT added to the database
-                .Calling(c => c.PostTagInstanceRelation(expected))
+                .Calling(c => c.PostTagInstanceRelationAsync(expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     !relations.Any(actual => // negated --> NO relation like this exists
@@ -469,8 +469,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 TargetId = _tester.Tag2.Id,
                 Title = "relation-with-nonexisting-tags"
             };
-            _tester.TestController(_tester.Student.UId) // id = 2 --> student
-                .Calling(c => c.PostTagInstanceRelation(expected))
+            _tester.TestController(_tester.Student.Id) // id = 2 --> student
+                .Calling(c => c.PostTagInstanceRelationAsync(expected))
                 .ShouldReturn()
                 .Forbid();
         }
@@ -494,7 +494,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 ArrowStyle = "dotted"
             };
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PostTagRelationRule(expected))
+                .Calling(c => c.PostTagRelationRuleAsync(expected))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
                     relations.Any(actual =>
@@ -536,7 +536,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                     .WithSet<AnnotationTagInstance>(db => db.AddRange(_tester.TagInstance1, _tester.TagInstance2))
                     .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_tester.Relation12))
                 )
-                .Calling(c => c.PutTagInstanceRelation(updated))
+                .Calling(c => c.PutTagInstanceRelationAsync(updated))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(relations =>
                     relations.Any(actual =>
@@ -558,7 +558,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PutTagRelationTest404()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTagInstanceRelation(new RelationUpdateModel()))
+                .Calling(c => c.PutTagInstanceRelationAsync(new RelationUpdateModel()))
                 .ShouldReturn()
 		       	.NotFound();
         }
@@ -577,8 +577,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 Title = model.Title,
                 NewTitle = "changed"
             };
-            _tester.TestController(_tester.Student.UId) // --> log in as student
-                .Calling(c => c.PutTagInstanceRelation(update))
+            _tester.TestController(_tester.Student.Id) // --> log in as student
+                .Calling(c => c.PutTagInstanceRelationAsync(update))
                 .ShouldReturn()
                 .Forbid();
         }
@@ -604,7 +604,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 ArrowStyle = "dotted"
             };
             _tester.TestControllerWithMockData()
-                .Calling(c => c.PutTagRelationRule(update))
+                .Calling(c => c.PutTagRelationRuleAsync(update))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
                     relations.Any(actual => TagRulesEqual(actual, update))
@@ -635,7 +635,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                     .WithSet<AnnotationTag>(db => db.AddRange(_tester.Tag1, _tester.Tag2))
                     .WithSet<AnnotationTagInstanceRelation>(db => db.Add(_tester.Relation12))
                 )
-                .Calling(c => c.DeleteTagRelation(model))
+                .Calling(c => c.DeleteTagRelationAsync(model))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagInstanceRelation>(rels =>
                     !rels.Any(rel => rel.SourceTagId == model.SourceId && rel.TargetTagId == model.TargetId))
@@ -658,7 +658,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
             _tester.TestControllerWithMockData()
                 // --> no AnnotationTagRelation objects were added to the database
-                .Calling(c => c.DeleteTagRelation(model))
+                .Calling(c => c.DeleteTagRelationAsync(model))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -674,8 +674,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 SourceId = _tester.Relation12.SourceTag.Id,
                 TargetId = _tester.Relation12.TargetTag.Id
             };
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.DeleteTagRelation(model))
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.DeleteTagRelationAsync(model))
                 .ShouldReturn()
                 .Forbid();
         }
@@ -693,7 +693,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var original = RelationFormModelFromRelationRule(_tester.RelationRule12);
             _tester.TestControllerWithMockData()
-                .Calling(c => c.DeleteTagRelationRule(original))
+                .Calling(c => c.DeleteTagRelationRuleAsync(original))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<AnnotationTagRelationRule>(relations =>
                     !(relations.Any(actual => TagRulesEqual(actual, original)))

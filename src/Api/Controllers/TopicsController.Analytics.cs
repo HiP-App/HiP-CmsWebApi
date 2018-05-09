@@ -1,19 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+﻿using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.AnnotationAnalytics;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-        private ContentAnalyticsManager _analyticsManager;
-
-        private void TopicsAnalyticsController()
-        {
-            _analyticsManager = new ContentAnalyticsManager(DbContext);
-        }
+        private readonly ContentAnalyticsManager _analyticsManager;
 
         /// <summary>
         /// gets the AnnotationTag Frequency Analytics of {topicId}
@@ -27,10 +23,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(TagFrequencyAnalyticsResult), 200)]
         [ProducesResponseType(typeof(void), 404)]
         [ProducesResponseType(typeof(void), 403)]
-        public IActionResult GetTagFrequencyAnalytics([FromRoute]int topicId)
+        public async Task<IActionResult> GetTagFrequencyAnalyticsAsync([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
 
             try
             {

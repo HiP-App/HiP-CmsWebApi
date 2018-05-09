@@ -1,29 +1,9 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
-using System;
+﻿using System;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 {
     public class TopicResult
     {
-
-        public TopicResult(Entity.Topic topic)
-        {
-            Id = topic.Id;
-            Title = topic.Title;
-            Status = topic.Status;
-            Deadline = topic.Deadline;
-            Description = topic.Description;
-            Requirements = topic.Requirements;
-            CreatedAt = topic.CreatedAt;
-            UpdatedAt = topic.UpdatedAt;
-
-            if (topic.CreatedBy != null)
-                CreatedBy = new UserResult(topic.CreatedBy);
-
-            // TODO this.CreatedBy = topic.UpdatedBy;
-        }
-
-
         public int Id { get; set; }
 
         public string Title { get; set; }
@@ -36,12 +16,26 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic
 
         public string Requirements { get; set; }
 
-        public UserResult CreatedBy { get; set; }
+        public string CreatedBy { get; set; } // a user ID
 
         public DateTime CreatedAt { get; set; }
 
-        public UserResult UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; } // a user ID
 
         public DateTime UpdatedAt { get; set; }
+
+        public TopicResult(Entity.Topic topic)
+        {
+            Id = topic.Id;
+            Title = topic.Title;
+            Status = topic.Status;
+            Deadline = topic.Deadline;
+            Description = topic.Description;
+            Requirements = topic.Requirements;
+            CreatedAt = topic.CreatedAt;
+            UpdatedAt = topic.UpdatedAt;
+            CreatedBy = topic.CreatedById;
+            // TODO this.CreatedBy = topic.UpdatedBy;
+        }
     }
 }

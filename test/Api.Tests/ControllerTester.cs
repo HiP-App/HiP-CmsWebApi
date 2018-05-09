@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
 using PaderbornUniversity.SILab.Hip.CmsApi.Tests.Utility;
+using System.Linq;
+using PaderbornUniversity.SILab.Hip.UserStore;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 {
@@ -16,10 +18,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
         private const string SupervisorUId = "test-auth:supervisor3";
         private const string ReviewerUId = "test-auth:reviewer4";
         private const string AdminUId = "test-auth:admin1";
-        public User Admin { get; }
-        public User Student { get; }
-        public User Supervisor { get; }
-        public User Reviewer { get; }
+        public UserResult Admin { get; }
+        public UserResult Student { get; }
+        public UserResult Supervisor { get; }
+        public UserResult Reviewer { get; }
         public AnnotationTag Tag1 { get; set; }
         public AnnotationTag Tag2 { get; set; }
         public AnnotationTag Tag3 { get; set; }
@@ -50,33 +52,29 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
 
         public ControllerTester()
         {
-            Admin = new User
+            Admin = new UserResult
             {
-                Id = 1,
-                UId = AdminUId,
+                Id = AdminUId,
                 Email = "admin@hipapp.de",
-                Role = "Administrator"
+                Roles = new[] { "Administrator" }
             };
-            Student = new User
+            Student = new UserResult
             {
-                Id = 2,
-                UId = StudentUId,
+                Id = StudentUId,
                 Email = "student@hipapp.de",
-                Role = "Student"
+                Roles = new[] { "Student" }
             };
-            Supervisor = new User
+            Supervisor = new UserResult
             {
-                Id = 3,
-                UId = SupervisorUId,
+                Id = SupervisorUId,
                 Email = "supervisor@hipapp.de",
-                Role = "Supervisor"
+                Roles = new[] { "Supervisor" }
             };
-            Reviewer = new User
+            Reviewer = new UserResult
             {
-                Id = 6,
-                UId = ReviewerUId,
+                Id = ReviewerUId,
                 Email = "reviewer@hipapp.de",
-                Role = "Reviewer"
+                Roles = new[] { "Reviewer" }
             };
             /*
              * Layer1   Layer2
@@ -159,26 +157,25 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
             {
                 SubscriptionId = 1,
                 SubscriberId = Student.Id,
-                Subscriber = Student,
                 Type = NotificationType.TOPIC_ASSIGNED_TO
             };
             SupervisorUser = new TopicUser
             {
                 TopicId = TopicOne.Id,
                 UserId = Supervisor.Id,
-                Role = Supervisor.Role
+                Role = Supervisor.Roles.First()
             };
             StudentUser = new TopicUser
             {
                 TopicId = TopicOne.Id,
                 UserId = Student.Id,
-                Role = Student.Role
+                Role = Student.Roles.First()
             };
             ReviewerUser = new TopicUser
             {
                 TopicId = TopicOne.Id,
                 UserId = Reviewer.Id,
-                Role = Reviewer.Role
+                Role = Reviewer.Roles.First()
             };
             FirstDocument = new Document
             {
@@ -206,9 +203,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests
             return MyMvc
                 .Controller<T>()
                 .WithAuthenticatedUser(user => user.WithClaim(CustomClaims.Sub, userIdentity).WithClaim(CustomClaims.Role, role))
-                .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.AddRange(Admin, Student, Supervisor, Reviewer))
-                );
+                .WithDbContext(dbContext => { });
         }
 
         public IAndControllerBuilder<T> TestControllerWithMockData(string userIdentity = AdminUId, string role = "Administrator")
