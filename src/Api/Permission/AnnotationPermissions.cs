@@ -1,6 +1,7 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +29,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
             {
                 allowed = false;
             }
+            catch (SwaggerException)
+            {
+                allowed = false;
+            }
+
             return allowed;
         }
 

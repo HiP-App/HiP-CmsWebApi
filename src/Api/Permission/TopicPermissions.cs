@@ -1,6 +1,7 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 
                 if (user.Roles.Contains(Role.Administrator))
                     return true;
-                
+
                 // Created?
                 if (DbContext.Topics.Any(t => t.Id == topicId && t.CreatedById == user.Id))
                     return true;
@@ -34,6 +35,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
                     return true;
             }
             catch (InvalidOperationException) { }
+            catch (SwaggerException) { }
 
             return false;
         }
@@ -56,6 +58,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
                     return true;
             }
             catch (InvalidOperationException) { }
+            catch (SwaggerException) { }
+
 
             return false;
         }
@@ -71,6 +75,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
             {
                 return false;
             }
+            catch (SwaggerException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> IsReviewerAsync(string identity, int topicId)
@@ -82,6 +90,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
                     return true;
             }
             catch (InvalidOperationException) { }
+            catch (SwaggerException) { }
 
             return false;
         }
