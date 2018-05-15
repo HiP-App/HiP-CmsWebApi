@@ -7,6 +7,7 @@ using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -26,7 +27,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <summary>
         /// Get all notifications for the user
         /// </summary>
-        /// <response code="200">A List of All NotificationResults for the current user</response>
+        /// <response code="200">A List of all NotificationResults for the current user</response>
         /// <response code="404">There are no Notifications for the current user</response>                
         /// <response code="401">User is denied</response>
         [HttpGet("All")]
