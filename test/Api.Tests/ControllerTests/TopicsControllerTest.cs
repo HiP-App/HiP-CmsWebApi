@@ -179,9 +179,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .StatusCode(403);
         }
 
-        /// <summary>
-        /// Passes if topic is added successfully
-        /// </summary>
+        // <summary>
+        // Passes if topic is added successfully
+        // </summary>
         //[Fact]
         //public void PutTopicTest()
         //{

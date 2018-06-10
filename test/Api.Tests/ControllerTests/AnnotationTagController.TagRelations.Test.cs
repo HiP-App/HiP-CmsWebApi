@@ -281,9 +281,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .Passing(RelationsEqualPredicate(expected));
         }
 
-        /// <summary>
-        /// Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
-        /// </summary>
+        // <summary>
+        // Should return code 200 and an empty list of tag relations if there are no relations possible for the given tag instance
+        // </summary>
         // TODO [Fact]
         //public void GetAvailableRelationsForIdTest_NoRelations()
         //{
