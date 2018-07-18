@@ -1,7 +1,6 @@
 $csproj = (ls *.Sdk\*.csproj).FullName
 
-dotnet pack "$csproj" -o .
+dotnet pack "$csproj" -o . 
+dotnet pack "$csproj" -o . --version-suffix "develop"
 
-$nupkg = (ls src\*.Sdk\*.nupkg).FullName
-dotnet nuget push "$nupkg" -k "$env:MyGetKey" -s "$env:NuGetFeed"
 $LASTEXITCODE = 0
