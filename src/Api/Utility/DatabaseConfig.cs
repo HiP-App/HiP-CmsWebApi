@@ -12,6 +12,8 @@
 
         public string Port { get; set; }
 
+        public string AdminUserId { get; set; }
+
         public string ConnectionString =>
             $"Host={Host};" +
             $"Username={Username};" +
