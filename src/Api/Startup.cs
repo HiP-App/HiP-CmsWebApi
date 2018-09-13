@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Migrations;
 using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
@@ -59,12 +60,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             var authConfig = serviceProvider.GetService<IOptions<AuthConfig>>().Value;
             var databaseConfig = serviceProvider.GetService<IOptions<DatabaseConfig>>().Value;
 
+            if (!string.IsNullOrEmpty(databaseConfig.AdminUserId))
+                MigrationDataProvider.AdminUserId = databaseConfig.AdminUserId;
+
             // Register AppConfig in Services 
             services
                 .AddTransient<IEmailSender, EmailSender>()
                 .AddTransient<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<UserStoreService>()
-                .AddSingleton<UserManager>()                
+                .AddSingleton<UserManager>()
                 .AddScoped<NotificationManager>()
                 .AddScoped<TopicManager>()
                 .AddScoped<AttachmentsManager>()

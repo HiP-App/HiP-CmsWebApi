@@ -6,8 +6,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 {
     public partial class UserStore : Migration
     {
-        public const string AdminUserId = "auth0|5968ed8cdd1b3733ca94865d"; // Account "admin@hipapp.de"
-
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -185,7 +183,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Migrations
 
             void AssignAdminUserId(string table, string column)
             {
-                migrationBuilder.Sql($"UPDATE \"{table}\" SET \"{column}\" = '{AdminUserId}'");
+                migrationBuilder.Sql($"UPDATE \"{table}\" SET \"{column}\" = '{MigrationDataProvider.AdminUserId}'");
             }
 
             void RemoveDuplicates(string table, params string[] primaryKeyColumns)
