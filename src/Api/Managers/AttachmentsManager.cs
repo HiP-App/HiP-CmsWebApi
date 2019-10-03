@@ -1,20 +1,26 @@
-﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class AttachmentsManager : BaseManager
     {
-        public AttachmentsManager(CmsDbContext dbContext) : base(dbContext) { }
+        private readonly UserManager _userManager;
+
+        public AttachmentsManager(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
+        {
+            _userManager = userManager;
+        }
 
         /// <exception cref="InvalidOperationException">The input sequence contains more than one element. -or- The input sequence is empty.</exception>
         public TopicAttachment GetAttachmentById(int attachmentId)
@@ -24,20 +30,23 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 
         public IEnumerable<TopicAttachmentResult> GetAttachments(int topicId)
         {
-            return DbContext.TopicAttachments.Where(ta => (ta.TopicId == topicId)).Include(ta => ta.User).Include(ta => ta.Metadata).ToList().Select(at => new TopicAttachmentResult(at));
+            return DbContext.TopicAttachments
+                .Where(ta => ta.TopicId == topicId)
+                .Include(ta => ta.Metadata)
+                .ToList()
+                .Select(at => new TopicAttachmentResult(at));
         }
 
-        public EntityResult CreateAttachment(int topicId, string identity, AttachmentFormModel model)
+        public EntityResult CreateAttachment(int topicId, string userId, AttachmentFormModel model)
         {
             if (!DbContext.Topics.Include(t => t.TopicUsers).Any(t => t.Id == topicId))
                 return EntityResult.Error("Unknown Topic");
 
             try
             {
-                var user = GetUserByIdentity(identity);
                 var attatchment = new TopicAttachment(model)
                 {
-                    UserId = user.Id,
+                    UserId = userId,
                     TopicId = topicId,
                     Type = "TODO"
                 };
@@ -45,14 +54,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 DbContext.TopicAttachments.Add(attatchment);
                 DbContext.SaveChanges();
 
-                return EntityResult.Successfull(attatchment.Id);
+                return EntityResult.Successful(attatchment.Id);
             }
             catch (Exception e)
             {
                 return EntityResult.Error(e.Message);
             }
         }
-        public EntityResult PutAttachment(int attachmentId, string identity, IFormFile file)
+
+        public async Task<EntityResult> PutAttachmentAsync(int attachmentId, string identity, IFormFile file)
         {
             TopicAttachment attachment;
             try
@@ -68,11 +78,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             if (!Directory.Exists(topicFolder))
                 Directory.CreateDirectory(topicFolder);
 
-            var fileName = (Path.Combine(topicFolder, file.FileName));
+            var fileName = Path.Combine(topicFolder, file.FileName);
+
             using (var outputStream = new FileStream(fileName, FileMode.Create))
-            {
                 file.CopyTo(outputStream);
-            }
+            
             try
             {
                 attachment.Path = file.FileName;
@@ -81,16 +91,15 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 DbContext.Update(attachment);
                 DbContext.SaveChanges();
 
-                new NotificationProcessor(DbContext, attachment.Topic, identity).OnAttachmetAdded(attachment.Title);
+                await new NotificationProcessor(DbContext, attachment.Topic, identity, _userManager).OnAttachmentAddedAsync(attachment.Title);
 
-                return EntityResult.Successfull(attachment.Id);
+                return EntityResult.Successful(attachment.Id);
             }
             catch (Exception e)
             {
                 return EntityResult.Error(e.Message);
             }
         }
-
 
         public bool DeleteAttachment(int topicId, int attachmentId)
         {
@@ -100,7 +109,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 if (!string.IsNullOrEmpty(attachment.Path))
                 {
                     var fileName = Path.Combine(Constants.AttachmentFolder, topicId.ToString(), attachment.Path);
-                    DeleteFile(fileName);
+                    if (File.Exists(fileName))
+                        File.Delete(fileName);
                 }
                 DbContext.Remove(attachment);
                 DbContext.SaveChanges();
@@ -111,7 +121,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
                 return false;
             }
         }
-        #region Metadata
 
         internal void UpdateMetadata(int topicId, int attachmentId, string identity, Metadata metadata)
         {
@@ -134,6 +143,5 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             DbContext.Add(newMetadata);
             DbContext.SaveChanges();
         }
-        #endregion
     }
 }

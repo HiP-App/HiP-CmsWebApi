@@ -1,23 +1,32 @@
-﻿﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.PlatformAbstractions;
+using PaderbornUniversity.SILab.Hip.CmsApi.Data;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using PaderbornUniversity.SILab.Hip.CmsApi.Migrations;
+using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
+using PaderbornUniversity.SILab.Hip.CmsApi.Services;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.UserStore;
+using PaderbornUniversity.SILab.Hip.Webservice;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.IO;
-using Microsoft.Extensions.PlatformAbstractions;
-using PaderbornUniversity.SILab.Hip.CmsApi.Services;
-using Swashbuckle.AspNetCore.Swagger;
-using PaderbornUniversity.SILab.Hip.Webservice;
+using AppConfig = PaderbornUniversity.SILab.Hip.CmsApi.Utility.AppConfig;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Startup
     {
-    internal static IServiceProvider ServiceProvider { get; private set; }
+        internal static IServiceProvider ServiceProvider { get; private set; }
 
         private IConfigurationRoot Configuration { get; }
 
@@ -40,14 +49,47 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // Read configurations from json
-            var appConfig = new Utility.AppConfig(Configuration);
+            // Read configurations from JSON or environment variables
+            services
+                .Configure<AppConfig>(Configuration.GetSection("App"))
+                .Configure<DatabaseConfig>(Configuration.GetSection("Database"))
+                .Configure<UserStoreConfig>(Configuration.GetSection("App"))
+                .Configure<AuthConfig>(Configuration.GetSection("Auth"));
+
+            var serviceProvider = services.BuildServiceProvider();
+            var authConfig = serviceProvider.GetService<IOptions<AuthConfig>>().Value;
+            var databaseConfig = serviceProvider.GetService<IOptions<DatabaseConfig>>().Value;
+
+            if (!string.IsNullOrEmpty(databaseConfig.AdminUserId))
+                MigrationDataProvider.AdminUserId = databaseConfig.AdminUserId;
 
             // Register AppConfig in Services 
-            services.AddSingleton(appConfig);
-            services.AddTransient<IEmailSender, EmailSender>();
+            services
+                .AddTransient<IEmailSender, EmailSender>()
+                .AddTransient<IHttpContextAccessor, HttpContextAccessor>()
+                .AddSingleton<UserStoreService>()
+                .AddSingleton<UserManager>()
+                .AddScoped<NotificationManager>()
+                .AddScoped<TopicManager>()
+                .AddScoped<AttachmentsManager>()
+                .AddScoped<DocumentManager>()
+                .AddScoped<ContentAnalyticsManager>()
+                .AddScoped<AnnotationPermissions>()
+                .AddScoped<TopicPermissions>()
+                .AddScoped<UserPermissions>();
 
-            string domain = appConfig.AuthConfig.Authority;
+            // Configure authentication
+            services
+                .AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Audience = authConfig.Audience;
+                    options.Authority = authConfig.Authority;
+                });
+
+            // Configure authorization
+            var domain = authConfig.Authority;
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("read:webapi",
@@ -60,7 +102,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             services.AddCors();
 
             // Add database service for Postgres
-            services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(appConfig.DatabaseConfig.ConnectionString));
+            services.AddDbContext<CmsDbContext>(options => options.UseNpgsql(databaseConfig.ConnectionString));
 
             // Add framework services.
             services.AddMvc();
@@ -68,34 +110,28 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             // Add Swagger service
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info() { Title = "HiPCMS API", Version = "v1", Description = "A REST api to serve History in Paderborn CMS System" });
-
+                c.SwaggerDoc("v1", new Info { Title = "HiPCMS API", Version = "v1", Description = "A REST api to serve History in Paderborn CMS System" });
                 c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "Api.xml"));
-               // c.OperationFilter<SwaggerOperationFilter>();
+                c.OperationFilter<CustomSwaggerOperationFilter>();
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, Utility.AppConfig appConfig)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             if (env.IsDevelopment())
                 loggerFactory.AddDebug();
 
             app.UseCors(builder =>
+            {
                 // This will allow any request from any server. Tweak to fit your needs!
                 builder.AllowAnyHeader()
                        .AllowAnyMethod()
-                       .AllowAnyOrigin()
-            );
+                       .AllowAnyOrigin();
+            });
 
-            var options = new JwtBearerOptions
-            {
-                Audience = appConfig.AuthConfig.Audience,
-                Authority = appConfig.AuthConfig.Authority
-            };
-            app.UseJwtBearerAuthentication(options);
-
+            app.UseAuthentication();
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
@@ -126,6 +162,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseConfiguration(config)
+                .UseUrls("http://*:5001")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();

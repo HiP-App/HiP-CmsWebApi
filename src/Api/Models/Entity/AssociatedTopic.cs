@@ -14,11 +14,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity
         public int ChildTopicId { get; set; }
 
         public Topic ChildTopic { get; set; }
-    }
 
-    public class AssociatedTopicMap
-    {
-        public AssociatedTopicMap(EntityTypeBuilder<AssociatedTopic> entityBuilder)
+        public static void ConfigureModel(EntityTypeBuilder<AssociatedTopic> entityBuilder)
         {
             entityBuilder.HasKey(t => new { t.ParentTopicId, t.ChildTopicId });
 

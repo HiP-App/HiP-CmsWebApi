@@ -1,154 +1,146 @@
-﻿using System;
-using System.Collections.Generic;
-using PaderbornUniversity.SILab.Hip.CmsApi.Data;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications;
-using System.Linq;
 using PaderbornUniversity.SILab.Hip.CmsApi.Services;
-// ReSharper disable InconsistentNaming
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
+// ReSharper disable InconsistentNaming
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
 {
     public class NotificationProcessor : BaseManager
     {
-
-        private readonly List<int> notifiedUsers = new List<int>();
-        private readonly Topic topic;
-        private readonly int currentUser;
-        private readonly IEmailSender emailSender;
+        private readonly List<string> _notifiedUsers = new List<string>();
+        private readonly Topic _topic;
+        private readonly string _currentUser;
+        private readonly IEmailSender _emailSender;
+        private readonly UserManager _userManager;
 
         public NotificationProcessor(
             CmsDbContext dbContext,
             Topic currentTopic,
-            string identity
-        ) : base(dbContext)
+            string userId,
+            UserManager userManager) : base(dbContext)
         {
-            topic = currentTopic;
-            currentUser = GetIdByIdentity(identity);
-            emailSender = (EmailSender) Startup.ServiceProvider.GetService(typeof(IEmailSender)); // TODO: This is probably not such a good idea...
+            _topic = currentTopic;
+            _currentUser = userId;
+            _emailSender = (EmailSender)Startup.ServiceProvider.GetService(typeof(IEmailSender)); // TODO: This is probably not such a good idea...
+            _userManager = userManager;
             // Do not notify yourself
-            notifiedUsers.Add(currentUser);
+            _notifiedUsers.Add(_currentUser);
         }
 
-        public void OnNewTopic()
+        public async Task OnNewTopicAsync()
         {
-            NotifyAll(NotificationType.TOPIC_CREATED);
-            finnish();
+            await NotifyAllAsync(NotificationType.TOPIC_CREATED);
+            Finish();
         }
 
-        public void OnDeleteTopic()
+        public async Task OnDeleteTopicAsync()
         {
-            NotifyAll(NotificationType.TOPIC_DELETED, topic.Title);
-            finnish();
+            await NotifyAllAsync(NotificationType.TOPIC_DELETED, _topic.Title);
+            Finish();
         }
 
-        public void OnStateChanged(string state)
+        public async Task OnStateChangedAsync(string state)
         {
-            NotifyAll(NotificationType.TOPIC_STATE_CHANGED, state);
-            finnish();
+            await NotifyAllAsync(NotificationType.TOPIC_STATE_CHANGED, state);
+            Finish();
         }
 
-        public void OnAttachmetAdded(string name)
+        public async Task OnAttachmentAddedAsync(string name)
         {
-            NotifyAll(NotificationType.TOPIC_ATTACHMENT_ADDED, name);
-            finnish();
+            await NotifyAllAsync(NotificationType.TOPIC_ATTACHMENT_ADDED, name);
+            Finish();
         }
 
-        private void NotifyAll(NotificationType type, string data = null)
+        private async Task NotifyAllAsync(NotificationType type, string data = null)
         {
-            topic.TopicUsers.ForEach(tu => createNotification(tu, type, data));
+            foreach (var tu in _topic.TopicUsers)
+                await CreateNotificationAsync(tu, type, data);
         }
 
-        #region OnUpdate
-
-        public void OnUpdate(TopicFormModel changes)
+        public async Task OnUpdateAsync(TopicFormModel changes)
         {
             // Deadline Changed
-            if (changes.Deadline != topic.Deadline)
-                NotifyAll(NotificationType.TOPIC_DEADLINE_CHANGED, changes.Deadline.ToString());
-            else if ((changes.Status != topic.Status))
-                NotifyAll(NotificationType.TOPIC_STATE_CHANGED, changes.Status);
+            if (changes.Deadline != _topic.Deadline)
+                await NotifyAllAsync(NotificationType.TOPIC_DEADLINE_CHANGED, changes.Deadline.ToString());
+            else if (changes.Status != _topic.Status)
+                await NotifyAllAsync(NotificationType.TOPIC_STATE_CHANGED, changes.Status);
             else
-                NotifyAll(NotificationType.TOPIC_UPDATED);
+                await NotifyAllAsync(NotificationType.TOPIC_UPDATED);
 
-            finnish();
+            Finish();
         }
 
-        #endregion
-
-        #region OnUsersChanged
-
-        public void OnUsersChanged(IEnumerable<TopicUser> newUser, IEnumerable<TopicUser> deletedUser, string role)
+        public async Task OnUsersChangedAsync(IEnumerable<TopicUser> newUser, IEnumerable<TopicUser> deletedUser, string role)
         {
-            foreach (TopicUser user in newUser)
-            {
-                createNotification(user, NotificationType.TOPIC_ASSIGNED_TO, role);
-            }
-            foreach (TopicUser user in deletedUser)
-            {
-                createNotification(user, NotificationType.TOPIC_REMOVED_FROM, role);
-            }
+            foreach (var user in newUser)
+                await CreateNotificationAsync(user, NotificationType.TOPIC_ASSIGNED_TO, role);
 
-            finnish();
+            foreach (var user in deletedUser)
+                await CreateNotificationAsync(user, NotificationType.TOPIC_REMOVED_FROM, role);
+
+            Finish();
         }
 
-        #endregion
-
-        #region createNotification
-
-        private void createNotification(TopicUser topicUser, NotificationType type, string data = null)
+        private async Task CreateNotificationAsync(TopicUser topicUser, NotificationType type, string data = null)
         {
             var userId = topicUser.UserId;
-            if (!notifiedUsers.Contains(userId))
+            if (!_notifiedUsers.Contains(userId))
             {
-                var not = createAppNotification(type, data, userId);
-                createMailNotification(topicUser, type, userId, not);
+                var notification = CreateAppNotification(type, data, userId);
+                await CreateMailNotificationAsync(topicUser, type, userId, notification);
             }
         }
 
-        private Notification createAppNotification(NotificationType type, string data, int userId)
+        private Notification CreateAppNotification(NotificationType type, string data, string userId)
         {
-            Notification not = new Notification() { UpdaterId = currentUser, Type = type, UserId = userId };
-            if (topic != null)
-                not.TopicId = topic.Id;
-            if (data != null)
-                not.Data = data;
+            var notification = new Notification
+            {
+                UpdaterId = _currentUser,
+                Type = type,
+                UserId = userId,
+                TopicId = _topic?.Id ?? 0,
+                Data = data
+            };
 
-            notifiedUsers.Add(userId);
-            DbContext.Notifications.Add(not);
-            return not;
+            _notifiedUsers.Add(userId);
+            DbContext.Notifications.Add(notification);
+            return notification;
         }
 
-        private void createMailNotification(TopicUser topicUser, NotificationType type, int userId, Notification not)
+        private async Task CreateMailNotificationAsync(TopicUser topicUser, NotificationType type, string userId, Notification not)
         {
-            var email = fetchUserEmail(topicUser);
-            var subscribed = isSubsccribed(type, userId);
+            var email = await TryFetchUserEmailAsync();
+            var subscribed = IsSubscribed(type, userId);
+
             if (email != null && subscribed)
-                emailSender.NotifyAsync(email, not);
-        }
+                await _emailSender.NotifyAsync(email, not);
 
-        private string fetchUserEmail(TopicUser topicUser)
-        {
-            try
+            async Task<string> TryFetchUserEmailAsync()
             {
-                var user = DbContext.Users.First(candidate => candidate.Id == topicUser.UserId);
-                return user.Email;
-            }
-            catch (InvalidOperationException)
-            {
-                return null;
+                try
+                {
+                    var user = await _userManager.GetUserByIdAsync(topicUser.UserId);
+                    return user.Email;
+                }
+                catch (InvalidOperationException) // TODO: Find out what UserManager throws in case of '404 Not Found'
+                {
+                    return null;
+                }
             }
         }
 
-        private bool isSubsccribed(NotificationType type, int userId)
+        private bool IsSubscribed(NotificationType type, string userId)
         {
-            return DbContext.Subscriptions.Any(subscription => subscription.Subscriber.Id == userId && subscription.Type == type);
+            return DbContext.Subscriptions.Any(subscription => subscription.SubscriberId == userId && subscription.Type == type);
         }
 
-        #endregion
-
-        private void finnish()
+        private void Finish()
         {
             DbContext.SaveChanges();
         }

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 // ReSharper disable CollectionNeverUpdated.Global
 
@@ -58,41 +59,21 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
             IsDeleted = false;
         }
 
-        #region Utily Methods
+        [NotMapped]
+        public string AbsoluteName => (ParentTag == null)
+            ? Layer + "_" + ShortName
+            : ParentTag.ShortName + "-" + ShortName;
 
-        public string GetAbsoluteName()
+        [NotMapped]
+        public int UsageCounter => TagInstances?.Count ?? 0;
+
+        public static void ConfigureModel(EntityTypeBuilder<AnnotationTag> entityBuilder)
         {
-            if (ParentTag == null)
-            {
-                return Layer + "_" + ShortName;
-            }
-            return ParentTag.ShortName + "-" + ShortName;
-        }
-
-        public int UsageCounter()
-        {
-            try
-            {
-                return TagInstances.Count;
-            }
-            catch (System.NullReferenceException)
-            {
-                return 0;
-            }
-        }
-
-        #endregion
-
-        public class AnnotationTagMap
-        {
-            public AnnotationTagMap(EntityTypeBuilder<AnnotationTag> entityBuilder)
-            {
-                entityBuilder.HasOne(at => at.ParentTag)
-                    .WithMany(pt => pt.ChildTags)
-                    .HasForeignKey(at => at.ParentTagId)
-                    .OnDelete(DeleteBehavior.SetNull);
-                entityBuilder.HasMany(at => at.TagInstances).WithOne(ati => ati.TagModel);
-            }
+            entityBuilder.HasOne(at => at.ParentTag)
+                .WithMany(pt => pt.ChildTags)
+                .HasForeignKey(at => at.ParentTagId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entityBuilder.HasMany(at => at.TagInstances).WithOne(ati => ati.TagModel);
         }
     }
 }

@@ -2,6 +2,7 @@
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -21,10 +22,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 401)]
         [ProducesResponseType(typeof(void), 404)]
         [HttpGet("{topicId}/ReviewStatus")]
-        public IActionResult GetReviewStatus([FromRoute]int topicId)
+        public async Task<IActionResult> GetReviewStatusAsync([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
             if (!_topicManager.IsValidTopicId(topicId))
                 return NotFound();
 
@@ -46,10 +47,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
         [HttpPut("{topicId}/ReviewStatus")]
-        public IActionResult PutReviewStatus([FromRoute] int topicId, [FromBody] TopicReviewStatus status)
+        public async Task<IActionResult> PutReviewStatusAsync([FromRoute] int topicId, [FromBody] TopicReviewStatus status)
         {
-            if (!_topicPermissions.IsReviewer(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsReviewerAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
             if (!ModelState.IsValid || !status.IsStatusValid())
                 return BadRequest();
             if(!_topicManager.IsValidTopicId(topicId))

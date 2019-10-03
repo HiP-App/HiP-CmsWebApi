@@ -1,24 +1,20 @@
-using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Collections.Generic;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Shared;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
     public partial class TopicsController
     {
-        private AttachmentsManager _attachmentsManager;
-
-        private void TopicsAttachmentsController()
-        {
-            _attachmentsManager = new AttachmentsManager(DbContext);
-        }
+        private readonly AttachmentsManager _attachmentsManager;
 
         // GET api/topics/:id/attachments
 
@@ -34,10 +30,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(IEnumerable<TopicAttachmentResult>), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAttachments([FromRoute]int topicId)
+        public async Task<IActionResult> GetAttachmentsAsync([FromRoute]int topicId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
 
             var attachments = _attachmentsManager.GetAttachments(topicId);
             if (attachments != null)
@@ -60,17 +56,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(StringWrapper), 200)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult GetAttachmet([FromRoute]int topicId, [FromRoute]int attachmentId)
+        public async Task<IActionResult> GetAttachmentAsync([FromRoute]int topicId, [FromRoute]int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
 
             try
             {
                 var attachment = _attachmentsManager.GetAttachmentById(attachmentId);
                 string fileName = Path.Combine(Constants.AttachmentFolder, topicId.ToString(), attachment.Path);
                 var hash = DownloadManager.AddFile(fileName, HttpContext.Connection.RemoteIpAddress);
-                return Ok(new StringWrapper() { Value = hash });
+                return Ok(new StringWrapper { Value = hash });
             }
             catch (InvalidOperationException)
             {
@@ -93,10 +89,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PostAttachment([FromRoute]int topicId, [FromBody]AttachmentFormModel model)
+        public async Task<IActionResult> PostAttachmentAsync([FromRoute]int topicId, [FromBody]AttachmentFormModel model)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -105,7 +101,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 
             if (result.Success)
                 return Ok(result);
-            return NotFoundError(result);
+            return NotFound(result);
         }
 
 
@@ -127,10 +123,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 403)]
         [ProducesResponseType(typeof(EntityResult), 500)]
-        public IActionResult PutAttachment([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
+        public async Task<IActionResult> PutAttachmentAsync([FromRoute]int topicId, [FromRoute] int attachmentId, [FromForm]IFormFile file)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
 
             if (file == null)
                 ModelState.AddModelError("file", "File is null");
@@ -138,11 +134,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _attachmentsManager.PutAttachment(attachmentId, User.Identity.GetUserIdentity(), file);
+            var result = await _attachmentsManager.PutAttachmentAsync(attachmentId, User.Identity.GetUserIdentity(), file);
 
             if (result.Success)
                 return Ok(result);
-            return NotFoundError(result);
+            return NotFound(result);
         }
 
         // DELETE api/topics/:id/attachments
@@ -160,10 +156,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 400)]
         [ProducesResponseType(typeof(void), 404)]
-        public IActionResult DeleteAttachment([FromRoute]int topicId, [FromRoute] int attachmentId)
+        public async Task<IActionResult> DeleteAttachmentAsync([FromRoute]int topicId, [FromRoute] int attachmentId)
         {
-            if (!_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
-                return Forbidden();
+            if (!(await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId)))
+                return Forbid();
 
             if (_attachmentsManager.DeleteAttachment(topicId, attachmentId))
                 return Ok();

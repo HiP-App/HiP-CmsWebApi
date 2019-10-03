@@ -1,17 +1,17 @@
 ﻿{
-  // Database Configurations
-  "DB_HOST": "localhost",
-  "DB_USERNAME": "postgres",
-  "DB_PASSWORD": "postgres",
-  "DB_NAME": "hipcmsdb",
-  "DB_PORT": "5632",
-
-  // Auth Configurations
-  "AUDIENCE": "https://hip.cs.upb.de/API",
-  "AUTHORITY": "https://hip.eu.auth0.com/",
-
-  // Admin Details
-  "ADMIN_EMAIL": "admin@hipapp.de",
-
-  "ALLOW_HTTP": true
+    "Database": {
+        "Name": "hipCmsDb",
+        "Host": "localhost",
+        "Username": "postgres",
+        "Password": "postgres",
+        "Port": "5632"
+    },
+    "Auth": {
+        "Audience": "https://hip.cs.upb.de/API",
+        "Authority": "https://hip.eu.auth0.com/",
+    },
+    "App": {
+        "EmailService": "",
+        "UserStoreUrl": "http://localhost:5000"
+    }
 }

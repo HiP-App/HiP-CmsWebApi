@@ -30,13 +30,6 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
             return Convert.ToBase64String(System.IO.File.ReadAllBytes(source));
         }
 
-        public static StatusCodeResult Forbidden() { return new StatusCodeResult(403); }
-        protected static StatusCodeResult Conflict() { return new StatusCodeResult(409); }
-        public static StatusCodeResult Gone() { return new StatusCodeResult(410); }
-        protected static StatusCodeResult ServiceUnavailable() { return new StatusCodeResult(503); }
-        protected static ObjectResult NotFoundError(object error) { return new ObjectResult(error) { StatusCode = 404 }; }
-
-
+        protected static StatusCodeResult Conflict() => new StatusCodeResult(409);
     }
-
 }

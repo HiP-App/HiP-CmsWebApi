@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using PaderbornUniversity.SILab.Hip.CmsApi.Permission;
 using Microsoft.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
 {
@@ -15,16 +16,19 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
     [ProducesResponseType(typeof(void), 403)]
     public class PermissionsController : ApiController
     {
-
         private readonly AnnotationPermissions _annotationPermissions;
         private readonly TopicPermissions _topicPermissions;
         private readonly UserPermissions _userPermissions;
 
-        public PermissionsController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public PermissionsController(CmsDbContext dbContext, ILoggerFactory loggerFactory,
+            AnnotationPermissions annotationPermissions,
+            TopicPermissions topicPermissions,
+            UserPermissions userPermissions)
+            : base(dbContext, loggerFactory)
         {
-            _annotationPermissions = new AnnotationPermissions(dbContext);
-            _topicPermissions = new TopicPermissions(dbContext);
-            _userPermissions = new UserPermissions(dbContext);
+            _annotationPermissions = annotationPermissions;
+            _topicPermissions = topicPermissions;
+            _userPermissions = userPermissions;
         }
 
         #region Annotations
@@ -36,9 +40,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="401">User is denied</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Annotation/Tags/All/Permission/IsAllowedToCreate")]
-        public IActionResult IsAllowedToCreateTags()
+        public async Task<IActionResult> IsAllowedToCreateTagsAsync()
         {
-            if (_annotationPermissions.IsAllowedToCreateTags(User.Identity.GetUserIdentity()))
+            if (await _annotationPermissions.IsAllowedToCreateTagsAsync(User.Identity.GetUserIdentity()))
                 return Ok();
             return Unauthorized();
         }
@@ -50,9 +54,9 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="401">User is denied</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Annotation/Tags/All/Permission/IsAllowedToEdit")]
-        public IActionResult IsAllowedToEditTags()
+        public async Task<IActionResult> IsAllowedToEditTagsAsync()
         {
-            if (_annotationPermissions.IsAllowedToEditTags(User.Identity.GetUserIdentity()))
+            if (await _annotationPermissions.IsAllowedToEditTagsAsync(User.Identity.GetUserIdentity()))
                 return Ok();
             return Unauthorized();
         }
@@ -67,11 +71,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/All/Permission/IsAllowedToCreate")]
-        public IActionResult IsAllowedToCreate()
+        public async Task<IActionResult> IsAllowedToCreateAsync()
         {
-            if (_topicPermissions.IsAllowedToCreate(User.Identity.GetUserIdentity()))
+            if (await _topicPermissions.IsAllowedToCreateAsync(User.Identity.GetUserIdentity()))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -82,11 +86,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         [HttpGet("Topics/{topicId}/Permission/IsAssociatedTo")]
         [ProducesResponseType(typeof(void), 200)]
         [ProducesResponseType(typeof(void), 401)]
-        public IActionResult IsAssociatedTo([FromRoute]int topicId)
+        public async Task<IActionResult> IsAssociatedToAsync([FromRoute]int topicId)
         {
-            if (_topicPermissions.IsAssociatedTo(User.Identity.GetUserIdentity(), topicId))
+            if (await _topicPermissions.IsAssociatedToAsync(User.Identity.GetUserIdentity(), topicId))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -95,11 +99,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsAllowedToEdit")]
-        public IActionResult IsAllowedToEdit([FromRoute]int topicId)
+        public async Task<IActionResult> IsAllowedToEditAsync([FromRoute]int topicId)
         {
-            if (_topicPermissions.IsAllowedToEdit(User.Identity.GetUserIdentity(), topicId))
+            if (await _topicPermissions.IsAllowedToEditAsync(User.Identity.GetUserIdentity(), topicId))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -108,11 +112,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         /// <response code="200">User is allowed</response>
         /// <response code="403">User is denied</response>
         [HttpGet("Topics/{topicId}/Permission/IsReviewer")]
-        public IActionResult IsAllowedToReview([FromRoute]int topicId)
+        public async Task<IActionResult> IsAllowedToReviewAsync([FromRoute]int topicId)
         {
-            if (_topicPermissions.IsReviewer(User.Identity.GetUserIdentity(), topicId))
+            if (await _topicPermissions.IsReviewerAsync(User.Identity.GetUserIdentity(), topicId))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         #endregion
@@ -129,7 +133,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_userPermissions.IsAllowedToAdminister(User.Identity))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         /// <summary>
@@ -142,7 +146,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         {
             if (_userPermissions.IsAllowedToInvite(User.Identity))
                 return Ok();
-            return Forbidden();
+            return Forbid();
         }
 
         #endregion

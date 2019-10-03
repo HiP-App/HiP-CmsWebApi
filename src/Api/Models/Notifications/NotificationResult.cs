@@ -1,25 +1,24 @@
-﻿using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.User;
+﻿using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using System;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Notifications
 {
     public class NotificationResult
     {
-
-        public NotificationResult(Notification not)
+        public NotificationResult(Notification notification)
         {
-            NotificationId = not.NotificationId;
-            TimeStamp = not.TimeStamp;
-            Type = not.Type.ToString();
-            IsRead = not.IsRead;
+            NotificationId = notification.NotificationId;
+            TimeStamp = notification.TimeStamp;
+            Updater = notification.UpdaterId;
+            Type = notification.Type.ToString();
+            IsRead = notification.IsRead;
         }
 
         public int NotificationId { get; set; }
 
         public DateTime TimeStamp { get; set; }
 
-        public UserResult Updater { get; set; }
+        public string Updater { get; set; } // a user ID
 
         public string Type { get; set; }
 

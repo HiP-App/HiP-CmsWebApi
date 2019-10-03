@@ -102,7 +102,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             DbContext.AnnotationTags.Add(tag);
             DbContext.SaveChanges();
 
-            return EntityResult.Successfull(tag.Id);
+            return EntityResult.Successful(tag.Id);
         }
 
         public bool AddChildTag(int parentId, int childId)
@@ -296,7 +296,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Managers
             try
             {
                 var tag = DbContext.AnnotationTags.Include(t => t.ChildTags).Single(t => t.Id == id);
-                if (tag.UsageCounter() == 0)
+                if (tag.UsageCounter == 0)
                 {
                     DbContext.AnnotationTags.Remove(tag);
                 }

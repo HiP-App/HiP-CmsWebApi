@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 {
@@ -16,21 +16,18 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity.Annotation
 
         public Layer TargetLayer { get; set; }
 
-        public class LayerRelationRuleMap
+        public static void ConfigureModel(EntityTypeBuilder<LayerRelationRule> entityBuilder)
         {
-            public LayerRelationRuleMap(EntityTypeBuilder<LayerRelationRule> entityBuilder)
-            {
-                entityBuilder
-                    .HasOne(r => r.SourceLayer)
-                    .WithMany(l => l.Relations)
-                    .HasForeignKey(r => r.SourceLayerId)
-                    .OnDelete(DeleteBehavior.Cascade);
-                entityBuilder
-                    .HasOne(r => r.TargetLayer)
-                    .WithMany(l => l.IncomingRelations)
-                    .HasForeignKey(r => r.TargetLayerId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            }
+            entityBuilder
+                .HasOne(r => r.SourceLayer)
+                .WithMany(l => l.Relations)
+                .HasForeignKey(r => r.SourceLayerId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entityBuilder
+                .HasOne(r => r.TargetLayer)
+                .WithMany(l => l.IncomingRelations)
+                .HasForeignKey(r => r.TargetLayerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

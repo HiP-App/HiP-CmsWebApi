@@ -1,17 +1,18 @@
 ﻿using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.UserStore;
+using System.Collections.ObjectModel;
 using Xunit;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
     public class PermissionControllerTest
     {
-        private ControllerTester<PermissionsController> _tester;                      
+        private ControllerTester<PermissionsController> _tester;
 
         public PermissionControllerTest()
         {
-            _tester = new ControllerTester<PermissionsController>();                                    
+            _tester = new ControllerTester<PermissionsController>();
         }
 
         #region Annotations test
@@ -23,7 +24,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToCreateTagsTestOk()
         {
             _tester.TestController()
-                .Calling(c => c.IsAllowedToCreateTags())
+                .Calling(c => c.IsAllowedToCreateTagsAsync())
                 .ShouldReturn()
                 .Ok();
         }
@@ -34,8 +35,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToCreateTagsTestUnauthorized()
         {
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.IsAllowedToCreateTags())
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.IsAllowedToCreateTagsAsync())
                 .ShouldReturn()
                 .Unauthorized();
         }
@@ -47,7 +48,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToEditTagsTestOk()
         {
             _tester.TestController()
-                .Calling(c => c.IsAllowedToEditTags())
+                .Calling(c => c.IsAllowedToEditTagsAsync())
                 .ShouldReturn()
                 .Ok();
         }
@@ -58,8 +59,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToEditTagsTestUnauthorized()
         {
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.IsAllowedToEditTags())
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.IsAllowedToEditTagsAsync())
                 .ShouldReturn()
                 .Unauthorized();
         }
@@ -75,7 +76,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToCreateTestOk()
         {
             _tester.TestController()
-                .Calling(c => c.IsAllowedToCreate())
+                .Calling(c => c.IsAllowedToCreateAsync())
                 .ShouldReturn()
                 .Ok();
         }
@@ -86,8 +87,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToCreateTestForbidden()
         {
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.IsAllowedToCreate())
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.IsAllowedToCreateAsync())
                 .ShouldReturn()
                 .StatusCode(403); // Not able to use Forbidden() as the original method returns the status code only but not Forbid()
         }
@@ -99,7 +100,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToEditTestOk()
         {
             _tester.TestController()
-                .Calling(c => c.IsAllowedToEdit(_tester.TopicOne.Id))
+                .Calling(c => c.IsAllowedToEditAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -110,8 +111,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToEditTestForbidden()
         {
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.IsAllowedToEdit(_tester.TopicOne.Id))
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.IsAllowedToEditAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -122,8 +123,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestOk()
         {
-            _tester.TestControllerWithMockData()                
-                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData()
+                .Calling(c => c.IsAssociatedToAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -134,8 +135,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestForSupervisor()
         {
-            _tester.TestControllerWithMockData(_tester.Supervisor.UId)
-                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Supervisor.Id)
+                .Calling(c => c.IsAssociatedToAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -146,8 +147,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestForStudent()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.IsAssociatedToAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -158,18 +159,16 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAssociatedToTestForbidden()
         {
-            var newStudent = new User
+            var newStudent = new UserResult
             {
-                Id = 13,
-                UId = "test-auth:student13",
+                Id = "test-auth:student13",
                 Email = "student1@hipapp.de",
-                Role = "Student"
+                Roles = new ObservableCollection<string>(new[] { "Student" })
             };
 
-            _tester.TestControllerWithMockData(newStudent.UId)
-                .WithDbContext(dbContext => dbContext                    
-                    .WithSet<User>(db => db.Add(newStudent)))
-                .Calling(c => c.IsAssociatedTo(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(newStudent.Id)
+                .WithDbContext(dbContext => { })
+                .Calling(c => c.IsAssociatedToAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -180,8 +179,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToReviewTest()
         {
-            _tester.TestControllerWithMockData(_tester.Reviewer.UId)
-                .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Reviewer.Id)
+                .Calling(c => c.IsAllowedToReviewAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok();
         }
@@ -193,7 +192,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void IsAllowedToReviewTest403ForAdmin()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
+                .Calling(c => c.IsAllowedToReviewAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -204,8 +203,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToReviewTest403ForStudent()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.IsAllowedToReview(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.IsAllowedToReviewAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
@@ -220,7 +219,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToAdministerTestOk()
         {
-            _tester.TestController()                
+            _tester.TestController()
                 .Calling(c => c.IsAllowedToAdminister())
                 .ShouldReturn()
                 .Ok();
@@ -232,7 +231,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToAdministerTestForbiddenForStudent()
         {
-            _tester.TestController(_tester.Student.UId, "Student")
+            _tester.TestController(_tester.Student.Id, "Student")
                 .Calling(c => c.IsAllowedToAdminister())
                 .ShouldReturn()
                 .StatusCode(403);
@@ -244,7 +243,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToAdministerTestForbiddenForSupervisor()
         {
-            _tester.TestController(_tester.Supervisor.UId, "Supervisor")
+            _tester.TestController(_tester.Supervisor.Id, "Supervisor")
                 .Calling(c => c.IsAllowedToAdminister())
                 .ShouldReturn()
                 .StatusCode(403);
@@ -269,7 +268,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToInviteForbiddenForStudent()
         {
-            _tester.TestController(_tester.Student.UId, "Student")
+            _tester.TestController(_tester.Student.Id, "Student")
                 .Calling(c => c.IsAllowedToInvite())
                 .ShouldReturn()
                 .StatusCode(403);
@@ -281,7 +280,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void IsAllowedToInviteTestForSupervisor()
         {
-            _tester.TestController(_tester.Supervisor.UId)
+            _tester.TestController(_tester.Supervisor.Id)
                 .Calling(c => c.IsAllowedToInvite())
                 .ShouldReturn()
                 .Ok();

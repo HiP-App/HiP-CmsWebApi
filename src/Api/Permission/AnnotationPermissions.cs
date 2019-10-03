@@ -1,7 +1,9 @@
 ﻿using PaderbornUniversity.SILab.Hip.CmsApi.Data;
 using PaderbornUniversity.SILab.Hip.CmsApi.Managers;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
+using PaderbornUniversity.SILab.Hip.UserStore;
 using System;
+using System.Threading.Tasks;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
 {
@@ -9,41 +11,44 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Permission
     {
         private readonly UserManager _userManager;
 
-
-        public AnnotationPermissions(CmsDbContext dbContext) : base(dbContext)
+        public AnnotationPermissions(CmsDbContext dbContext, UserManager userManager) : base(dbContext)
         {
-            _userManager = new UserManager(dbContext);
+            _userManager = userManager;
         }
 
-        private bool IsAdminOrSupervisor(string identity)
+        private async Task<bool> IsAdminOrSupervisorAsync(string identity)
         {
             bool allowed;
             try
             {
-                var user = _userManager.GetUserByIdentity(identity);
-                allowed = user.Role.Equals(Role.Administrator) || user.Role.Equals(Role.Supervisor);
+                var user = await _userManager.GetUserByIdAsync(identity);
+                allowed = user.Roles.Contains(Role.Administrator) || user.Roles.Contains(Role.Supervisor);
             }
             catch (InvalidOperationException)
             {
                 allowed = false;
             }
+            catch (SwaggerException)
+            {
+                allowed = false;
+            }
+
             return allowed;
         }
 
-        public bool IsAllowedToEditTags(string identity)
+        public async Task<bool> IsAllowedToEditTagsAsync(string identity)
         {
-            return IsAdminOrSupervisor(identity);
+            return await IsAdminOrSupervisorAsync(identity);
         }
 
-        public bool IsAllowedToCreateTags(string identity)
+        public async Task<bool> IsAllowedToCreateTagsAsync(string identity)
         {
-            return IsAdminOrSupervisor(identity);
+            return await IsAdminOrSupervisorAsync(identity);
         }
 
-        public bool IsAllowedToCreateRelationRules(string identity)
+        public async Task<bool> IsAllowedToCreateRelationRulesAsync(string identity)
         {
-            return IsAdminOrSupervisor(identity);
+            return await IsAdminOrSupervisorAsync(identity);
         }
-
     }
 }

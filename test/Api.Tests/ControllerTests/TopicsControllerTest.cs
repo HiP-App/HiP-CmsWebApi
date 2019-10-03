@@ -1,12 +1,14 @@
-﻿using Xunit;
+﻿using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Controllers;
-using System;
-using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
-using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
-using MyTested.AspNetCore.Mvc;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models;
 using PaderbornUniversity.SILab.Hip.CmsApi.Models.Entity;
+using PaderbornUniversity.SILab.Hip.CmsApi.Models.Topic;
+using PaderbornUniversity.SILab.Hip.CmsApi.Utility;
+using PaderbornUniversity.SILab.Hip.UserStore;
+using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using Xunit;
 
 namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
 {
@@ -52,7 +54,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTopicsWithQueryTest()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
+            _tester.TestControllerWithMockData(_tester.Student.Id)
                 .Calling(c => c.Get("Paderborner", "InReview", new DateTime(2017, 5, 04), false, 0, 0))
                 .ShouldReturn()
                 .Ok()
@@ -63,7 +65,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         #endregion
 
         #region GET topics of user
-        
+
         /// <summary>
         /// Returns ok if all topics are retrieved for the user
         /// </summary>
@@ -71,13 +73,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTopicsForUserTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTopicsForUser(_tester.Student.UId, 0, 0, null))
+                .Calling(c => c.GetTopicsForUser(_tester.Student.Id, 0, 0, null))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<TopicResult>>()
                 .Passing(topic => topic.Metadata.ItemsCount == 1);
         }
-        
+
         /// <summary>
         /// Returns ok if all topics are retrieved for the user matching query
         /// </summary>
@@ -85,17 +87,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTopicsForUserWithQueryTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTopicsForUser(_tester.Student.UId, 0, 0, "Paderborner"))
+                .Calling(c => c.GetTopicsForUser(_tester.Student.Id, 0, 0, "Paderborner"))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<PagedResult<TopicResult>>()
                 .Passing(topic => topic.Metadata.ItemsCount == 1);
         }
-        
+
         #endregion
-        
+
         #region GET topic based on topicId
-        
+
         /// <summary>
         /// Returns ok if the topic is retrieved given topicId
         /// </summary>
@@ -109,7 +111,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .WithModelOfType<TopicResult>()
                 .Passing(actual => actual.Id == _tester.TopicOne.Id);
         }
-        
+
         /// <summary>
         /// Returns ok if the topic is retrieved given topicId
         /// </summary>
@@ -121,11 +123,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
                 .ShouldReturn()
                 .NotFound();
         }
-        
+
         #endregion
-        
+
         #region Edit Topics
-        
+
         /// <summary>
         /// Passes if topic is added successfully
         /// </summary>
@@ -133,12 +135,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void PostTopicTest()
         {
             _tester.TestController()
-                .Calling(c => c.Post(TopicFormModel))
+                .Calling(c => c.PostAsync(TopicFormModel))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Title == TopicFormModel.Title)));
             // As we have problem with DI, when EmailService is invoked it returns BadRequest. Hence only a part of the positive test case is tested.
         }
-        
+
         /// <summary>
         /// returns BadRequest when model is incorrect
         /// </summary>
@@ -147,11 +149,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var topicFormModel = new TopicFormModel();
             _tester.TestController()
-                .Calling(c => c.Post(topicFormModel))
+                .Calling(c => c.PostAsync(topicFormModel))
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         /// <summary>
         /// returns BadRequest when topic status is incorrect
         /// </summary>
@@ -160,39 +162,39 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             TopicFormModel.Status = "Wrong";
             _tester.TestController()
-                .Calling(c => c.Post(TopicFormModel))
+                .Calling(c => c.PostAsync(TopicFormModel))
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         /// <summary>
         /// returns status code 403 when student tries to add a topic
         /// </summary>
         [Fact]
         public void PostTopicTest403()
         {
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.Post(TopicFormModel))
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.PostAsync(TopicFormModel))
                 .ShouldReturn()
                 .StatusCode(403);
         }
-        
-        /// <summary>
-        /// Passes if topic is added successfully
-        /// </summary>
-        //[Fact]
-        public void PutTopicTest()
-        {
-            //The test returns Transactions are not supported by the in-memory store.
-            //See http://go.microsoft.com/fwlink/?LinkId=800142. Positive test case not possible.
 
-            _tester.TestControllerWithMockData()
-                .Calling(c => c.Put(_tester.TopicOne.Id, TopicFormModel))
-                .ShouldHave()
-                .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Title == TopicFormModel.Title)));
-            // As we have problem with DI, when EmailService is invoked it returns BadRequest. Hence only a part of the positive test case is tested.
-        }
-        
+        // <summary>
+        // Passes if topic is added successfully
+        // </summary>
+        //[Fact]
+        //public void PutTopicTest()
+        //{
+        //    //The test returns Transactions are not supported by the in-memory store.
+        //    //See http://go.microsoft.com/fwlink/?LinkId=800142. Positive test case not possible.
+
+        //    _tester.TestControllerWithMockData()
+        //        .Calling(c => c.PutAsync(_tester.TopicOne.Id, TopicFormModel))
+        //        .ShouldHave()
+        //        .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Title == TopicFormModel.Title)));
+        //    // As we have problem with DI, when EmailService is invoked it returns BadRequest. Hence only a part of the positive test case is tested.
+        //}
+
         /// <summary>
         /// returns BadRequest when model is incorrect
         /// </summary>
@@ -201,23 +203,23 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             var topicFormModel = new TopicFormModel();
             _tester.TestControllerWithMockData()
-                .Calling(c => c.Put(_tester.TopicOne.Id, topicFormModel))
+                .Calling(c => c.PutAsync(_tester.TopicOne.Id, topicFormModel))
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         /// <summary>
         /// returns status code 403 when student tries to update a topic
         /// </summary>
         [Fact]
         public void PutTopicTest403()
         {
-            _tester.TestController(_tester.Student.UId)
-                .Calling(c => c.Post(TopicFormModel))
+            _tester.TestController(_tester.Student.Id)
+                .Calling(c => c.PostAsync(TopicFormModel))
                 .ShouldReturn()
                 .StatusCode(403);
         }
-        
+
         /// <summary>
         /// Passes if topic staus is changed successfully
         /// </summary>
@@ -225,20 +227,20 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void ChangeTopicStatusTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
+                .Calling(c => c.ChangeStatusAsync(_tester.TopicOne.Id, TopicStatus))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Topic>(topic => topic.Any(actual => actual.Status == TopicStatus.Status)));
             // As we have problem with DI, when EmailService is invoked it returns NotFound. Hence only a part of the positive test case is tested.
         }
-        
+
         /// <summary>
         /// returns 404 in case of exception occured
         /// </summary>
         [Fact]
         public void ChangeTopicStatusTest404Forexception()
         {
-            _tester.TestControllerWithMockData(_tester.Supervisor.UId)
-                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
+            _tester.TestControllerWithMockData(_tester.Supervisor.Id)
+                .Calling(c => c.ChangeStatusAsync(_tester.TopicOne.Id, TopicStatus))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -250,11 +252,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void ChangeTopicStatusTest404()
         {
             _tester.TestController()
-                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
+                .Calling(c => c.ChangeStatusAsync(_tester.TopicOne.Id, TopicStatus))
                 .ShouldReturn()
                 .NotFound();
         }
-        
+
         /// <summary>
         /// returns BadRequest when model is incorrect
         /// </summary>
@@ -263,11 +265,11 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         {
             TopicStatus.Status = "Wrong";
             _tester.TestControllerWithMockData()
-                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
+                .Calling(c => c.ChangeStatusAsync(_tester.TopicOne.Id, TopicStatus))
                 .ShouldReturn()
                 .BadRequest();
         }
-        
+
         /// <summary>
         /// returns status code 409 when topic status is done and also reviewed
         /// </summary>
@@ -275,17 +277,17 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void ChangeTopicStatusTestForConflict()
         {
             TopicStatus.Status = "Done";
-            var reviewer = new User
+            var reviewer = new UserResult
             {
-                Id = 4,
+                Id = "test-auth:reviewer",
                 Email = "reviewer@hipapp.de",
-                Role = "Reviewer"
+                Roles = new ObservableCollection<string>(new[] { "Reviewer" })
             };
             var reviewerUser = new TopicUser
             {
                 TopicId = _tester.TopicOne.Id,
                 UserId = reviewer.Id,
-                Role = reviewer.Role
+                Role = reviewer.Roles.First()
             };
             var topicReview = new TopicReview
             {
@@ -294,14 +296,13 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
             _tester.TestControllerWithMockData()
                 .WithDbContext(dbContext => dbContext
-                    .WithSet<User>(db => db.Add(reviewer))
                     .WithSet<TopicUser>(db => db.Add(reviewerUser))
                     .WithSet<TopicReview>(db => db.Add(topicReview)))
-                .Calling(c => c.ChangeStatus(_tester.TopicOne.Id, TopicStatus))
+                .Calling(c => c.ChangeStatusAsync(_tester.TopicOne.Id, TopicStatus))
                 .ShouldReturn()
                 .StatusCode(409);
         }
-        
+
         /// <summary>
         /// Returns ok if topic is deleted
         /// </summary>
@@ -309,12 +310,12 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void DeleteTest()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.Delete(_tester.TopicOne.Id))
+                .Calling(c => c.DeleteAsync(_tester.TopicOne.Id))
                 .ShouldHave()
                 .DbContext(db => db.WithSet<Topic>(topic => !topic.Any(actual => actual == _tester.TopicOne)));
             // As we have problem with DI, when EmailService is invoked it returns NotFound. Hence only a part of the positive test case is tested.
         }
-        
+
         /// <summary>
         /// returns 404 when topic is not found
         /// </summary>
@@ -322,23 +323,23 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void DeleteTest404()
         {
             _tester.TestController()
-                .Calling(c => c.Delete(_tester.TopicOne.Id))
+                .Calling(c => c.DeleteAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .NotFound();
         }
-        
+
         /// <summary>
         /// returns 403 when a student tries to delete topic
         /// </summary>
         [Fact]
         public void DeleteTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId)
-                .Calling(c => c.Delete(_tester.TopicOne.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id)
+                .Calling(c => c.DeleteAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }
-        
+
         #endregion
     }
 }

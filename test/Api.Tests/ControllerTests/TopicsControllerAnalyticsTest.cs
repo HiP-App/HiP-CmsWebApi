@@ -32,7 +32,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
             };
 
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicOne.Id))
+                .Calling(c => c.GetTagFrequencyAnalyticsAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .Ok()
                 .WithModelOfType<TagFrequencyAnalyticsResult>()
@@ -46,7 +46,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTagFrequencyAnalyticsTest404()
         {
             _tester.TestController()
-                .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicOne.Id))
+                .Calling(c => c.GetTagFrequencyAnalyticsAsync(_tester.TopicOne.Id))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -58,7 +58,7 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         public void GetTagFrequencyAnalyticsTest404ForDifferentTopic()
         {
             _tester.TestControllerWithMockData()
-                .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicTwo.Id))
+                .Calling(c => c.GetTagFrequencyAnalyticsAsync(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .NotFound();
         }
@@ -69,8 +69,8 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Tests.ControllerTests
         [Fact]
         public void GetTagFrequencyAnalyticsTest403()
         {
-            _tester.TestControllerWithMockData(_tester.Student.UId) // Student not attached to topic two
-                .Calling(c => c.GetTagFrequencyAnalytics(_tester.TopicTwo.Id))
+            _tester.TestControllerWithMockData(_tester.Student.Id) // Student not attached to topic two
+                .Calling(c => c.GetTagFrequencyAnalyticsAsync(_tester.TopicTwo.Id))
                 .ShouldReturn()
                 .StatusCode(403);
         }

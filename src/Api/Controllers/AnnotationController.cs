@@ -10,10 +10,10 @@ namespace PaderbornUniversity.SILab.Hip.CmsApi.Controllers
         private readonly AnnotationTagManager _tagManager;
         private readonly AnnotationPermissions _annotationPermissions;
 
-        public AnnotationController(CmsDbContext dbContext, ILoggerFactory loggerFactory) : base(dbContext, loggerFactory)
+        public AnnotationController(CmsDbContext dbContext, ILoggerFactory loggerFactory, AnnotationPermissions annotationPermissions) : base(dbContext, loggerFactory)
         {
             _tagManager = new AnnotationTagManager(dbContext);
-            _annotationPermissions = new AnnotationPermissions(dbContext);
+            _annotationPermissions = annotationPermissions;
         }
     }
 }
